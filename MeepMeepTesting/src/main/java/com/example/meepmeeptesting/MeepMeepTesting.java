@@ -27,28 +27,13 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity bot1 = new DefaultBotBuilder(meepMeep)
                 .setDimensions(16.4, 15.5)
-                .setStartPose(new Pose2d(35, -62.5, Math.toRadians(180)))
+                .setStartPose(new Pose2d(35, -62.5, Math.toRadians(90)))
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(65, 65, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive->
-                        drive.trajectorySequenceBuilder(new Pose2d(35, -62.5, Math.toRadians(180)))
-                                .lineTo(new Vector2d(35, -23.5))
-                                .waitSeconds(0.1)
-                                .lineTo(new Vector2d(30, -23.5))
-                                .waitSeconds(0.1)
-                                .lineTo(new Vector2d(35, -23.5))
-                                .lineTo(new Vector2d(35, -12.5))
-
-                                .setReversed(true)
-                                .lineTo(new Vector2d(61, -12.5))
-                                .waitSeconds(0.1)
-                                .setReversed(false)
-                                .splineTo(new Vector2d(40, -12.5), Math.toRadians(180))
-                                .splineTo(new Vector2d(28, -18.5), Math.toRadians(225))
-                                .waitSeconds(0.1)
-                                .setReversed(true)
-                                .splineTo(new Vector2d(40, -12.5), Math.toRadians(0))
-                                .splineTo(new Vector2d(61, -12.5), Math.toRadians(0))
+                        drive.trajectorySequenceBuilder(new Pose2d(35, -62.5, Math.toRadians(90)))
+                                .splineToConstantHeading(new Vector2d(24, -61), Math.toRadians(-180))
+                                .splineToConstantHeading(new Vector2d(0, -61), Math.toRadians(-180))
                                 .build()
                 );
 
