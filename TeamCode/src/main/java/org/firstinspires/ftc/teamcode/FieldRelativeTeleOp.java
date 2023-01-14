@@ -67,6 +67,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runClaw();
             telemetry.addData("Claw is open:", scorer.clawOpen);
 
+            telemetry.addData("Lift encoder raw output:", scorer.lift_motor1.encoder.getPosition());
+            telemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
+
             scorer.liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
             scorer.runLiftPos();
             scorer.liftController.setPIDF(

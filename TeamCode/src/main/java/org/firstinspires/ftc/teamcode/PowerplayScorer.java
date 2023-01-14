@@ -147,7 +147,7 @@ public class PowerplayScorer {
 
     public void liftClaw() {
         clawOpen = false;
-        liftController.setSetPoint(TeleOpConfig.HEIGHT_LOW);
+        liftController.setSetPoint(TeleOpConfig.HEIGHT_GROUND);
     }
     public void dropClaw() {
         liftController.setSetPoint(TeleOpConfig.HEIGHT_ONE);
