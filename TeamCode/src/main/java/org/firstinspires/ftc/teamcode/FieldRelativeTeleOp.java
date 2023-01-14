@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-// This is the main TeleOp, with full bot functionality as well as telemetry
-@TeleOp(name="Field Relative 1", group="FTC 21836")
+
+@TeleOp(name="Field Relative", group="21836 Teleop")
 //@Disabled
 public class FieldRelativeTeleOp extends LinearOpMode {
     PowerplayScorer scorer = new PowerplayScorer();
@@ -34,7 +34,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         GamepadEx Gamepad1 = new GamepadEx(gamepad1);
         GamepadEx Gamepad2 = new GamepadEx(gamepad2);
 
-        ButtonReader control1A = new ButtonReader(Gamepad1, GamepadKeys.Button.A);
+        ButtonReader control1A = new ButtonReader(Gamepad1, GamepadKeys.Button.A); //reset field-centric heading
 
         ButtonReader control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A); //drop + open claw
         ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); //close claw + lift
@@ -67,8 +67,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runClaw();
             telemetry.addData("Claw is open:", scorer.clawOpen);
 
-            telemetry.addData("Lift encoder raw output:", scorer.lift_motor1.encoder.getPosition());
-            telemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
 
             scorer.liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
             scorer.runLiftPos();
@@ -80,6 +78,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             );
 
             telemetry.addData("Lift position", scorer.liftPos);
+            telemetry.addData("Lift encoder raw output:", scorer.lift_motor1.encoder.getPosition());
+            telemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
 
 
             //Get stick inputs

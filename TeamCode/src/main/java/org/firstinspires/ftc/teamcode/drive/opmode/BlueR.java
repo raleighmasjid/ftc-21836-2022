@@ -11,10 +11,8 @@ import org.firstinspires.ftc.teamcode.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-/*
- * This is an example of a more complex path to really test the tuning.
- */
-@Autonomous(group = "drive")
+
+@Autonomous(name="Blue Alliance - Right", group = "21836 Autonomous")
 public class BlueR extends LinearOpMode {
     PowerplayScorer scorer = new PowerplayScorer();
 
