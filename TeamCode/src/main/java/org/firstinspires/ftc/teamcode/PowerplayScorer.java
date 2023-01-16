@@ -19,21 +19,22 @@ public class PowerplayScorer {
 
     public MotorEx lift_motor1;
     public MotorEx lift_motor2;
-//    public MotorEx lift_motor3;
-    public SimpleServo clawLeft;
+    public MotorEx lift_motor3;
     public SimpleServo clawRight;
+    public SimpleServo passThru;
+    public SimpleServo clawPivot;
     public PIDFController liftController;
     public String liftPos;
 
     // the following is the code that runs during initialization
     public void init(HardwareMap hw) {
 
-        clawLeft = new SimpleServo(hw,"claw left",0,180);
         clawRight = new SimpleServo(hw,"claw right",0,180);
+        passThru = new SimpleServo(hw, "claw spin",0,180);
 
         lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, MAX_RPM);
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
-//        lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, MAX_RPM);
+        lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, MAX_RPM);
 
         liftController = new PIDFController(
                 TeleOpConfig.LIFT_P,
@@ -45,10 +46,13 @@ public class PowerplayScorer {
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+
         lift_motor1.setRunMode(Motor.RunMode.VelocityControl);
         lift_motor2.setRunMode(Motor.RunMode.VelocityControl);
-//        lift_motor3.setRunMode(Motor.RunMode.VelocityControl);
-//        lift_motor3.setInverted(true);
+        lift_motor3.setRunMode(Motor.RunMode.VelocityControl);
+
+        lift_motor1.setInverted(true);
+        lift_motor3.setInverted(true);
 
         liftPos = null;
 
@@ -58,6 +62,7 @@ public class PowerplayScorer {
 
     // states that the claw should be open upon teleop control loop start
     public boolean clawOpen = true;
+    public boolean clawSpin = false;
 
     // squares input but keeps +/- sign
     public double signSquare (double x) {
@@ -112,7 +117,7 @@ public class PowerplayScorer {
     public void runLiftPos() {
         if (!liftController.atSetPoint()) {
             double velocity = liftController.calculate(
-                lift_motor1.getCurrentPosition()
+                lift_motor2.getCurrentPosition()
             );
             runLift(velocity);
         }
@@ -126,7 +131,7 @@ public class PowerplayScorer {
         // this allows for smoother acceleration
         lift_motor1.set(velocity);
         lift_motor2.set(velocity);
-//        lift_motor3.set(velocity);
+        lift_motor3.set(velocity);
     }
 
     // inverts claw state boolean
@@ -137,10 +142,8 @@ public class PowerplayScorer {
     // the following code switches the open/closed state of the claw based on the boolean above
     public void runClaw() {
         if (clawOpen){
-            clawLeft.setPosition(TeleOpConfig.CLAW_LEFT_OPEN);
             clawRight.setPosition(TeleOpConfig.CLAW_RIGHT_OPEN);
         } else {
-            clawLeft.setPosition(TeleOpConfig.CLAW_LEFT_CLOSED);
             clawRight.setPosition(TeleOpConfig.CLAW_RIGHT_CLOSED);
         }
     }
@@ -153,5 +156,12 @@ public class PowerplayScorer {
         liftController.setSetPoint(TeleOpConfig.HEIGHT_ONE);
         clawOpen = true;
     }
-
+    public void spinClaw(){
+        clawSpin = !clawSpin;
+        if(clawSpin == false){
+            passThru.setPosition(TeleOpConfig.spin_1);
+        } else {
+            passThru.setPosition(TeleOpConfig.spin_2);
+        }
+    }
 }

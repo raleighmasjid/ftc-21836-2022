@@ -39,6 +39,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         ButtonReader control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A); //drop + open claw
         ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); //close claw + lift
         ButtonReader control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X); //claw override
+        ButtonReader control2Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); //claw spin
 
         ButtonReader control2Up = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_UP);
         ButtonReader control2Left = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_LEFT);
@@ -57,6 +58,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2B.readValue();
             control2A.readValue();
             control2X.readValue();
+            control2Y.readValue();
 
             control2Up.readValue();
             control2Left.readValue();
@@ -90,7 +92,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 //            gamepad 2's left analog stick:
             double control2LeftY = Gamepad2.getLeftY();
 
-
+            if(control2Y.wasJustPressed()){scorer.spinClaw();}
 
             if (control2X.wasJustPressed()) {
                 scorer.toggleClaw();

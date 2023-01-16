@@ -26,4 +26,6 @@ public class TeleOpConfig {
     public static double LIFT_E_TOLERANCE = 5;
     public static double LIFT_V_TOLERANCE = 10;
 
+    public static double spin_1 = 0;
+    public static double spin_2 = Math.PI;
 }
