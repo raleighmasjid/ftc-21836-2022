@@ -48,6 +48,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
         scorer.setLiftPos(PowerplayScorer.HEIGHT_VAL.ONE);
 
+        scorer.lift_motor2.resetEncoder();
+
         waitForStart();
 
 //      teleop control loop
@@ -67,8 +69,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
 //            constantly moves the claw to its position dictated by "clawOpen"
             scorer.runClaw();
-            telemetry.addData("Claw is open:", scorer.clawOpen);
-
+            mytelemetry.addData("Claw is open:", scorer.clawOpen);
+            scorer.runPassthrough();
+            scorer.runPivot();
 
             scorer.liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
             scorer.runLiftPos();
@@ -79,9 +82,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     TeleOpConfig.LIFT_F
             );
 
-            telemetry.addData("Lift position", scorer.liftPos);
-            telemetry.addData("Lift encoder raw output:", scorer.lift_motor1.encoder.getPosition());
-            telemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
+            mytelemetry.addData("Lift position", scorer.liftPos);
+            mytelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
+            mytelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
 
 
             //Get stick inputs
@@ -92,16 +95,18 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 //            gamepad 2's left analog stick:
             double control2LeftY = Gamepad2.getLeftY();
 
-            if(control2Y.wasJustPressed()){scorer.spinClaw();}
 
             if (control2X.wasJustPressed()) {
                 scorer.toggleClaw();
             }
-            if (control2B.wasJustPressed()) {
-                scorer.liftClaw();
+            if(control2Y.wasJustPressed()){
+                scorer.togglePassthrough();
             }
             if (control2A.wasJustPressed()) {
                 scorer.dropClaw();
+            }
+            if (control2B.wasJustPressed()) {
+                scorer.liftClaw();
             }
 
 

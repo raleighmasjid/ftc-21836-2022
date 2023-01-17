@@ -7,7 +7,9 @@ import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 /**
  * Creates a 'GreenBot' class that extends the mecanum drive class
@@ -21,16 +23,20 @@ public class PowerplayScorer {
     public MotorEx lift_motor2;
     public MotorEx lift_motor3;
     public SimpleServo clawRight;
-    public SimpleServo passThru;
     public SimpleServo clawPivot;
+    public SimpleServo passThru1;
+    public SimpleServo passThru2;
     public PIDFController liftController;
     public String liftPos;
+    public TouchSensor limitSwitch;
 
     // the following is the code that runs during initialization
     public void init(HardwareMap hw) {
 
         clawRight = new SimpleServo(hw,"claw right",0,180);
-        passThru = new SimpleServo(hw, "claw spin",0,180);
+        clawPivot = new SimpleServo(hw, "claw pivot",0,180);
+        passThru1 = new SimpleServo(hw, "passthrough 1",0,180);
+        passThru2 = new SimpleServo(hw, "passthrough 2",0,180);
 
         lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, MAX_RPM);
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
@@ -62,7 +68,8 @@ public class PowerplayScorer {
 
     // states that the claw should be open upon teleop control loop start
     public boolean clawOpen = true;
-    public boolean clawSpin = false;
+    public boolean passIsFront = true;
+    public boolean pivotIsFront = true;
 
     // squares input but keeps +/- sign
     public double signSquare (double x) {
@@ -156,12 +163,26 @@ public class PowerplayScorer {
         liftController.setSetPoint(TeleOpConfig.HEIGHT_ONE);
         clawOpen = true;
     }
-    public void spinClaw(){
-        clawSpin = !clawSpin;
-        if(clawSpin == false){
-            passThru.setPosition(TeleOpConfig.spin_1);
+
+    public void togglePassthrough() {
+        passIsFront = !passIsFront;
+    }
+
+    public void runPassthrough(){
+        if(passIsFront){
+            passThru1.setPosition(TeleOpConfig.pass1Front);
+            passThru2.setPosition(TeleOpConfig.pass2Front);
         } else {
-            passThru.setPosition(TeleOpConfig.spin_2);
+            passThru1.setPosition(TeleOpConfig.pass1Back);
+            passThru2.setPosition(TeleOpConfig.pass2Back);
+        }
+    }
+
+    public void runPivot () {
+        if(pivotIsFront) {
+            clawPivot.setPosition(TeleOpConfig.pivotFront);
+        } else {
+            clawPivot.setPosition(TeleOpConfig.pivotBack);
         }
     }
 }
