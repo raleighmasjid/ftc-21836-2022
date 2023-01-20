@@ -49,11 +49,13 @@ public class BlueR extends LinearOpMode {
                 .build()
                 ;
 
+        drive.followTrajectorySequenceAsync(traj1);
 
         waitForStart();
-        if (isStopRequested()) return;
+        while (opModeIsActive()) {
 
-        drive.followTrajectorySequence(traj1);
+            drive.update();
 
+        }
     }
 }

@@ -49,8 +49,6 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
     // UNITS ARE METERS
     double tagsize = 0.166;
 
-    int ID_TAG_OF_INTEREST = 18; // Tag ID 18 from the 36h11 family
-
     int LEFT = 1;
     int MIDDLE = 2;
     int RIGHT = 3;
@@ -106,7 +104,7 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
 
                 if(tagFound)
                 {
-                    telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
+                    telemetry.addLine("Tag of interest is in sight!");
                     tagToTelemetry(tagOfInterest);
                 }
                 else

@@ -2,16 +2,16 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.util.Timing;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@TeleOp(name="Field Relative", group="21836 Teleop")
+@TeleOp(name="Field Relative", group = "21836 Teleop")
 //@Disabled
 public class FieldRelativeTeleOp extends LinearOpMode {
     PowerplayScorer scorer = new PowerplayScorer();
@@ -30,6 +30,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         scorer.init(hardwareMap);
         drivetrain.init(hardwareMap);
 
+
 //      instantiates both gamepads:
         GamepadEx Gamepad1 = new GamepadEx(gamepad1);
         GamepadEx Gamepad2 = new GamepadEx(gamepad2);
@@ -46,9 +47,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         ButtonReader control2Right = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_RIGHT);
         ButtonReader control2Down = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_DOWN);
 
-        scorer.setLiftPos(PowerplayScorer.HEIGHT_VAL.ONE);
-
         scorer.lift_motor2.resetEncoder();
+        scorer.setLiftPos(PowerplayScorer.heightVal.ONE);
+        drivetrain.resetRotation();
+
+        double targetPos;
 
         waitForStart();
 
@@ -69,9 +72,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
 //            constantly moves the claw to its position dictated by "clawOpen"
             scorer.runClaw();
-            mytelemetry.addData("Claw is open:", scorer.clawOpen);
-            scorer.runPassthrough();
+            mytelemetry.addData("Claw is open:", scorer.clawIsOpen);
             scorer.runPivot();
+            scorer.runPassthrough();
 
             scorer.liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
             scorer.runLiftPos();
@@ -82,10 +85,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     TeleOpConfig.LIFT_F
             );
 
-            mytelemetry.addData("Lift position", scorer.liftPos);
+            mytelemetry.addData("Lift position:", scorer.liftPosStr);
             mytelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
             mytelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
-
 
             //Get stick inputs
             double control1LeftY = Gamepad1.getLeftY();
@@ -95,6 +97,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 //            gamepad 2's left analog stick:
             double control2LeftY = Gamepad2.getLeftY();
 
+            // runs field-centric driving using analog stick inputs
+            drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
+
+
+            targetPos = scorer.liftController.getSetPoint() + 5*control2LeftY;
+            scorer.liftController.setSetPoint(targetPos);
 
             if (control2X.wasJustPressed()) {
                 scorer.toggleClaw();
@@ -111,16 +119,16 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
 
             if (control2Up.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.HEIGHT_VAL.TALL);
+                scorer.setLiftPos(PowerplayScorer.heightVal.TALL);
             }
             if (control2Left.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.HEIGHT_VAL.MED);
+                scorer.setLiftPos(PowerplayScorer.heightVal.MED);
             }
             if (control2Right.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.HEIGHT_VAL.LOW);
+                scorer.setLiftPos(PowerplayScorer.heightVal.LOW);
             }
             if (control2Down.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.HEIGHT_VAL.GROUND);
+                scorer.setLiftPos(PowerplayScorer.heightVal.GROUND);
             }
 
 
@@ -128,8 +136,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 drivetrain.resetRotation();
             }
 
-            // runs field-centric driving using analog stick inputs
-            drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
+
+            mytelemetry.addData("Lift motor 1 output:", scorer.lift_motor1.get());
+            mytelemetry.addData("Lift motor 2 output:", scorer.lift_motor2.get());
+            mytelemetry.addData("Lift motor 3 output:", scorer.lift_motor3.get());
 
             mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
             mytelemetry.addData("Field-relative heading", drivetrain.rotYaw);
