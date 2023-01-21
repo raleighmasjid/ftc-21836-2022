@@ -82,7 +82,7 @@ public class PowerplayScorer {
 
 
     public enum passPositions {
-        MOVING_TO_FRONT, FRONT, CLAW_CLOSING, MOVING_TO_PIVOT, PIVOT, MOVING_TO_BACK, BACK
+        MOVING_TO_FRONT, FRONT, CLAW_CLOSING, MOVING_TO_PIVOT, PIVOT, MOVING_TO_BACK, BACK, OVERRIDE
     }
 
     passPositions currentPos = passPositions.FRONT;
@@ -306,11 +306,8 @@ public class PowerplayScorer {
     }
 
     public void togglePassthrough () {
-        if ((currentPos != passPositions.FRONT) && (passIsFront)) {
-            currentPos = passPositions.FRONT;
-
-        } else if ((currentPos !=passPositions.BACK) && (!passIsFront)) {
-            currentPos = passPositions.BACK;
+        if ((currentPos != passPositions.FRONT) && (currentPos !=passPositions.BACK)) {
+            passIsFront = !passIsFront;
 
         } else {
 
@@ -322,8 +319,6 @@ public class PowerplayScorer {
                 currentPos = passPositions.CLAW_CLOSING;
                 passThruTimer.reset();
             }
-
-
         }
     }
 }

@@ -42,6 +42,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         ButtonReader control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X); //claw override
         ButtonReader control2Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); //claw spin
 
+        ButtonReader control2LShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.LEFT_BUMPER);
+
         ButtonReader control2Up = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_UP);
         ButtonReader control2Left = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_LEFT);
         ButtonReader control2Right = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_RIGHT);
@@ -64,6 +66,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2A.readValue();
             control2X.readValue();
             control2Y.readValue();
+            control2LShoulder.readValue();
 
             control2Up.readValue();
             control2Left.readValue();
@@ -100,7 +103,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             // runs field-centric driving using analog stick inputs
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
-
             targetPos = scorer.liftController.getSetPoint() + 5*control2LeftY;
             scorer.liftController.setSetPoint(targetPos);
 
@@ -116,6 +118,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             if (control2B.wasJustPressed()) {
                 scorer.liftClaw();
             }
+            if (control2LShoulder.wasJustPressed()) {
+                scorer.togglePivot();
+            }
+
 
 
             if (control2Up.wasJustPressed()) {
@@ -143,6 +149,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
             mytelemetry.addData("Field-relative heading", drivetrain.rotYaw);
+            mytelemetry.addData("passisfront", scorer.passIsFront);
             mytelemetry.update();
         }
     }

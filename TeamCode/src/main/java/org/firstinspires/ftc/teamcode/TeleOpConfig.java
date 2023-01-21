@@ -17,7 +17,7 @@ public class TeleOpConfig {
     public static double LIFT_P = 0.01;
     public static double LIFT_I = 0;
     public static double LIFT_D = 0;
-    public static double LIFT_F = 0.00012;
+    public static double LIFT_F = 0.00013;
 
     public static double LIFT_E_TOLERANCE = 1;
     public static double LIFT_V_TOLERANCE = 10;
@@ -37,7 +37,7 @@ public class TeleOpConfig {
     public static double pass1Pivoting = 25;
     public static double pass2Pivoting = 170;
 
-    public static double clawClosingTime = 0.35;
+    public static double clawClosingTime = 0.31;
     public static double frontToPivot = 0.2;
     public static double backToPivot = 0.857;
     public static double pivotingTime = 0.85;

@@ -1,29 +1,17 @@
-/*
- * Copyright (c) 2021 OpenFTC Team
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+package org.firstinspires.ftc.teamcode.drive.opmode;
 
-package org.firstinspires.ftc.teamcode.auton;
-
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.PowerplayScorer;
+import org.firstinspires.ftc.teamcode.auton.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -31,8 +19,11 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(group = "drive")
-public class AprilTagInitDetectionTest extends LinearOpMode {
+
+
+
+@Autonomous(name="Red Alliance - 21-point Autonomous", group = "21836 Autonomous")
+public class TwentyPointAuton extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -57,8 +48,10 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
 
     AprilTagDetection tagOfInterest = null;
 
+    PowerplayScorer scorer = new PowerplayScorer();
+
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -85,6 +78,16 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
          * The INIT-loop:
          * This REPLACES waitForStart!
          */
+
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.setPoseEstimate(new Pose2d(35, -62.5, Math.toRadians(90)));
+
+        //  Initialize telemetry and dashboard
+        MultipleTelemetry mytelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+
+        //  initializes code:
+        scorer.init(hardwareMap);
 
 
         while (!isStarted() && !isStopRequested()) {
@@ -146,14 +149,9 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
         }
 
 
-        /*
-         * The START command just came in: now work off the latest snapshot acquired
-         * during the init loop.
-         */
+        //START IS HERE//
 
 
-
-        /* Update the telemetry */
         if(tagOfInterest != null)
         {
             telemetry.addLine("Tag snapshot:\n");
@@ -166,21 +164,37 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
             telemetry.update();
         }
 
+        TrajectorySequence parking;
 
         if(tagOfInterest.id == LEFT) {
-            //zone 1 park
+            parking = drive.trajectorySequenceBuilder(new Pose2d(35, -12.5, Math.toRadians(90)))
+                    .lineToConstantHeading(new Vector2d(12.5, -12.5))
+                    .build();
 
-        } else if(tagOfInterest == null || tagOfInterest.id == MIDDLE) {
-            //zone 2 park
-
+        } else if(tagOfInterest.id == RIGHT) {
+            parking = drive.trajectorySequenceBuilder(new Pose2d(35, -12.5, Math.toRadians(90)))
+                    .lineToConstantHeading(new Vector2d(56, -12.5))
+                    .build();
         } else {
-            //zone 3 park
-
+            parking = drive.trajectorySequenceBuilder(new Pose2d(35, -12.5, Math.toRadians(90)))
+                    .lineToConstantHeading(new Vector2d(34.5, -12.5))
+                    .build();
         }
 
 
-        /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
-        while (opModeIsActive()) {sleep(20);}
+
+        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d(35, -62.5, Math.toRadians(90)))
+                .splineToConstantHeading(new Vector2d(40, -61), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(55, -61), Math.toRadians(0))
+                .waitSeconds(0.01)
+                .lineToConstantHeading(new Vector2d(35, -60))
+                .lineToConstantHeading(new Vector2d(35, -12.5))
+                .build()
+                ;
+
+
+        drive.followTrajectorySequence(traj1);
+        drive.followTrajectorySequence(parking);
     }
 
     void tagToTelemetry(AprilTagDetection detection)
