@@ -123,7 +123,7 @@ public class PowerplayScorer {
                 case MOVING_TO_BACK:
                     passThruRight.turnToAngle(TeleOpConfig.pass1Back);
                     passThruLeft.turnToAngle(TeleOpConfig.pass2Back);
-                    if (passThruTimer.seconds() >= TeleOpConfig.backToPivot) {
+                    if (passThruTimer.seconds() >= (TeleOpConfig.backToPivot/1.6)) {
                         passThruTimer.reset();
                         clawIsOpen = clawWasOpen;
                         currentPos = passPositions.BACK;

@@ -49,6 +49,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         ButtonReader control2Right = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_RIGHT);
         ButtonReader control2Down = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_DOWN);
 
+        double control1LeftY;
+        double control1LeftX;
+        double control1RightX;
+        double control2LeftY;
+
         scorer.lift_motor2.resetEncoder();
         scorer.setLiftPos(PowerplayScorer.heightVal.ONE);
         drivetrain.resetRotation();
@@ -75,7 +80,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
 //            constantly moves the claw to its position dictated by "clawOpen"
             scorer.runClaw();
-            mytelemetry.addData("Claw is open:", scorer.clawIsOpen);
+//            mytelemetry.addData("Claw is open:", scorer.clawIsOpen);
             scorer.runPivot();
             scorer.runPassthrough();
 
@@ -88,20 +93,17 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     TeleOpConfig.LIFT_F
             );
 
-            mytelemetry.addData("Lift position:", scorer.liftPosStr);
-            mytelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
-            mytelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
+//            mytelemetry.addData("Lift position:", scorer.liftPosStr);
+//            mytelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
+//            mytelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
 
             //Get stick inputs
-            double control1LeftY = Gamepad1.getLeftY();
-            double control1LeftX = Gamepad1.getLeftX();
+            control1LeftY = Gamepad1.getLeftY();
+            control1LeftX = Gamepad1.getLeftX();
 //            gamepad 1's right analog stick:
-            double control1RightX = Gamepad1.getRightX();
+            control1RightX = Gamepad1.getRightX();
 //            gamepad 2's left analog stick:
-            double control2LeftY = Gamepad2.getLeftY();
-
-            // runs field-centric driving using analog stick inputs
-            drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
+            control2LeftY = Gamepad2.getLeftY();
 
             targetPos = scorer.liftController.getSetPoint() + 5*control2LeftY;
             scorer.liftController.setSetPoint(targetPos);
@@ -142,14 +144,17 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 drivetrain.resetRotation();
             }
 
+            // runs field-centric driving using analog stick inputs
+            drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
-            mytelemetry.addData("Lift motor 1 output:", scorer.lift_motor1.get());
-            mytelemetry.addData("Lift motor 2 output:", scorer.lift_motor2.get());
-            mytelemetry.addData("Lift motor 3 output:", scorer.lift_motor3.get());
-
-            mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
-            mytelemetry.addData("Field-relative heading", drivetrain.rotYaw);
-            mytelemetry.addData("passisfront", scorer.passIsFront);
+//
+//            mytelemetry.addData("Lift motor 1 output:", scorer.lift_motor1.get());
+//            mytelemetry.addData("Lift motor 2 output:", scorer.lift_motor2.get());
+//            mytelemetry.addData("Lift motor 3 output:", scorer.lift_motor3.get());
+//
+//            mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
+//            mytelemetry.addData("Field-relative heading", drivetrain.rotYaw);
+//            mytelemetry.addData("passisfront", scorer.passIsFront);
             mytelemetry.update();
         }
     }

@@ -20,10 +20,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 
-
-
-@Autonomous(name="Red Alliance - 21-point Autonomous", group = "21836 Autonomous")
-public class TwentyPointAuton extends LinearOpMode {
+@Autonomous(name= "Red Alliance - Left - Terminal & park", group = "21836 Autonomous")
+public class TerminalParkRedLeft extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -80,7 +78,7 @@ public class TwentyPointAuton extends LinearOpMode {
          */
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(35, -62.5, Math.toRadians(90)));
+        drive.setPoseEstimate(new Pose2d(-35, -62.5, Math.toRadians(90)));
 
         //  Initialize telemetry and dashboard
         MultipleTelemetry mytelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -148,6 +146,8 @@ public class TwentyPointAuton extends LinearOpMode {
             sleep(20);
         }
 
+        camera.stopStreaming();
+        camera.closeCameraDevice();
 
         //START IS HERE//
 
@@ -167,28 +167,28 @@ public class TwentyPointAuton extends LinearOpMode {
         TrajectorySequence parking;
 
         if(tagOfInterest.id == LEFT) {
-            parking = drive.trajectorySequenceBuilder(new Pose2d(35, -12.5, Math.toRadians(90)))
-                    .lineToConstantHeading(new Vector2d(12.5, -12.5))
+            parking = drive.trajectorySequenceBuilder(new Pose2d(-35, -12.5, Math.toRadians(90)))
+                    .lineToConstantHeading(new Vector2d(-56, -12.5))
                     .build();
 
         } else if(tagOfInterest.id == RIGHT) {
-            parking = drive.trajectorySequenceBuilder(new Pose2d(35, -12.5, Math.toRadians(90)))
-                    .lineToConstantHeading(new Vector2d(56, -12.5))
+            parking = drive.trajectorySequenceBuilder(new Pose2d(-35, -12.5, Math.toRadians(90)))
+                    .lineToConstantHeading(new Vector2d(-12.5, -12.5))
                     .build();
         } else {
-            parking = drive.trajectorySequenceBuilder(new Pose2d(35, -12.5, Math.toRadians(90)))
-                    .lineToConstantHeading(new Vector2d(34.5, -12.5))
+            parking = drive.trajectorySequenceBuilder(new Pose2d(-35, -12.5, Math.toRadians(90)))
+                    .lineToConstantHeading(new Vector2d(-34.5, -12.5))
                     .build();
         }
 
 
 
-        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d(35, -62.5, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(40, -61), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(55, -61), Math.toRadians(0))
+        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d(-35, -62.5, Math.toRadians(90)))
+                .splineToConstantHeading(new Vector2d(-40, -61), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(-55, -61), Math.toRadians(0))
                 .waitSeconds(0.01)
-                .lineToConstantHeading(new Vector2d(35, -60))
-                .lineToConstantHeading(new Vector2d(35, -12.5))
+                .lineToConstantHeading(new Vector2d(-35, -61))
+                .lineToConstantHeading(new Vector2d(-35, -12.5))
                 .build()
                 ;
 
