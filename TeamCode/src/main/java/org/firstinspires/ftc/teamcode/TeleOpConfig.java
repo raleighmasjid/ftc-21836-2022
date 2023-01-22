@@ -14,6 +14,8 @@ public class TeleOpConfig {
     public static double HEIGHT_MEDIUM = 800;
     public static double HEIGHT_TALL = 1152;
 
+    public static double MINIMUM_PIVOT_HEIGHT = 100;
+
     public static double LIFT_P = 0.01;
     public static double LIFT_I = 0;
     public static double LIFT_D = 0;
@@ -22,25 +24,32 @@ public class TeleOpConfig {
     public static double LIFT_E_TOLERANCE = 1;
     public static double LIFT_V_TOLERANCE = 10;
 
+    public static double LIFT_MAX_DOWN_VELOCITY = -0.3;
+
     public static double CLAW_RIGHT_CLOSED = 165;
     public static double CLAW_RIGHT_OPEN = 115;
+    public static double CLAW_RIGHT_PASS = 140;
 
-    public static double pivotFront = 200;
-    public static double pivotBack = 0;
+    public static double CLAW_CLOSING_TIME = 0.31;
+    public static double CLAW_PASS_CLOSING_TIME = 0.155;
 
-    public static double pass1Front = 5;
-    public static double pass1Back = 195;
+    public static double PIVOT_FRONT = 200;
+    public static double PIVOT_BACK = 0;
 
-    public static double pass2Front = 195;
-    public static double pass2Back = 5;
+    public static double PASS_1_FRONT = 5;
+    public static double PASS_1_BACK = 195;
 
-    public static double pass1Pivoting = 25;
-    public static double pass2Pivoting = 170;
+    public static double PASS_2_FRONT = 195;
+    public static double PASS_2_BACK = 5;
 
-    public static double clawClosingTime = 0.31;
-    public static double frontToPivot = 0.2;
-    public static double backToPivot = 0.857;
-    public static double pivotingTime = 0.85;
+    public static double PASS_1_PIVOTING = 25;
+    public static double PASS_2_PIVOTING = 170;
 
-    public static double liftDownMaxVelo = -0.3;
+    public static double FRONT_TO_PIVOT_TIME = 0.1;
+    public static double PIVOTING_TO_BACK_TIME = 0.75;
+    public static double PIVOT_TO_BACK_TIME = 0.4;
+
+    public static double BACK_TO_PIVOT_TIME = 0.857;
+    public static double PIVOTING_TO_FRONT_TIME = 0.6;
+    public static double PIVOT_TO_FRONT_TIME = 0.1;
 }
