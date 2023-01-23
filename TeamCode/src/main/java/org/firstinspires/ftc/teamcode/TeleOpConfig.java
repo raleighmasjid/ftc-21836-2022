@@ -24,7 +24,7 @@ public class TeleOpConfig {
     public static double LIFT_E_TOLERANCE = 1;
     public static double LIFT_V_TOLERANCE = 10;
 
-    public static double LIFT_MAX_DOWN_VELOCITY = -0.3;
+    public static double LIFT_MAX_DOWN_VELOCITY = -0.35;
 
     public static double CLAW_RIGHT_CLOSED = 165;
     public static double CLAW_RIGHT_OPEN = 115;
@@ -32,6 +32,9 @@ public class TeleOpConfig {
 
     public static double CLAW_CLOSING_TIME = 0.31;
     public static double CLAW_PASS_CLOSING_TIME = 0.155;
+    public static double CLAW_DROP_TIME = 0.7;
+    public static double CLAW_LIFT_TIME = 0.7;
+    public static double PASSTHROUGH_TIME = 1.2;
 
     public static double PIVOT_FRONT = 200;
     public static double PIVOT_BACK = 0;

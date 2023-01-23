@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="Field Relative", group = "21836 Teleop")
-//@Disabled
+
 public class FieldRelativeTeleOp extends LinearOpMode {
 
     PowerplayScorer scorer = new PowerplayScorer();
@@ -85,12 +85,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
 //            constantly moves the claw to its position dictated by "clawOpen"
             scorer.runClaw();
-//            mytelemetry.addData("Claw is open:", scorer.clawIsOpen);
             scorer.runPivot();
             scorer.runPassthrough();
+            scorer.runLiftPos();
 
             scorer.liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
-            scorer.runLiftPos();
             scorer.liftController.setPIDF(
                     TeleOpConfig.LIFT_P,
                     TeleOpConfig.LIFT_I,
@@ -98,23 +97,22 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     TeleOpConfig.LIFT_F
             );
 
-//            mytelemetry.addData("Lift position:", scorer.liftPosStr);
-//            mytelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
-//            mytelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
+            mytelemetry.addData("Claw is open:", scorer.clawIsOpen);
+            mytelemetry.addData("Lift position:", scorer.liftPosStr);
+            mytelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
+            mytelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
 
-            //Get stick inputs
             control1LeftY = Gamepad1.getLeftY();
             control1LeftX = Gamepad1.getLeftX();
-//            gamepad 1's right analog stick:
             control1RightX = Gamepad1.getRightX();
-//            gamepad 2's left analog stick:
+
             control2LeftY = Gamepad2.getLeftY();
 
-            targetPos = scorer.liftController.getSetPoint() + (10 * control2LeftY);
+            targetPos = scorer.liftController.getSetPoint() + (7 * control2LeftY);
             scorer.liftController.setSetPoint(targetPos);
 
             if (control2X.wasJustPressed()) {
-                scorer.toggleClaw();
+                scorer.toggleClaw(); //claw override
             }
             if(control2Y.wasJustPressed()){
                 scorer.togglePassthrough();
@@ -126,7 +124,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.liftClaw();
             }
             if (control2LShoulder.wasJustPressed()) {
-                scorer.togglePivot();
+                scorer.togglePivot(); //pivot override
             }
 
 
@@ -153,19 +151,19 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             if (scorer.limitSwitch.getState()) {
-                telemetry.addData("Digital Touch", "Is Not Pressed");
+                mytelemetry.addData("Digital Touch", "Is Not Pressed");
             } else {
-                telemetry.addData("Digital Touch", "Is Pressed");
+                mytelemetry.addData("Digital Touch", "Is Pressed");
             }
 
-//
-//            mytelemetry.addData("Lift motor 1 output", scorer.lift_motor1.get());
-//            mytelemetry.addData("Lift motor 2 output", scorer.lift_motor2.get());
-//            mytelemetry.addData("Lift motor 3 output", scorer.lift_motor3.get());
-//
-//            mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
-//            mytelemetry.addData("Field-relative heading", drivetrain.rotYaw);
-//            mytelemetry.addData("Passthrough is in the front", scorer.passIsFront);
+
+            mytelemetry.addData("Lift motor 1 output", scorer.lift_motor1.get());
+            mytelemetry.addData("Lift motor 2 output", scorer.lift_motor2.get());
+            mytelemetry.addData("Lift motor 3 output", scorer.lift_motor3.get());
+
+            mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
+            mytelemetry.addData("Field-relative heading", drivetrain.rotYaw);
+            mytelemetry.addData("Passthrough is in the front", scorer.passIsFront);
             mytelemetry.update();
         }
     }

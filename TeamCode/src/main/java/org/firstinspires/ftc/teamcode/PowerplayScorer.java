@@ -9,7 +9,6 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -77,7 +76,7 @@ public class PowerplayScorer {
 
 
     public boolean clawIsOpen = true;
-    public boolean clawPass = false;
+    public boolean clawIsPass = false;
 
     public boolean passIsFront = true;
     public boolean pivotIsFront = true;
@@ -141,7 +140,7 @@ public class PowerplayScorer {
 
                     if (passThruTimer.seconds() >= (TeleOpConfig.PIVOT_TO_BACK_TIME)) {
                         passThruTimer.reset();
-                        clawPass = false;
+                        clawIsPass = false;
                         currentPos = passPositions.BACK;
                         passIsFront = false;
                     }
@@ -204,7 +203,7 @@ public class PowerplayScorer {
                     passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
                     if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT)) {
                         passThruTimer.reset();
-                        clawPass = false;
+                        clawIsPass = false;
                         currentPos = passPositions.FRONT;
                         passIsFront = true;
                     }
@@ -300,7 +299,7 @@ public class PowerplayScorer {
     }
 
     public void runClaw () {
-        if (clawPass) {
+        if (clawIsPass) {
             clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_PASS);
         } else if (clawIsOpen){
             clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_OPEN);
@@ -313,7 +312,7 @@ public class PowerplayScorer {
         clawIsOpen = false;
         liftClawTimer.reset();
         if (liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) {
-            liftController.setSetPoint(TeleOpConfig.HEIGHT_GROUND);
+            liftController.setSetPoint(liftController.getSetPoint() + 50);
         }
     }
     public void dropClaw () {
@@ -342,7 +341,7 @@ public class PowerplayScorer {
             if (!clawIsOpen) {
                 currentPos = passPositions.MOVING_TO_PIVOT;
             } else {
-                clawPass = true;
+                clawIsPass = true;
                 currentPos = passPositions.CLAW_CLOSING;
                 passThruTimer.reset();
             }

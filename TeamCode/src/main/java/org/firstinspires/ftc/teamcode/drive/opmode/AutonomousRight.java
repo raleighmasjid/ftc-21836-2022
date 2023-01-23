@@ -6,10 +6,12 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.PowerplayScorer;
+import org.firstinspires.ftc.teamcode.TeleOpConfig;
 import org.firstinspires.ftc.teamcode.auton.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.drive.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -21,8 +23,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 
-@Autonomous(name= "Red Alliance - Left - Terminal & park", group = "21836 Autonomous")
-public class TerminalParkRedLeft extends LinearOpMode {
+@Autonomous(name= "Right - 1+6 medium", group = "21836 Autonomous")
+public class AutonomousRight extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline signalSleeveDetectionPipeline;
@@ -82,36 +84,83 @@ public class TerminalParkRedLeft extends LinearOpMode {
         MultipleTelemetry mytelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-        //  initializes code:
+        scorer.lift_motor2.resetEncoder();
+        scorer.setLiftPos(PowerplayScorer.heightVal.ONE);
+        scorer.clawIsOpen = false;
+
+        scorer.limitSwitch = hardwareMap.get(DigitalChannel.class, "sensor_digital");
+
+        // set the digital channel to input.
+        scorer.limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
 
-        Pose2d startPose = new Pose2d(-35, -62.5, Math.toRadians(90));
+
+        Pose2d startPose = new Pose2d(35, -62.5, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(startPose)
-                .splineToConstantHeading(new Vector2d(-40, -61), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-55, -61), Math.toRadians(180))
-                .waitSeconds(0.05)
-                .setTangent(0)
-                .lineTo(new Vector2d(-35, -61))
-                .waitSeconds(0.05)
-                .lineTo(new Vector2d(-35, -12.5))
-                .waitSeconds(0.05)
+                .splineTo(new Vector2d(35, -45), Math.toRadians(90))
+                .addTemporalMarker(() -> {
+                    scorer.setLiftPos(PowerplayScorer.heightVal.MED);
+                })
+                .splineToSplineHeading(new Pose2d(35, -23.5, Math.toRadians(180)), Math.toRadians(90))
+                .waitSeconds(0.1)
+                .lineTo(new Vector2d(31, -23.5))
+                .addTemporalMarker(() -> {
+                    scorer.clawIsOpen = false;
+                    scorer.setLiftPos(PowerplayScorer.heightVal.FIVE);
+                })
+                .waitSeconds(TeleOpConfig.CLAW_DROP_TIME)
+                .lineTo(new Vector2d(35, -23.5))
+                .waitSeconds(0.5)
+                .lineTo(new Vector2d(35, -12.5))
+                .addTemporalMarker(() -> {
+                    scorer.togglePassthrough();
+                })
+                .waitSeconds(0.3)
+                .setReversed(true)
+                .splineTo(new Vector2d(61, -12.5), Math.toRadians(0))
+                .addTemporalMarker(() -> {
+                    scorer.liftClaw();
+                })
+                .waitSeconds(TeleOpConfig.CLAW_LIFT_TIME)
+                .addTemporalMarker(() -> {
+                    scorer.togglePassthrough();
+                })
+
+                .setReversed(false)
+                .splineTo(new Vector2d(40, -12.5), Math.toRadians(180))
+                .addTemporalMarker(() -> {
+                    scorer.setLiftPos(PowerplayScorer.heightVal.MED);
+                })
+                .splineTo(new Vector2d(28.5, -19), Math.toRadians(225))
+                .addTemporalMarker(() -> {
+                    scorer.clawIsOpen = false;
+                    scorer.setLiftPos(PowerplayScorer.heightVal.FOUR);
+                })
+                .waitSeconds(TeleOpConfig.CLAW_DROP_TIME)
+                .addTemporalMarker(() -> {
+                    scorer.togglePassthrough();
+                })
+                .setReversed(true)
+                .splineTo(new Vector2d(40, -12.5), Math.toRadians(0))
+                .splineTo(new Vector2d(61, -12.5), Math.toRadians(0))
+
                 .build()
                 ;
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(-57, -12.5))
+                .lineTo(new Vector2d(12.5, -12.5))
                 .build()
                 ;
 
         TrajectorySequence parkRight = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(-12.5, -12.5))
+                .lineTo(new Vector2d(57, -12.5))
                 .build()
                 ;
 
         TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(-34.5, -12.5))
+                .lineTo(new Vector2d(34.5, -12.5))
                 .build()
                 ;
 
@@ -181,6 +230,7 @@ public class TerminalParkRedLeft extends LinearOpMode {
         }
 
         //START IS HERE//
+        autonTimer.reset();
 
         camera.stopStreaming();
         camera.closeCameraDevice();
@@ -199,11 +249,14 @@ public class TerminalParkRedLeft extends LinearOpMode {
 
 
         drive.followTrajectorySequenceAsync(traj1);
-        autonTimer.reset();
 
         while(opModeIsActive()) {
 
             drive.update();
+            scorer.runLiftPos();
+            scorer.runPassthrough();
+            scorer.runPivot();
+            scorer.runClaw();
 
 
             if((autonTimer.seconds() >= 3) && !drive.isBusy() && !hasParked) {
