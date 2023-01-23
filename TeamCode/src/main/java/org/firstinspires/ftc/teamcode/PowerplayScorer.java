@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -28,9 +29,9 @@ public class PowerplayScorer {
     public SimpleServo passThruLeft;
     public PIDFController liftController;
     public String liftPosStr;
-    public TouchSensor limitSwitch;
-    public ElapsedTime passThruTimer;
-    public ElapsedTime liftClawTimer;
+    public DigitalChannel limitSwitch;
+    public static ElapsedTime passThruTimer;
+    public static ElapsedTime liftClawTimer;
 
     // the following is the code that runs during initialization
     public void init(HardwareMap hw) {
@@ -123,7 +124,7 @@ public class PowerplayScorer {
                 case PIVOT:
                     if (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
                         passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
-                        passThruLeft.turnToAngle(TeleOpConfig.PASS_1_FRONT);
+                        passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
                     } else {
                         passThruRight.turnToAngle(TeleOpConfig.PASS_1_PIVOTING);
                         passThruLeft.turnToAngle(TeleOpConfig.PASS_2_PIVOTING);
@@ -137,6 +138,7 @@ public class PowerplayScorer {
                 case MOVING_TO_BACK:
                     passThruRight.turnToAngle(TeleOpConfig.PASS_1_BACK);
                     passThruLeft.turnToAngle(TeleOpConfig.PASS_2_BACK);
+
                     if (passThruTimer.seconds() >= (TeleOpConfig.PIVOT_TO_BACK_TIME)) {
                         passThruTimer.reset();
                         clawPass = false;
@@ -170,9 +172,8 @@ public class PowerplayScorer {
                     break;
                 case MOVING_TO_PIVOT:
                     if (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
-                        passThruTimer.reset();
-                        currentPos = passPositions.PIVOT;
-                        togglePivot();
+                        passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
+                        passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
                     } else {
                         passThruRight.turnToAngle(TeleOpConfig.PASS_1_PIVOTING);
                         passThruLeft.turnToAngle(TeleOpConfig.PASS_2_PIVOTING);
@@ -187,7 +188,7 @@ public class PowerplayScorer {
                 case PIVOT:
                     if (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
                         passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
-                        passThruLeft.turnToAngle(TeleOpConfig.PASS_1_FRONT);
+                        passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
                     } else {
                         passThruRight.turnToAngle(TeleOpConfig.PASS_1_PIVOTING);
                         passThruLeft.turnToAngle(TeleOpConfig.PASS_2_PIVOTING);
@@ -201,7 +202,7 @@ public class PowerplayScorer {
                 case MOVING_TO_FRONT:
                     passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
                     passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
-                    if (passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT)) {
                         passThruTimer.reset();
                         clawPass = false;
                         currentPos = passPositions.FRONT;
@@ -230,39 +231,39 @@ public class PowerplayScorer {
         switch (height){
             case ONE:
                 liftController.setSetPoint(TeleOpConfig.HEIGHT_ONE);
-                liftPosStr = "floor / stack of one";
+                liftPosStr = heightVal.ONE.name();
                 break;
             case TWO:
                 liftController.setSetPoint(TeleOpConfig.HEIGHT_TWO);
-                liftPosStr = "stack of 2";
+                liftPosStr = heightVal.TWO.name();
                 break;
             case THREE:
                 liftController.setSetPoint(TeleOpConfig.HEIGHT_THREE);
-                liftPosStr = "stack of 3";
+                liftPosStr = heightVal.THREE.name();
                 break;
             case FOUR:
                 liftController.setSetPoint(TeleOpConfig.HEIGHT_FOUR);
-                liftPosStr = "stack of 4";
+                liftPosStr = heightVal.FOUR.name();
                 break;
             case FIVE:
                 liftController.setSetPoint(TeleOpConfig.HEIGHT_FIVE);
-                liftPosStr = "stack of 5";
+                liftPosStr = heightVal.FIVE.name();
                 break;
             case GROUND:
                 liftController.setSetPoint(TeleOpConfig.HEIGHT_GROUND);
-                liftPosStr = "ground junction height";
+                liftPosStr = heightVal.GROUND.name();
                 break;
             case LOW:
                 liftController.setSetPoint(TeleOpConfig.HEIGHT_LOW);
-                liftPosStr = "low pole height";
+                liftPosStr = heightVal.LOW.name();
                 break;
             case MED:
                 liftController.setSetPoint(TeleOpConfig.HEIGHT_MEDIUM);
-                liftPosStr = "medium pole height";
+                liftPosStr = heightVal.MED.name();
                 break;
             case TALL:
                 liftController.setSetPoint(TeleOpConfig.HEIGHT_TALL);
-                liftPosStr = "tall pole height";
+                liftPosStr = heightVal.TALL.name();
                 break;
         }
     }

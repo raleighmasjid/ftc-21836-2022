@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -164,19 +165,19 @@ public class TerminalParkRedLeft extends LinearOpMode {
             telemetry.update();
         }
 
-        TrajectorySequence parking;
+        Trajectory parking;
 
         if(tagOfInterest.id == LEFT) {
-            parking = drive.trajectorySequenceBuilder(new Pose2d(-35, -12.5, Math.toRadians(90)))
+            parking = drive.trajectoryBuilder(new Pose2d(-35, -12.5, Math.toRadians(90)))
                     .lineToConstantHeading(new Vector2d(-56, -12.5))
                     .build();
 
         } else if(tagOfInterest.id == RIGHT) {
-            parking = drive.trajectorySequenceBuilder(new Pose2d(-35, -12.5, Math.toRadians(90)))
+            parking = drive.trajectoryBuilder(new Pose2d(-35, -12.5, Math.toRadians(90)))
                     .lineToConstantHeading(new Vector2d(-12.5, -12.5))
                     .build();
         } else {
-            parking = drive.trajectorySequenceBuilder(new Pose2d(-35, -12.5, Math.toRadians(90)))
+            parking = drive.trajectoryBuilder(new Pose2d(-35, -12.5, Math.toRadians(90)))
                     .lineToConstantHeading(new Vector2d(-34.5, -12.5))
                     .build();
         }
@@ -184,17 +185,23 @@ public class TerminalParkRedLeft extends LinearOpMode {
 
 
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d(-35, -62.5, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(-40, -61), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(-55, -61), Math.toRadians(0))
-                .waitSeconds(0.01)
-                .lineToConstantHeading(new Vector2d(-35, -61))
-                .lineToConstantHeading(new Vector2d(-35, -12.5))
+                .splineToConstantHeading(new Vector2d(-40, -61), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-55, -61), Math.toRadians(180))
+                .waitSeconds(0.05)
+                .setTangent(0)
+                .lineTo(new Vector2d(-35, -61))
+                .waitSeconds(0.05)
+                .lineTo(new Vector2d(-35, -12.5))
+                .addTrajectory(parking)
                 .build()
                 ;
 
 
-        drive.followTrajectorySequence(traj1);
-        drive.followTrajectorySequence(parking);
+        drive.followTrajectorySequenceAsync(traj1);
+
+        while(opModeIsActive()) {
+            drive.update();
+        }
     }
 
     void tagToTelemetry(AprilTagDetection detection)

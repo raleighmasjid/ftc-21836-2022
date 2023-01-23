@@ -8,16 +8,16 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="Field Relative", group = "21836 Teleop")
 //@Disabled
 public class FieldRelativeTeleOp extends LinearOpMode {
+
     PowerplayScorer scorer = new PowerplayScorer();
     MarvelsMecanumDrive drivetrain = new MarvelsMecanumDrive();
-
-    ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -54,11 +54,16 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double control1RightX;
         double control2LeftY;
 
+        double targetPos;
+
         scorer.lift_motor2.resetEncoder();
         scorer.setLiftPos(PowerplayScorer.heightVal.ONE);
         drivetrain.resetRotation();
 
-        double targetPos;
+        scorer.limitSwitch = hardwareMap.get(DigitalChannel.class, "sensor_digital");
+
+        // set the digital channel to input.
+        scorer.limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         waitForStart();
 
@@ -105,7 +110,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 //            gamepad 2's left analog stick:
             control2LeftY = Gamepad2.getLeftY();
 
-            targetPos = scorer.liftController.getSetPoint() + 5*control2LeftY;
+            targetPos = scorer.liftController.getSetPoint() + (10 * control2LeftY);
             scorer.liftController.setSetPoint(targetPos);
 
             if (control2X.wasJustPressed()) {
@@ -147,14 +152,20 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             // runs field-centric driving using analog stick inputs
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
+            if (scorer.limitSwitch.getState()) {
+                telemetry.addData("Digital Touch", "Is Not Pressed");
+            } else {
+                telemetry.addData("Digital Touch", "Is Pressed");
+            }
+
 //
-//            mytelemetry.addData("Lift motor 1 output:", scorer.lift_motor1.get());
-//            mytelemetry.addData("Lift motor 2 output:", scorer.lift_motor2.get());
-//            mytelemetry.addData("Lift motor 3 output:", scorer.lift_motor3.get());
+//            mytelemetry.addData("Lift motor 1 output", scorer.lift_motor1.get());
+//            mytelemetry.addData("Lift motor 2 output", scorer.lift_motor2.get());
+//            mytelemetry.addData("Lift motor 3 output", scorer.lift_motor3.get());
 //
 //            mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
 //            mytelemetry.addData("Field-relative heading", drivetrain.rotYaw);
-//            mytelemetry.addData("passisfront", scorer.passIsFront);
+//            mytelemetry.addData("Passthrough is in the front", scorer.passIsFront);
             mytelemetry.update();
         }
     }
