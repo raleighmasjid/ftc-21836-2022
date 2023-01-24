@@ -55,4 +55,9 @@ public class TeleOpConfig {
     public static double BACK_TO_PIVOT_TIME = 0.857;
     public static double PIVOTING_TO_FRONT_TIME = 0.6;
     public static double PIVOT_TO_FRONT_TIME = 0.1;
+
+    public static double fx = 578.272;
+    public static double fy = 578.272;
+    public static double cx = 402.145;
+    public static double cy = 221.506;
 }

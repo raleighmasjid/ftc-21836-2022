@@ -23,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 
-@Autonomous(name= "Right - 1+6 medium", group = "21836 Autonomous")
+@Autonomous(name= "Right - 1+5 medium", group = "21836 Autonomous")
 public class AutonomousRight extends LinearOpMode {
 
     OpenCvCamera camera;
@@ -33,10 +33,10 @@ public class AutonomousRight extends LinearOpMode {
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
     // You will need to do your own calibration for other configurations!
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
+    double fx = TeleOpConfig.fx;
+    double fy = TeleOpConfig.fy;
+    double cx = TeleOpConfig.cx;
+    double cy = TeleOpConfig.cy;
 
     // UNITS ARE METERS
     double tagsize = 0.166;
@@ -124,7 +124,7 @@ public class AutonomousRight extends LinearOpMode {
                     scorer.liftClaw();
                 })
                 .waitSeconds(TeleOpConfig.CLAW_LIFT_TIME)
-                .addTemporalMarker(() -> {
+                .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
                 })
 
@@ -253,6 +253,7 @@ public class AutonomousRight extends LinearOpMode {
         while(opModeIsActive()) {
 
             drive.update();
+
             scorer.runLiftPos();
             scorer.runPassthrough();
             scorer.runPivot();
