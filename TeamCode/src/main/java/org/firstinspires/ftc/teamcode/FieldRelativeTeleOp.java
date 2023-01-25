@@ -60,6 +60,14 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         scorer.setLiftPos(PowerplayScorer.heightVal.ONE);
         drivetrain.resetRotation();
 
+        scorer.liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
+        scorer.liftController.setPIDF(
+                TeleOpConfig.LIFT_P,
+                TeleOpConfig.LIFT_I,
+                TeleOpConfig.LIFT_D,
+                TeleOpConfig.LIFT_F
+        );
+
         waitForStart();
 
 //      teleop control loop
@@ -84,26 +92,18 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runPassthrough();
             scorer.runLiftPos();
 
-            scorer.liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
-            scorer.liftController.setPIDF(
-                    TeleOpConfig.LIFT_P,
-                    TeleOpConfig.LIFT_I,
-                    TeleOpConfig.LIFT_D,
-                    TeleOpConfig.LIFT_F
-            );
-
-            mytelemetry.addData("Claw is open:", scorer.clawIsOpen);
-            mytelemetry.addData("Lift position:", scorer.liftPosStr);
-            mytelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
-            mytelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
-
             control1LeftY = Gamepad1.getLeftY();
             control1LeftX = Gamepad1.getLeftX();
             control1RightX = Gamepad1.getRightX();
 
             control2LeftY = Gamepad2.getLeftY();
 
-            targetPos = scorer.liftController.getSetPoint() + (7 * control2LeftY);
+            targetPos = (scorer.liftController.getSetPoint() + (7 * control2LeftY));
+            if (targetPos > TeleOpConfig.HEIGHT_TALL) {
+                targetPos = TeleOpConfig.HEIGHT_TALL;
+            } else if (targetPos < TeleOpConfig.HEIGHT_ONE){
+                targetPos = TeleOpConfig.HEIGHT_ONE;
+            }
             scorer.liftController.setSetPoint(targetPos);
 
             if (control2X.wasJustPressed()) {
@@ -152,6 +152,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             }
 
 
+            mytelemetry.addData("Claw is open:", scorer.clawIsOpen);
+            mytelemetry.addData("Lift position:", scorer.liftPosStr);
+            mytelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
+            mytelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
             mytelemetry.addData("Lift motors output", scorer.lift_motor1.get());
 
             mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);

@@ -24,13 +24,13 @@ public class TeleOpConfig {
     public static double LIFT_E_TOLERANCE = 1;
     public static double LIFT_V_TOLERANCE = 10;
 
-    public static double LIFT_MAX_DOWN_VELOCITY = -0.35;
+    public static double LIFT_MAX_DOWN_VELOCITY = -0.3;
 
     public static double CLAW_RIGHT_CLOSED = 165;
     public static double CLAW_RIGHT_OPEN = 115;
     public static double CLAW_RIGHT_PASS = 140;
 
-    public static double CLAW_CLOSING_TIME = 0.5;
+    public static double CLAW_CLOSING_TIME = 0.31;
     public static double CLAW_PASS_CLOSING_TIME = 0;
     public static double CLAW_OPEN_TO_DROP_TIME = 0.1;
     public static double CLAW_DROP_TIME = 0.7;

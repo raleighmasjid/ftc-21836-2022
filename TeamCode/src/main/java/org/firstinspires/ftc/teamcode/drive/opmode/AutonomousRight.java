@@ -26,7 +26,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 
-@Autonomous(name= "Right - 1+5 medium", group = "21836 Autonomous")
+@Autonomous(name= "Right - 1+1 medium", group = "21836 Autonomous")
 public class AutonomousRight extends LinearOpMode {
 
     OpenCvCamera camera;
@@ -94,14 +94,19 @@ public class AutonomousRight extends LinearOpMode {
         Vector2d turnPos = new Vector2d(47, -12.5);
         Vector2d medScoringPos = new Vector2d(30, -19);
 
-        TrajectoryVelocityConstraint velocityCap = AutonMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
+        Vector2d parkingZone2 = new Vector2d(35, -12.5);
+        Vector2d parkingZone3 = new Vector2d(57, -12.5);
+
+        TrajectoryVelocityConstraint velocityCap = AutonMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryAccelerationConstraint accelerationCap = AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
 
+        double facingRight = Math.toRadians(0);
+        double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
         double scoringAngleRight = Math.toRadians(225);
 
-
-        Pose2d startPose = new Pose2d(35, -62.5, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(35, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
@@ -110,36 +115,33 @@ public class AutonomousRight extends LinearOpMode {
                 })
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
                 .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.heightVal.LOW);
-                })
-                .lineTo(new Vector2d(35, -58))
-                .turn(Math.toRadians(90))
-                .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.heightVal.MED);
                 })
-                .lineTo(new Vector2d(35, -25))
-                .waitSeconds(0.1)
+                .splineToSplineHeading(new Pose2d(35, -53, Math.toRadians(180)), facingForward)
+                .splineToSplineHeading(new Pose2d(35, -25, Math.toRadians(180)), facingForward)
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .lineTo(new Vector2d(32.5, -25))
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
-                    scorer.setLiftPos(PowerplayScorer.heightVal.FIVE);
                 })
-                .waitSeconds(TeleOpConfig.CLAW_DROP_TIME)
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .addTemporalMarker(() -> {
+                    scorer.setLiftPos(PowerplayScorer.heightVal.FIVE);
+                    scorer.clawIsPass = true;
+                })
                 .lineTo(new Vector2d(35, -25))
-                .waitSeconds(0.3)
-                .lineTo(new Vector2d(35, -12.5))
                 .addTemporalMarker(() -> {
                     scorer.togglePassthrough();
                 })
+                .lineTo(parkingZone2)
                 .setReversed(true)
-
                 .splineTo(
                         stackPos,
-                        Math.toRadians(0),
+                        facingRight,
                         velocityCap,
                         accelerationCap
                 )
-                .waitSeconds(0.3)
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = false;
                 })
@@ -151,9 +153,7 @@ public class AutonomousRight extends LinearOpMode {
                 .waitSeconds(TeleOpConfig.PASSTHROUGH_TIME)
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
-                .splineTo(medScoringPos, scoringAngleRight,
-                        velocityCap,
-                        accelerationCap)
+                .splineTo(medScoringPos, scoringAngleRight, velocityCap, accelerationCap)
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
@@ -162,93 +162,19 @@ public class AutonomousRight extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.heightVal.FOUR);
                 })
                 .setReversed(true)
-                .splineTo(turnPos , Math.toRadians(0))
-                .addTemporalMarker(() -> {
-                    scorer.togglePassthrough();
-                })
-                .splineTo(
-                        stackPos,
-                        Math.toRadians(0),
-                        velocityCap,
-                        accelerationCap
-                )
-                .waitSeconds(0.8)
-                .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = false;
-                })
-                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
-                .addTemporalMarker(() ->{
-                    scorer.togglePassthrough();
-                    scorer.setLiftPos(PowerplayScorer.heightVal.MED);
-                })
-                .waitSeconds(TeleOpConfig.PASSTHROUGH_TIME)
+                .splineTo(turnPos, facingRight)
                 .setReversed(false)
-                .splineTo(turnPos, Math.toRadians(180))
-                .splineTo(medScoringPos, Math.toRadians(225),
-                        velocityCap,
-                        accelerationCap)
-                .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = true;
-                })
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.heightVal.THREE);
-                })
-                .setReversed(true)
-                .splineTo(turnPos , Math.toRadians(0))
-                .addTemporalMarker(() -> {
-                    scorer.togglePassthrough();
-                })
-                .splineTo(
-                        stackPos,
-                        Math.toRadians(0),
-                        velocityCap,
-                        accelerationCap
-                )
-                .waitSeconds(0.8)
-                .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = false;
-                })
-                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
-                .addTemporalMarker(() ->{
-                    scorer.togglePassthrough();
-                    scorer.setLiftPos(PowerplayScorer.heightVal.MED);
-                })
-                .waitSeconds(TeleOpConfig.PASSTHROUGH_TIME)
-                .setReversed(false)
-                .splineTo(turnPos, Math.toRadians(180))
-                .splineTo(medScoringPos, Math.toRadians(225),
-                        velocityCap,
-                        accelerationCap)
-                .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = true;
-                })
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .addTemporalMarker(() -> {
-                    scorer.dropClaw();
-                })
-                .setReversed(true)
-
-                .splineTo(turnPos, Math.toRadians(0))
-                .setReversed(false)
-                .splineTo(new Vector2d(35, -12), Math.toRadians(90))
-
-                .waitSeconds(1)
+                .splineTo(parkingZone2, facingForward)
                 .build()
                 ;
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
-                .lineTo(new Vector2d(12.5, -12.5))
+                .lineTo(parkingZone1)
                 .build()
                 ;
 
         TrajectorySequence parkRight = drive.trajectorySequenceBuilder(trajectory1.end())
-                .lineTo(new Vector2d(57, -12.5))
-                .build()
-                ;
-
-        TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(trajectory1.end())
-                .lineTo(new Vector2d(34.5, -12.5))
+                .lineTo(parkingZone3)
                 .build()
                 ;
 
@@ -338,6 +264,14 @@ public class AutonomousRight extends LinearOpMode {
 
         drive.followTrajectorySequenceAsync(trajectory1);
 
+        scorer.liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
+        scorer.liftController.setPIDF(
+                TeleOpConfig.LIFT_P,
+                TeleOpConfig.LIFT_I,
+                TeleOpConfig.LIFT_D,
+                TeleOpConfig.LIFT_F
+        );
+
         while(opModeIsActive()) {
 
             drive.update();
@@ -347,28 +281,25 @@ public class AutonomousRight extends LinearOpMode {
             scorer.runPassthrough();
             scorer.runLiftPos();
 
-            scorer.liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
-            scorer.liftController.setPIDF(
-                    TeleOpConfig.LIFT_P,
-                    TeleOpConfig.LIFT_I,
-                    TeleOpConfig.LIFT_D,
-                    TeleOpConfig.LIFT_F
-            );
 
             // parking statement
-            if((autonomousTimer.seconds() >= 3) && !drive.isBusy() && !hasParked) {
+            if(
+                    (autonomousTimer.seconds() >= 3) && //at least 3 seconds into autonomous
+                    !drive.isBusy() &&                  //bot is not driving
+                    (tagOfInterest != null) &&          //camera HAS detected any tag
+                    !hasParked                          //bot has not yet parked in zone
+            ) {
+
                 if (tagOfInterest.id == LEFT) {
                     drive.followTrajectorySequenceAsync(parkLeft);
-
                 } else if (tagOfInterest.id == RIGHT) {
                     drive.followTrajectorySequenceAsync(parkRight);
-
-                } else {
-                    drive.followTrajectorySequenceAsync(parkMiddle);
                 }
 
                 hasParked = true;
             }
+
+
 
             //telemetry in '...'
             if (scorer.limitSwitch.getState()) {
@@ -376,8 +307,6 @@ public class AutonomousRight extends LinearOpMode {
             } else {
                 myTelemetry.addData("Limit switch", "is triggered");
             }
-
-
             myTelemetry.addData("Claw is open:", scorer.clawIsOpen);
             myTelemetry.addData("Lift position:", scorer.liftPosStr);
             myTelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
