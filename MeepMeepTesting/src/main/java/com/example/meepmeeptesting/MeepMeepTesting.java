@@ -6,6 +6,7 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
+import java.util.Vector;
 
 
 public class MeepMeepTesting {
@@ -17,6 +18,7 @@ public class MeepMeepTesting {
         MeepMeep meepMeep = new MeepMeep(650);
 
         Pose2d startPose = new Pose2d(35, -62.5, Math.toRadians(90));
+        Vector2d stackPos = new Vector2d(60, -12.5);
 
         RoadRunnerBotEntity bot1 = new DefaultBotBuilder(meepMeep)
                 .setDimensions(17, 16)
@@ -25,19 +27,19 @@ public class MeepMeepTesting {
                 .setConstraints(65, 65, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive->
                         drive.trajectorySequenceBuilder(startPose)
-                                .splineTo(new Vector2d(35, -45), Math.toRadians(90))
+                                .splineToSplineHeading(new Pose2d(35, -52, Math.toRadians(180)), Math.toRadians(90))
                                 .addTemporalMarker(() -> {
 //                                    scorer.setLiftPos(PowerplayScorer.heightVal.MED);
                                 })
-                                .splineToSplineHeading(new Pose2d(35, -23.5, Math.toRadians(180)), Math.toRadians(90))
+                                .splineToSplineHeading(new Pose2d(35, -25, Math.toRadians(180)), Math.toRadians(90))
                                 .waitSeconds(0.1)
-                                .lineTo(new Vector2d(31, -23.5))
+                                .lineTo(new Vector2d(31, -25))
                                 .addTemporalMarker(() -> {
 //                                    scorer.clawIsOpen = false;
 //                                    scorer.setLiftPos(PowerplayScorer.heightVal.FIVE);
                                 })
                                 .waitSeconds(CLAW_DROP_TIME)
-                                .lineTo(new Vector2d(35, -23.5))
+                                .lineTo(new Vector2d(35, -25))
                                 .waitSeconds(0.5)
                                 .lineTo(new Vector2d(35, -12.5))
                                 .addTemporalMarker(() -> {
@@ -45,7 +47,7 @@ public class MeepMeepTesting {
                                 })
                                 .waitSeconds(0.3)
                                 .setReversed(true)
-                                .splineTo(new Vector2d(61, -12.5), Math.toRadians(0))
+                                .splineTo(stackPos, Math.toRadians(0))
                                 .addTemporalMarker(() -> {
 //                                    scorer.liftClaw();
                                 })
@@ -55,11 +57,11 @@ public class MeepMeepTesting {
                                 })
 
                                 .setReversed(false)
-                                .splineTo(new Vector2d(40, -12.5), Math.toRadians(180))
+                                .splineTo(new Vector2d(47, -12.5), Math.toRadians(180))
                                 .addTemporalMarker(() -> {
 //                                    scorer.setLiftPos(PowerplayScorer.heightVal.MED);
                                 })
-                                .splineTo(new Vector2d(28.5, -19), Math.toRadians(225))
+                                .splineTo(new Vector2d(30, -19), Math.toRadians(225))
                                 .addTemporalMarker(() -> {
 //                                    scorer.clawIsOpen = false;
 //                                    scorer.setLiftPos(PowerplayScorer.heightVal.FOUR);
@@ -70,7 +72,9 @@ public class MeepMeepTesting {
                                 })
                                 .setReversed(true)
                                 .splineTo(new Vector2d(40, -12.5), Math.toRadians(0))
-                                .splineTo(new Vector2d(61, -12.5), Math.toRadians(0))
+                                .setReversed(false)
+                                .splineTo(new Vector2d(35, -12), Math.toRadians(90))
+
 
                                 .build()
                 )

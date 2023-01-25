@@ -31,6 +31,7 @@ public class PowerplayScorer {
     public DigitalChannel limitSwitch;
     public static ElapsedTime passThruTimer;
     public static ElapsedTime liftClawTimer;
+    public static ElapsedTime dropClawTimer;
 
     // the following is the code that runs during initialization
     public void init(HardwareMap hw) {
@@ -68,6 +69,11 @@ public class PowerplayScorer {
         passThruTimer.reset();
         liftClawTimer = new ElapsedTime();
         liftClawTimer.reset();
+        dropClawTimer = new ElapsedTime();
+        dropClawTimer.reset();
+
+        limitSwitch = hw.get(DigitalChannel.class, "limit switch");
+        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
     }
 
 
@@ -108,7 +114,7 @@ public class PowerplayScorer {
                     if (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
                         passThruTimer.reset();
                         currentPos = passPositions.PIVOT;
-                        togglePivot();
+                        pivotIsFront = false;
                     } else {
                         passThruRight.turnToAngle(TeleOpConfig.PASS_1_PIVOTING);
                         passThruLeft.turnToAngle(TeleOpConfig.PASS_2_PIVOTING);
@@ -117,7 +123,7 @@ public class PowerplayScorer {
                     if (passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) {
                         passThruTimer.reset();
                         currentPos = passPositions.PIVOT;
-                        togglePivot();
+                        pivotIsFront = false;
                     }
                     break;
                 case PIVOT:
@@ -181,7 +187,7 @@ public class PowerplayScorer {
                     if (passThruTimer.seconds() >= TeleOpConfig.BACK_TO_PIVOT_TIME) {
                         passThruTimer.reset();
                         currentPos = passPositions.PIVOT;
-                        togglePivot();
+                        pivotIsFront = true;
                     }
                     break;
                 case PIVOT:
@@ -268,11 +274,11 @@ public class PowerplayScorer {
     }
 
 
+    double velocity;
+
     public void runLiftPos() {
         if (!liftController.atSetPoint()) {
-            double velocity = liftController.calculate(
-                lift_motor2.getCurrentPosition()
-            );
+            velocity = liftController.calculate(lift_motor2.getCurrentPosition());
 
             if (velocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
                 velocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
@@ -298,6 +304,10 @@ public class PowerplayScorer {
         clawIsOpen = !clawIsOpen;
     }
 
+    public boolean hasDropped = true;
+
+    public boolean hasLifted = true;
+
     public void runClaw () {
         if (clawIsPass) {
             clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_PASS);
@@ -306,18 +316,33 @@ public class PowerplayScorer {
         } else {
             clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_CLOSED);
         }
+
+
+        if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasLifted) {
+            targetPos = liftController.getSetPoint() + 80;
+            liftController.setSetPoint(targetPos);
+            liftClawTimer.reset();
+            hasDropped = true;
+        }
+        if ((dropClawTimer.seconds() >= 0.1) && !hasDropped) {
+            liftController.setSetPoint(TeleOpConfig.HEIGHT_ONE);
+            dropClawTimer.reset();
+            hasDropped = true;
+        }
     }
+
+    double targetPos;
 
     public void liftClaw () {
         clawIsOpen = false;
         liftClawTimer.reset();
-        if (liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) {
-            liftController.setSetPoint(liftController.getSetPoint() + 50);
-        }
+        hasLifted = false;
     }
+
     public void dropClaw () {
-        liftController.setSetPoint(TeleOpConfig.HEIGHT_ONE);
         clawIsOpen = true;
+        dropClawTimer.reset();
+        hasDropped = false;
     }
 
 

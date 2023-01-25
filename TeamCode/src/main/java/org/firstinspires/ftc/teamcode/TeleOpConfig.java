@@ -4,12 +4,12 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class TeleOpConfig {
     public static double HEIGHT_ONE = 0;
-    public static double HEIGHT_TWO = 0;
-    public static double HEIGHT_THREE = 0;
-    public static double HEIGHT_FOUR = 0;
-    public static double HEIGHT_FIVE = 0;
+    public static double HEIGHT_TWO = 30;
+    public static double HEIGHT_THREE = 65;
+    public static double HEIGHT_FOUR = 100;
+    public static double HEIGHT_FIVE = 150;
 
-    public static double HEIGHT_GROUND = 5;
+    public static double HEIGHT_GROUND = 30;
     public static double HEIGHT_LOW = 500;
     public static double HEIGHT_MEDIUM = 800;
     public static double HEIGHT_TALL = 1152;
@@ -30,11 +30,11 @@ public class TeleOpConfig {
     public static double CLAW_RIGHT_OPEN = 115;
     public static double CLAW_RIGHT_PASS = 140;
 
-    public static double CLAW_CLOSING_TIME = 0.31;
-    public static double CLAW_PASS_CLOSING_TIME = 0.155;
+    public static double CLAW_CLOSING_TIME = 0.5;
+    public static double CLAW_PASS_CLOSING_TIME = 0;
     public static double CLAW_DROP_TIME = 0.7;
     public static double CLAW_LIFT_TIME = 0.7;
-    public static double PASSTHROUGH_TIME = 1.2;
+    public static double PASSTHROUGH_TIME = 1;
 
     public static double PIVOT_FRONT = 200;
     public static double PIVOT_BACK = 0;
@@ -48,13 +48,13 @@ public class TeleOpConfig {
     public static double PASS_1_PIVOTING = 25;
     public static double PASS_2_PIVOTING = 170;
 
-    public static double FRONT_TO_PIVOT_TIME = 0.1;
-    public static double PIVOTING_TO_BACK_TIME = 0.75;
+    public static double FRONT_TO_PIVOT_TIME = 0;
+    public static double PIVOTING_TO_BACK_TIME = 0.6;
     public static double PIVOT_TO_BACK_TIME = 0.4;
 
-    public static double BACK_TO_PIVOT_TIME = 0.857;
+    public static double BACK_TO_PIVOT_TIME = 0.8;
     public static double PIVOTING_TO_FRONT_TIME = 0.6;
-    public static double PIVOT_TO_FRONT_TIME = 0.1;
+    public static double PIVOT_TO_FRONT_TIME = 0;
 
     public static double fx = 578.272;
     public static double fy = 578.272;

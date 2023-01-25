@@ -60,11 +60,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         scorer.setLiftPos(PowerplayScorer.heightVal.ONE);
         drivetrain.resetRotation();
 
-        scorer.limitSwitch = hardwareMap.get(DigitalChannel.class, "sensor_digital");
-
-        // set the digital channel to input.
-        scorer.limitSwitch.setMode(DigitalChannel.Mode.INPUT);
-
         waitForStart();
 
 //      teleop control loop
@@ -151,15 +146,13 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             if (scorer.limitSwitch.getState()) {
-                mytelemetry.addData("Digital Touch", "Is Not Pressed");
+                mytelemetry.addData("Limit switch", "is not triggered");
             } else {
-                mytelemetry.addData("Digital Touch", "Is Pressed");
+                mytelemetry.addData("Limit switch", "is triggered");
             }
 
 
-            mytelemetry.addData("Lift motor 1 output", scorer.lift_motor1.get());
-            mytelemetry.addData("Lift motor 2 output", scorer.lift_motor2.get());
-            mytelemetry.addData("Lift motor 3 output", scorer.lift_motor3.get());
+            mytelemetry.addData("Lift motors output", scorer.lift_motor1.get());
 
             mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
             mytelemetry.addData("Field-relative heading", drivetrain.rotYaw);
