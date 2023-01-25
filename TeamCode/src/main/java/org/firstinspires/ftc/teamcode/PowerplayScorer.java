@@ -27,8 +27,10 @@ public class PowerplayScorer {
     public SimpleServo passThruRight;
     public SimpleServo passThruLeft;
     public PIDFController liftController;
-    public String liftPosStr;
+    public String targetLiftPosName;
     public DigitalChannel limitSwitch;
+    public double targetLiftPos;
+    public double liftVelocity;
     public static ElapsedTime passThruTimer;
     public static ElapsedTime liftClawTimer;
     public static ElapsedTime dropClawTimer;
@@ -45,13 +47,13 @@ public class PowerplayScorer {
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
         lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, MAX_RPM);
 
+        liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
         liftController = new PIDFController(
                 TeleOpConfig.LIFT_P,
                 TeleOpConfig.LIFT_I,
                 TeleOpConfig.LIFT_D,
                 TeleOpConfig.LIFT_F
         );
-        liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -63,7 +65,7 @@ public class PowerplayScorer {
         lift_motor1.setInverted(true);
         lift_motor3.setInverted(true);
 
-        liftPosStr = null;
+        targetLiftPosName = null;
 
         passThruTimer = new ElapsedTime();
         passThruTimer.reset();
@@ -74,8 +76,14 @@ public class PowerplayScorer {
 
         limitSwitch = hw.get(DigitalChannel.class, "limit switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+
+        targetLiftPos = liftController.getSetPoint();
     }
 
+
+    public double clip (double input, double min, double max) {
+        return Math.min(Math.max(input, min), max);
+    }
 
     //  lift motor encoder resolution (ticks):
     public static final double LIFT_TICKS = 145.1;
@@ -235,66 +243,63 @@ public class PowerplayScorer {
 
         switch (height){
             case ONE:
-                liftController.setSetPoint(TeleOpConfig.HEIGHT_ONE);
-                liftPosStr = heightVal.ONE.name();
+                targetLiftPos = TeleOpConfig.HEIGHT_ONE;
+                targetLiftPosName = heightVal.ONE.name();
                 break;
             case TWO:
-                liftController.setSetPoint(TeleOpConfig.HEIGHT_TWO);
-                liftPosStr = heightVal.TWO.name();
+                targetLiftPos = TeleOpConfig.HEIGHT_TWO;
+                targetLiftPosName = heightVal.TWO.name();
                 break;
             case THREE:
-                liftController.setSetPoint(TeleOpConfig.HEIGHT_THREE);
-                liftPosStr = heightVal.THREE.name();
+                targetLiftPos = TeleOpConfig.HEIGHT_THREE;
+                targetLiftPosName = heightVal.THREE.name();
                 break;
             case FOUR:
-                liftController.setSetPoint(TeleOpConfig.HEIGHT_FOUR);
-                liftPosStr = heightVal.FOUR.name();
+                targetLiftPos = TeleOpConfig.HEIGHT_FOUR;
+                targetLiftPosName = heightVal.FOUR.name();
                 break;
             case FIVE:
-                liftController.setSetPoint(TeleOpConfig.HEIGHT_FIVE);
-                liftPosStr = heightVal.FIVE.name();
+                targetLiftPos = TeleOpConfig.HEIGHT_FIVE;
+                targetLiftPosName = heightVal.FIVE.name();
                 break;
             case GROUND:
-                liftController.setSetPoint(TeleOpConfig.HEIGHT_GROUND);
-                liftPosStr = heightVal.GROUND.name();
+                targetLiftPos = TeleOpConfig.HEIGHT_GROUND;
+                targetLiftPosName = heightVal.GROUND.name();
                 break;
             case LOW:
-                liftController.setSetPoint(TeleOpConfig.HEIGHT_LOW);
-                liftPosStr = heightVal.LOW.name();
+                targetLiftPos = TeleOpConfig.HEIGHT_LOW;
+                targetLiftPosName = heightVal.LOW.name();
                 break;
             case MED:
-                liftController.setSetPoint(TeleOpConfig.HEIGHT_MEDIUM);
-                liftPosStr = heightVal.MED.name();
+                targetLiftPos = TeleOpConfig.HEIGHT_MEDIUM;
+                targetLiftPosName = heightVal.MED.name();
                 break;
             case TALL:
-                liftController.setSetPoint(TeleOpConfig.HEIGHT_TALL);
-                liftPosStr = heightVal.TALL.name();
+                targetLiftPos = TeleOpConfig.HEIGHT_TALL;
+                targetLiftPosName = heightVal.TALL.name();
                 break;
         }
     }
 
+    public void runLiftToPos() {
+        liftController.setSetPoint(targetLiftPos);
 
-    double velocity;
-
-    public void runLiftPos() {
         if (!liftController.atSetPoint()) {
-            velocity = liftController.calculate(lift_motor2.getCurrentPosition());
+            liftVelocity = liftController.calculate(lift_motor2.getCurrentPosition());
 
-            if (velocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
-                velocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
+            if (liftVelocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
+                liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
             }
 
-            runLift(velocity);
+            runLift(liftVelocity);
         }
     }
 
-    // takes an analog stick input (-1 to 1)
     public void runLift(double velocity) {
         lift_motor1.set(velocity);
         lift_motor2.set(velocity);
         lift_motor3.set(velocity);
     }
-
 
     public void toggleClaw () {
         clawIsOpen = !clawIsOpen;
@@ -315,8 +320,8 @@ public class PowerplayScorer {
 
 
         if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasLifted) {
-            targetPos = liftController.getSetPoint() + 80;
-            liftController.setSetPoint(targetPos);
+            targetLiftPos = liftController.getSetPoint() + 80;
+            liftController.setSetPoint(targetLiftPos);
             liftClawTimer.reset();
             hasDropped = true;
         }
@@ -326,8 +331,6 @@ public class PowerplayScorer {
             hasDropped = true;
         }
     }
-
-    double targetPos;
 
     public void liftClaw () {
         clawIsOpen = false;

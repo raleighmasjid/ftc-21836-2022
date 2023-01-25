@@ -279,7 +279,7 @@ public class AutonomousRight extends LinearOpMode {
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassthrough();
-            scorer.runLiftPos();
+            scorer.runLiftToPos();
 
 
             // parking statement
@@ -308,7 +308,7 @@ public class AutonomousRight extends LinearOpMode {
                 myTelemetry.addData("Limit switch", "is triggered");
             }
             myTelemetry.addData("Claw is open:", scorer.clawIsOpen);
-            myTelemetry.addData("Lift position:", scorer.liftPosStr);
+            myTelemetry.addData("Lift position:", scorer.targetLiftPosName);
             myTelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
             myTelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
 

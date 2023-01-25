@@ -2,14 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="Field Relative", group = "21836 Teleop")
@@ -54,7 +51,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double control1RightX;
         double control2LeftY;
 
-        double targetPos;
 
         scorer.lift_motor2.resetEncoder();
         scorer.setLiftPos(PowerplayScorer.heightVal.ONE);
@@ -90,7 +86,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassthrough();
-            scorer.runLiftPos();
+            scorer.runLiftToPos();
 
             control1LeftY = Gamepad1.getLeftY();
             control1LeftX = Gamepad1.getLeftX();
@@ -98,13 +94,14 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             control2LeftY = Gamepad2.getLeftY();
 
-            targetPos = (scorer.liftController.getSetPoint() + (7 * control2LeftY));
-            if (targetPos > TeleOpConfig.HEIGHT_TALL) {
-                targetPos = TeleOpConfig.HEIGHT_TALL;
-            } else if (targetPos < TeleOpConfig.HEIGHT_ONE){
-                targetPos = TeleOpConfig.HEIGHT_ONE;
-            }
-            scorer.liftController.setSetPoint(targetPos);
+
+            scorer.targetLiftPos = scorer.clip(
+                    (scorer.liftController.getSetPoint() + (TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY)),
+                    TeleOpConfig.HEIGHT_ONE,
+                    TeleOpConfig.HEIGHT_TALL
+                    );
+
+
 
             if (control2X.wasJustPressed()) {
                 scorer.toggleClaw(); //claw override
@@ -153,10 +150,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
 
             mytelemetry.addData("Claw is open:", scorer.clawIsOpen);
-            mytelemetry.addData("Lift position:", scorer.liftPosStr);
+            mytelemetry.addData("Lift position:", scorer.targetLiftPosName);
             mytelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
-            mytelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
-            mytelemetry.addData("Lift motors output", scorer.lift_motor1.get());
+            mytelemetry.addData("Lift target pos:", scorer.targetLiftPos);
+            mytelemetry.addData("Lift motors output", scorer.liftVelocity);
 
             mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
             mytelemetry.addData("Field-relative heading", drivetrain.rotYaw);
