@@ -32,6 +32,7 @@ public class TeleOpConfig {
 
     public static double CLAW_CLOSING_TIME = 0.5;
     public static double CLAW_PASS_CLOSING_TIME = 0;
+    public static double CLAW_OPEN_TO_DROP_TIME = 0.1;
     public static double CLAW_DROP_TIME = 0.7;
     public static double CLAW_LIFT_TIME = 0.7;
     public static double PASSTHROUGH_TIME = 1;

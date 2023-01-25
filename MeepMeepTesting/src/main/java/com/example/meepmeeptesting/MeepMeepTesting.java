@@ -27,13 +27,21 @@ public class MeepMeepTesting {
                 .setConstraints(65, 65, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive->
                         drive.trajectorySequenceBuilder(startPose)
-                                .splineToSplineHeading(new Pose2d(35, -52, Math.toRadians(180)), Math.toRadians(90))
+                                .addTemporalMarker(() -> {
+//                                    scorer.clawIsOpen = false;
+                                })
+                                .waitSeconds(0.5)
+                                .addTemporalMarker(() -> {
+//                                    scorer.setLiftPos(PowerplayScorer.heightVal.LOW);
+                                })
+                                .lineTo(new Vector2d(35, -58))
+                                .turn(Math.toRadians(90))
                                 .addTemporalMarker(() -> {
 //                                    scorer.setLiftPos(PowerplayScorer.heightVal.MED);
                                 })
-                                .splineToSplineHeading(new Pose2d(35, -25, Math.toRadians(180)), Math.toRadians(90))
+                                .lineTo(new Vector2d(35, -25))
                                 .waitSeconds(0.1)
-                                .lineTo(new Vector2d(31, -25))
+                                .lineTo(new Vector2d(32.5, -25))
                                 .addTemporalMarker(() -> {
 //                                    scorer.clawIsOpen = false;
 //                                    scorer.setLiftPos(PowerplayScorer.heightVal.FIVE);

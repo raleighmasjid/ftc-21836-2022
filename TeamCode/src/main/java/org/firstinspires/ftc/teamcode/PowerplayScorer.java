@@ -290,10 +290,6 @@ public class PowerplayScorer {
 
     // takes an analog stick input (-1 to 1)
     public void runLift(double velocity) {
-        // squares input but keeps +/- sign
-//        velocity = signSquare(velocity);
-        // sets both lift motor power to squared value
-        // this allows for smoother acceleration
         lift_motor1.set(velocity);
         lift_motor2.set(velocity);
         lift_motor3.set(velocity);
@@ -324,7 +320,7 @@ public class PowerplayScorer {
             liftClawTimer.reset();
             hasDropped = true;
         }
-        if ((dropClawTimer.seconds() >= 0.1) && !hasDropped) {
+        if ((dropClawTimer.seconds() >= TeleOpConfig.CLAW_OPEN_TO_DROP_TIME) && !hasDropped) {
             liftController.setSetPoint(TeleOpConfig.HEIGHT_ONE);
             dropClawTimer.reset();
             hasDropped = true;

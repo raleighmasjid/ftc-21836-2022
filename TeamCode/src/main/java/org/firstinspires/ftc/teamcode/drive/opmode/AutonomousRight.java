@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -93,7 +94,12 @@ public class AutonomousRight extends LinearOpMode {
         Vector2d turnPos = new Vector2d(47, -12.5);
         Vector2d medScoringPos = new Vector2d(30, -19);
 
-        TrajectoryVelocityConstraint speedCap = AutonMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        TrajectoryVelocityConstraint velocityCap = AutonMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        TrajectoryAccelerationConstraint accelerationCap = AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
+
+        double facingLeft = Math.toRadians(180);
+        double scoringAngleRight = Math.toRadians(225);
+
 
         Pose2d startPose = new Pose2d(35, -62.5, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
@@ -106,11 +112,12 @@ public class AutonomousRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.heightVal.LOW);
                 })
-                .splineToSplineHeading(new Pose2d(35, -52, Math.toRadians(180)), Math.toRadians(90))
+                .lineTo(new Vector2d(35, -58))
+                .turn(Math.toRadians(90))
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.heightVal.MED);
                 })
-                .splineToSplineHeading(new Pose2d(35, -25, Math.toRadians(180)), Math.toRadians(90))
+                .lineTo(new Vector2d(35, -25))
                 .waitSeconds(0.1)
                 .lineTo(new Vector2d(32.5, -25))
                 .addTemporalMarker(() -> {
@@ -118,7 +125,7 @@ public class AutonomousRight extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.heightVal.FIVE);
                 })
                 .waitSeconds(TeleOpConfig.CLAW_DROP_TIME)
-                .lineTo(new Vector2d(35, -24))
+                .lineTo(new Vector2d(35, -25))
                 .waitSeconds(0.3)
                 .lineTo(new Vector2d(35, -12.5))
                 .addTemporalMarker(() -> {
@@ -129,8 +136,8 @@ public class AutonomousRight extends LinearOpMode {
                 .splineTo(
                         stackPos,
                         Math.toRadians(0),
-                        speedCap,
-                        AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                        velocityCap,
+                        accelerationCap
                 )
                 .waitSeconds(0.3)
                 .addTemporalMarker(() -> {
@@ -143,12 +150,14 @@ public class AutonomousRight extends LinearOpMode {
                 })
                 .waitSeconds(TeleOpConfig.PASSTHROUGH_TIME)
                 .setReversed(false)
-                .splineTo(turnPos, Math.toRadians(180))
-                .splineTo(medScoringPos, Math.toRadians(225))
+                .splineTo(turnPos, facingLeft)
+                .splineTo(medScoringPos, scoringAngleRight,
+                        velocityCap,
+                        accelerationCap)
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
-                .waitSeconds(0.1)
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.heightVal.FOUR);
                 })
@@ -160,8 +169,8 @@ public class AutonomousRight extends LinearOpMode {
                 .splineTo(
                         stackPos,
                         Math.toRadians(0),
-                        speedCap,
-                        AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                        velocityCap,
+                        accelerationCap
                 )
                 .waitSeconds(0.8)
                 .addTemporalMarker(() -> {
@@ -175,11 +184,13 @@ public class AutonomousRight extends LinearOpMode {
                 .waitSeconds(TeleOpConfig.PASSTHROUGH_TIME)
                 .setReversed(false)
                 .splineTo(turnPos, Math.toRadians(180))
-                .splineTo(medScoringPos, Math.toRadians(225))
+                .splineTo(medScoringPos, Math.toRadians(225),
+                        velocityCap,
+                        accelerationCap)
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
-                .waitSeconds(0.1)
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.heightVal.THREE);
                 })
@@ -191,9 +202,10 @@ public class AutonomousRight extends LinearOpMode {
                 .splineTo(
                         stackPos,
                         Math.toRadians(0),
-                        speedCap,
-                        AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                )                .waitSeconds(0.8)
+                        velocityCap,
+                        accelerationCap
+                )
+                .waitSeconds(0.8)
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = false;
                 })
@@ -205,11 +217,13 @@ public class AutonomousRight extends LinearOpMode {
                 .waitSeconds(TeleOpConfig.PASSTHROUGH_TIME)
                 .setReversed(false)
                 .splineTo(turnPos, Math.toRadians(180))
-                .splineTo(medScoringPos, Math.toRadians(225))
+                .splineTo(medScoringPos, Math.toRadians(225),
+                        velocityCap,
+                        accelerationCap)
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
-                .waitSeconds(0.1)
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .addTemporalMarker(() -> {
                     scorer.dropClaw();
                 })
