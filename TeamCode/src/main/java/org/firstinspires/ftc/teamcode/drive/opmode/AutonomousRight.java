@@ -87,21 +87,21 @@ public class AutonomousRight extends LinearOpMode {
         MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-        Vector2d stackPos = new Vector2d(59, -12.5);
+        Vector2d stackPos = new Vector2d(57.5, -12.5);
         Vector2d turnPos = new Vector2d(47, -12.5);
-        Vector2d medScoringPos = new Vector2d(30, -19);
+        Vector2d medScoringPos = new Vector2d(30.5, -18);
 
         Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
         Vector2d parkingZone2 = new Vector2d(35, -12.5);
         Vector2d parkingZone3 = new Vector2d(57, -12.5);
 
-        TrajectoryVelocityConstraint velocityCap = AutonMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        TrajectoryVelocityConstraint velocityCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.SLOWER_AUTON_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryAccelerationConstraint accelerationCap = AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double scoringAngleRight = Math.toRadians(225);
+        double scoringAngleRight = Math.toRadians(210);
 
         Pose2d startPose = new Pose2d(35, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
@@ -110,14 +110,14 @@ public class AutonomousRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = false;
                 })
-                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
+                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME + TeleOpConfig.AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .splineToSplineHeading(new Pose2d(35, -53, Math.toRadians(180)), facingForward)
-                .splineToSplineHeading(new Pose2d(35, -25, Math.toRadians(180)), facingForward)
+                .splineToSplineHeading(new Pose2d(35, -53, facingLeft), facingForward, velocityCap, accelerationCap)
+                .splineToSplineHeading(new Pose2d(35, -25, facingLeft), facingForward, velocityCap, accelerationCap)
                 .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .lineTo(new Vector2d(32.5, -25))
+                .lineTo(new Vector2d(31.5, -25))
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
@@ -130,8 +130,12 @@ public class AutonomousRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     scorer.togglePassthrough();
                 })
-                .lineTo(parkingZone2)
                 .setReversed(true)
+                .lineTo(new Vector2d(35, -9))
+                .waitSeconds(0.1)
+                .lineTo(new Vector2d(35, -12.5))
+                .waitSeconds(0.1)
+                .lineTo(turnPos)
                 .splineTo(
                         stackPos,
                         facingRight,

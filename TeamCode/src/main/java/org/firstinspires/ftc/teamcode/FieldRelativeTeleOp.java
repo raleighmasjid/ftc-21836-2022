@@ -5,8 +5,13 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
+import java.util.List;
 
 
 @TeleOp(name="Field Relative", group = "21836 Teleop")
@@ -15,6 +20,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
     PowerplayScorer scorer = new PowerplayScorer();
     MarvelsMecanumDrive drivetrain = new MarvelsMecanumDrive();
+    List<LynxModule> hubs;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -26,6 +32,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 //      initializes code:
         scorer.init(hardwareMap);
         drivetrain.init(hardwareMap);
+
+        hubs = hardwareMap.getAll(LynxModule.class);
 
 //      instantiates both gamepads:
         GamepadEx Gamepad1 = new GamepadEx(gamepad1);
@@ -128,22 +136,46 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             // runs field-centric driving using analog stick inputs
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
+            //everything below is telemetry
+
             if (scorer.limitSwitch.getState()) {
                 mytelemetry.addData("Limit switch", "is not triggered");
             } else {
                 mytelemetry.addData("Limit switch", "is triggered");
             }
 
+            if (scorer.clawIsPass) {
+                mytelemetry.addData("Claw is", "passing through");
+            } else if (scorer.clawIsOpen){
+                mytelemetry.addData("Claw is", "open");
+            } else {
+                mytelemetry.addData("Claw is", "closed");
+            }
 
-            mytelemetry.addData("Claw is open:", scorer.clawIsOpen);
+            if (scorer.passIsFront) {
+                mytelemetry.addData("Passthrough is in the", "front");
+            } else {
+                mytelemetry.addData("Passthrough is in the", "back");
+            }
+
             mytelemetry.addData("Lift position:", scorer.targetLiftPosName);
             mytelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
             mytelemetry.addData("Lift target pos:", scorer.targetLiftPos);
             mytelemetry.addData("Lift motors output", scorer.liftVelocity);
 
+            mytelemetry.addData("Passthrough status", scorer.currentPassPos);
+            mytelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
+
+            mytelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
+
+            mytelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
+            mytelemetry.addData("Hub 0 draw", hubs.get(0).getCurrent(CurrentUnit.AMPS));
+            mytelemetry.addData("Hub 0 name", hubs.get(0).getDeviceName());
+            mytelemetry.addData("Hub 1 draw", hubs.get(1).getCurrent(CurrentUnit.AMPS));
+            mytelemetry.addData("Hub 1 name", hubs.get(1).getDeviceName());
+
             mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
             mytelemetry.addData("Field-relative heading", drivetrain.rotYaw);
-            mytelemetry.addData("Passthrough is in the front", scorer.passIsFront);
             mytelemetry.update();
         }
     }

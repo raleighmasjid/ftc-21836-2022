@@ -47,7 +47,6 @@ public class PowerplayScorer {
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
         lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, MAX_RPM);
 
-        liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
         liftController = new PIDFController(
                 TeleOpConfig.LIFT_P,
                 TeleOpConfig.LIFT_I,
@@ -60,6 +59,7 @@ public class PowerplayScorer {
                 TeleOpConfig.LIFT_D,
                 TeleOpConfig.LIFT_F
         );
+        liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -329,12 +329,11 @@ public class PowerplayScorer {
 
         if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasLifted) {
             targetLiftPos = liftController.getSetPoint() + 80;
-            liftController.setSetPoint(targetLiftPos);
             liftClawTimer.reset();
-            hasDropped = true;
+            hasLifted = true;
         }
         if ((dropClawTimer.seconds() >= TeleOpConfig.CLAW_OPEN_TO_DROP_TIME) && !hasDropped) {
-            liftController.setSetPoint(TeleOpConfig.HEIGHT_ONE);
+            targetLiftPos = TeleOpConfig.HEIGHT_ONE;
             dropClawTimer.reset();
             hasDropped = true;
         }

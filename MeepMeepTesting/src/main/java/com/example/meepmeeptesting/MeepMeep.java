@@ -2,29 +2,22 @@ package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-import java.util.Vector;
 
-
-public class MeepMeepTesting {
+public class MeepMeep {
 
     public static double CLAW_CLOSING_TIME = 0.31;
-    public static double CLAW_OPEN_TO_DROP_TIME = 0.1;
-    public static double CLAW_DROP_TIME = 0.7;
-    public static double CLAW_LIFT_TIME = 0.7;
-    public static double PASSTHROUGH_TIME = 1;
+    public static double CLAW_OPEN_TO_DROP_TIME = 0.2;
+    public static double AUTON_START_DELAY = 0.15;
 
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(650);
+        com.noahbres.meepmeep.MeepMeep meepMeep = new com.noahbres.meepmeep.MeepMeep(650);
 
-        Vector2d stackPos = new Vector2d(59, -12.5);
+        Vector2d stackPos = new Vector2d(58, -12.5);
         Vector2d turnPos = new Vector2d(49, -12.5);
-        Vector2d medScoringPos = new Vector2d(31, -20);
+        Vector2d medScoringPos = new Vector2d(31, -21);
 
         Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
         Vector2d parkingZone2 = new Vector2d(35, -12.5);
@@ -49,14 +42,14 @@ public class MeepMeepTesting {
                                 .addTemporalMarker(() -> {
 //                                    scorer.clawIsOpen = false;
                                 })
-                                .waitSeconds(CLAW_CLOSING_TIME)
+                                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                                 .addTemporalMarker(() -> {
 //                                    scorer.setLiftPos(PowerplayScorer.heightVal.MED);
                                 })
                                 .splineToSplineHeading(new Pose2d(35, -53, Math.toRadians(180)), facingForward)
-                                .splineToSplineHeading(new Pose2d(35, -25, Math.toRadians(180)), facingForward)
+                                .splineToSplineHeading(new Pose2d(35, -24, Math.toRadians(180)), facingForward)
                                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
-                                .lineTo(new Vector2d(32.5, -25))
+                                .lineTo(new Vector2d(32, -24))
                                 .addTemporalMarker(() -> {
 //                                    scorer.clawIsOpen = true;
                                 })
@@ -64,14 +57,14 @@ public class MeepMeepTesting {
                                 .addTemporalMarker(() -> {
 //                                    scorer.setLiftPos(PowerplayScorer.heightVal.FIVE);
                                 })
-                                .lineTo(new Vector2d(35, -25))
+                                .lineTo(new Vector2d(35, -24))
                                 .addTemporalMarker(() -> {
 //                                    scorer.togglePassthrough();
                                 })
                                 .setReversed(true)
-                                .setTangent(Math.toRadians(90))
-                                .lineTo(new Vector2d(35, -20))
-                                .splineToConstantHeading(new Vector2d(42, -12.5), facingRight)
+                                .lineTo(new Vector2d(35, -12))
+                                .waitSeconds(CLAW_CLOSING_TIME)
+                                .lineTo(turnPos)
                                 .splineTo(
                                         stackPos,
                                         facingRight
@@ -105,7 +98,7 @@ public class MeepMeepTesting {
                 )
         ;
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
+        meepMeep.setBackground(com.noahbres.meepmeep.MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
                 .setDarkMode(false)
                 .setBackgroundAlpha(1.0f)
                 .addEntity(bot1)
