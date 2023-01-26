@@ -87,9 +87,6 @@ public class AutonomousRight extends LinearOpMode {
         MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-        scorer.lift_motor2.resetEncoder();
-        scorer.setLiftPos(PowerplayScorer.heightVal.ONE);
-
         Vector2d stackPos = new Vector2d(59, -12.5);
         Vector2d turnPos = new Vector2d(47, -12.5);
         Vector2d medScoringPos = new Vector2d(30, -19);
@@ -115,7 +112,7 @@ public class AutonomousRight extends LinearOpMode {
                 })
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
                 .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.heightVal.MED);
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
                 .splineToSplineHeading(new Pose2d(35, -53, Math.toRadians(180)), facingForward)
                 .splineToSplineHeading(new Pose2d(35, -25, Math.toRadians(180)), facingForward)
@@ -126,7 +123,7 @@ public class AutonomousRight extends LinearOpMode {
                 })
                 .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.heightVal.FIVE);
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
                     scorer.clawIsPass = true;
                 })
                 .lineTo(new Vector2d(35, -25))
@@ -148,7 +145,7 @@ public class AutonomousRight extends LinearOpMode {
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
-                    scorer.setLiftPos(PowerplayScorer.heightVal.MED);
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
                 .waitSeconds(TeleOpConfig.PASSTHROUGH_TIME)
                 .setReversed(false)
@@ -159,7 +156,7 @@ public class AutonomousRight extends LinearOpMode {
                 })
                 .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.heightVal.FOUR);
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
                 })
                 .setReversed(true)
                 .splineTo(turnPos, facingRight)
@@ -264,14 +261,6 @@ public class AutonomousRight extends LinearOpMode {
 
         drive.followTrajectorySequenceAsync(trajectory1);
 
-        scorer.liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
-        scorer.liftController.setPIDF(
-                TeleOpConfig.LIFT_P,
-                TeleOpConfig.LIFT_I,
-                TeleOpConfig.LIFT_D,
-                TeleOpConfig.LIFT_F
-        );
-
         while(opModeIsActive()) {
 
             drive.update();
@@ -301,7 +290,6 @@ public class AutonomousRight extends LinearOpMode {
 
 
 
-            //telemetry in '...'
             if (scorer.limitSwitch.getState()) {
                 myTelemetry.addData("Limit switch", "is not triggered");
             } else {

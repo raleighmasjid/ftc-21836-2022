@@ -27,7 +27,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         scorer.init(hardwareMap);
         drivetrain.init(hardwareMap);
 
-
 //      instantiates both gamepads:
         GamepadEx Gamepad1 = new GamepadEx(gamepad1);
         GamepadEx Gamepad2 = new GamepadEx(gamepad2);
@@ -50,19 +49,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double control1LeftX;
         double control1RightX;
         double control2LeftY;
-
-
-        scorer.lift_motor2.resetEncoder();
-        scorer.setLiftPos(PowerplayScorer.heightVal.ONE);
-        drivetrain.resetRotation();
-
-        scorer.liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
-        scorer.liftController.setPIDF(
-                TeleOpConfig.LIFT_P,
-                TeleOpConfig.LIFT_I,
-                TeleOpConfig.LIFT_D,
-                TeleOpConfig.LIFT_F
-        );
 
         waitForStart();
 
@@ -122,16 +108,16 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
 
             if (control2Up.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.heightVal.TALL);
+                scorer.setLiftPos(PowerplayScorer.liftHeights.TALL);
             }
             if (control2Left.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.heightVal.MED);
+                scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
             }
             if (control2Right.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.heightVal.LOW);
+                scorer.setLiftPos(PowerplayScorer.liftHeights.LOW);
             }
             if (control2Down.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.heightVal.GROUND);
+                scorer.setLiftPos(PowerplayScorer.liftHeights.GROUND);
             }
 
 
