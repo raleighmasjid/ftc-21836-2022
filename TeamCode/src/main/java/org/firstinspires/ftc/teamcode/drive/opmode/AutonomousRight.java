@@ -87,7 +87,7 @@ public class AutonomousRight extends LinearOpMode {
         MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-        Vector2d stackPos = new Vector2d(57.5, -12.5);
+        Vector2d stackPos = new Vector2d(58, -12.5);
         Vector2d turnPos = new Vector2d(47, -12.5);
         Vector2d medScoringPos = new Vector2d(30.5, -18);
 
@@ -101,7 +101,7 @@ public class AutonomousRight extends LinearOpMode {
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double scoringAngleRight = Math.toRadians(210);
+        double scoringAngleRight = Math.toRadians(220);
 
         Pose2d startPose = new Pose2d(35, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
