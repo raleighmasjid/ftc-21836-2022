@@ -328,7 +328,7 @@ public class PowerplayScorer {
 
 
         if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasLifted) {
-            targetLiftPos = liftController.getSetPoint() + 80;
+            targetLiftPos = liftController.getSetPoint() + 120;
             liftClawTimer.reset();
             hasLifted = true;
         }

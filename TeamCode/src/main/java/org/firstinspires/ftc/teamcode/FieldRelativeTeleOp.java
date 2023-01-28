@@ -47,6 +47,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         ButtonReader control2Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); //claw spin
 
         ButtonReader control2LShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.LEFT_BUMPER);
+        ButtonReader control2RShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.RIGHT_BUMPER);
 
         ButtonReader control2Up = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_UP);
         ButtonReader control2Left = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_LEFT);
@@ -69,7 +70,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2A.readValue();
             control2X.readValue();
             control2Y.readValue();
+
             control2LShoulder.readValue();
+            control2RShoulder.readValue();
 
             control2Up.readValue();
             control2Left.readValue();
@@ -89,11 +92,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2LeftY = Gamepad2.getLeftY();
 
 
-            scorer.targetLiftPos = scorer.clip(
-                    (scorer.liftController.getSetPoint() + (TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY)),
-                    TeleOpConfig.HEIGHT_ONE,
-                    TeleOpConfig.HEIGHT_TALL
-                    );
+            scorer.targetLiftPos = Math.min((scorer.liftController.getSetPoint() + (TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY)), TeleOpConfig.HEIGHT_TALL);
 
 
 
@@ -111,6 +110,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             }
             if (control2LShoulder.wasJustPressed()) {
                 scorer.togglePivot(); //pivot override
+            }
+            if (control2RShoulder.wasJustPressed()) {
+                scorer.lift_motor2.resetEncoder();
             }
 
 

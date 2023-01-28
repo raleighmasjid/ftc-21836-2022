@@ -26,7 +26,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 
-@Autonomous(name= "Right - 1+1 medium", group = "21836 Autonomous")
+@Autonomous(name= "Right - 1+3 medium", group = "21836 Autonomous")
 public class AutonomousRight extends LinearOpMode {
 
     OpenCvCamera camera;
@@ -87,21 +87,25 @@ public class AutonomousRight extends LinearOpMode {
         MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-        Vector2d stackPos = new Vector2d(58, -12.5);
-        Vector2d turnPos = new Vector2d(47, -12.5);
+        Vector2d stackPos = new Vector2d(59, -12.5);
+        Vector2d turnPos = new Vector2d(47, -13);
         Vector2d medScoringPos = new Vector2d(30.5, -18);
 
         Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
         Vector2d parkingZone2 = new Vector2d(35, -12.5);
         Vector2d parkingZone3 = new Vector2d(57, -12.5);
 
-        TrajectoryVelocityConstraint velocityCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.SLOWER_AUTON_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.TO_STACK_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.TO_SCORING_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryAccelerationConstraint accelerationCap = AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double scoringAngleRight = Math.toRadians(220);
+        double scoringAngleRight = Math.toRadians(215);
+
+        double mediumScoringOffset = 0.1;
+        double stackOffset = 0.5;
 
         Pose2d startPose = new Pose2d(35, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
@@ -114,17 +118,15 @@ public class AutonomousRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .splineToSplineHeading(new Pose2d(35, -53, facingLeft), facingForward, velocityCap, accelerationCap)
-                .splineToSplineHeading(new Pose2d(35, -25, facingLeft), facingForward, velocityCap, accelerationCap)
+                .splineToSplineHeading(new Pose2d(35, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
+                .splineToSplineHeading(new Pose2d(35, -25, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .lineTo(new Vector2d(31.5, -25))
                 .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = true;
-                })
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
-                    scorer.clawIsPass = true;
+                })
+                .addTemporalMarker(() -> {
+                    scorer.clawIsOpen = true;
                 })
                 .lineTo(new Vector2d(35, -25))
                 .addTemporalMarker(() -> {
@@ -132,14 +134,12 @@ public class AutonomousRight extends LinearOpMode {
                 })
                 .setReversed(true)
                 .lineTo(new Vector2d(35, -9))
-                .waitSeconds(0.1)
                 .lineTo(new Vector2d(35, -12.5))
-                .waitSeconds(0.1)
                 .lineTo(turnPos)
                 .splineTo(
                         stackPos,
                         facingRight,
-                        velocityCap,
+                        stackVeloCap,
                         accelerationCap
                 )
                 .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
@@ -151,19 +151,81 @@ public class AutonomousRight extends LinearOpMode {
                     scorer.togglePassthrough();
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .waitSeconds(TeleOpConfig.PASSTHROUGH_TIME)
+                .waitSeconds(stackOffset)
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
-                .splineTo(medScoringPos, scoringAngleRight, velocityCap, accelerationCap)
-                .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = true;
-                })
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
                 })
+                .addTemporalMarker(() -> {
+                    scorer.clawIsOpen = true;
+                })
+                .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
+                    scorer.togglePassthrough();
+                })
+                .splineTo(turnPos, facingRight)
+                .splineTo(
+                        stackPos,
+                        facingRight,
+                        stackVeloCap,
+                        accelerationCap
+                )
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .addTemporalMarker(() -> {
+                    scorer.clawIsOpen = false;
+                })
+                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
+                .addTemporalMarker(() ->{
+                    scorer.togglePassthrough();
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                })
+                .waitSeconds(stackOffset)
+                .setReversed(false)
+                .splineTo(turnPos, facingLeft)
+                .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
+                .addTemporalMarker(() -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
+                })
+                .addTemporalMarker(() -> {
+                    scorer.clawIsOpen = true;
+                })
+                .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
+                    scorer.togglePassthrough();
+                })
+                .splineTo(turnPos, facingRight)
+                .splineTo(
+                        stackPos,
+                        facingRight,
+                        stackVeloCap,
+                        accelerationCap
+                )
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .addTemporalMarker(() -> {
+                    scorer.clawIsOpen = false;
+                })
+                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
+                .addTemporalMarker(() ->{
+                    scorer.togglePassthrough();
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                })
+                .waitSeconds(stackOffset)
+                .setReversed(false)
+                .splineTo(turnPos, facingLeft)
+                .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
+                .addTemporalMarker(() -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
+                })
+                .addTemporalMarker(() -> {
+                    scorer.clawIsOpen = true;
+                })
                 .setReversed(true)
                 .splineTo(turnPos, facingRight)
+                .addTemporalMarker(() -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.ONE);
+                })
                 .setReversed(false)
                 .splineTo(parkingZone2, facingForward)
                 .build()

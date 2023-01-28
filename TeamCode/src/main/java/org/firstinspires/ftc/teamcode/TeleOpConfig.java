@@ -4,9 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class TeleOpConfig {
     public static double HEIGHT_ONE = 0;
-    public static double HEIGHT_TWO = 30;
-    public static double HEIGHT_THREE = 70;
-    public static double HEIGHT_FOUR = 110;
+    public static double HEIGHT_TWO = 40;
+    public static double HEIGHT_THREE = 80;
+    public static double HEIGHT_FOUR = 120;
     public static double HEIGHT_FIVE = 150;
 
     public static double HEIGHT_GROUND = 30;
@@ -38,7 +38,8 @@ public class TeleOpConfig {
     public static double PASSTHROUGH_TIME = 1;
 
     public static double AUTON_START_DELAY = 0.15;
-    public static double SLOWER_AUTON_VELOCITY = 40;
+    public static double TO_STACK_VELOCITY = 17;
+    public static double TO_SCORING_VELOCITY = 40;
 
     public static double PIVOT_FRONT = 200;
     public static double PIVOT_BACK = 0;
@@ -57,7 +58,7 @@ public class TeleOpConfig {
     public static double PIVOT_TO_BACK_TIME = 0.4;
 
     public static double BACK_TO_PIVOT_TIME = 0.8;
-    public static double PIVOTING_TO_FRONT_TIME = 0.6;
+    public static double PIVOTING_TO_FRONT_TIME = 0.4;
     public static double PIVOT_TO_FRONT_TIME = 0;
 
     public static double fx = 578.272;
