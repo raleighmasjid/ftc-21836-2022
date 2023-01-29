@@ -79,23 +79,20 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2Right.readValue();
             control2Down.readValue();
 
-//            constantly moves the claw to its position dictated by "clawOpen"
-            scorer.runClaw();
-            scorer.runPivot();
-            scorer.runPassthrough();
-            scorer.runLiftToPos();
-
             control1LeftY = Gamepad1.getLeftY();
             control1LeftX = Gamepad1.getLeftX();
             control1RightX = Gamepad1.getRightX();
 
             control2LeftY = Gamepad2.getLeftY();
 
+            scorer.runClaw();
+            scorer.runPivot();
+            scorer.runPassthrough();
+            scorer.runLiftToPos();
 
             scorer.targetLiftPos = Math.min((scorer.liftController.getSetPoint() + (TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY)), TeleOpConfig.HEIGHT_TALL);
 
-
-
+            //claw and passthrough buttons
             if (control2X.wasJustPressed()) {
                 scorer.toggleClaw(); //claw override
             }
@@ -116,7 +113,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             }
 
 
-
+            // lift heights
             if (control2Up.wasJustPressed()) {
                 scorer.setLiftPos(PowerplayScorer.liftHeights.TALL);
             }
@@ -130,7 +127,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.setLiftPos(PowerplayScorer.liftHeights.GROUND);
             }
 
-
+            //field-centric reset
             if (control1A.isDown()) {
                 drivetrain.resetRotation();
             }
@@ -138,8 +135,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             // runs field-centric driving using analog stick inputs
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
-            //everything below is telemetry
 
+            //everything below is telemetry
             if (scorer.limitSwitch.getState()) {
                 mytelemetry.addData("Limit switch", "is not triggered");
             } else {
