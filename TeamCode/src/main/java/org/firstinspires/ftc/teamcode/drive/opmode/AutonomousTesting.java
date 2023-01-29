@@ -26,7 +26,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 
-@Autonomous(name= "Right - 1+3 medium", group = "21836 Autonomous")
+@Autonomous(name= "Testing", group = "21836 Autonomous")
 public class AutonomousTesting extends LinearOpMode {
 
     OpenCvCamera camera;
