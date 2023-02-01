@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.TeleOpConfig;
 import org.firstinspires.ftc.teamcode.auton.AprilTagDetectionPipeline;
@@ -26,7 +27,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 
-@Autonomous(name= "Testing", group = "21836 Autonomous")
+@Autonomous(name= "Active Testing", group = "21836 Autonomous")
 public class AutonomousTesting extends LinearOpMode {
 
     OpenCvCamera camera;
@@ -105,7 +106,8 @@ public class AutonomousTesting extends LinearOpMode {
         double scoringAngleRight = Math.toRadians(215);
 
         double mediumScoringOffset = 0.1;
-        double stackOffset = 0.5;
+        double stackOffset = 0.4;
+        double stackApproachOffset = -1;
 
         Pose2d startPose = new Pose2d(35, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
@@ -120,12 +122,9 @@ public class AutonomousTesting extends LinearOpMode {
                 })
                 .splineToSplineHeading(new Pose2d(35, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .splineToSplineHeading(new Pose2d(35, -25, facingLeft), facingForward, scoringVeloCap, accelerationCap)
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .lineTo(new Vector2d(31.5, -25))
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
-                })
-                .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
                 .lineTo(new Vector2d(35, -25))
@@ -133,17 +132,16 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.togglePassthrough();
                 })
                 .setReversed(true)
-                .lineTo(new Vector2d(35, -9))
                 .lineTo(new Vector2d(35, -12.5))
-                .lineTo(turnPos)
+                .setTangent(facingRight)
+                .splineTo(turnPos, facingRight)
                 .splineTo(
                         stackPos,
                         facingRight,
                         stackVeloCap,
                         accelerationCap
                 )
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
                     scorer.clawIsOpen = false;
                 })
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
@@ -157,8 +155,6 @@ public class AutonomousTesting extends LinearOpMode {
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
-                })
-                .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
                 .setReversed(true)
@@ -172,8 +168,7 @@ public class AutonomousTesting extends LinearOpMode {
                         stackVeloCap,
                         accelerationCap
                 )
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
                     scorer.clawIsOpen = false;
                 })
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
@@ -187,8 +182,6 @@ public class AutonomousTesting extends LinearOpMode {
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
-                })
-                .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
                 .setReversed(true)
@@ -203,7 +196,7 @@ public class AutonomousTesting extends LinearOpMode {
                         accelerationCap
                 )
                 .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
                     scorer.clawIsOpen = false;
                 })
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
@@ -217,8 +210,6 @@ public class AutonomousTesting extends LinearOpMode {
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
-                })
-                .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
                 .setReversed(true)
@@ -232,12 +223,15 @@ public class AutonomousTesting extends LinearOpMode {
                 ;
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
-                .lineTo(parkingZone1)
+                .setTangent(facingLeft)
+                .splineTo(parkingZone1, facingLeft)
                 .build()
                 ;
 
         TrajectorySequence parkRight = drive.trajectorySequenceBuilder(trajectory1.end())
-                .lineTo(parkingZone3)
+                .setTangent(facingRight)
+                .splineTo(turnPos, facingRight)
+                .splineTo(parkingZone3, facingRight)
                 .build()
                 ;
 
@@ -356,19 +350,34 @@ public class AutonomousTesting extends LinearOpMode {
 
 
 
+            //everything below is telemetry
             if (scorer.limitSwitch.getState()) {
                 myTelemetry.addData("Limit switch", "is not triggered");
             } else {
                 myTelemetry.addData("Limit switch", "is triggered");
             }
-            myTelemetry.addData("Claw is open:", scorer.clawIsOpen);
+
+            if (scorer.clawIsPass) {
+                myTelemetry.addData("Claw is", "passing through");
+            } else if (scorer.clawIsOpen){
+                myTelemetry.addData("Claw is", "open");
+            } else {
+                myTelemetry.addData("Claw is", "closed");
+            }
+
+            if (scorer.passIsFront) {
+                myTelemetry.addData("Passthrough is in the", "front");
+            } else {
+                myTelemetry.addData("Passthrough is in the", "back");
+            }
+
             myTelemetry.addData("Lift position:", scorer.targetLiftPosName);
             myTelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
-            myTelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
+            myTelemetry.addData("Lift target pos:", scorer.targetLiftPos);
+            myTelemetry.addData("Lift motors output", scorer.liftVelocity);
 
-            myTelemetry.addData("Lift motors output", scorer.lift_motor1.get());
+            myTelemetry.addData("Passthrough status", scorer.currentPassPos);
 
-            myTelemetry.addData("Passthrough is in the front", scorer.passIsFront);
             myTelemetry.update();
 
         }

@@ -32,12 +32,12 @@ public class TeleOpConfig {
     public static double CLAW_RIGHT_OPEN = 115;
     public static double CLAW_RIGHT_PASS = 140;
 
-    public static double CLAW_CLOSING_TIME = 0.31;
+    public static double CLAW_CLOSING_TIME = 0.3;
     public static double CLAW_PASS_CLOSING_TIME = 0;
     public static double CLAW_OPEN_TO_DROP_TIME = 0.2;
     public static double PASSTHROUGH_TIME = 1;
 
-    public static double AUTON_START_DELAY = 0.15;
+    public static double AUTON_START_DELAY = 0.16;
     public static double TO_STACK_VELOCITY = 17;
     public static double TO_SCORING_VELOCITY = 40;
 

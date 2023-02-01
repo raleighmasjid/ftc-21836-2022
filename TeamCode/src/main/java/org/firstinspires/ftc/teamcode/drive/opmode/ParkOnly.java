@@ -1,17 +1,23 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.PowerplayScorer;
+import org.firstinspires.ftc.teamcode.TeleOpConfig;
 import org.firstinspires.ftc.teamcode.auton.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.drive.AutonMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -21,8 +27,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 
-@Autonomous(name= "Red Alliance - Left - Terminal & park", group = "21836 Autonomous")
-public class TerminalParkRedLeft extends LinearOpMode {
+@Autonomous(name= "Parking Only", group = "21836 Autonomous")
+public class ParkOnly extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline signalSleeveDetectionPipeline;
@@ -31,19 +37,19 @@ public class TerminalParkRedLeft extends LinearOpMode {
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
     // You will need to do your own calibration for other configurations!
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
+    double fx = TeleOpConfig.fx;
+    double fy = TeleOpConfig.fy;
+    double cx = TeleOpConfig.cx;
+    double cy = TeleOpConfig.cy;
 
     // UNITS ARE METERS
-    double tagsize = 0.166;
+    double tagSize = 0.166;
 
     int LEFT = 1;
     int MIDDLE = 2;
     int RIGHT = 3;
 
-    static ElapsedTime autonTimer = new ElapsedTime();
+    static ElapsedTime autonomousTimer = new ElapsedTime();
 
     boolean hasParked = false;
 
@@ -55,7 +61,7 @@ public class TerminalParkRedLeft extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        signalSleeveDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+        signalSleeveDetectionPipeline = new AprilTagDetectionPipeline(tagSize, fx, fy, cx, cy);
 
         camera.setPipeline(signalSleeveDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -79,39 +85,37 @@ public class TerminalParkRedLeft extends LinearOpMode {
         scorer.init(hardwareMap);
 
         //  Initialize telemetry and dashboard
-        MultipleTelemetry mytelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-        //  initializes code:
+        Vector2d turnPos = new Vector2d(47, -13);
 
+        Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
+        Vector2d parkingZone2 = new Vector2d(35, -12.5);
+        Vector2d parkingZone3 = new Vector2d(57, -12.5);
 
-        Pose2d startPose = new Pose2d(-35, -62.5, Math.toRadians(90));
+        double facingRight = Math.toRadians(0);
+        double facingForward = Math.toRadians(90);
+        double facingLeft = Math.toRadians(180);
+
+        Pose2d startPose = new Pose2d(35, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
 
-        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(startPose)
-                .splineToConstantHeading(new Vector2d(-40, -61), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-55, -61), Math.toRadians(180))
-                .waitSeconds(0.05)
-                .setTangent(0)
-                .lineTo(new Vector2d(-35, -61))
-                .waitSeconds(0.05)
-                .lineTo(new Vector2d(-35, -12.5))
-                .waitSeconds(0.05)
+        TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+                .splineTo(parkingZone2, facingForward)
                 .build()
                 ;
 
-        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(-57, -12.5))
+        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
+                .setTangent(facingLeft)
+                .splineTo(parkingZone1, facingLeft)
                 .build()
                 ;
 
-        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(-12.5, -12.5))
-                .build()
-                ;
-
-        TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(-34.5, -12.5))
+        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(trajectory1.end())
+                .setTangent(facingRight)
+                .splineTo(turnPos, facingRight)
+                .splineTo(parkingZone3, facingRight)
                 .build()
                 ;
 
@@ -181,6 +185,7 @@ public class TerminalParkRedLeft extends LinearOpMode {
         }
 
         //START IS HERE//
+        autonomousTimer.reset();
 
         camera.stopStreaming();
         camera.closeCameraDevice();
@@ -198,27 +203,61 @@ public class TerminalParkRedLeft extends LinearOpMode {
         }
 
 
-        drive.followTrajectorySequenceAsync(traj1);
-        autonTimer.reset();
+        drive.followTrajectorySequenceAsync(trajectory1);
 
         while(opModeIsActive()) {
 
             drive.update();
 
 
-            if((autonTimer.seconds() >= 3) && !drive.isBusy() && !hasParked) {
-                if(tagOfInterest.id == LEFT) {
+            // parking statement
+            if(
+                    (autonomousTimer.seconds() >= 3) && //at least 3 seconds into autonomous
+                    !drive.isBusy() &&                  //bot is not driving
+                    (tagOfInterest != null) &&          //camera HAS detected any tag
+                    !hasParked                          //bot has not yet parked in zone
+            ) {
+
+                if (tagOfInterest.id == LEFT) {
                     drive.followTrajectorySequenceAsync(parkLeft);
-
-                } else if(tagOfInterest.id == RIGHT) {
+                } else if (tagOfInterest.id == RIGHT) {
                     drive.followTrajectorySequenceAsync(parkRight);
-
-                } else {
-                    drive.followTrajectorySequenceAsync(parkMiddle);
                 }
 
                 hasParked = true;
             }
+
+
+
+            //everything below is telemetry
+            if (scorer.limitSwitch.getState()) {
+                myTelemetry.addData("Limit switch", "is not triggered");
+            } else {
+                myTelemetry.addData("Limit switch", "is triggered");
+            }
+
+            if (scorer.clawIsPass) {
+                myTelemetry.addData("Claw is", "passing through");
+            } else if (scorer.clawIsOpen){
+                myTelemetry.addData("Claw is", "open");
+            } else {
+                myTelemetry.addData("Claw is", "closed");
+            }
+
+            if (scorer.passIsFront) {
+                myTelemetry.addData("Passthrough is in the", "front");
+            } else {
+                myTelemetry.addData("Passthrough is in the", "back");
+            }
+
+            myTelemetry.addData("Lift position:", scorer.targetLiftPosName);
+            myTelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
+            myTelemetry.addData("Lift target pos:", scorer.targetLiftPos);
+            myTelemetry.addData("Lift motors output", scorer.liftVelocity);
+
+            myTelemetry.addData("Passthrough status", scorer.currentPassPos);
+
+            myTelemetry.update();
 
         }
     }

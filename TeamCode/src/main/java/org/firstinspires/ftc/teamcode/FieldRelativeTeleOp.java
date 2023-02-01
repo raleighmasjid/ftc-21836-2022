@@ -26,7 +26,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
 //      Initialize telemetry and dashboard
-        MultipleTelemetry mytelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
 //      initializes code:
@@ -138,44 +138,44 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             //everything below is telemetry
             if (scorer.limitSwitch.getState()) {
-                mytelemetry.addData("Limit switch", "is not triggered");
+                myTelemetry.addData("Limit switch", "is not triggered");
             } else {
-                mytelemetry.addData("Limit switch", "is triggered");
+                myTelemetry.addData("Limit switch", "is triggered");
             }
 
             if (scorer.clawIsPass) {
-                mytelemetry.addData("Claw is", "passing through");
+                myTelemetry.addData("Claw is", "passing through");
             } else if (scorer.clawIsOpen){
-                mytelemetry.addData("Claw is", "open");
+                myTelemetry.addData("Claw is", "open");
             } else {
-                mytelemetry.addData("Claw is", "closed");
+                myTelemetry.addData("Claw is", "closed");
             }
 
             if (scorer.passIsFront) {
-                mytelemetry.addData("Passthrough is in the", "front");
+                myTelemetry.addData("Passthrough is in the", "front");
             } else {
-                mytelemetry.addData("Passthrough is in the", "back");
+                myTelemetry.addData("Passthrough is in the", "back");
             }
 
-            mytelemetry.addData("Lift position:", scorer.targetLiftPosName);
-            mytelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
-            mytelemetry.addData("Lift target pos:", scorer.targetLiftPos);
-            mytelemetry.addData("Lift motors output", scorer.liftVelocity);
+            myTelemetry.addData("Lift position:", scorer.targetLiftPosName);
+            myTelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
+            myTelemetry.addData("Lift target pos:", scorer.targetLiftPos);
+            myTelemetry.addData("Lift motors output", scorer.liftVelocity);
 
-            mytelemetry.addData("Passthrough status", scorer.currentPassPos);
-            mytelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
+            myTelemetry.addData("Passthrough status", scorer.currentPassPos);
+            myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
 
-            mytelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
+            myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
 
-            mytelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
-            mytelemetry.addData("Hub 0 draw", hubs.get(0).getCurrent(CurrentUnit.AMPS));
-            mytelemetry.addData("Hub 0 name", hubs.get(0).getDeviceName());
-            mytelemetry.addData("Hub 1 draw", hubs.get(1).getCurrent(CurrentUnit.AMPS));
-            mytelemetry.addData("Hub 1 name", hubs.get(1).getDeviceName());
+            myTelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
+            myTelemetry.addData("Hub 0 draw", hubs.get(0).getCurrent(CurrentUnit.AMPS));
+            myTelemetry.addData("Hub 0 name", hubs.get(0).getDeviceName());
+            myTelemetry.addData("Hub 1 draw", hubs.get(1).getCurrent(CurrentUnit.AMPS));
+            myTelemetry.addData("Hub 1 name", hubs.get(1).getDeviceName());
 
-            mytelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
-            mytelemetry.addData("Field-relative heading", drivetrain.rotYaw);
-            mytelemetry.update();
+            myTelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
+            myTelemetry.addData("Field-relative heading", drivetrain.rotYaw);
+            myTelemetry.update();
         }
     }
 }

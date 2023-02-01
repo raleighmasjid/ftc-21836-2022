@@ -108,7 +108,7 @@ public class PowerplayScorer {
         MOVING_TO_FRONT, FRONT, CLAW_CLOSING, MOVING_TO_PIVOT, PIVOT, MOVING_TO_BACK, BACK
     }
 
-    passPositions currentPassPos = passPositions.FRONT;
+    public passPositions currentPassPos = passPositions.FRONT;
 
     public void runPassthrough () {
         if (passIsFront) {
