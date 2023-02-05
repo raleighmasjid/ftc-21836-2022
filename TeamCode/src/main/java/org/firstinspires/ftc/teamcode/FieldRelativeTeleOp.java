@@ -39,8 +39,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         GamepadEx Gamepad1 = new GamepadEx(gamepad1);
         GamepadEx Gamepad2 = new GamepadEx(gamepad2);
 
-        ButtonReader control1A = new ButtonReader(Gamepad1, GamepadKeys.Button.A); //reset field-centric heading
-
         ButtonReader control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A); //drop + open claw
         ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); //close claw + lift
         ButtonReader control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X); //claw override
@@ -64,7 +62,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 //      teleop control loop
         while (opModeIsActive()) {
             // get button inputs
-            control1A.readValue();
 
             control2B.readValue();
             control2A.readValue();
@@ -129,7 +126,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
 
             //field-centric reset
-            if (control1A.isDown()) {
+            if (Gamepad1.isDown(GamepadKeys.Button.A)) {
                 drivetrain.resetRotation();
             }
 
