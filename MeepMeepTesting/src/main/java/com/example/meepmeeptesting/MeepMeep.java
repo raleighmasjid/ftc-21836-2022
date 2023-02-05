@@ -18,7 +18,7 @@ public class MeepMeep {
         com.noahbres.meepmeep.MeepMeep meepMeep = new com.noahbres.meepmeep.MeepMeep(650);
 
         Vector2d stackPos = new Vector2d(59, -12.5);
-        Vector2d turnPos = new Vector2d(47, -13);
+        Vector2d turnPos = new Vector2d(47, -12.5);
         Vector2d medScoringPos = new Vector2d(30.5, -18);
 
         Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
@@ -28,11 +28,11 @@ public class MeepMeep {
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double scoringAngleRight = Math.toRadians(215);
+        double scoringAngleRight = Math.toRadians(210);
 
         double mediumScoringOffset = 0.1;
         double stackOffset = 0.4;
-        double stackApproachOffset = -1;
+        double stackApproachOffset = -0.2;
 
         Pose2d startPose = new Pose2d(35, -62.5, facingForward);
 

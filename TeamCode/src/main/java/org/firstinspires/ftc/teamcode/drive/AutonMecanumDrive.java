@@ -27,6 +27,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -38,6 +39,7 @@ import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
@@ -294,10 +296,20 @@ public class AutonMecanumDrive extends MecanumDrive {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        leftFront.setPower(v);
-        leftRear.setPower(v1);
-        rightRear.setPower(v2);
-        rightFront.setPower(v3);
+        double voltage = batteryVoltageSensor.getVoltage();
+        double scalar = 12.0 / voltage;
+
+        v *= scalar;
+        v1 *= scalar;
+        v2 *= scalar;
+        v3 *= scalar;
+
+        double max = Collections.max(Arrays.asList(v, v1, v2, v3, 1.0));
+
+        leftFront.setPower(v / max);
+        leftRear.setPower(v1 / max);
+        rightRear.setPower(v2 / max);
+        rightFront.setPower(v3 / max);
     }
 
     @Override

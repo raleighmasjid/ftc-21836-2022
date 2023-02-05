@@ -127,13 +127,21 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.setLiftPos(PowerplayScorer.liftHeights.GROUND);
             }
 
+
             //field-centric reset
             if (control1A.isDown()) {
                 drivetrain.resetRotation();
             }
 
+            if (Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
+                control1LeftX *= TeleOpConfig.PRECISION_MODE_SCALE;
+                control1LeftY *= TeleOpConfig.PRECISION_MODE_SCALE;
+                control1RightX *= TeleOpConfig.PRECISION_MODE_SCALE;
+            }
+
             // runs field-centric driving using analog stick inputs
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
+
 
 
             //everything below is telemetry

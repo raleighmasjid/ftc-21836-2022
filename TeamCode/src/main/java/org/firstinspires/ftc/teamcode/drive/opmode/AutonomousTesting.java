@@ -69,7 +69,7 @@ public class AutonomousTesting extends LinearOpMode {
             @Override
             public void onOpened()
             {
-                camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(800,448, OpenCvCameraRotation.SIDEWAYS_RIGHT);
             }
 
             @Override
@@ -87,9 +87,10 @@ public class AutonomousTesting extends LinearOpMode {
         //  Initialize telemetry and dashboard
         MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
+        dashboard.startCameraStream(camera,0);
 
         Vector2d stackPos = new Vector2d(59, -12.5);
-        Vector2d turnPos = new Vector2d(47, -13);
+        Vector2d turnPos = new Vector2d(47, -12.5);
         Vector2d medScoringPos = new Vector2d(30.5, -18);
 
         Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
@@ -103,11 +104,13 @@ public class AutonomousTesting extends LinearOpMode {
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double scoringAngleRight = Math.toRadians(215);
+        double scoringAngleRight = Math.toRadians(210);
 
         double mediumScoringOffset = 0.1;
         double stackOffset = 0.4;
-        double stackApproachOffset = -1;
+        double stackApproachOffset = -0.2;
+
+        double firstScoringY = -24;
 
         Pose2d startPose = new Pose2d(35, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
@@ -121,13 +124,13 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
                 .splineToSplineHeading(new Pose2d(35, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
-                .splineToSplineHeading(new Pose2d(35, -25, facingLeft), facingForward, scoringVeloCap, accelerationCap)
-                .lineTo(new Vector2d(31.5, -25))
+                .splineToSplineHeading(new Pose2d(35, firstScoringY, facingLeft), facingForward, scoringVeloCap, accelerationCap)
+                .lineTo(new Vector2d(31.5, firstScoringY))
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
                     scorer.clawIsOpen = true;
                 })
-                .lineTo(new Vector2d(35, -25))
+                .lineTo(new Vector2d(35, firstScoringY))
                 .addTemporalMarker(() -> {
                     scorer.togglePassthrough();
                 })
@@ -303,6 +306,7 @@ public class AutonomousTesting extends LinearOpMode {
         //START IS HERE//
         autonomousTimer.reset();
 
+        dashboard.stopCameraStream();
         camera.stopStreaming();
         camera.closeCameraDevice();
 
