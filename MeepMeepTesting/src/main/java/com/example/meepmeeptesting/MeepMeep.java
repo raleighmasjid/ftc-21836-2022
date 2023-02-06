@@ -17,18 +17,19 @@ public class MeepMeep {
     public static void main(String[] args) {
         com.noahbres.meepmeep.MeepMeep meepMeep = new com.noahbres.meepmeep.MeepMeep(650);
 
-        Vector2d stackPos = new Vector2d(59, -12.5);
+
+        Vector2d stackPos = new Vector2d(59, -12);
         Vector2d turnPos = new Vector2d(47, -12.5);
         Vector2d medScoringPos = new Vector2d(30.5, -18);
 
-        Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
-        Vector2d parkingZone2 = new Vector2d(35, -12.5);
-        Vector2d parkingZone3 = new Vector2d(57, -12.5);
+        Vector2d parkingZone1 = new Vector2d(12.5, -12);
+        Vector2d parkingZone2 = new Vector2d(35, -12);
+        Vector2d parkingZone3 = new Vector2d(57, -12);
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double scoringAngleRight = Math.toRadians(210);
+        double scoringAngleRight = Math.toRadians(215);
 
         double mediumScoringOffset = 0.1;
         double stackOffset = 0.4;
@@ -144,8 +145,8 @@ public class MeepMeep {
                                 .setReversed(false)
                                 .splineTo(parkingZone2, facingForward)
 
-                                .setTangent(facingLeft)
-                                .splineTo(parkingZone1, facingLeft)
+                                .setTangent(facingRight)
+                                .splineTo(parkingZone3, facingLeft)
 
                                 .build()
                 )
