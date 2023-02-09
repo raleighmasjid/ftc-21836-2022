@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.TeleOpConfig;
 import org.firstinspires.ftc.teamcode.auton.AprilTagDetectionPipeline;
@@ -89,13 +88,15 @@ public class AutonomousTesting extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         dashboard.startCameraStream(camera,0);
 
-        Vector2d stackPos = new Vector2d(59, -12);
-        Vector2d turnPos = new Vector2d(47, -12.5);
+        Vector2d stackPos = new Vector2d(59, -12.5);
+        Vector2d turnPos = new Vector2d(47, -13);
         Vector2d medScoringPos = new Vector2d(30.5, -18);
 
-        Vector2d parkingZone1 = new Vector2d(12.5, -12);
-        Vector2d parkingZone2 = new Vector2d(35, -12);
-        Vector2d parkingZone3 = new Vector2d(57, -12);
+        double centerPathX = 35;
+
+        Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
+        Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
+        Vector2d parkingZone3 = new Vector2d(57, -12.5);
 
         TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.TO_STACK_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.TO_SCORING_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
@@ -107,25 +108,23 @@ public class AutonomousTesting extends LinearOpMode {
         double scoringAngleRight = Math.toRadians(215);
 
         double mediumScoringOffset = 0.1;
-        double stackOffset = 0.4;
+        double liftTime = -1.5;
         double stackApproachOffset = -0.2;
-
-        double firstScoringY = -24;
-        double centerPathX = 35;
+        double firstScoringY = -25;
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = false;
+                    scorer.liftClaw();
                 })
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME + TeleOpConfig.AUTON_START_DELAY)
-                .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
-                })
                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .splineToSplineHeading(new Pose2d(centerPathX, firstScoringY, facingLeft), facingForward, scoringVeloCap, accelerationCap)
+                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                })
                 .lineTo(new Vector2d(31.5, firstScoringY))
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
@@ -146,17 +145,18 @@ public class AutonomousTesting extends LinearOpMode {
                         accelerationCap
                 )
                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
-                    scorer.clawIsOpen = false;
+                    scorer.liftClaw();
                 })
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .waitSeconds(stackOffset)
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
+                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                })
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
                     scorer.clawIsOpen = true;
@@ -173,17 +173,18 @@ public class AutonomousTesting extends LinearOpMode {
                         accelerationCap
                 )
                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
-                    scorer.clawIsOpen = false;
+                    scorer.liftClaw();
                 })
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .waitSeconds(stackOffset)
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
+                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                })
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
                     scorer.clawIsOpen = true;
@@ -199,19 +200,19 @@ public class AutonomousTesting extends LinearOpMode {
                         stackVeloCap,
                         accelerationCap
                 )
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
-                    scorer.clawIsOpen = false;
+                    scorer.liftClaw();
                 })
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .waitSeconds(stackOffset)
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
+                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                })
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
                     scorer.clawIsOpen = true;
