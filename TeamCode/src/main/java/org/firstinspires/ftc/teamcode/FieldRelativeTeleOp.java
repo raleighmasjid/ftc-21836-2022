@@ -32,12 +32,15 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 //      initializes code:
         scorer.init(hardwareMap);
         drivetrain.init(hardwareMap);
+        drivetrain.setStartDirection(HeadingHolder.getHeading());
 
         hubs = hardwareMap.getAll(LynxModule.class);
 
 //      instantiates both gamepads:
         GamepadEx Gamepad1 = new GamepadEx(gamepad1);
         GamepadEx Gamepad2 = new GamepadEx(gamepad2);
+
+        ButtonReader control1Y = new ButtonReader(Gamepad1, GamepadKeys.Button.Y);
 
         ButtonReader control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A); //drop + open claw
         ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); //close claw + lift
@@ -57,13 +60,17 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double control1RightX;
         double control2LeftY;
 
-        double precisionScale = 1;
+        double precisionScale;
+
+        boolean useFieldCentric = true;
 
         waitForStart();
 
 //      teleop control loop
         while (opModeIsActive()) {
             // get button inputs
+
+            control1Y.readValue();
 
             control2B.readValue();
             control2A.readValue();
@@ -139,8 +146,16 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control1LeftY *= precisionScale;
             control1RightX *= precisionScale;
 
-            // runs field-centric driving using analog stick inputs
-            drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
+            if (useFieldCentric) {
+                drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
+            } else {
+                drivetrain.driveRobotCentric(control1LeftX, control1LeftY, control1RightX);
+            }
+
+            if(control1Y.wasJustPressed()){
+                useFieldCentric = !useFieldCentric;
+            }
+
 
 
 

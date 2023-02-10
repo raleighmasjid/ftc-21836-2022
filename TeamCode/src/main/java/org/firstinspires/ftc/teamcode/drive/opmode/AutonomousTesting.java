@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.HeadingHolder;
 import org.firstinspires.ftc.teamcode.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.TeleOpConfig;
 import org.firstinspires.ftc.teamcode.auton.AprilTagDetectionPipeline;
@@ -108,9 +109,12 @@ public class AutonomousTesting extends LinearOpMode {
         double scoringAngleRight = Math.toRadians(215);
 
         double mediumScoringOffset = 0.1;
-        double liftTime = -1.5;
+        double liftTime = -(TeleOpConfig.LIFT_TO_MEDIUM_TIME);
         double stackApproachOffset = -0.2;
         double firstScoringY = -25;
+
+        // counter-clockwise = positive angle
+        HeadingHolder.setHeading(90);
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drive.setPoseEstimate(startPose);

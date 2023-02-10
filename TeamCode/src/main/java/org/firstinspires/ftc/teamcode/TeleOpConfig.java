@@ -26,6 +26,8 @@ public class TeleOpConfig {
 
     public static double LIFT_MAX_DOWN_VELOCITY = -0.45;
     public static double PRECISION_MODE_SCALE = 0.3;
+    public static double LIFT_TO_MEDIUM_TIME = 0.6;
+    public static double LIFT_TO_TALL_TIME = 0.8;
 
     public static double LIFT_MANUAL_CONTROL_SCALE = 10;
 

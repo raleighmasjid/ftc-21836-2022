@@ -29,14 +29,16 @@ public class MarvelsMecanumDrive {
     public double rotYaw = 0.0;
     private double heading = 0.0;
 
+    public void setStartDirection(double startAngle) {
+        heading = startAngle;
+    }
+
     // ftclib robot-centric mecanum drive code:
-    // the 'true' at the end enables a squared power input for smoother acceleration
     public void driveRobotCentric (double leftX, double leftY, double rightX){
         mecanumDrivetrain.driveRobotCentric(leftX,leftY,rightX);
     }
 
     // ftclib field-centric mecanum drive code:
-    // the 'true' at the end enables a squared power input for smoother acceleration
     public void driveFieldCentric (double leftX, double leftY, double rightX){
         heading = getOffsetRotation();
         rotYaw = heading;
@@ -66,7 +68,7 @@ public class MarvelsMecanumDrive {
 
         imu = hw.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientation = new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP
         );
         IMU.Parameters parameters = new IMU.Parameters(orientation);

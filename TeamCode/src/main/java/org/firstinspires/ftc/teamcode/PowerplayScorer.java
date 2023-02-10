@@ -88,11 +88,6 @@ public class PowerplayScorer {
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
     }
 
-
-    public double clip (double input, double min, double max) {
-        return Math.min(Math.max(input, min), max);
-    }
-
     //  lift motor encoder resolution (ticks):
     public static final double LIFT_TICKS = 145.1;
 
