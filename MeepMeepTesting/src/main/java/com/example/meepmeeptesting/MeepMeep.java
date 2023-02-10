@@ -19,8 +19,8 @@ public class MeepMeep {
         com.noahbres.meepmeep.MeepMeep meepMeep = new com.noahbres.meepmeep.MeepMeep(650);
 
 
-        Vector2d stackPos = new Vector2d(59, -12.5);
-        Vector2d turnPos = new Vector2d(47, -13);
+        Vector2d stackPos = new Vector2d(59, -12);
+        Vector2d turnPos = new Vector2d(47, -12.5);
         Vector2d medScoringPos = new Vector2d(30.5, -18);
 
         double centerPathX = 35;
@@ -146,13 +146,9 @@ public class MeepMeep {
                                 .addTemporalMarker(() -> {
 //                                    scorer.setLiftPos(PowerplayScorer.liftHeights.ONE);
                                 })
-                                .setReversed(false)
-                                .splineTo(parkingZone2, facingForward)
-
-                                .setTangent(facingRight)
-                                .splineTo(turnPos, facingRight)
                                 .splineTo(parkingZone3, facingRight)
-
+                                .setReversed(false)
+                                .splineTo(parkingZone1, facingLeft)
                                 .build()
                 )
         ;

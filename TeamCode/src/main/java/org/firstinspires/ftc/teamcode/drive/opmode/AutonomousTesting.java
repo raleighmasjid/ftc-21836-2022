@@ -117,9 +117,12 @@ public class AutonomousTesting extends LinearOpMode {
 
         TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
-                    scorer.liftClaw();
+                    scorer.clawIsOpen = false;
                 })
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME + TeleOpConfig.AUTON_START_DELAY)
+                .addTemporalMarker(() -> {
+                    scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
+                })
                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .splineToSplineHeading(new Pose2d(centerPathX, firstScoringY, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
@@ -130,6 +133,7 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
                     scorer.clawIsOpen = true;
                 })
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .lineTo(new Vector2d(centerPathX, firstScoringY))
                 .addTemporalMarker(() -> {
                     scorer.togglePassthrough();
@@ -161,6 +165,7 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
                     scorer.clawIsOpen = true;
                 })
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
                     scorer.togglePassthrough();
@@ -189,6 +194,7 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
                     scorer.clawIsOpen = true;
                 })
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
                     scorer.togglePassthrough();
@@ -217,26 +223,25 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
                     scorer.clawIsOpen = true;
                 })
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
                 .splineTo(turnPos, facingRight)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.ONE);
                 })
+                .splineTo(parkingZone3, facingRight)
                 .setReversed(false)
-                .splineTo(parkingZone2, facingForward)
                 .build()
                 ;
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
-                .setTangent(facingLeft)
                 .splineTo(parkingZone1, facingLeft)
                 .build()
                 ;
 
-        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(trajectory1.end())
-                .setTangent(facingRight)
-                .splineTo(turnPos, facingRight)
-                .splineTo(parkingZone3, facingRight)
+        TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(trajectory1.end())
+                .splineTo(turnPos, facingLeft)
+                .splineTo(parkingZone2, facingLeft)
                 .build()
                 ;
 
@@ -340,15 +345,15 @@ public class AutonomousTesting extends LinearOpMode {
             // parking statement
             if(
                     (autonomousTimer.seconds() >= 3) && //at least 3 seconds into autonomous
-                    !drive.isBusy() &&                  //bot is not driving
-                    (tagOfInterest != null) &&          //camera HAS detected any tag
-                    !hasParked                          //bot has not yet parked in zone
+                            !drive.isBusy() &&                  //bot is not driving
+                            (tagOfInterest != null) &&          //camera has detected any tag
+                            !hasParked                          //bot has not yet parked in zone
             ) {
 
                 if (tagOfInterest.id == LEFT) {
                     drive.followTrajectorySequenceAsync(parkLeft);
-                } else if (tagOfInterest.id == RIGHT) {
-                    drive.followTrajectorySequenceAsync(parkRight);
+                } else if (tagOfInterest.id == MIDDLE) {
+                    drive.followTrajectorySequenceAsync(parkMiddle);
                 }
 
                 hasParked = true;
