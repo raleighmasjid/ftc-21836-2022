@@ -93,6 +93,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             scorer.runClaw();
             scorer.runPivot();
+            scorer.runPassServos();
             scorer.runPassthrough();
             scorer.runLiftToPos();
 
@@ -185,7 +186,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             myTelemetry.addData("Lift target pos:", scorer.targetLiftPos);
             myTelemetry.addData("Lift motors output", scorer.liftVelocity);
 
-            myTelemetry.addData("Passthrough status", scorer.currentPassPos);
+            myTelemetry.addData("Passthrough status", scorer.currentPassState);
             myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
 
             myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));

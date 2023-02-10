@@ -98,140 +98,133 @@ public class PowerplayScorer {
     public boolean passIsFront = true;
     public boolean pivotIsFront = true;
 
+    // override variable--when true, skips the timer to switch to next state immediately
+    public boolean skip = false;
 
+
+    public enum passStates {
+        MOVING_TO_FRONT, IN_FRONT, CLAW_CLOSING, MOVING_TO_PIVOT, PIVOTING, MOVING_TO_BACK, IN_BACK
+    }
     public enum passPositions {
-        MOVING_TO_FRONT, FRONT, CLAW_CLOSING, MOVING_TO_PIVOT, PIVOT, MOVING_TO_BACK, BACK
+        FRONT, PIVOT_POS, BACK
     }
 
+    public passStates currentPassState = passStates.IN_FRONT;
     public passPositions currentPassPos = passPositions.FRONT;
+
+    public void runPassServos () {
+        switch (currentPassPos) {
+            case FRONT:
+                passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
+                passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
+                break;
+            case PIVOT_POS:
+                if (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
+                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
+                } else {
+                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_PIVOTING);
+                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_PIVOTING);
+                }
+                break;
+            case BACK:
+                passThruRight.turnToAngle(TeleOpConfig.PASS_1_BACK);
+                passThruLeft.turnToAngle(TeleOpConfig.PASS_2_BACK);
+                break;
+            default:
+                currentPassState = passStates.IN_FRONT;
+                break;
+        }
+    }
+
 
     public void runPassthrough () {
         if (passIsFront) {
-            switch (currentPassPos) {
-                case FRONT:
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
+            switch (currentPassState) {
+                case IN_FRONT:
+                case IN_BACK:
                     passThruTimer.reset();
+                    skip = false;
                     break;
                 case CLAW_CLOSING:
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
-                    if (passThruTimer.seconds() >= TeleOpConfig.CLAW_PASS_CLOSING_TIME) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.CLAW_PASS_CLOSING_TIME) || skip) {
                         passThruTimer.reset();
-                        currentPassPos = passPositions.MOVING_TO_PIVOT;
+                        currentPassState = passStates.MOVING_TO_PIVOT;
+                        currentPassPos = passPositions.PIVOT_POS;
+                        skip = false;
                     }
                     break;
                 case MOVING_TO_PIVOT:
-                    if (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skip) {
                         passThruTimer.reset();
-                        currentPassPos = passPositions.PIVOT;
+                        currentPassState = passStates.PIVOTING;
                         pivotIsFront = false;
-                    } else {
-                        passThruRight.turnToAngle(TeleOpConfig.PASS_1_PIVOTING);
-                        passThruLeft.turnToAngle(TeleOpConfig.PASS_2_PIVOTING);
-                    }
-
-                    if (passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) {
-                        passThruTimer.reset();
-                        currentPassPos = passPositions.PIVOT;
-                        pivotIsFront = false;
+                        skip = false;
                     }
                     break;
-                case PIVOT:
-                    if (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
-                        passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
-                        passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
-                    } else {
-                        passThruRight.turnToAngle(TeleOpConfig.PASS_1_PIVOTING);
-                        passThruLeft.turnToAngle(TeleOpConfig.PASS_2_PIVOTING);
-                    }
-
-                    if (passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_BACK_TIME) {
+                case PIVOTING:
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_BACK_TIME) || skip) {
                         passThruTimer.reset();
-                        currentPassPos = passPositions.MOVING_TO_BACK;
+                        currentPassState = passStates.MOVING_TO_BACK;
+                        currentPassPos = passPositions.BACK;
+                        skip = false;
                     }
                     break;
                 case MOVING_TO_BACK:
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_BACK);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_BACK);
-
-                    if (passThruTimer.seconds() >= (TeleOpConfig.PIVOT_TO_BACK_TIME)) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_BACK_TIME) || skip) {
                         passThruTimer.reset();
                         clawIsPass = false;
-                        currentPassPos = passPositions.BACK;
+                        currentPassState = passStates.IN_BACK;
                         passIsFront = false;
+                        skip = false;
                     }
                     break;
-                case BACK:
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_BACK);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_BACK);
-                    passThruTimer.reset();
-                    break;
                 default:
-                    currentPassPos = passPositions.FRONT;
+                    currentPassState = passStates.IN_FRONT;
                     break;
             }
         } else {
-            switch (currentPassPos) {
-                case BACK:
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_BACK);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_BACK);
+            switch (currentPassState) {
+                case IN_BACK:
+                case IN_FRONT:
                     passThruTimer.reset();
+                    skip = false;
                     break;
                 case CLAW_CLOSING:
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_BACK);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_BACK);
-                    if (passThruTimer.seconds() >= TeleOpConfig.CLAW_PASS_CLOSING_TIME) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.CLAW_PASS_CLOSING_TIME) || skip) {
                         passThruTimer.reset();
-                        currentPassPos = passPositions.MOVING_TO_PIVOT;
+                        currentPassState = passStates.MOVING_TO_PIVOT;
+                        currentPassPos = passPositions.PIVOT_POS;
+                        skip = false;
                     }
                     break;
                 case MOVING_TO_PIVOT:
-                    if (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
-                        passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
-                        passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
-                    } else {
-                        passThruRight.turnToAngle(TeleOpConfig.PASS_1_PIVOTING);
-                        passThruLeft.turnToAngle(TeleOpConfig.PASS_2_PIVOTING);
-                    }
-
-                    if (passThruTimer.seconds() >= TeleOpConfig.BACK_TO_PIVOT_TIME) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.BACK_TO_PIVOT_TIME) || skip) {
                         passThruTimer.reset();
-                        currentPassPos = passPositions.PIVOT;
+                        currentPassState = passStates.PIVOTING;
                         pivotIsFront = true;
+                        skip = false;
                     }
                     break;
-                case PIVOT:
-                    if (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
-                        passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
-                        passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
-                    } else {
-                        passThruRight.turnToAngle(TeleOpConfig.PASS_1_PIVOTING);
-                        passThruLeft.turnToAngle(TeleOpConfig.PASS_2_PIVOTING);
-                    }
-
-                    if (passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_FRONT_TIME) {
+                case PIVOTING:
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_FRONT_TIME) || skip) {
                         passThruTimer.reset();
-                        currentPassPos = passPositions.MOVING_TO_FRONT;
+                        currentPassState = passStates.MOVING_TO_FRONT;
+                        currentPassPos = passPositions.FRONT;
+                        skip = false;
                     }
                     break;
                 case MOVING_TO_FRONT:
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT)) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skip) {
                         passThruTimer.reset();
                         clawIsPass = false;
-                        currentPassPos = passPositions.FRONT;
+                        currentPassState = passStates.IN_FRONT;
                         passIsFront = true;
+                        skip = false;
                     }
                     break;
-                case FRONT:
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
-                    passThruTimer.reset();
-                    break;
                 default:
-                    currentPassPos = passPositions.FRONT;
+                    currentPassState = passStates.IN_BACK;
                     break;
             }
         }
@@ -313,12 +306,12 @@ public class PowerplayScorer {
     public boolean hasLifted = true;
 
     public void runClaw () {
-        if (clawIsPass) {
-            clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_PASS);
-        } else if (clawIsOpen){
-            clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_OPEN);
-        } else {
+        if (!clawIsOpen){
             clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_CLOSED);
+        } else if (clawIsPass) {
+            clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_PASS);
+        } else {
+            clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_OPEN);
         }
 
 
@@ -360,15 +353,18 @@ public class PowerplayScorer {
     }
 
     public void togglePassthrough () {
-        if ((currentPassPos != passPositions.FRONT) && (currentPassPos !=passPositions.BACK)) {
+        if ((currentPassState != passStates.IN_FRONT) && (currentPassState != passStates.IN_BACK)) {
             passIsFront = !passIsFront;
+            skip = true;
+
+        clawIsPass = true;
 
         } else {
             if (!clawIsOpen) {
-                currentPassPos = passPositions.MOVING_TO_PIVOT;
+                currentPassState = passStates.MOVING_TO_PIVOT;
+                currentPassPos = passPositions.PIVOT_POS;
             } else {
-                clawIsPass = true;
-                currentPassPos = passPositions.CLAW_CLOSING;
+                currentPassState = passStates.CLAW_CLOSING;
                 passThruTimer.reset();
             }
         }
