@@ -91,16 +91,13 @@ public class AutonomousTesting extends LinearOpMode {
 
         Vector2d stackPos = new Vector2d(59, -12.5);
         Vector2d turnPos = new Vector2d(47, -13);
-        Vector2d medScoringPos = new Vector2d(30.5, -18);
+        Vector2d medScoringPos = new Vector2d(31, -17.5);
 
         double centerPathX = 35;
 
-        Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
+        Vector2d parkingZone1 = new Vector2d(13, -12.5);
         Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
         Vector2d parkingZone3 = new Vector2d(57, -12.5);
-
-        // counter-clockwise = positive angle
-        HeadingHolder.setHeading(90);
 
         TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.TO_STACK_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.TO_SCORING_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
@@ -114,7 +111,9 @@ public class AutonomousTesting extends LinearOpMode {
         double mediumScoringOffset = 0.1;
         double liftTime = -(TeleOpConfig.LIFT_TO_MEDIUM_TIME);
         double stackApproachOffset = -0.2;
-        double firstScoringY = -25;
+        double firstScoringY = -24;
+        double mediumApproachWait = 0;
+        double stackWait = TeleOpConfig.STACK_WAIT_TIME;
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
@@ -155,7 +154,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
                     scorer.liftClaw();
                 })
-                .waitSeconds(TeleOpConfig.CLAW_LIFT_TIME)
+                .waitSeconds(stackWait)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
                 })
@@ -165,6 +164,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
+                .waitSeconds(mediumApproachWait)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
                     scorer.clawIsOpen = true;
@@ -184,7 +184,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
                     scorer.liftClaw();
                 })
-                .waitSeconds(TeleOpConfig.CLAW_LIFT_TIME)
+                .waitSeconds(stackWait)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
                 })
@@ -194,6 +194,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
+                .waitSeconds(mediumApproachWait)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
                     scorer.clawIsOpen = true;
@@ -213,7 +214,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
                     scorer.liftClaw();
                 })
-                .waitSeconds(TeleOpConfig.CLAW_LIFT_TIME)
+                .waitSeconds(stackWait)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
                 })
@@ -223,6 +224,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
+                .waitSeconds(mediumApproachWait)
                 .addTemporalMarker(() -> {
                     scorer.dropClaw();
                 })

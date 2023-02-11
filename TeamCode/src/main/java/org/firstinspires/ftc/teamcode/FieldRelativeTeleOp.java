@@ -32,7 +32,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 //      initializes code:
         scorer.init(hardwareMap);
         drivetrain.init(hardwareMap);
-        drivetrain.setStartDirection(HeadingHolder.getHeading());
+        drivetrain.setStartDirection(Math.toRadians(90));
 
         hubs = hardwareMap.getAll(LynxModule.class);
 
@@ -64,7 +64,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double precisionScale;
 
         boolean useFieldCentric = true;
-        boolean useStraightMode = false;
 
         waitForStart();
 
@@ -153,17 +152,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control1LeftY *= precisionScale;
             control1RightX *= precisionScale;
 
-            if (useStraightMode) {
-                if (Math.abs(control1LeftX) > Math.abs(control1LeftY)) {
-                    control1LeftY = 0;
-                } else if (Math.abs(control1LeftY) > Math.abs(control1LeftX)) {
-                    control1LeftX = 0;
-                } else {
-                    control1LeftX = 0;
-                    control1LeftY = 0;
-                }
-            }
-
             if (useFieldCentric) {
                 drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
             } else {
@@ -173,11 +161,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             // toggle field centric
             if(control1Y.wasJustPressed()){
                 useFieldCentric = !useFieldCentric;
-            }
-
-            // toggle up-down-left-right only mode
-            if(control1X.wasJustPressed()){
-                useStraightMode = !useStraightMode;
             }
 
 

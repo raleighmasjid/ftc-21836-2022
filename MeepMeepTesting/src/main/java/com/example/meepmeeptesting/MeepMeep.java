@@ -152,11 +152,10 @@ public class MeepMeep {
                                 })
                                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                                 .setReversed(true)
-                                .splineTo(turnPos, facingRight)
                                 .addTemporalMarker(() -> {
 //                                    scorer.setLiftPos(PowerplayScorer.liftHeights.ONE);
                                 })
-                                .splineTo(parkingZone3, facingRight)
+                                .splineTo(parkingZone2, facingRight)
                                 .setReversed(false)
                                 .build()
                 )

@@ -357,9 +357,9 @@ public class PowerplayScorer {
             passIsFront = !passIsFront;
             skip = true;
 
-        clawIsPass = true;
 
         } else {
+            clawIsPass = true;
             if (!clawIsOpen) {
                 currentPassState = passStates.MOVING_TO_PIVOT;
                 currentPassPos = passPositions.PIVOT_POS;

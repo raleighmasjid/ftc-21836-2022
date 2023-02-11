@@ -34,12 +34,13 @@ public class TeleOpConfig {
     public static double CLAW_RIGHT_PASS = 140;
 
     public static double CLAW_CLOSING_TIME = 0.3;
+    public static double STACK_WAIT_TIME = 0.15;
     public static double CLAW_LIFT_TIME = 0.5;
     public static double CLAW_PASS_CLOSING_TIME = 0;
     public static double CLAW_OPEN_TO_DROP_TIME = 0.1;
     public static double PASSTHROUGH_TIME = 1;
-    public static double LIFT_TO_MEDIUM_TIME = 0.6;
-    public static double LIFT_TO_TALL_TIME = 0.8;
+    public static double LIFT_TO_MEDIUM_TIME = 0.8;
+    public static double LIFT_TO_TALL_TIME = 1;
 
     public static double AUTON_START_DELAY = 0.16;
     public static double TO_STACK_VELOCITY = 17;
