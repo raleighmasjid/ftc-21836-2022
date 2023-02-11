@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * Creates a 'GreenBot' class that extends the mecanum drive class
+ * Creates a 'PowerplayScorer' class that contains lift, claw, and passthrough functions
  * @author Arshad Anas
  * @since 2022/12/24
  */
@@ -138,7 +138,7 @@ public class PowerplayScorer {
     }
 
 
-    public void runPassthrough () {
+    public void runPassStates() {
         if (passIsFront) {
             switch (currentPassState) {
                 case IN_FRONT:

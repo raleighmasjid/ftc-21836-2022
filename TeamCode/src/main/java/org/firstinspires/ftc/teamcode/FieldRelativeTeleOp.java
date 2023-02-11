@@ -94,7 +94,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassServos();
-            scorer.runPassthrough();
+            scorer.runPassStates();
             scorer.runLiftToPos();
 
             scorer.targetLiftPos = Math.min((scorer.liftController.getSetPoint() + (TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY)), TeleOpConfig.HEIGHT_TALL);
@@ -136,7 +136,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
 
             //field-centric reset
-            if (Gamepad1.isDown(GamepadKeys.Button.A)) {
+            if (Gamepad1.isDown(GamepadKeys.Button.A) && useFieldCentric) {
                 drivetrain.resetRotation();
             }
 
@@ -167,18 +167,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 myTelemetry.addData("Limit switch", "is triggered");
             }
 
-            if (scorer.clawIsPass) {
-                myTelemetry.addData("Claw is", "passing through");
-            } else if (scorer.clawIsOpen){
-                myTelemetry.addData("Claw is", "open");
-            } else {
+            if (!scorer.clawIsOpen){
                 myTelemetry.addData("Claw is", "closed");
-            }
-
-            if (scorer.passIsFront) {
-                myTelemetry.addData("Passthrough is in the", "front");
+            } else if (scorer.clawIsPass) {
+                myTelemetry.addData("Claw is", "half-closed");
             } else {
-                myTelemetry.addData("Passthrough is in the", "back");
+                myTelemetry.addData("Claw is", "open");
             }
 
             myTelemetry.addData("Lift position:", scorer.targetLiftPosName);

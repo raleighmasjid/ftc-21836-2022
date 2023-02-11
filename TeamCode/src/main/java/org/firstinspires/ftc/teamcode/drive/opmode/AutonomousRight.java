@@ -332,7 +332,8 @@ public class AutonomousRight extends LinearOpMode {
 
             scorer.runClaw();
             scorer.runPivot();
-            scorer.runPassthrough();
+            scorer.runPassServos();
+            scorer.runPassStates();
             scorer.runLiftToPos();
 
 

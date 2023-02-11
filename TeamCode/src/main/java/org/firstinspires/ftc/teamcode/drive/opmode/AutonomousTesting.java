@@ -342,7 +342,8 @@ public class AutonomousTesting extends LinearOpMode {
 
             scorer.runClaw();
             scorer.runPivot();
-            scorer.runPassthrough();
+            scorer.runPassServos();
+            scorer.runPassStates();
             scorer.runLiftToPos();
 
 
@@ -372,18 +373,12 @@ public class AutonomousTesting extends LinearOpMode {
                 myTelemetry.addData("Limit switch", "is triggered");
             }
 
-            if (scorer.clawIsPass) {
-                myTelemetry.addData("Claw is", "passing through");
-            } else if (scorer.clawIsOpen){
-                myTelemetry.addData("Claw is", "open");
-            } else {
+            if (!scorer.clawIsOpen){
                 myTelemetry.addData("Claw is", "closed");
-            }
-
-            if (scorer.passIsFront) {
-                myTelemetry.addData("Passthrough is in the", "front");
+            } else if (scorer.clawIsPass) {
+                myTelemetry.addData("Claw is", "half-closed");
             } else {
-                myTelemetry.addData("Passthrough is in the", "back");
+                myTelemetry.addData("Claw is", "open");
             }
 
             myTelemetry.addData("Lift position:", scorer.targetLiftPosName);
