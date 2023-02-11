@@ -40,7 +40,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         GamepadEx Gamepad1 = new GamepadEx(gamepad1);
         GamepadEx Gamepad2 = new GamepadEx(gamepad2);
 
-        ButtonReader control1Y = new ButtonReader(Gamepad1, GamepadKeys.Button.Y);
+        ButtonReader control1Y = new ButtonReader(Gamepad1, GamepadKeys.Button.Y); //field centric to robot centric toggle
+        ButtonReader control1X = new ButtonReader(Gamepad1, GamepadKeys.Button.Y); //straight mode toggle
 
         ButtonReader control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A); //drop + open claw
         ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); //close claw + lift
@@ -63,6 +64,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double precisionScale;
 
         boolean useFieldCentric = true;
+        boolean useStraightMode = false;
 
         waitForStart();
 
@@ -70,10 +72,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             // get button inputs
 
+            control1X.readValue();
             control1Y.readValue();
 
-            control2B.readValue();
             control2A.readValue();
+            control2B.readValue();
             control2X.readValue();
             control2Y.readValue();
 
@@ -97,7 +100,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runPassStates();
             scorer.runLiftToPos();
 
-            scorer.targetLiftPos = Math.min((scorer.liftController.getSetPoint() + (TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY)), TeleOpConfig.HEIGHT_TALL);
+            scorer.targetLiftPos = Math.min(
+                    TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY + scorer.liftController.getSetPoint(),
+                    TeleOpConfig.HEIGHT_TALL
+            );
 
             //claw and passthrough buttons
             if (control2X.wasJustPressed()) {
@@ -147,14 +153,31 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control1LeftY *= precisionScale;
             control1RightX *= precisionScale;
 
+            if (useStraightMode) {
+                if (Math.abs(control1LeftX) > Math.abs(control1LeftY)) {
+                    control1LeftY = 0;
+                } else if (Math.abs(control1LeftY) > Math.abs(control1LeftX)) {
+                    control1LeftX = 0;
+                } else {
+                    control1LeftX = 0;
+                    control1LeftY = 0;
+                }
+            }
+
             if (useFieldCentric) {
                 drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
             } else {
                 drivetrain.driveRobotCentric(control1LeftX, control1LeftY, control1RightX);
             }
 
+            // toggle field centric
             if(control1Y.wasJustPressed()){
                 useFieldCentric = !useFieldCentric;
+            }
+
+            // toggle up-down-left-right only mode
+            if(control1X.wasJustPressed()){
+                useStraightMode = !useStraightMode;
             }
 
 

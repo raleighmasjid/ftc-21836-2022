@@ -99,6 +99,9 @@ public class AutonomousTesting extends LinearOpMode {
         Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
         Vector2d parkingZone3 = new Vector2d(57, -12.5);
 
+        // counter-clockwise = positive angle
+        HeadingHolder.setHeading(90);
+
         TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.TO_STACK_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.TO_SCORING_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryAccelerationConstraint accelerationCap = AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
@@ -112,9 +115,6 @@ public class AutonomousTesting extends LinearOpMode {
         double liftTime = -(TeleOpConfig.LIFT_TO_MEDIUM_TIME);
         double stackApproachOffset = -0.2;
         double firstScoringY = -25;
-
-        // counter-clockwise = positive angle
-        HeadingHolder.setHeading(90);
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
@@ -155,7 +155,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
                     scorer.liftClaw();
                 })
-                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
+                .waitSeconds(TeleOpConfig.CLAW_LIFT_TIME)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
                 })
@@ -184,7 +184,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
                     scorer.liftClaw();
                 })
-                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
+                .waitSeconds(TeleOpConfig.CLAW_LIFT_TIME)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
                 })
@@ -213,7 +213,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
                     scorer.liftClaw();
                 })
-                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
+                .waitSeconds(TeleOpConfig.CLAW_LIFT_TIME)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
                 })
@@ -224,15 +224,11 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
                 .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
-                    scorer.clawIsOpen = true;
+                    scorer.dropClaw();
                 })
                 .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
                 .splineTo(turnPos, facingRight)
-                .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.ONE);
-                })
                 .splineTo(parkingZone3, facingRight)
                 .setReversed(false)
                 .build()
