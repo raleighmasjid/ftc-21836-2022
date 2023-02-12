@@ -26,8 +26,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 
-@Autonomous(name= "Right - 1+3 medium", group = "21836 Autonomous")
-public class AutonomousRight extends LinearOpMode {
+@Autonomous(name= "Right - 1+4 medium", group = "21836 Autonomous")
+public class AutonomousRight5Med extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline signalSleeveDetectionPipeline;
@@ -86,13 +86,16 @@ public class AutonomousRight extends LinearOpMode {
         //  Initialize telemetry and dashboard
         MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
+        dashboard.startCameraStream(camera,0);
 
         Vector2d stackPos = new Vector2d(59, -12.5);
         Vector2d turnPos = new Vector2d(47, -13);
-        Vector2d medScoringPos = new Vector2d(30.5, -18);
+        Vector2d medScoringPos = new Vector2d(31, -17.5);
 
-        Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
-        Vector2d parkingZone2 = new Vector2d(35, -12.5);
+        double centerPathX = 35;
+
+        Vector2d parkingZone1 = new Vector2d(13, -12.5);
+        Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
         Vector2d parkingZone3 = new Vector2d(57, -12.5);
 
         TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.TO_STACK_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
@@ -105,9 +108,13 @@ public class AutonomousRight extends LinearOpMode {
         double scoringAngleRight = Math.toRadians(215);
 
         double mediumScoringOffset = 0.1;
-        double stackOffset = 0.5;
+        double liftTime = -0.8;
+        double stackApproachOffset = -0.2;
+        double firstScoringY = -24;
+        double mediumApproachOffset = -0.005;
+        double stackWait = 0.1;
 
-        Pose2d startPose = new Pose2d(35, -62.5, facingForward);
+        Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
@@ -116,51 +123,51 @@ public class AutonomousRight extends LinearOpMode {
                 })
                 .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME + TeleOpConfig.AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
+                    scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
+                })
+                .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
+                .splineToSplineHeading(new Pose2d(centerPathX, firstScoringY, facingLeft), facingForward, scoringVeloCap, accelerationCap)
+                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .splineToSplineHeading(new Pose2d(35, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
-                .splineToSplineHeading(new Pose2d(35, -25, facingLeft), facingForward, scoringVeloCap, accelerationCap)
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .lineTo(new Vector2d(31.5, -25))
+                .lineTo(new Vector2d(31.5, firstScoringY))
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
-                })
-                .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
-                .lineTo(new Vector2d(35, -25))
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .lineTo(new Vector2d(centerPathX, firstScoringY))
                 .addTemporalMarker(() -> {
                     scorer.togglePassthrough();
                 })
                 .setReversed(true)
-                .lineTo(new Vector2d(35, -9))
-                .lineTo(new Vector2d(35, -12.5))
-                .lineTo(turnPos)
+                .lineTo(parkingZone2)
+                .setTangent(facingRight)
+                .splineTo(turnPos, facingRight)
                 .splineTo(
                         stackPos,
                         facingRight,
                         stackVeloCap,
                         accelerationCap
                 )
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = false;
+                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
+                    scorer.liftClaw();
                 })
-                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
+                .waitSeconds(stackWait)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .waitSeconds(stackOffset)
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
+                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                })
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
-                })
-                .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
                     scorer.togglePassthrough();
@@ -172,25 +179,24 @@ public class AutonomousRight extends LinearOpMode {
                         stackVeloCap,
                         accelerationCap
                 )
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = false;
+                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
+                    scorer.liftClaw();
                 })
-                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
+                .waitSeconds(stackWait)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .waitSeconds(stackOffset)
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
-                })
-                .addTemporalMarker(() -> {
                     scorer.clawIsOpen = true;
                 })
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
                     scorer.togglePassthrough();
@@ -202,42 +208,67 @@ public class AutonomousRight extends LinearOpMode {
                         stackVeloCap,
                         accelerationCap
                 )
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = false;
+                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
+                    scorer.liftClaw();
                 })
-                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME)
+                .waitSeconds(stackWait)
                 .addTemporalMarker(() ->{
                     scorer.togglePassthrough();
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .waitSeconds(stackOffset)
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
-                .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
+                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
                     scorer.clawIsOpen = true;
                 })
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
+                    scorer.togglePassthrough();
+                })
                 .splineTo(turnPos, facingRight)
-                .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.ONE);
+                .splineTo(
+                        stackPos,
+                        facingRight,
+                        stackVeloCap,
+                        accelerationCap
+                )
+                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
+                    scorer.liftClaw();
+                })
+                .waitSeconds(stackWait)
+                .addTemporalMarker(() ->{
+                    scorer.togglePassthrough();
                 })
                 .setReversed(false)
-                .splineTo(parkingZone2, facingForward)
+                .splineTo(turnPos, facingLeft)
+                .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
+                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
+                    scorer.dropClaw();
+                })
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .setReversed(true)
+                .splineTo(turnPos, facingRight)
+                .splineTo(parkingZone3, facingRight)
+                .setReversed(false)
                 .build()
                 ;
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
-                .lineTo(parkingZone1)
+                .splineTo(parkingZone1, facingLeft)
                 .build()
                 ;
 
-        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(trajectory1.end())
-                .lineTo(parkingZone3)
+        TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(trajectory1.end())
+                .splineTo(turnPos, facingLeft)
+                .splineTo(parkingZone2, facingLeft)
                 .build()
                 ;
 
@@ -308,6 +339,8 @@ public class AutonomousRight extends LinearOpMode {
 
         //START IS HERE//
         autonomousTimer.reset();
+
+        dashboard.stopCameraStream();
         camera.stopStreaming();
         camera.closeCameraDevice();
 
@@ -340,15 +373,15 @@ public class AutonomousRight extends LinearOpMode {
             // parking statement
             if(
                     (autonomousTimer.seconds() >= 3) && //at least 3 seconds into autonomous
-                    !drive.isBusy() &&                  //bot is not driving
-                    (tagOfInterest != null) &&          //camera HAS detected any tag
-                    !hasParked                          //bot has not yet parked in zone
+                            !drive.isBusy() &&                  //bot is not driving
+                            (tagOfInterest != null) &&          //camera has detected any tag
+                            !hasParked                          //bot has not yet parked in zone
             ) {
 
                 if (tagOfInterest.id == LEFT) {
                     drive.followTrajectorySequenceAsync(parkLeft);
-                } else if (tagOfInterest.id == RIGHT) {
-                    drive.followTrajectorySequenceAsync(parkRight);
+                } else if (tagOfInterest.id == MIDDLE) {
+                    drive.followTrajectorySequenceAsync(parkMiddle);
                 }
 
                 hasParked = true;
@@ -356,19 +389,28 @@ public class AutonomousRight extends LinearOpMode {
 
 
 
+            //everything below is telemetry
             if (scorer.limitSwitch.getState()) {
                 myTelemetry.addData("Limit switch", "is not triggered");
             } else {
                 myTelemetry.addData("Limit switch", "is triggered");
             }
-            myTelemetry.addData("Claw is open:", scorer.clawIsOpen);
+
+            if (!scorer.clawIsOpen){
+                myTelemetry.addData("Claw is", "closed");
+            } else if (scorer.clawIsPass) {
+                myTelemetry.addData("Claw is", "half-closed");
+            } else {
+                myTelemetry.addData("Claw is", "open");
+            }
+
             myTelemetry.addData("Lift position:", scorer.targetLiftPosName);
             myTelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
-            myTelemetry.addData("Lift target pos:", scorer.liftController.getSetPoint());
+            myTelemetry.addData("Lift target pos:", scorer.targetLiftPos);
+            myTelemetry.addData("Lift motors output", scorer.liftVelocity);
 
-            myTelemetry.addData("Lift motors output", scorer.lift_motor1.get());
+            myTelemetry.addData("Passthrough status", scorer.currentPassState);
 
-            myTelemetry.addData("Passthrough is in the front", scorer.passIsFront);
             myTelemetry.update();
 
         }
