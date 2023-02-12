@@ -180,9 +180,9 @@ public class MeepMeep {
 //                                    scorer.dropClaw();
                                 })
                                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
-                                .setReversed(true)
-                                .splineTo(parkingZone2, facingRight)
-                                .setReversed(false)
+                                .setTangent(scoringAngleRight - facingLeft)
+                                .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
+                                .setTangent(facingLeft)
                                 .splineTo(new Vector2d(23.5, -12), facingLeft)
                                 .splineTo(parkingZone1, facingLeft)
                                 .build()

@@ -255,22 +255,21 @@ public class AutonomousRight5Med extends LinearOpMode {
                     scorer.dropClaw();
                 })
                 .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .setReversed(true)
                 .build()
                 ;
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
-                .setReversed(true)
-                .splineTo(parkingZone2, facingRight)
-                .setReversed(false)
+                .setTangent(scoringAngleRight - facingLeft)
+                .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
+                .setTangent(facingLeft)
                 .splineTo(new Vector2d(23.5, -12), facingLeft)
                 .splineTo(parkingZone1, facingLeft)
                 .build()
                 ;
 
         TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(trajectory1.end())
-                .setReversed(true)
-                .splineTo(parkingZone2, facingRight)
+                .setTangent(scoringAngleRight - facingLeft)
+                .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
                 .build()
                 ;
 

@@ -283,22 +283,21 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.dropClaw();
                 })
                 .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
-                .setReversed(true)
                 .build()
                 ;
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
-                .setReversed(true)
-                .splineTo(parkingZone2, facingRight)
-                .setReversed(false)
+                .setTangent(scoringAngleRight - facingLeft)
+                .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
+                .setTangent(facingLeft)
                 .splineTo(new Vector2d(23.5, -12), facingLeft)
                 .splineTo(parkingZone1, facingLeft)
                 .build()
                 ;
 
         TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(trajectory1.end())
-                .setReversed(true)
-                .splineTo(parkingZone2, facingRight)
+                .setTangent(scoringAngleRight - facingLeft)
+                .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
                 .build()
                 ;
 
@@ -410,9 +409,9 @@ public class AutonomousTesting extends LinearOpMode {
             // parking statement
             if(
                     !hasParked &&                       // bot has not yet parked in zone
-                    !drive.isBusy() &&                  // bot is not driving
-                    (autonomousTimer.seconds() >= 3) && // at least 3 seconds into autonomous
-                    (tagOfInterest != null)             // camera has detected any tag
+                            !drive.isBusy() &&                  // bot is not driving
+                            (autonomousTimer.seconds() >= 3) && // at least 3 seconds into autonomous
+                            (tagOfInterest != null)             // camera has detected any tag
             ) {
 
                 if (tagOfInterest.id == LEFT) {
@@ -462,6 +461,7 @@ public class AutonomousTesting extends LinearOpMode {
             myTelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
 
             myTelemetry.update();
+
         }
     }
 
