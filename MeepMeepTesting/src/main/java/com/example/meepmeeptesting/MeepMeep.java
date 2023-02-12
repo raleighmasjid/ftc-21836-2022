@@ -48,7 +48,7 @@ public class MeepMeep {
                 .setDimensions(17, 16)
                 .setStartPose(startPose)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(140), Math.toRadians(190), 14.25)
+                .setConstraints(58, 55, Math.toRadians(140), Math.toRadians(190), 14.25)
                 .followTrajectorySequence(drive->
                         drive.trajectorySequenceBuilder(startPose)
                                 .addTemporalMarker(() -> {

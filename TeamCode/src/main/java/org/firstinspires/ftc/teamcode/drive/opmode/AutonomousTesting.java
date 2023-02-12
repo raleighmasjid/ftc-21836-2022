@@ -98,8 +98,8 @@ public class AutonomousTesting extends LinearOpMode {
         Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
         Vector2d parkingZone3 = new Vector2d(57, -12.5);
 
-        TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.TO_STACK_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
-        TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(TeleOpConfig.TO_SCORING_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(17, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryAccelerationConstraint accelerationCap = AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
 
         double facingRight = Math.toRadians(0);
@@ -259,7 +259,8 @@ public class AutonomousTesting extends LinearOpMode {
                 ;
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
-                .splineTo(turnPos, facingRight)
+                .setReversed(true)
+                .splineTo(parkingZone2, facingRight)
                 .setReversed(false)
                 .splineTo(new Vector2d(23.5, -12), facingLeft)
                 .splineTo(parkingZone1, facingLeft)
@@ -267,11 +268,13 @@ public class AutonomousTesting extends LinearOpMode {
                 ;
 
         TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(trajectory1.end())
+                .setReversed(true)
                 .splineTo(parkingZone2, facingRight)
                 .build()
                 ;
 
         TrajectorySequence parkRight = drive.trajectorySequenceBuilder(trajectory1.end())
+                .setReversed(true)
                 .splineTo(turnPos, facingRight)
                 .splineTo(parkingZone3, facingRight)
                 .build()
