@@ -180,24 +180,32 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 myTelemetry.addData("Claw is", "open");
             }
 
-            myTelemetry.addData("Lift position:", scorer.targetLiftPosName);
-            myTelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
-            myTelemetry.addData("Lift target pos:", scorer.targetLiftPos);
-            myTelemetry.addData("Lift motors output", scorer.liftVelocity);
+            myTelemetry.addData("Lift target encoder value", scorer.targetLiftPosName);
+            myTelemetry.addData("Lift encoder", scorer.lift_motor2.encoder.getPosition());
+            myTelemetry.addData("Lift target height", scorer.targetLiftPos);
+            myTelemetry.addData("Lift motor power output", scorer.liftVelocity);
 
             myTelemetry.addData("Passthrough status", scorer.currentPassState);
+            myTelemetry.addData("Passthrough position", scorer.currentPassPos);
+
             myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
-
             myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
-
             myTelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
-            myTelemetry.addData("Hub 0 draw", hubs.get(0).getCurrent(CurrentUnit.AMPS));
-            myTelemetry.addData("Hub 0 name", hubs.get(0).getDeviceName());
-            myTelemetry.addData("Hub 1 draw", hubs.get(1).getCurrent(CurrentUnit.AMPS));
-            myTelemetry.addData("Hub 1 name", hubs.get(1).getDeviceName());
+//            myTelemetry.addData("Hub 0 draw", hubs.get(0).getCurrent(CurrentUnit.AMPS));
+//            myTelemetry.addData("Hub 0 name", hubs.get(0).getDeviceName());
+//            myTelemetry.addData("Hub 1 draw", hubs.get(1).getCurrent(CurrentUnit.AMPS));
+//            myTelemetry.addData("Hub 1 name", hubs.get(1).getDeviceName());
 
             myTelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
             myTelemetry.addData("Field-relative heading", drivetrain.rotYaw);
+            myTelemetry.addData("Drive speed scale", precisionScale);
+
+            if (useFieldCentric) {
+                myTelemetry.addData("Driver is using", "field-centric driving");
+            } else {
+                myTelemetry.addData("Driver is using", "robot-centric driving");
+            }
+
             myTelemetry.update();
         }
     }

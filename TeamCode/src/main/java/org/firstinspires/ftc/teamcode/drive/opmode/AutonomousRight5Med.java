@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.TeleOpConfig;
 import org.firstinspires.ftc.teamcode.auton.AprilTagDetectionPipeline;
@@ -406,6 +407,12 @@ public class AutonomousRight5Med extends LinearOpMode {
                 myTelemetry.addData("Limit switch", "is triggered");
             }
 
+            if (scorer.limitSwitch.getState()) {
+                myTelemetry.addData("Limit switch", "is not triggered");
+            } else {
+                myTelemetry.addData("Limit switch", "is triggered");
+            }
+
             if (!scorer.clawIsOpen){
                 myTelemetry.addData("Claw is", "closed");
             } else if (scorer.clawIsPass) {
@@ -414,12 +421,17 @@ public class AutonomousRight5Med extends LinearOpMode {
                 myTelemetry.addData("Claw is", "open");
             }
 
-            myTelemetry.addData("Lift position:", scorer.targetLiftPosName);
-            myTelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
-            myTelemetry.addData("Lift target pos:", scorer.targetLiftPos);
-            myTelemetry.addData("Lift motors output", scorer.liftVelocity);
+            myTelemetry.addData("Lift target encoder value", scorer.targetLiftPosName);
+            myTelemetry.addData("Lift encoder", scorer.lift_motor2.encoder.getPosition());
+            myTelemetry.addData("Lift target height", scorer.targetLiftPos);
+            myTelemetry.addData("Lift motor power output", scorer.liftVelocity);
 
             myTelemetry.addData("Passthrough status", scorer.currentPassState);
+            myTelemetry.addData("Passthrough position", scorer.currentPassPos);
+
+            myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
+            myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
+            myTelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
 
             myTelemetry.update();
 
