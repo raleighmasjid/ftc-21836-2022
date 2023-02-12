@@ -55,8 +55,8 @@ public class TeleOpConfig {
     public static double PASS_2_FRONT = 200;
     public static double PASS_2_BACK = 0;
 
-    public static double PASS_1_PIVOTING = 25;
-    public static double PASS_2_PIVOTING = 170;
+    public static double PASS_1_PIVOTING = 27.5;
+    public static double PASS_2_PIVOTING = 167.5;
 
     public static double FRONT_TO_PIVOT_TIME = 0;
     public static double PIVOTING_TO_BACK_TIME = 0.6;
