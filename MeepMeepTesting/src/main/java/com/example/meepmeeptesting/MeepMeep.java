@@ -22,11 +22,11 @@ public class MeepMeep {
 
         Vector2d stackPos = new Vector2d(59, -12.5);
         Vector2d turnPos = new Vector2d(47, -13);
-        Vector2d medScoringPos = new Vector2d(30.5, -18);
+        Vector2d medScoringPos = new Vector2d(31, -17.5);
 
         double centerPathX = 35;
 
-        Vector2d parkingZone1 = new Vector2d(12.5, -12.5);
+        Vector2d parkingZone1 = new Vector2d(13, -12.5);
         Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
         Vector2d parkingZone3 = new Vector2d(57, -12.5);
 
@@ -36,9 +36,11 @@ public class MeepMeep {
         double scoringAngleRight = Math.toRadians(215);
 
         double mediumScoringOffset = 0.1;
-        double liftTime = -(LIFT_TO_MEDIUM_TIME);
+        double liftTime = -0.8;
         double stackApproachOffset = -0.2;
-        double firstScoringY = -25;
+        double firstScoringY = -24;
+        double mediumApproachOffset = -0.005;
+        double stackWait = 0.1;
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
 
@@ -54,7 +56,7 @@ public class MeepMeep {
                                 })
                                 .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                                 .addTemporalMarker(() -> {
-//                                    targetLiftPos = scorer.liftController.getSetPoint() + 150;
+//                                    scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
                                 })
                                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward)
                                 .splineToSplineHeading(new Pose2d(centerPathX, firstScoringY, facingLeft), facingForward)
@@ -72,8 +74,9 @@ public class MeepMeep {
 //                                    scorer.togglePassthrough();
                                 })
                                 .setReversed(true)
-                                .lineTo(parkingZone2)
-                                .setTangent(facingRight)
+                                .setTangent(facingForward)
+                                .lineTo(new Vector2d(centerPathX, -18))
+                                .splineToConstantHeading(new Vector2d(39, turnPos.getY()), facingRight)
                                 .splineTo(turnPos, facingRight)
                                 .splineTo(
                                         stackPos,
@@ -82,7 +85,7 @@ public class MeepMeep {
                                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
 //                                    scorer.liftClaw();
                                 })
-                                .waitSeconds(CLAW_CLOSING_TIME)
+                                .waitSeconds(stackWait)
                                 .addTemporalMarker(() ->{
 //                                    scorer.togglePassthrough();
                                 })
@@ -109,7 +112,7 @@ public class MeepMeep {
                                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
 //                                    scorer.liftClaw();
                                 })
-                                .waitSeconds(CLAW_CLOSING_TIME)
+                                .waitSeconds(stackWait)
                                 .addTemporalMarker(() ->{
 //                                    scorer.togglePassthrough();
                                 })
@@ -119,7 +122,7 @@ public class MeepMeep {
                                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
 //                                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                                 })
-                                .addTemporalMarker(() -> {
+                                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
 //                                    scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
 //                                    scorer.clawIsOpen = true;
                                 })
@@ -136,7 +139,7 @@ public class MeepMeep {
                                 .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
 //                                    scorer.liftClaw();
                                 })
-                                .waitSeconds(CLAW_CLOSING_TIME)
+                                .waitSeconds(stackWait)
                                 .addTemporalMarker(() ->{
 //                                    scorer.togglePassthrough();
                                 })
@@ -146,17 +149,42 @@ public class MeepMeep {
                                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
 //                                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                                 })
-                                .addTemporalMarker(() -> {
+                                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
 //                                    scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
 //                                    scorer.clawIsOpen = true;
                                 })
                                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                                 .setReversed(true)
-                                .addTemporalMarker(() -> {
-//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.ONE);
+                                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
+//                                    scorer.togglePassthrough();
                                 })
+                                .splineTo(turnPos, facingRight)
+                                .splineTo(
+                                        stackPos,
+                                        facingRight
+                                )
+                                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
+//                                    scorer.liftClaw();
+                                })
+                                .waitSeconds(stackWait)
+                                .addTemporalMarker(() ->{
+//                                    scorer.togglePassthrough();
+                                })
+                                .setReversed(false)
+                                .splineTo(turnPos, facingLeft)
+                                .splineTo(medScoringPos, scoringAngleRight)
+                                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
+//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                                })
+                                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
+//                                    scorer.dropClaw();
+                                })
+                                .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
+                                .setReversed(true)
                                 .splineTo(parkingZone2, facingRight)
                                 .setReversed(false)
+                                .splineTo(new Vector2d(23.5, -12), facingLeft)
+                                .splineTo(parkingZone1, facingLeft)
                                 .build()
                 )
         ;

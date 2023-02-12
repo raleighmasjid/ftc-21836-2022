@@ -255,20 +255,25 @@ public class AutonomousTesting extends LinearOpMode {
                 })
                 .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
-                .splineTo(turnPos, facingRight)
-                .splineTo(parkingZone3, facingRight)
-                .setReversed(false)
                 .build()
                 ;
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
+                .splineTo(turnPos, facingRight)
+                .setReversed(false)
+                .splineTo(new Vector2d(23.5, -12), facingLeft)
                 .splineTo(parkingZone1, facingLeft)
                 .build()
                 ;
 
         TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(trajectory1.end())
-                .splineTo(turnPos, facingLeft)
-                .splineTo(parkingZone2, facingLeft)
+                .splineTo(parkingZone2, facingRight)
+                .build()
+                ;
+
+        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(trajectory1.end())
+                .splineTo(turnPos, facingRight)
+                .splineTo(parkingZone3, facingRight)
                 .build()
                 ;
 
@@ -372,15 +377,17 @@ public class AutonomousTesting extends LinearOpMode {
 
             // parking statement
             if(
-                    (autonomousTimer.seconds() >= 3) && //at least 3 seconds into autonomous
-                            !drive.isBusy() &&                  //bot is not driving
-                            (tagOfInterest != null) &&          //camera has detected any tag
-                            !hasParked                          //bot has not yet parked in zone
+                    !hasParked &&                       // bot has not yet parked in zone
+                    !drive.isBusy() &&                  // bot is not driving
+                    (autonomousTimer.seconds() >= 3) && // at least 3 seconds into autonomous
+                    (tagOfInterest != null)             // camera has detected any tag
             ) {
 
                 if (tagOfInterest.id == LEFT) {
                     drive.followTrajectorySequenceAsync(parkLeft);
-                } else if (tagOfInterest.id == MIDDLE) {
+                } else if (tagOfInterest.id == RIGHT) {
+                    drive.followTrajectorySequenceAsync(parkRight);
+                } else {
                     drive.followTrajectorySequenceAsync(parkMiddle);
                 }
 
