@@ -32,7 +32,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 //      initializes code:
         scorer.init(hardwareMap);
         drivetrain.init(hardwareMap);
-        drivetrain.setStartDirection(Math.toRadians(90));
 
         hubs = hardwareMap.getAll(LynxModule.class);
 

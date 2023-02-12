@@ -132,7 +132,7 @@ public class PowerplayScorer {
                 passThruLeft.turnToAngle(TeleOpConfig.PASS_2_BACK);
                 break;
             default:
-                currentPassState = passStates.IN_FRONT;
+                currentPassPos = passPositions.FRONT;
                 break;
         }
     }

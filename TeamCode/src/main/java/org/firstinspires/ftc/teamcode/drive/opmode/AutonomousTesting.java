@@ -109,11 +109,11 @@ public class AutonomousTesting extends LinearOpMode {
         double scoringAngleRight = Math.toRadians(215);
 
         double mediumScoringOffset = 0.1;
-        double liftTime = -(TeleOpConfig.LIFT_TO_MEDIUM_TIME);
+        double liftTime = -0.8;
         double stackApproachOffset = -0.2;
         double firstScoringY = -24;
-        double mediumApproachWait = 0;
-        double stackWait = TeleOpConfig.STACK_WAIT_TIME;
+        double mediumApproachOffset = -0.005;
+        double stackWait = 0.1;
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
@@ -164,7 +164,6 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .waitSeconds(mediumApproachWait)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
                     scorer.clawIsOpen = true;
@@ -194,8 +193,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .waitSeconds(mediumApproachWait)
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
                     scorer.clawIsOpen = true;
                 })
@@ -224,8 +222,36 @@ public class AutonomousTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .waitSeconds(mediumApproachWait)
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
+                    scorer.clawIsOpen = true;
+                })
+                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
+                    scorer.togglePassthrough();
+                })
+                .splineTo(turnPos, facingRight)
+                .splineTo(
+                        stackPos,
+                        facingRight,
+                        stackVeloCap,
+                        accelerationCap
+                )
+                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
+                    scorer.liftClaw();
+                })
+                .waitSeconds(stackWait)
+                .addTemporalMarker(() ->{
+                    scorer.togglePassthrough();
+                })
+                .setReversed(false)
+                .splineTo(turnPos, facingLeft)
+                .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
+                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
                     scorer.dropClaw();
                 })
                 .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)

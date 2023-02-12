@@ -49,11 +49,11 @@ public class TeleOpConfig {
     public static double PIVOT_FRONT = 200;
     public static double PIVOT_BACK = 0;
 
-    public static double PASS_1_FRONT = 5;
-    public static double PASS_1_BACK = 195;
+    public static double PASS_1_FRONT = 12.5;
+    public static double PASS_1_BACK = 187.5;
 
-    public static double PASS_2_FRONT = 195;
-    public static double PASS_2_BACK = 5;
+    public static double PASS_2_FRONT = 200;
+    public static double PASS_2_BACK = 0;
 
     public static double PASS_1_PIVOTING = 25;
     public static double PASS_2_PIVOTING = 170;
