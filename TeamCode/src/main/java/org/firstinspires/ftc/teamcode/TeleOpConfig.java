@@ -38,23 +38,23 @@ public class TeleOpConfig {
 
     public static double AUTON_START_DELAY = 0.16;
 
-    public static double PIVOT_FRONT = 200;
-    public static double PIVOT_BACK = 0;
+    public static double PIVOT_FRONT = 198;
+    public static double PIVOT_BACK = 2;
 
-    public static double PASS_1_FRONT = 12.5;
-    public static double PASS_1_BACK = 187.5;
+    public static double PASS_1_FRONT = 5;
+    public static double PASS_1_BACK = 197;
 
     public static double PASS_2_FRONT = 200;
-    public static double PASS_2_BACK = 0;
+    public static double PASS_2_BACK = 5;
 
-    public static double PASS_1_PIVOTING = 27.5;
-    public static double PASS_2_PIVOTING = 167.5;
+    public static double PASS_1_PIVOTING = 45;
+    public static double PASS_2_PIVOTING = 157;
 
     public static double FRONT_TO_PIVOT_TIME = 0;
     public static double PIVOTING_TO_BACK_TIME = 0.6;
-    public static double PIVOT_TO_BACK_TIME = 0.4;
+    public static double PIVOT_TO_BACK_TIME = 0.1;
 
-    public static double BACK_TO_PIVOT_TIME = 0.8;
+    public static double BACK_TO_PIVOT_TIME = 0.55;
     public static double PIVOTING_TO_FRONT_TIME = 0.4;
     public static double PIVOT_TO_FRONT_TIME = 0;
 

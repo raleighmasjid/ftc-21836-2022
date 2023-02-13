@@ -112,8 +112,8 @@ public class AutonomousTesting extends LinearOpMode {
         double liftTime = -0.8;
         double stackApproachOffset = -0.2;
         double firstScoringY = -24;
-        double mediumApproachOffset = -0.005;
-        double stackWait = 0.1;
+        double mediumApproachOffset = -0.01;
+        double stackWait = 0;
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
@@ -142,8 +142,9 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.togglePassthrough();
                 })
                 .setReversed(true)
-                .lineTo(parkingZone2)
-                .setTangent(facingRight)
+                .setTangent(facingForward)
+                .lineTo(new Vector2d(centerPathX, -18))
+                .splineToConstantHeading(new Vector2d(39, -13), facingRight)
                 .splineTo(turnPos, facingRight)
                 .splineTo(
                         stackPos,
