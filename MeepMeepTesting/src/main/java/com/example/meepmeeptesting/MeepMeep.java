@@ -15,7 +15,7 @@ public class MeepMeep {
         Vector2d medScoringPos = new Vector2d(31, -17.5);
 
         double centerPathX = 35;
-        double firstScoringY = -24;
+        double firstScoringTurnY = -24;
 
         Vector2d parkingZone1 = new Vector2d(13, -12.5);
         Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
@@ -55,7 +55,7 @@ public class MeepMeep {
 //                                    scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
                                 })
                                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward)
-                                .splineToSplineHeading(new Pose2d(centerPathX, firstScoringY, facingLeft), facingForward)
+                                .splineToSplineHeading(new Pose2d(centerPathX, firstScoringTurnY, facingLeft), facingForward)
                                 .splineToSplineHeading(new Pose2d(centerPathX, -15, scoringAngleRight), facingForward)
                                 .setTangent(Math.toRadians(210))
                                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {

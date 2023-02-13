@@ -113,7 +113,7 @@ public class AutonomousRight5Med extends LinearOpMode {
         double mediumScoringOffset = 0.1;
 
         double CLAW_CLOSING_TIME = 0.3;
-        double AUTON_START_DELAY = 0; //0.16
+        double AUTON_START_DELAY = 0.16;
 
         TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(17, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
