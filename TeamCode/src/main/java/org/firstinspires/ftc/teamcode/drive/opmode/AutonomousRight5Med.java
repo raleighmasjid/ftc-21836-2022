@@ -94,26 +94,30 @@ public class AutonomousRight5Med extends LinearOpMode {
         Vector2d medScoringPos = new Vector2d(31, -17.5);
 
         double centerPathX = 35;
+        double firstScoringY = -24;
 
         Vector2d parkingZone1 = new Vector2d(13, -12.5);
         Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
         Vector2d parkingZone3 = new Vector2d(57, -12.5);
-
-        TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(17, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
-        TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
-        TrajectoryAccelerationConstraint accelerationCap = AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
         double scoringAngleRight = Math.toRadians(215);
 
-        double mediumScoringOffset = 0.1;
         double liftTime = -0.8;
         double stackApproachOffset = -0.2;
-        double firstScoringY = -24;
-        double mediumApproachOffset = -0.003;
         double stackWait = 0.1;
+        double mediumApproachOffset = -0.003;
+        double postScoringWait = 0.1;
+        double mediumScoringOffset = 0.1;
+
+        double CLAW_CLOSING_TIME = 0.3;
+        double AUTON_START_DELAY = 0; //0.16
+
+        TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(17, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        TrajectoryAccelerationConstraint accelerationCap = AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
@@ -122,7 +126,7 @@ public class AutonomousRight5Med extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = false;
                 })
-                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME + TeleOpConfig.AUTON_START_DELAY)
+                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
                     scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
                 })
@@ -136,13 +140,13 @@ public class AutonomousRight5Med extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
                     scorer.clawIsOpen = true;
                 })
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .waitSeconds(postScoringWait)
                 .lineTo(new Vector2d(centerPathX, firstScoringY))
                 .addTemporalMarker(() -> {
                     scorer.togglePassthrough();
                 })
                 .setReversed(true)
-                .lineTo(parkingZone2)
+                .lineTo(new Vector2d(35, -13))
                 .setTangent(facingRight)
                 .splineTo(turnPos, facingRight)
                 .splineTo(
@@ -168,7 +172,7 @@ public class AutonomousRight5Med extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
                     scorer.clawIsOpen = true;
                 })
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .waitSeconds(postScoringWait)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
                     scorer.togglePassthrough();
@@ -197,7 +201,7 @@ public class AutonomousRight5Med extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
                     scorer.clawIsOpen = true;
                 })
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .waitSeconds(postScoringWait)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
                     scorer.togglePassthrough();
@@ -226,7 +230,7 @@ public class AutonomousRight5Med extends LinearOpMode {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
                     scorer.clawIsOpen = true;
                 })
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .waitSeconds(postScoringWait)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
                     scorer.togglePassthrough();
@@ -254,7 +258,7 @@ public class AutonomousRight5Med extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
                     scorer.dropClaw();
                 })
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .waitSeconds(postScoringWait)
                 .build()
                 ;
 
@@ -279,6 +283,9 @@ public class AutonomousRight5Med extends LinearOpMode {
                 .splineTo(parkingZone3, facingRight)
                 .build()
                 ;
+
+
+        drive.followTrajectorySequenceAsync(trajectory1);
 
 
 
@@ -363,9 +370,6 @@ public class AutonomousRight5Med extends LinearOpMode {
             telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
             telemetry.update();
         }
-
-
-        drive.followTrajectorySequenceAsync(trajectory1);
 
         while(opModeIsActive()) {
 
