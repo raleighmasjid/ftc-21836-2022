@@ -112,7 +112,7 @@ public class AutonomousRight5Med extends LinearOpMode {
         double liftTime = -0.8;
         double stackApproachOffset = -0.2;
         double firstScoringY = -24;
-        double mediumApproachOffset = -0.005;
+        double mediumApproachOffset = -0.003;
         double stackWait = 0.1;
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
