@@ -60,7 +60,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double control1RightX;
         double control2LeftY;
 
-        double precisionScale;
+        double precisionScale = 1;
 
         boolean useFieldCentric = true;
 
