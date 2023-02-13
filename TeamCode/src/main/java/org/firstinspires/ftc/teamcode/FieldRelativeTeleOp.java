@@ -144,12 +144,21 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 drivetrain.resetRotation();
             }
 
+            if (Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
 
-            precisionScale = (TeleOpConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
+                control1LeftX *= TeleOpConfig.PRECISION_MODE_SCALE;
+                control1LeftY *= TeleOpConfig.PRECISION_MODE_SCALE;
+                control1RightX *= TeleOpConfig.PRECISION_MODE_SCALE;
 
-            control1LeftX *= precisionScale;
-            control1LeftY *= precisionScale;
-            control1RightX *= precisionScale;
+            } else {
+
+                precisionScale = (TeleOpConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
+
+                control1LeftX *= precisionScale;
+                control1LeftY *= precisionScale;
+                control1RightX *= precisionScale;
+
+            }
 
             if (useFieldCentric) {
                 drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
