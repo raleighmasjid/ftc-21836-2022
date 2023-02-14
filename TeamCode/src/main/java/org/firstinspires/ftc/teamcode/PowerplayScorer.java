@@ -146,6 +146,12 @@ public class PowerplayScorer {
                     passThruTimer.reset();
                     skip = false;
                     break;
+                case MOVING_TO_FRONT:
+                    passThruTimer.reset();
+                    currentPassState = passStates.MOVING_TO_PIVOT;
+                    currentPassPos = passPositions.PIVOT_POS;
+                    skip = false;
+                    break;
                 case CLAW_CLOSING:
                     if ((passThruTimer.seconds() >= TeleOpConfig.CLAW_PASS_CLOSING_TIME) || skip) {
                         passThruTimer.reset();
@@ -188,6 +194,12 @@ public class PowerplayScorer {
                 case IN_BACK:
                 case IN_FRONT:
                     passThruTimer.reset();
+                    skip = false;
+                    break;
+                case MOVING_TO_BACK:
+                    passThruTimer.reset();
+                    currentPassState = passStates.MOVING_TO_PIVOT;
+                    currentPassPos = passPositions.PIVOT_POS;
                     skip = false;
                     break;
                 case CLAW_CLOSING:
@@ -361,11 +373,14 @@ public class PowerplayScorer {
         } else {
             clawIsPass = true;
             if (!clawIsOpen) {
+                passThruTimer.reset();
                 currentPassState = passStates.MOVING_TO_PIVOT;
                 currentPassPos = passPositions.PIVOT_POS;
+                skip = false;
             } else {
-                currentPassState = passStates.CLAW_CLOSING;
                 passThruTimer.reset();
+                currentPassState = passStates.CLAW_CLOSING;
+                skip = false;
             }
         }
     }

@@ -125,10 +125,10 @@ public class AutonomousTesting extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
-                .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = false;
-                })
-                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
+//                .addTemporalMarker(() -> {
+//                    scorer.clawIsOpen = false;
+//                })
+//                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
                     scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
                 })
@@ -321,6 +321,7 @@ public class AutonomousTesting extends LinearOpMode {
          * This REPLACES waitForStart!
          */
 
+        scorer.clawIsOpen = false;
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = signalSleeveDetectionPipeline.getLatestDetections();
 
@@ -376,7 +377,11 @@ public class AutonomousTesting extends LinearOpMode {
             }
 
             telemetry.update();
-            sleep(20);
+//            sleep(20);
+            scorer.runClaw();
+            scorer.runPivot();
+            scorer.runPassServos();
+            scorer.runPassStates();
         }
 
         //START IS HERE//

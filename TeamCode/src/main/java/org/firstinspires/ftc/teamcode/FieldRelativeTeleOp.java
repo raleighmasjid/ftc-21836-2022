@@ -39,11 +39,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         GamepadEx Gamepad1 = new GamepadEx(gamepad1);
         GamepadEx Gamepad2 = new GamepadEx(gamepad2);
 
-        ButtonReader control1Y = new ButtonReader(Gamepad1, GamepadKeys.Button.Y); //field centric to robot centric toggle
-        ButtonReader control1X = new ButtonReader(Gamepad1, GamepadKeys.Button.Y); //straight mode toggle
-
-        ButtonReader control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A); //drop + open claw
-        ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); //close claw + lift
+        ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); // lift claw / drop claw combo
         ButtonReader control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X); //claw override
         ButtonReader control2Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); //claw spin
 
@@ -60,9 +56,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double control1RightX;
         double control2LeftY;
 
-        double precisionScale = 1;
-
-        boolean useFieldCentric = true;
+        double precisionScale;
 
         waitForStart();
 
@@ -70,10 +64,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             // get button inputs
 
-            control1X.readValue();
-            control1Y.readValue();
-
-            control2A.readValue();
             control2B.readValue();
             control2X.readValue();
             control2Y.readValue();
@@ -110,11 +100,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             if(control2Y.wasJustPressed()){
                 scorer.togglePassthrough();
             }
-            if (control2A.wasJustPressed()) {
-                scorer.dropClaw();
-            }
             if (control2B.wasJustPressed()) {
-                scorer.liftClaw();
+                if (scorer.clawIsOpen) {
+                    scorer.liftClaw();
+                } else {
+                    scorer.dropClaw();
+                }
             }
             if (control2LShoulder.wasJustPressed()) {
                 scorer.togglePivot(); //pivot override
@@ -140,37 +131,21 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
 
             //field-centric reset
-            if (Gamepad1.isDown(GamepadKeys.Button.A) && useFieldCentric) {
+            if (Gamepad1.isDown(GamepadKeys.Button.A)) {
                 drivetrain.resetRotation();
             }
 
             if (Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
-
-                control1LeftX *= TeleOpConfig.PRECISION_MODE_SCALE;
-                control1LeftY *= TeleOpConfig.PRECISION_MODE_SCALE;
-                control1RightX *= TeleOpConfig.PRECISION_MODE_SCALE;
-
+                precisionScale = TeleOpConfig.PRECISION_MODE_SCALE;
             } else {
-
                 precisionScale = (TeleOpConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
-
-                control1LeftX *= precisionScale;
-                control1LeftY *= precisionScale;
-                control1RightX *= precisionScale;
-
             }
 
-            if (useFieldCentric) {
-                drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
-            } else {
-                drivetrain.driveRobotCentric(control1LeftX, control1LeftY, control1RightX);
-            }
+            control1LeftX *= precisionScale;
+            control1LeftY *= precisionScale;
+            control1RightX *= precisionScale;
 
-            // toggle field centric
-            if(control1Y.wasJustPressed()){
-                useFieldCentric = !useFieldCentric;
-            }
-
+            drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
 
 
@@ -208,12 +183,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             myTelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
             myTelemetry.addData("Field-relative heading", drivetrain.rotYaw);
             myTelemetry.addData("Drive speed scale", precisionScale);
-
-            if (useFieldCentric) {
-                myTelemetry.addData("Driver is using", "field-centric driving");
-            } else {
-                myTelemetry.addData("Driver is using", "robot-centric driving");
-            }
 
             myTelemetry.update();
         }
