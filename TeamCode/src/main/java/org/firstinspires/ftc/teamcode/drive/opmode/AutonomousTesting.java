@@ -130,11 +130,11 @@ public class AutonomousTesting extends LinearOpMode {
 //                })
 //                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
-                    scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
+                    scorer.targetLiftPos = 150;
                 })
                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward)
                 .splineToSplineHeading(new Pose2d(centerPathX, firstScoringTurnY, facingLeft), facingForward, scoringVeloCap, accelerationCap)
-                .splineToSplineHeading(new Pose2d(centerPathX, -15, scoringAngleRight), facingForward)
+                .splineToSplineHeading(new Pose2d(centerPathX, -15, scoringAngleRight), facingForward, scoringVeloCap, accelerationCap)
                 .setTangent(Math.toRadians(210))
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
