@@ -96,10 +96,6 @@ public class AutonomousTesting extends LinearOpMode {
         double centerPathX = 35;
         double firstScoringTurnY = -24;
 
-        Vector2d parkingZone1 = new Vector2d(13, -12.5);
-        Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
-        Vector2d parkingZone3 = new Vector2d(57, -12.5);
-
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
@@ -116,6 +112,10 @@ public class AutonomousTesting extends LinearOpMode {
 
         double CLAW_CLOSING_TIME = 0.3;
         double AUTON_START_DELAY = 0; //0.16
+
+        Vector2d parkingZone1 = new Vector2d(13, -12.5);
+        Pose2d parkingZone2 = new Pose2d(35, -12.5, facingLeft);
+        Vector2d parkingZone3 = new Vector2d(57, -12.5);
 
         TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(17, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
@@ -293,7 +293,7 @@ public class AutonomousTesting extends LinearOpMode {
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
                 .setTangent(scoringAngleRight - facingLeft)
-                .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
+                .lineToSplineHeading(parkingZone2)
                 .setTangent(facingLeft)
                 .splineTo(new Vector2d(23.5, -12), facingLeft)
                 .splineTo(parkingZone1, facingLeft)
@@ -302,7 +302,7 @@ public class AutonomousTesting extends LinearOpMode {
 
         TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(trajectory1.end())
                 .setTangent(scoringAngleRight - facingLeft)
-                .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
+                .lineToSplineHeading(parkingZone2)
                 .build()
                 ;
 
