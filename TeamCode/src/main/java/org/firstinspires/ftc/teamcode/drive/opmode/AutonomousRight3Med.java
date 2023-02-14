@@ -193,7 +193,7 @@ public class AutonomousRight3Med extends LinearOpMode {
                 })
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
-                .splineTo(new Vector2d(31, -14.5), scoringAngleRight, scoringVeloCap, accelerationCap)
+                .splineTo(new Vector2d(31, -15.5), scoringAngleRight, scoringVeloCap, accelerationCap)
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
