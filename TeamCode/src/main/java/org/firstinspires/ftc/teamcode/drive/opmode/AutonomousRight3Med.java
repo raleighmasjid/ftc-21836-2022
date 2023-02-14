@@ -27,8 +27,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 
-@Autonomous(name= "Right - 1+1 medium", group = "21836 Autonomous")
-public class AutonomousRight2Med extends LinearOpMode {
+@Autonomous(name= "Right - 1+2 medium", group = "21836 Autonomous")
+public class AutonomousRight3Med extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline signalSleeveDetectionPipeline;
@@ -165,6 +165,35 @@ public class AutonomousRight2Med extends LinearOpMode {
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
+                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                })
+                .addTemporalMarker(() -> {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
+                    scorer.clawIsOpen = true;
+                })
+                .waitSeconds(postScoringWait)
+                .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
+                    scorer.togglePassthrough();
+                })
+                .splineTo(turnPos, facingRight)
+                .splineTo(
+                        stackPos,
+                        facingRight,
+                        stackVeloCap,
+                        accelerationCap
+                )
+                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
+                    scorer.liftClaw();
+                })
+                .waitSeconds(stackWait)
+                .addTemporalMarker(() ->{
+                    scorer.togglePassthrough();
+                })
+                .setReversed(false)
+                .splineTo(turnPos, facingLeft)
+                .splineTo(new Vector2d(31, -14.5), scoringAngleRight, scoringVeloCap, accelerationCap)
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
