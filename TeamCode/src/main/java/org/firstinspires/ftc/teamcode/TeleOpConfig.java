@@ -29,27 +29,26 @@ public class TeleOpConfig {
     public static double LIFT_MANUAL_CONTROL_SCALE = 15;
     public static double PRECISION_MODE_SCALE = 0.3;
 
-    public static double CLAW_RIGHT_CLOSED = 165;
-    public static double CLAW_RIGHT_OPEN = 115;
-    public static double CLAW_RIGHT_PASS = 140;
+    public static double CLAW_CLOSED_ANGLE = 165;
+    public static double CLAW_PASS_ANGLE = 140;
+    public static double CLAW_OPEN_ANGLE = 115;
 
     public static double CLAW_CLOSING_TIME = 0.3;
     public static double CLAW_PASS_CLOSING_TIME = 0;
-    public static double CLAW_OPEN_TO_DROP_TIME = 0.1;
 
     public static double AUTON_START_DELAY = 0.16;
 
-    public static double PIVOT_FRONT = 198;
-    public static double PIVOT_BACK = 2;
+    public static double PIVOT_FRONT_ANGLE = 198;
+    public static double PIVOT_BACK_ANGLE = 2;
 
-    public static double PASS_1_FRONT = 5;
-    public static double PASS_1_BACK = 197;
+    public static double PASS_RIGHT_FRONT_ANGLE = 5;
+    public static double PASS_RIGHT_BACK_ANGLE = 197;
 
-    public static double PASS_2_FRONT = 200;
-    public static double PASS_2_BACK = 5;
+    public static double PASS_LEFT_FRONT_ANGLE = 200;
+    public static double PASS_LEFT_BACK_ANGLE = 5;
 
-    public static double PASS_1_PIVOTING = 45;
-    public static double PASS_2_PIVOTING = 157;
+    public static double PASS_RIGHT_PIVOT_ANGLE = 45;
+    public static double PASS_LEFT_PIVOT_ANGLE = 157;
 
     public static double FRONT_TO_PIVOT_TIME = 0.1; // time between lifting claw and pivoting
     public static double PIVOTING_TO_BACK_TIME = 0.7; // time between starting pivoting and moving to back

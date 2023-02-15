@@ -106,6 +106,7 @@ public class AutonomousRight4Med extends LinearOpMode {
 
         double mediumScoringOffset = 0.1;
         double stackOffset = 0.5;
+        double CLAW_OPEN_TO_DROP_TIME = 0.2;
 
         Pose2d startPose = new Pose2d(35, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
@@ -120,7 +121,7 @@ public class AutonomousRight4Med extends LinearOpMode {
                 })
                 .splineToSplineHeading(new Pose2d(35, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .splineToSplineHeading(new Pose2d(35, -25, facingLeft), facingForward, scoringVeloCap, accelerationCap)
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .lineTo(new Vector2d(31.5, -25))
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
@@ -142,7 +143,7 @@ public class AutonomousRight4Med extends LinearOpMode {
                         stackVeloCap,
                         accelerationCap
                 )
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = false;
                 })
@@ -172,7 +173,7 @@ public class AutonomousRight4Med extends LinearOpMode {
                         stackVeloCap,
                         accelerationCap
                 )
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = false;
                 })
@@ -202,7 +203,7 @@ public class AutonomousRight4Med extends LinearOpMode {
                         stackVeloCap,
                         accelerationCap
                 )
-                .waitSeconds(TeleOpConfig.CLAW_OPEN_TO_DROP_TIME)
+                .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = false;
                 })

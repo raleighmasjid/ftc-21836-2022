@@ -33,7 +33,6 @@ public class PowerplayScorer {
     public double liftVelocity;
     public static ElapsedTime passThruTimer;
     public static ElapsedTime liftClawTimer;
-    public static ElapsedTime dropClawTimer;
 
     // the following is the code that runs during initialization
     public void init(HardwareMap hw) {
@@ -81,8 +80,6 @@ public class PowerplayScorer {
         passThruTimer.reset();
         liftClawTimer = new ElapsedTime();
         liftClawTimer.reset();
-        dropClawTimer = new ElapsedTime();
-        dropClawTimer.reset();
 
         limitSwitch = hw.get(DigitalChannel.class, "limit switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -120,21 +117,21 @@ public class PowerplayScorer {
     public void runPassServos () {
         switch (currentPassPos) {
             case FRONT:
-                passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
-                passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
+                passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
+                passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
                 break;
             case PIVOT_POS:
                 if (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_FRONT);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_FRONT);
+                    passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
+                    passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
                 } else {
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_1_PIVOTING);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_2_PIVOTING);
+                    passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_PIVOT_ANGLE);
+                    passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_PIVOT_ANGLE);
                 }
                 break;
             case BACK:
-                passThruRight.turnToAngle(TeleOpConfig.PASS_1_BACK);
-                passThruLeft.turnToAngle(TeleOpConfig.PASS_2_BACK);
+                passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_BACK_ANGLE);
+                passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_BACK_ANGLE);
                 break;
             default:
                 currentPassPos = passPositions.FRONT;
@@ -318,17 +315,15 @@ public class PowerplayScorer {
         clawIsOpen = !clawIsOpen;
     }
 
-    public boolean hasDropped = true;
-
     public boolean hasLifted = true;
 
     public void runClaw () {
         if (!clawIsOpen){
-            clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_CLOSED);
+            clawRight.turnToAngle(TeleOpConfig.CLAW_CLOSED_ANGLE);
         } else if (clawIsPass) {
-            clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_PASS);
+            clawRight.turnToAngle(TeleOpConfig.CLAW_PASS_ANGLE);
         } else {
-            clawRight.turnToAngle(TeleOpConfig.CLAW_RIGHT_OPEN);
+            clawRight.turnToAngle(TeleOpConfig.CLAW_OPEN_ANGLE);
         }
 
 
@@ -336,11 +331,6 @@ public class PowerplayScorer {
             targetLiftPos = liftController.getSetPoint() + 150;
             liftClawTimer.reset();
             hasLifted = true;
-        }
-        if ((dropClawTimer.seconds() >= TeleOpConfig.CLAW_OPEN_TO_DROP_TIME) && !hasDropped) {
-            targetLiftPos = TeleOpConfig.HEIGHT_ONE;
-            dropClawTimer.reset();
-            hasDropped = true;
         }
     }
 
@@ -351,9 +341,8 @@ public class PowerplayScorer {
     }
 
     public void dropClaw () {
+        targetLiftPos = TeleOpConfig.HEIGHT_ONE;
         clawIsOpen = true;
-        dropClawTimer.reset();
-        hasDropped = false;
     }
 
 
@@ -363,9 +352,9 @@ public class PowerplayScorer {
 
     public void runPivot () {
         if(pivotIsFront) {
-            clawPivot.turnToAngle(TeleOpConfig.PIVOT_FRONT);
+            clawPivot.turnToAngle(TeleOpConfig.PIVOT_FRONT_ANGLE);
         } else {
-            clawPivot.turnToAngle(TeleOpConfig.PIVOT_BACK);
+            clawPivot.turnToAngle(TeleOpConfig.PIVOT_BACK_ANGLE);
         }
     }
 
