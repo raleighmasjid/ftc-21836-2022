@@ -122,7 +122,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             }
             if (!liftHasReset) {
                 if (scorer.limitSwitch.getState()) {
-                    scorer.runLift(TeleOpConfig.LIFT_MAX_DOWN_VELOCITY * 0.5);
+                    scorer.runLift(TeleOpConfig.LIFT_RESET_VELOCITY);
                 } else {
                     scorer.useLiftPIDF = true;
                     liftHasReset = true;
