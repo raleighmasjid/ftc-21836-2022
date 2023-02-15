@@ -52,10 +52,10 @@ public class TeleOpConfig {
     public static double PASS_2_PIVOTING = 157;
 
     public static double FRONT_TO_PIVOT_TIME = 0;
-    public static double PIVOTING_TO_BACK_TIME = 0.6;
-    public static double PIVOT_TO_BACK_TIME = 0.1;
+    public static double PIVOTING_TO_BACK_TIME = 0.7;
+    public static double PIVOT_TO_BACK_TIME = 0.2;
 
-    public static double BACK_TO_PIVOT_TIME = 0.55;
+    public static double BACK_TO_PIVOT_TIME = 0.65;
     public static double PIVOTING_TO_FRONT_TIME = 0.4;
     public static double PIVOT_TO_FRONT_TIME = 0;
 
