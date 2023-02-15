@@ -39,7 +39,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         GamepadEx Gamepad1 = new GamepadEx(gamepad1);
         GamepadEx Gamepad2 = new GamepadEx(gamepad2);
 
-        ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); // lift claw / drop claw combo
+        ButtonReader control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A); //drop + open claw
+        ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); //close claw + lift
         ButtonReader control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X); //claw override
         ButtonReader control2Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); //claw spin
 
@@ -64,6 +65,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             // get button inputs
 
+            control2A.readValue();
             control2B.readValue();
             control2X.readValue();
             control2Y.readValue();
@@ -100,12 +102,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             if(control2Y.wasJustPressed()){
                 scorer.togglePassthrough();
             }
+            if (control2A.wasJustPressed()) {
+                scorer.dropClaw();
+            }
             if (control2B.wasJustPressed()) {
-                if (scorer.clawIsOpen) {
-                    scorer.liftClaw();
-                } else {
-                    scorer.dropClaw();
-                }
+                scorer.liftClaw();
             }
             if (control2LShoulder.wasJustPressed()) {
                 scorer.togglePivot(); //pivot override
