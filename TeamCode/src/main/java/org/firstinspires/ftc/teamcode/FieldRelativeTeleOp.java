@@ -92,12 +92,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runPassStates();
             scorer.runLiftToPos();
 
-            scorer.targetLiftPos = Math.max(
-                    Math.min(
-                        TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY + scorer.liftController.getSetPoint(),
-                        1200
-                    ),
-                    -20
+            scorer.targetLiftPos = Math.min(
+                    TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY + scorer.liftController.getSetPoint(),
+                    TeleOpConfig.HEIGHT_TALL
             );
 
 
