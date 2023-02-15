@@ -154,14 +154,6 @@ public class PowerplayScorer {
                     currentPassPos = passPositions.PIVOT_POS;
                     skip = false;
                     break;
-                case CLAW_CLOSING:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.CLAW_PASS_CLOSING_TIME) || skip) {
-                        passThruTimer.reset();
-                        currentPassState = passStates.MOVING_TO_PIVOT;
-                        currentPassPos = passPositions.PIVOT_POS;
-                        skip = false;
-                    }
-                    break;
                 case MOVING_TO_PIVOT:
                     if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skip) {
                         passThruTimer.reset();
@@ -203,14 +195,6 @@ public class PowerplayScorer {
                     currentPassState = passStates.MOVING_TO_PIVOT;
                     currentPassPos = passPositions.PIVOT_POS;
                     skip = false;
-                    break;
-                case CLAW_CLOSING:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.CLAW_PASS_CLOSING_TIME) || skip) {
-                        passThruTimer.reset();
-                        currentPassState = passStates.MOVING_TO_PIVOT;
-                        currentPassPos = passPositions.PIVOT_POS;
-                        skip = false;
-                    }
                     break;
                 case MOVING_TO_PIVOT:
                     if ((passThruTimer.seconds() >= TeleOpConfig.BACK_TO_PIVOT_TIME) || skip) {
@@ -362,20 +346,12 @@ public class PowerplayScorer {
         if ((currentPassState != passStates.IN_FRONT) && (currentPassState != passStates.IN_BACK)) {
             passIsFront = !passIsFront;
             skip = true;
-
-
         } else {
             clawIsPass = true;
-            if (!clawIsOpen) {
-                passThruTimer.reset();
-                currentPassState = passStates.MOVING_TO_PIVOT;
-                currentPassPos = passPositions.PIVOT_POS;
-                skip = false;
-            } else {
-                passThruTimer.reset();
-                currentPassState = passStates.CLAW_CLOSING;
-                skip = false;
-            }
+            passThruTimer.reset();
+            currentPassState = passStates.MOVING_TO_PIVOT;
+            currentPassPos = passPositions.PIVOT_POS;
+            skip = false;
         }
     }
 }
