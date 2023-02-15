@@ -99,7 +99,6 @@ public class PowerplayScorer {
     public enum passStates {
         MOVING_TO_FRONT,
         IN_FRONT,
-        CLAW_CLOSING,
         MOVING_TO_PIVOT,
         PIVOTING,
         MOVING_TO_BACK,
