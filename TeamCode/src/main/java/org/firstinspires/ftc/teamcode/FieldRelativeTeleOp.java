@@ -58,13 +58,14 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double control2LeftY;
 
         double precisionScale;
+        boolean liftHasReset = true;
 
         waitForStart();
 
 //      teleop control loop
         while (opModeIsActive()) {
-            // get button inputs
 
+            // Get button reader states
             control2A.readValue();
             control2B.readValue();
             control2X.readValue();
@@ -84,18 +85,23 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             control2LeftY = Gamepad2.getLeftY();
 
+
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassServos();
             scorer.runPassStates();
             scorer.runLiftToPos();
 
-            scorer.targetLiftPos = Math.min(
-                    TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY + scorer.liftController.getSetPoint(),
-                    TeleOpConfig.HEIGHT_TALL
+            scorer.targetLiftPos = Math.max(
+                    Math.min(
+                        TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY + scorer.liftController.getSetPoint(),
+                        1200
+                    ),
+                    -20
             );
 
-            //claw and passthrough buttons
+
+            // Claw and passthrough triggers
             if (control2X.wasJustPressed()) {
                 scorer.toggleClaw(); //claw override
             }
@@ -104,50 +110,59 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             }
             if (control2A.wasJustPressed()) {
                 scorer.dropClaw();
-            }
-            if (control2B.wasJustPressed()) {
+            } else if (control2B.wasJustPressed()) {
                 scorer.liftClaw();
             }
             if (control2LShoulder.wasJustPressed()) {
                 scorer.togglePivot(); //pivot override
             }
+
+
+            // Lift encoder reset
             if (control2RShoulder.wasJustPressed()) {
-                scorer.lift_motor2.resetEncoder();
+                scorer.useLiftPIDF = false;
+                liftHasReset = false;
+            }
+            if (!liftHasReset) {
+                if (scorer.limitSwitch.getState()) {
+                    scorer.runLift(TeleOpConfig.LIFT_MAX_DOWN_VELOCITY * 0.5);
+                } else {
+                    scorer.useLiftPIDF = true;
+                    liftHasReset = true;
+                }
             }
 
 
-            // lift heights
+            // Lift height triggers
             if (control2Up.wasJustPressed()) {
                 scorer.setLiftPos(PowerplayScorer.liftHeights.TALL);
-            }
-            if (control2Left.wasJustPressed()) {
+            } else if (control2Left.wasJustPressed()) {
                 scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
-            }
-            if (control2Right.wasJustPressed()) {
+            } else if (control2Right.wasJustPressed()) {
                 scorer.setLiftPos(PowerplayScorer.liftHeights.LOW);
-            }
-            if (control2Down.wasJustPressed()) {
+            } else if (control2Down.wasJustPressed()) {
                 scorer.setLiftPos(PowerplayScorer.liftHeights.GROUND);
             }
 
 
-            //field-centric reset
+            // Field-centric reset
             if (Gamepad1.isDown(GamepadKeys.Button.A)) {
                 drivetrain.resetRotation();
             }
 
+
+            // Precision mode driving triggers
             if (Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
                 precisionScale = TeleOpConfig.PRECISION_MODE_SCALE;
             } else {
                 precisionScale = (TeleOpConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
             }
-
             control1LeftX *= precisionScale;
             control1LeftY *= precisionScale;
             control1RightX *= precisionScale;
 
-            drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
+            drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
 
             //everything below is telemetry

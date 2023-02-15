@@ -91,22 +91,27 @@ public class PowerplayScorer {
     //  lift motor encoder resolution (ticks):
     public static final double LIFT_TICKS = 145.1;
 
-
     public boolean clawIsOpen = true;
     public boolean clawIsPass = false;
-
     public boolean passIsFront = true;
     public boolean pivotIsFront = true;
-
     // override variable--when true, skips the timer to switch to next state immediately
     public boolean skip = false;
-
+    public boolean useLiftPIDF = true;
 
     public enum passStates {
-        MOVING_TO_FRONT, IN_FRONT, CLAW_CLOSING, MOVING_TO_PIVOT, PIVOTING, MOVING_TO_BACK, IN_BACK
+        MOVING_TO_FRONT,
+        IN_FRONT,
+        CLAW_CLOSING,
+        MOVING_TO_PIVOT,
+        PIVOTING,
+        MOVING_TO_BACK,
+        IN_BACK
     }
     public enum passPositions {
-        FRONT, PIVOT_POS, BACK
+        FRONT,
+        PIVOT_POS,
+        BACK
     }
 
     public passStates currentPassState = passStates.IN_FRONT;
@@ -292,7 +297,7 @@ public class PowerplayScorer {
     public void runLiftToPos() {
         liftController.setSetPoint(targetLiftPos);
 
-        if (!liftController.atSetPoint()) {
+        if (useLiftPIDF && !liftController.atSetPoint()) {
             liftVelocity = liftController.calculate(lift_motor2.getCurrentPosition());
 
             if (liftVelocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {

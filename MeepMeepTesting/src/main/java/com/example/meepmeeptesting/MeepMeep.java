@@ -15,7 +15,6 @@ public class MeepMeep {
         Vector2d medScoringPos = new Vector2d(31, -17.5);
 
         double centerPathX = 35;
-        double firstScoringTurnY = -24;
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
@@ -47,21 +46,21 @@ public class MeepMeep {
                 .setConstraints(58, 55, Math.toRadians(140), Math.toRadians(190), 14.25)
                 .followTrajectorySequence(drive->
                         drive.trajectorySequenceBuilder(startPose)
-                                .addTemporalMarker(() -> {
-//                                    scorer.clawIsOpen = false;
-                                })
-                                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
+//                                .addTemporalMarker(() -> {
+////                                    scorer.clawIsOpen = false;
+//                                })
+//                                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                                 .addTemporalMarker(() -> {
 //                                    scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
                                 })
                                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward)
-                                .splineToSplineHeading(new Pose2d(centerPathX, firstScoringTurnY, facingLeft), facingForward)
+                                .splineToSplineHeading(new Pose2d(centerPathX, -24, facingLeft), facingForward)
                                 .splineToSplineHeading(new Pose2d(centerPathX, -15, scoringAngleRight), facingForward)
                                 .setTangent(Math.toRadians(210))
+                                .splineTo(medScoringPos, scoringAngleRight)
                                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
 //                                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                                 })
-                                .splineTo(medScoringPos, scoringAngleRight)
                                 .addTemporalMarker(() -> {
 //                                    scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
 //                                    scorer.clawIsOpen = true;

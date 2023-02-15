@@ -94,7 +94,6 @@ public class AutonomousTesting extends LinearOpMode {
         Vector2d medScoringPos = new Vector2d(31, -17.5);
 
         double centerPathX = 35;
-        double firstScoringTurnY = -24;
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
@@ -133,13 +132,13 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.targetLiftPos = 150;
                 })
                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward)
-                .splineToSplineHeading(new Pose2d(centerPathX, firstScoringTurnY, facingLeft), facingForward, scoringVeloCap, accelerationCap)
+                .splineToSplineHeading(new Pose2d(centerPathX, -24, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .splineToSplineHeading(new Pose2d(centerPathX, -15, scoringAngleRight), facingForward, scoringVeloCap, accelerationCap)
                 .setTangent(Math.toRadians(210))
+                .splineTo(medScoringPos, scoringAngleRight)
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
                 })
-                .splineTo(medScoringPos, scoringAngleRight)
                 .addTemporalMarker(() -> {
                     scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
                     scorer.clawIsOpen = true;
