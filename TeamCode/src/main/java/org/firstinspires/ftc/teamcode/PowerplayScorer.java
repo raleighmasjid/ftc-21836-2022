@@ -303,7 +303,7 @@ public class PowerplayScorer {
                 liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
             }
 
-            if (liftVelocity < 0 && !liftedPass && dropClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) {
+            if (liftVelocity < 0 && !liftedPass && dropClawTimer.seconds() >= TeleOpConfig.DROP_TO_RETRACT_TIME) {
                 lastPassPos = currentPassPos;
                 currentPassPos = passPositions.UP;
                 liftedPass = true;
