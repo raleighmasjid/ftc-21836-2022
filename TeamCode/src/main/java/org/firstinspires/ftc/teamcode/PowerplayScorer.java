@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_RPM;
 
-import android.media.session.PlaybackState;
-
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
@@ -297,7 +295,7 @@ public class PowerplayScorer {
                 liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
             }
 
-            if (liftVelocity < 0 && !liftedPass) {
+            if (liftVelocity < 0 && !liftedPass && dropClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) {
                 liftedPass = true;
                 lastPassPos = currentPassPos;
                 currentPassPos = passPositions.UP;
@@ -355,8 +353,10 @@ public class PowerplayScorer {
     }
 
     public void dropClaw () {
+        if (!clawIsOpen) {
+            dropClawTimer.reset();
+        }
         clawIsOpen = true;
-        dropClawTimer.reset();
         hasDropped = false;
         targetLiftPos = TeleOpConfig.HEIGHT_ONE;
     }
