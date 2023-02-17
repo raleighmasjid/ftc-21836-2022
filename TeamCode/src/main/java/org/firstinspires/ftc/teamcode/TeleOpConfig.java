@@ -24,7 +24,7 @@ public class TeleOpConfig {
     public static double LIFT_E_TOLERANCE = 1;
     public static double LIFT_V_TOLERANCE = 10;
 
-    public static double LIFT_RESET_VELOCITY = -0.2;
+    public static double LIFT_RESET_VELOCITY = -0.3;
     public static double LIFT_RESET_TIMER = 0.2;
     public static double LIFT_MAX_DOWN_VELOCITY = -0.45;
     public static double LIFT_MANUAL_CONTROL_SCALE = 15;

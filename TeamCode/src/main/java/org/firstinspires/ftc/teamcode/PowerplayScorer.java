@@ -98,9 +98,9 @@ public class PowerplayScorer {
     public boolean clawIsPass = false;
     public boolean passIsFront = true;
     public boolean pivotIsFront = true;
+    public boolean useLiftPIDF = true;
     // override variable--when true, skips the timer to switch to next state immediately
     public boolean skip = false;
-    public boolean useLiftPIDF = true;
 
     public enum passStates {
         MOVING_TO_FRONT,
