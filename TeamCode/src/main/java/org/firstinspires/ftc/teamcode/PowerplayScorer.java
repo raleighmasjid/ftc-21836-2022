@@ -34,6 +34,7 @@ public class PowerplayScorer {
     public static ElapsedTime passThruTimer;
     public static ElapsedTime liftClawTimer;
     public static ElapsedTime dropClawTimer;
+    public static ElapsedTime resetLiftTimer;
 
     // the following is the code that runs during initialization
     public void init(HardwareMap hw) {
@@ -83,6 +84,8 @@ public class PowerplayScorer {
         liftClawTimer.reset();
         dropClawTimer = new ElapsedTime();
         dropClawTimer.reset();
+        resetLiftTimer = new ElapsedTime();
+        resetLiftTimer.reset();
 
         limitSwitch = hw.get(DigitalChannel.class, "limit switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -296,14 +299,14 @@ public class PowerplayScorer {
             }
 
             if (liftVelocity < 0 && !liftedPass && dropClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) {
-                liftedPass = true;
                 lastPassPos = currentPassPos;
                 currentPassPos = passPositions.UP;
+                liftedPass = true;
                 clawIsPass = true;
             }
             if (liftedPass && liftVelocity >= 0) {
-                liftedPass = false;
                 currentPassPos = lastPassPos;
+                liftedPass = false;
                 clawIsPass = false;
             }
 

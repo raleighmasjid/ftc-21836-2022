@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
@@ -122,6 +123,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             }
             if (!liftHasReset) {
                 if (scorer.limitSwitch.getState()) {
+                    scorer.runLift(TeleOpConfig.LIFT_RESET_VELOCITY);
+                    scorer.resetLiftTimer.reset();
+                } else if (scorer.resetLiftTimer.seconds() <= TeleOpConfig.LIFT_RESET_TIMER){
                     scorer.runLift(TeleOpConfig.LIFT_RESET_VELOCITY);
                 } else {
                     scorer.useLiftPIDF = true;
