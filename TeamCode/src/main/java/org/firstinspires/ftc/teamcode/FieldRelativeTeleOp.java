@@ -47,6 +47,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
         ButtonReader control2LShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.LEFT_BUMPER);
         ButtonReader control2RShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.RIGHT_BUMPER);
+        TriggerReader control2RTrigger = new TriggerReader(Gamepad2, GamepadKeys.Trigger.RIGHT_TRIGGER);
 
         ButtonReader control2Up = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_UP);
         ButtonReader control2Left = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_LEFT);
@@ -57,9 +58,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double control1LeftX;
         double control1RightX;
         double control2LeftY;
+        double control2RightY;
 
         double precisionScale;
         boolean liftHasReset = true;
+        boolean useManualLiftControl = false;
 
         waitForStart();
 
@@ -85,18 +88,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control1RightX = Gamepad1.getRightX();
 
             control2LeftY = Gamepad2.getLeftY();
-
-
-            scorer.runClaw();
-            scorer.runPivot();
-            scorer.runPassServos();
-            scorer.runPassStates();
-            scorer.runLiftToPos();
-
-            scorer.targetLiftPos = Math.min(
-                    TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY + scorer.liftController.getSetPoint(),
-                    TeleOpConfig.HEIGHT_TALL
-            );
+            control2RightY = Gamepad2.getRightY();
 
 
             // Claw and passthrough triggers
@@ -134,8 +126,16 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     liftHasReset = true;
                 }
             }
-
-
+            
+            if (control2RTrigger.wasJustPressed()) {
+                scorer.useLiftPIDF = !scorer.useLiftPIDF;
+                useManualLiftControl = !useManualLiftControl;
+            }
+            if (useManualLiftControl) {
+                scorer.runLift(control2RightY);
+            }
+            
+            
             // Lift height triggers
             if (control2Up.wasJustPressed()) {
                 scorer.setLiftPos(PowerplayScorer.liftHeights.TALL);
@@ -164,6 +164,18 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control1LeftY *= precisionScale;
             control1RightX *= precisionScale;
 
+
+
+            scorer.targetLiftPos = Math.min(
+                    TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY + scorer.liftController.getSetPoint(),
+                    TeleOpConfig.HEIGHT_TALL
+            );
+            
+            scorer.runClaw();
+            scorer.runPivot();
+            scorer.runPassServos();
+            scorer.runPassStates();
+            scorer.runLiftToPos();
 
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
