@@ -136,8 +136,13 @@ public class PowerplayScorer {
                 }
                 break;
             case UP:
-                passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_UP_ANGLE);
-                passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_UP_ANGLE);
+                if (passIsFront) {
+                    passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_UP_ANGLE);
+                    passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_UP_ANGLE);
+                } else {
+                    passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_BACK_UP_ANGLE);
+                    passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_BACK_UP_ANGLE);
+                }
                 break;
             case BACK:
                 passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_BACK_ANGLE);
