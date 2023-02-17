@@ -115,7 +115,9 @@ public class AutonomousRight5Med extends LinearOpMode {
         double mediumApproachOffset = -0.003;
         double stackWait = 0.1;
 
+        double CLAW_CLOSING_TIME = 0.3;
         double CLAW_OPEN_TO_DROP_TIME = 0.1;
+        double AUTON_START_DELAY = 0.16;
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drive.setPoseEstimate(startPose);
@@ -124,7 +126,7 @@ public class AutonomousRight5Med extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     scorer.clawIsOpen = false;
                 })
-                .waitSeconds(TeleOpConfig.CLAW_CLOSING_TIME + TeleOpConfig.AUTON_START_DELAY)
+                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
                     scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
                 })
