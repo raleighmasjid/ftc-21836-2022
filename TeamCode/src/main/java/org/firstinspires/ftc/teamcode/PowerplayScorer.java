@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_RPM;
 
+import android.media.session.PlaybackState;
+
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
@@ -282,6 +284,9 @@ public class PowerplayScorer {
         }
     }
 
+    boolean liftedPass = false;
+    passPositions lastPassPos = currentPassPos;
+
     public void runLiftToPos() {
         liftController.setSetPoint(targetLiftPos);
 
@@ -290,6 +295,18 @@ public class PowerplayScorer {
 
             if (liftVelocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
                 liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
+            }
+
+            if (liftVelocity < 0 && !liftedPass) {
+                liftedPass = true;
+                lastPassPos = currentPassPos;
+                currentPassPos = passPositions.UP;
+                clawIsPass = true;
+            }
+            if (liftedPass && liftVelocity >= 0) {
+                liftedPass = false;
+                currentPassPos = lastPassPos;
+                clawIsPass = false;
             }
 
             runLift(liftVelocity);
@@ -324,11 +341,11 @@ public class PowerplayScorer {
             liftClawTimer.reset();
             hasLifted = true;
         }
-        if ((dropClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasDropped) {
-            currentPassPos = passPositions.UP;
-            liftClawTimer.reset();
-            hasDropped = true;
-        }
+//        if ((dropClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasDropped) {
+//            currentPassPos = passPositions.UP;
+//            dropClawTimer.reset();
+//            hasDropped = true;
+//        }
     }
 
     public void liftClaw () {
@@ -339,7 +356,7 @@ public class PowerplayScorer {
 
     public void dropClaw () {
         clawIsOpen = true;
-        liftClawTimer.reset();
+        dropClawTimer.reset();
         hasDropped = false;
         targetLiftPos = TeleOpConfig.HEIGHT_ONE;
     }
