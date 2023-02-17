@@ -91,7 +91,7 @@ public class AutonomousTesting extends LinearOpMode {
 
         Vector2d stackPos = new Vector2d(59, -12.5);
         Vector2d turnPos = new Vector2d(46, -13);
-        Vector2d medScoringPos = new Vector2d(31, -17.5);
+        Vector2d medScoringPos = new Vector2d(32, -16.5);
 
         double centerPathX = 35;
 

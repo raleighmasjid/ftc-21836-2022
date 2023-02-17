@@ -125,6 +125,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     scorer.runLift(TeleOpConfig.LIFT_RESET_VELOCITY);
                 } else {
                     scorer.useLiftPIDF = true;
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.ONE);
+                    scorer.lift_motor2.resetEncoder();
                     liftHasReset = true;
                 }
             }
