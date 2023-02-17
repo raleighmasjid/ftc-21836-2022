@@ -35,11 +35,11 @@ public class PowerplayScorer {
     public boolean clawIsPass = false;
     public boolean pivotIsFront = true;
     public boolean passIsFront = true;
-    public boolean liftedPass = false;
+    public boolean passIsLifted = false;
     public boolean useLiftPIDF = true;
-    public boolean skip = false;
-    public boolean hasLifted = true;
-    public boolean hasDropped = true;
+    public boolean skipCurrentPassState = false;
+    public boolean clawHasLifted = true;
+    public boolean clawHasDropped = true;
     public static ElapsedTime passThruTimer;
     public static ElapsedTime liftClawTimer;
     public static ElapsedTime dropClawTimer;
@@ -162,37 +162,37 @@ public class PowerplayScorer {
                 case IN_FRONT:
                 case IN_BACK:
                     passThruTimer.reset();
-                    skip = false;
+                    skipCurrentPassState = false;
                     break;
                 case MOVING_TO_FRONT:
                     passThruTimer.reset();
                     currentPassState = passStates.MOVING_TO_PIVOT;
                     currentPassPos = passPositions.PIVOT_POS;
-                    skip = false;
+                    skipCurrentPassState = false;
                     break;
                 case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skip) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skipCurrentPassState) {
                         passThruTimer.reset();
                         currentPassState = passStates.PIVOTING;
                         pivotIsFront = false;
-                        skip = false;
+                        skipCurrentPassState = false;
                     }
                     break;
                 case PIVOTING:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_BACK_TIME) || skip) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_BACK_TIME) || skipCurrentPassState) {
                         passThruTimer.reset();
                         currentPassState = passStates.MOVING_TO_BACK;
                         currentPassPos = passPositions.BACK;
-                        skip = false;
+                        skipCurrentPassState = false;
                     }
                     break;
                 case MOVING_TO_BACK:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_BACK_TIME) || skip) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_BACK_TIME) || skipCurrentPassState) {
                         passThruTimer.reset();
                         clawIsPass = false;
                         currentPassState = passStates.IN_BACK;
                         passIsFront = false;
-                        skip = false;
+                        skipCurrentPassState = false;
                     }
                     break;
                 default:
@@ -204,37 +204,37 @@ public class PowerplayScorer {
                 case IN_BACK:
                 case IN_FRONT:
                     passThruTimer.reset();
-                    skip = false;
+                    skipCurrentPassState = false;
                     break;
                 case MOVING_TO_BACK:
                     passThruTimer.reset();
                     currentPassState = passStates.MOVING_TO_PIVOT;
                     currentPassPos = passPositions.PIVOT_POS;
-                    skip = false;
+                    skipCurrentPassState = false;
                     break;
                 case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.BACK_TO_PIVOT_TIME) || skip) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.BACK_TO_PIVOT_TIME) || skipCurrentPassState) {
                         passThruTimer.reset();
                         currentPassState = passStates.PIVOTING;
                         pivotIsFront = true;
-                        skip = false;
+                        skipCurrentPassState = false;
                     }
                     break;
                 case PIVOTING:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_FRONT_TIME) || skip) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_FRONT_TIME) || skipCurrentPassState) {
                         passThruTimer.reset();
                         currentPassState = passStates.MOVING_TO_FRONT;
                         currentPassPos = passPositions.FRONT;
-                        skip = false;
+                        skipCurrentPassState = false;
                     }
                     break;
                 case MOVING_TO_FRONT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skip) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skipCurrentPassState) {
                         passThruTimer.reset();
                         clawIsPass = false;
                         currentPassState = passStates.IN_FRONT;
                         passIsFront = true;
-                        skip = false;
+                        skipCurrentPassState = false;
                     }
                     break;
                 default:
@@ -302,18 +302,18 @@ public class PowerplayScorer {
             }
 
             if (liftVelocity < 0.2 &&
-                !liftedPass && 
+                !passIsLifted &&
                 dropClawTimer.seconds() >= TeleOpConfig.DROP_TO_RETRACT_TIME &&
                 (currentPassState == passStates.IN_FRONT || currentPassState == passStates.IN_BACK)
                ) {
                 lastPassPos = currentPassPos;
                 currentPassPos = passPositions.UP;
-                liftedPass = true;
+                passIsLifted = true;
                 clawIsPass = true;
             }
-            if (liftedPass && liftVelocity >= 0) {
+            if (passIsLifted && liftVelocity >= 0) {
                 currentPassPos = lastPassPos;
-                liftedPass = false;
+                passIsLifted = false;
                 clawIsPass = false;
             }
 
@@ -341,10 +341,10 @@ public class PowerplayScorer {
         }
 
 
-        if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasLifted) {
+        if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !clawHasLifted) {
             targetLiftPos = liftController.getSetPoint() + 150;
             liftClawTimer.reset();
-            hasLifted = true;
+            clawHasLifted = true;
         }
 //        if ((dropClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasDropped) {
 //            currentPassPos = passPositions.UP;
@@ -356,7 +356,7 @@ public class PowerplayScorer {
     public void liftClaw () {
         clawIsOpen = false;
         liftClawTimer.reset();
-        hasLifted = false;
+        clawHasLifted = false;
     }
 
     public void dropClaw () {
@@ -364,7 +364,7 @@ public class PowerplayScorer {
             dropClawTimer.reset();
         }
         clawIsOpen = true;
-        hasDropped = false;
+        clawHasDropped = false;
         targetLiftPos = TeleOpConfig.HEIGHT_ONE;
     }
 
@@ -384,14 +384,14 @@ public class PowerplayScorer {
     public void togglePassthrough () {
         if ((currentPassState != passStates.IN_FRONT) && (currentPassState != passStates.IN_BACK)) {
             passIsFront = !passIsFront;
-            skip = true;
+            skipCurrentPassState = true;
         } else {
-            liftedPass = false;
+            passIsLifted = false;
             clawIsPass = true;
             passThruTimer.reset();
             currentPassState = passStates.MOVING_TO_PIVOT;
             currentPassPos = passPositions.PIVOT_POS;
-            skip = false;
+            skipCurrentPassState = false;
         }
     }
 }
