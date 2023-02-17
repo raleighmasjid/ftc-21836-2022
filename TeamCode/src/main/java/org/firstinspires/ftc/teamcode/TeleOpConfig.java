@@ -35,6 +35,7 @@ public class TeleOpConfig {
     public static double CLAW_OPEN_ANGLE = 115;
 
     public static double CLAW_CLOSING_TIME = 0.3;
+    public static double DROP_TO_RETRACT_TIME = 0.15;
 
     public static double AUTON_START_DELAY = 0.16;
 
