@@ -31,10 +31,21 @@ public class PowerplayScorer {
     public DigitalChannel limitSwitch;
     public double targetLiftPos;
     public double liftVelocity;
+    public boolean clawIsOpen = true;
+    public boolean clawIsPass = false;
+    public boolean pivotIsFront = true;
+    public boolean passIsFront = true;
+    public boolean liftedPass = false;
+    public boolean useLiftPIDF = true;
+    public boolean skip = false;
+    public boolean hasLifted = true;
+    public boolean hasDropped = true;
     public static ElapsedTime passThruTimer;
     public static ElapsedTime liftClawTimer;
     public static ElapsedTime dropClawTimer;
     public static ElapsedTime resetLiftTimer;
+    public static final double LIFT_TICKS = 145.1;
+
 
     // the following is the code that runs during initialization
     public void init(HardwareMap hw) {
@@ -91,17 +102,6 @@ public class PowerplayScorer {
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
     }
 
-    //  lift motor encoder resolution (ticks):
-    public static final double LIFT_TICKS = 145.1;
-
-    public boolean clawIsOpen = true;
-    public boolean clawIsPass = false;
-    public boolean passIsFront = true;
-    public boolean pivotIsFront = true;
-    public boolean useLiftPIDF = true;
-    // override variable--when true, skips the timer to switch to next state immediately
-    public boolean skip = false;
-
     public enum passStates {
         MOVING_TO_FRONT,
         IN_FRONT,
@@ -119,6 +119,7 @@ public class PowerplayScorer {
 
     public passStates currentPassState = passStates.IN_FRONT;
     public passPositions currentPassPos = passPositions.FRONT;
+    public passPositions lastPassPos = currentPassPos;
 
     public void runPassServos () {
         switch (currentPassPos) {
@@ -290,9 +291,6 @@ public class PowerplayScorer {
         }
     }
 
-    boolean liftedPass = false;
-    passPositions lastPassPos = currentPassPos;
-
     public void runLiftToPos() {
         liftController.setSetPoint(targetLiftPos);
 
@@ -303,7 +301,7 @@ public class PowerplayScorer {
                 liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
             }
 
-            if (liftVelocity < 0 && 
+            if (liftVelocity < 0.2 &&
                 !liftedPass && 
                 dropClawTimer.seconds() >= TeleOpConfig.DROP_TO_RETRACT_TIME &&
                 (currentPassState == passStates.IN_FRONT || currentPassState == passStates.IN_BACK)
@@ -332,9 +330,6 @@ public class PowerplayScorer {
     public void toggleClaw () {
         clawIsOpen = !clawIsOpen;
     }
-
-    public boolean hasLifted = true;
-    public boolean hasDropped = true;
 
     public void runClaw () {
         if (!clawIsOpen){
@@ -391,6 +386,7 @@ public class PowerplayScorer {
             passIsFront = !passIsFront;
             skip = true;
         } else {
+            liftedPass = false;
             clawIsPass = true;
             passThruTimer.reset();
             currentPassState = passStates.MOVING_TO_PIVOT;

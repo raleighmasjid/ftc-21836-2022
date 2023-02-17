@@ -125,6 +125,14 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     scorer.useLiftPIDF = true;
                     liftHasReset = true;
                 }
+
+                if (control2RShoulder.wasJustPressed()) {
+                    scorer.useLiftPIDF = true;
+                    liftHasReset = true;
+                }
+                if (control2RTrigger.wasJustPressed()) {
+                    liftHasReset = true;
+                }
             }
             
             if (control2RTrigger.wasJustPressed()) {
