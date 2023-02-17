@@ -42,9 +42,11 @@ public class TeleOpConfig {
 
     public static double PASS_RIGHT_FRONT_ANGLE = 5;
     public static double PASS_RIGHT_BACK_ANGLE = 197;
+    public static double PASS_RIGHT_UP_ANGLE = 101;
 
     public static double PASS_LEFT_FRONT_ANGLE = 225;
     public static double PASS_LEFT_BACK_ANGLE = 25;
+    public static double PASS_LEFT_UP_ANGLE = 125;
 
     public static double PASS_RIGHT_PIVOT_ANGLE = 45;
     public static double PASS_LEFT_PIVOT_ANGLE = 185;

@@ -33,6 +33,7 @@ public class PowerplayScorer {
     public double liftVelocity;
     public static ElapsedTime passThruTimer;
     public static ElapsedTime liftClawTimer;
+    public static ElapsedTime dropClawTimer;
 
     // the following is the code that runs during initialization
     public void init(HardwareMap hw) {
@@ -80,6 +81,8 @@ public class PowerplayScorer {
         passThruTimer.reset();
         liftClawTimer = new ElapsedTime();
         liftClawTimer.reset();
+        dropClawTimer = new ElapsedTime();
+        dropClawTimer.reset();
 
         limitSwitch = hw.get(DigitalChannel.class, "limit switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -107,6 +110,7 @@ public class PowerplayScorer {
     public enum passPositions {
         FRONT,
         PIVOT_POS,
+        UP,
         BACK
     }
 
@@ -127,6 +131,10 @@ public class PowerplayScorer {
                     passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_PIVOT_ANGLE);
                     passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_PIVOT_ANGLE);
                 }
+                break;
+            case UP:
+                passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_UP_ANGLE);
+                passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_UP_ANGLE);
                 break;
             case BACK:
                 passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_BACK_ANGLE);
@@ -299,6 +307,7 @@ public class PowerplayScorer {
     }
 
     public boolean hasLifted = true;
+    public boolean hasDropped = true;
 
     public void runClaw () {
         if (!clawIsOpen){
@@ -315,6 +324,11 @@ public class PowerplayScorer {
             liftClawTimer.reset();
             hasLifted = true;
         }
+        if ((dropClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasDropped) {
+            currentPassPos = passPositions.UP;
+            liftClawTimer.reset();
+            hasDropped = true;
+        }
     }
 
     public void liftClaw () {
@@ -324,8 +338,10 @@ public class PowerplayScorer {
     }
 
     public void dropClaw () {
-        targetLiftPos = TeleOpConfig.HEIGHT_ONE;
         clawIsOpen = true;
+        liftClawTimer.reset();
+        hasDropped = false;
+        targetLiftPos = TeleOpConfig.HEIGHT_ONE;
     }
 
 
