@@ -60,7 +60,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
         double precisionScale;
         boolean liftHasReset = true;
-        scorer.useServoSaver = true;
         scorer.lift_motor2.resetEncoder();
 
         waitForStart();
