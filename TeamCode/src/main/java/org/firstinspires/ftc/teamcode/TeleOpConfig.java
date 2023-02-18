@@ -6,7 +6,7 @@ public class TeleOpConfig {
     public static double HEIGHT_ONE = 0;
     public static double HEIGHT_TWO = 40;
     public static double HEIGHT_THREE = 80;
-    public static double HEIGHT_FOUR = 120;
+    public static double HEIGHT_FOUR = 105;
     public static double HEIGHT_FIVE = 150;
 
     public static double HEIGHT_GROUND = 30;

@@ -43,6 +43,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); //close claw + lift
         ButtonReader control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X); //claw override
         ButtonReader control2Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); //claw spin
+        ButtonReader control1Y = new ButtonReader(Gamepad1, GamepadKeys.Button.Y);
 
         ButtonReader control2LShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.LEFT_BUMPER);
         ButtonReader control2RShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.RIGHT_BUMPER);
@@ -59,6 +60,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
         double precisionScale;
         boolean liftHasReset = true;
+        scorer.useServoSaver = true;
+        scorer.lift_motor2.resetEncoder();
 
         waitForStart();
 
@@ -70,6 +73,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2B.readValue();
             control2X.readValue();
             control2Y.readValue();
+            control1Y.readValue();
 
             control2LShoulder.readValue();
             control2RShoulder.readValue();
@@ -129,6 +133,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     scorer.lift_motor2.resetEncoder();
                     liftHasReset = true;
                 }
+            }
+
+            if (control1Y.wasJustPressed()) {
+                scorer.useLiftPIDF = true;
+                liftHasReset = true;
             }
 
 

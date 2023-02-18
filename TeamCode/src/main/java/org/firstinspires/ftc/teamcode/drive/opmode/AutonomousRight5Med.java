@@ -99,7 +99,7 @@ public class AutonomousRight5Med extends LinearOpMode {
         Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
         Vector2d parkingZone3 = new Vector2d(57, -12.5);
 
-        TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(17, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryAccelerationConstraint accelerationCap = AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
 
@@ -179,12 +179,19 @@ public class AutonomousRight5Med extends LinearOpMode {
                 })
                 .splineTo(turnPos, facingRight)
                 .splineTo(
+                        new Vector2d(57, -12.5),
+                        facingRight,
+                        stackVeloCap,
+                        accelerationCap
+                )
+                .waitSeconds(0.001)
+                .splineTo(
                         stackPos,
                         facingRight,
                         stackVeloCap,
                         accelerationCap
                 )
-                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
+                .addTemporalMarker(() -> {
                     scorer.liftClaw();
                 })
                 .waitSeconds(stackWait)
@@ -399,6 +406,10 @@ public class AutonomousRight5Med extends LinearOpMode {
                 }
 
                 hasParked = true;
+            }
+
+            if (tagOfInterest == null) {
+                drive.followTrajectorySequenceAsync(parkMiddle);
             }
 
 
