@@ -50,11 +50,11 @@ public class TeleOpConfig {
     public static double PASS_LEFT_PIVOT_ANGLE = 185;
 
     public static double FRONT_TO_PIVOT_TIME = 0.1; // time between lifting claw and pivoting
-    public static double PIVOTING_TO_BACK_TIME = 0.8; // time between starting pivoting and moving to back
+    public static double PIVOTING_TO_BACK_TIME = 0.65; // time between starting pivoting and moving to back
     public static double PIVOT_TO_BACK_TIME = 0.2; // time between starting to move to the back and reaching the back
 
-    public static double BACK_TO_PIVOT_TIME = 0.68; //time between moving from back to pivot position
-    public static double PIVOTING_TO_FRONT_TIME = 0.6; // time from starting pivoting to moving down
+    public static double BACK_TO_PIVOT_TIME = 0.55; //time between moving from back to pivot position
+    public static double PIVOTING_TO_FRONT_TIME = 0.45; // time from starting pivoting to moving down
     public static double PIVOT_TO_FRONT_TIME = 0.1; // time it takes to get from pivot position to front position
 
     public static double fx = 578.272;

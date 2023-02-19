@@ -179,13 +179,6 @@ public class AutonomousRight5Med extends LinearOpMode {
                 })
                 .splineTo(turnPos, facingRight)
                 .splineTo(
-                        new Vector2d(57, -12.5),
-                        facingRight,
-                        stackVeloCap,
-                        accelerationCap
-                )
-                .waitSeconds(0.001)
-                .splineTo(
                         stackPos,
                         facingRight,
                         stackVeloCap,
@@ -215,7 +208,7 @@ public class AutonomousRight5Med extends LinearOpMode {
                 })
                 .splineTo(turnPos, facingRight)
                 .splineTo(
-                        stackPos,
+                        new Vector2d(60, -12.5),
                         facingRight,
                         stackVeloCap,
                         accelerationCap
@@ -244,7 +237,7 @@ public class AutonomousRight5Med extends LinearOpMode {
                 })
                 .splineTo(turnPos, facingRight)
                 .splineTo(
-                        stackPos,
+                        new Vector2d(60, -12.5),
                         facingRight,
                         stackVeloCap,
                         accelerationCap
