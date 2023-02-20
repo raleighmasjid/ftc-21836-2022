@@ -43,7 +43,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); //close claw + lift
         ButtonReader control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X); //claw override
         ButtonReader control2Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); //claw spin
-        ButtonReader control1Y = new ButtonReader(Gamepad1, GamepadKeys.Button.Y);
 
         ButtonReader control2LShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.LEFT_BUMPER);
         ButtonReader control2RShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.RIGHT_BUMPER);
@@ -60,6 +59,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
         double precisionScale;
         boolean liftHasReset = true;
+        boolean useOverrideMode = false;
+        scorer.useLiftPIDF = true;
         scorer.lift_motor2.resetEncoder();
 
         waitForStart();
@@ -72,7 +73,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2B.readValue();
             control2X.readValue();
             control2Y.readValue();
-            control1Y.readValue();
 
             control2LShoulder.readValue();
             control2RShoulder.readValue();
@@ -95,60 +95,83 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runPassStates();
             scorer.runLiftToPos();
 
-            scorer.targetLiftPos = Math.min(
-                    TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY + scorer.liftController.getSetPoint(),
-                    TeleOpConfig.HEIGHT_TALL
-            );
-
-
-            // Claw and passthrough triggers
             if (control2X.wasJustPressed()) {
-                scorer.toggleClaw(); //claw override
-            }
-            if(control2Y.wasJustPressed()){
-                scorer.togglePassthrough();
-            }
-            if (control2A.wasJustPressed()) {
-                scorer.dropClaw();
-            } else if (control2B.wasJustPressed()) {
-                scorer.liftClaw();
-            }
-            if (control2LShoulder.wasJustPressed()) {
-                scorer.togglePivot(); //pivot override
+                useOverrideMode = !useOverrideMode;
+                scorer.useLiftPIDF = !scorer.useLiftPIDF;
             }
 
+            if (useOverrideMode) {
 
-            // Lift encoder reset
-            if (control2RShoulder.wasJustPressed()) {
-                scorer.useLiftPIDF = false;
-                liftHasReset = false;
-            }
-            if (!liftHasReset) {
-                if (scorer.limitSwitch.getState()) {
-                    scorer.runLift(TeleOpConfig.LIFT_RESET_VELOCITY);
-                } else {
-                    scorer.useLiftPIDF = true;
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.ONE);
-                    scorer.lift_motor2.resetEncoder();
-                    liftHasReset = true;
+                if (control2LShoulder.wasJustPressed()) {
+                    scorer.togglePivot(); //pivot override
                 }
-            }
+                if (control2B.wasJustPressed()) {
+                    scorer.toggleClaw();
+                }
+                if (control2RShoulder.wasJustPressed()) {
+                    scorer.lift_motor2.resetEncoder();
+                }
 
-            if (control1Y.wasJustPressed()) {
-                scorer.useLiftPIDF = true;
-                liftHasReset = true;
-            }
+                scorer.runLift(control2LeftY);
+
+                if(control2Y.wasJustPressed()){
+                    if (scorer.currentPassState != PowerplayScorer.passStates.IN_FRONT) {
+                        scorer.currentPassPos = PowerplayScorer.passPositions.FRONT;
+                        scorer.currentPassState = PowerplayScorer.passStates.IN_FRONT;
+                        scorer.passIsFront = true;
+                    } else {
+                        scorer.currentPassPos = PowerplayScorer.passPositions.BACK;
+                        scorer.currentPassState = PowerplayScorer.passStates.IN_BACK;
+                        scorer.passIsFront = false;
+                    }
+                }
+
+            } else {
+
+                if(control2Y.wasJustPressed()){
+                    scorer.togglePassthrough();
+                }
+                if (control2B.wasJustPressed()) {
+                    if (scorer.clawIsOpen) {
+                        scorer.liftClaw();
+                    } else {
+                        scorer.dropClaw();
+                    }
+                }
+
+                scorer.targetLiftPos = Math.min(
+                        TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY + scorer.liftController.getSetPoint(),
+                        TeleOpConfig.HEIGHT_TALL
+                );
+
+                // Lift encoder reset
+                if (control2RShoulder.wasJustPressed()) {
+                    scorer.useLiftPIDF = false;
+                    liftHasReset = false;
+                }
+                if (!liftHasReset) {
+                    if (scorer.limitSwitch.getState()) {
+                        scorer.runLift(TeleOpConfig.LIFT_RESET_VELOCITY);
+                    } else {
+                        scorer.useLiftPIDF = true;
+                        scorer.setLiftPos(PowerplayScorer.liftHeights.ONE);
+                        scorer.lift_motor2.resetEncoder();
+                        liftHasReset = true;
+                    }
+                }
 
 
-            // Lift height triggers
-            if (control2Up.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.liftHeights.TALL);
-            } else if (control2Left.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
-            } else if (control2Right.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.liftHeights.LOW);
-            } else if (control2Down.wasJustPressed()) {
-                scorer.setLiftPos(PowerplayScorer.liftHeights.GROUND);
+                // Lift height triggers
+                if (control2Up.wasJustPressed()) {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.TALL);
+                } else if (control2Left.wasJustPressed()) {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                } else if (control2Right.wasJustPressed()) {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.LOW);
+                } else if (control2Down.wasJustPressed()) {
+                    scorer.setLiftPos(PowerplayScorer.liftHeights.GROUND);
+                }
+
             }
 
 
