@@ -210,6 +210,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 myTelemetry.addData("Claw is", "open");
             }
 
+            if (useOverrideMode) {
+                myTelemetry.addData("Robot is under", "fully manual control");
+            } else {
+                myTelemetry.addData("Robot is under", "semi-automated control");
+            }
+
             myTelemetry.addData("Lift target encoder value", scorer.targetLiftPosName);
             myTelemetry.addData("Lift encoder", scorer.lift_motor2.encoder.getPosition());
             myTelemetry.addData("Lift target height", scorer.targetLiftPos);
