@@ -60,6 +60,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double precisionScale;
         boolean liftHasReset = true;
         boolean useOverrideMode = false;
+        boolean useStackHeights = false;
         scorer.useLiftPIDF = true;
         scorer.lift_motor2.resetEncoder();
 
@@ -160,18 +161,33 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     }
                 }
 
-
-                // Lift height triggers
-                if (control2Up.wasJustPressed()) {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.TALL);
-                } else if (control2Left.wasJustPressed()) {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
-                } else if (control2Right.wasJustPressed()) {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.LOW);
-                } else if (control2Down.wasJustPressed()) {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.GROUND);
+                if(control2A.wasJustPressed()){
+                    useStackHeights = !useStackHeights;
                 }
 
+                if (useStackHeights) {
+                    // Lift stack height triggers
+                    if (control2Up.wasJustPressed()) {
+                        scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
+                    } else if (control2Left.wasJustPressed()) {
+                        scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
+                    } else if (control2Right.wasJustPressed()) {
+                        scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
+                    } else if (control2Down.wasJustPressed()) {
+                        scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
+                    }
+                } else {
+                    // Lift junction height triggers
+                    if (control2Up.wasJustPressed()) {
+                        scorer.setLiftPos(PowerplayScorer.liftHeights.TALL);
+                    } else if (control2Left.wasJustPressed()) {
+                        scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                    } else if (control2Right.wasJustPressed()) {
+                        scorer.setLiftPos(PowerplayScorer.liftHeights.LOW);
+                    } else if (control2Down.wasJustPressed()) {
+                        scorer.setLiftPos(PowerplayScorer.liftHeights.GROUND);
+                    }
+                }
             }
 
 
