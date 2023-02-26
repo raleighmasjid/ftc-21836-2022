@@ -23,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 
-@Autonomous(name= "Parking Only", group = "21836 Autonomous")
+@Autonomous(name= "Parking Only", group = "21836 Backup")
 public class ParkOnly extends LinearOpMode {
 
     OpenCvCamera camera;

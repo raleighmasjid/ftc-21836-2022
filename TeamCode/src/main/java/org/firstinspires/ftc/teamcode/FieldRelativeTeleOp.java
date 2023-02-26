@@ -64,10 +64,20 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         scorer.useLiftPIDF = true;
         scorer.lift_motor2.resetEncoder();
 
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
+
         waitForStart();
 
 //      teleop control loop
         while (opModeIsActive()) {
+
+            for (LynxModule hub : allHubs) {
+                hub.clearBulkCache();
+            }
 
             // Get button reader states
             control2A.readValue();
