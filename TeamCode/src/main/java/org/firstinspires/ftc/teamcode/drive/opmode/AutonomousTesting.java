@@ -125,10 +125,10 @@ public class AutonomousTesting extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
-                .addTemporalMarker(() -> {
-                    scorer.clawIsOpen = false;
-                })
-                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
+//                .addTemporalMarker(() -> {
+//                    scorer.clawIsOpen = false;
+//                })
+//                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
                     scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
                 })

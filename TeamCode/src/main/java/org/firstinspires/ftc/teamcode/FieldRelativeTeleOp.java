@@ -103,7 +103,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassServos();
-            scorer.runPassStates();
             scorer.runLiftToPos();
 
             if (control2X.wasJustPressed()) {
@@ -138,6 +137,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 }
 
             } else {
+
+                scorer.runPassStates();
 
                 if(control2Y.wasJustPressed()){
                     scorer.togglePassthrough();
