@@ -63,6 +63,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         boolean useStackHeights = false;
         scorer.useLiftPIDF = true;
         scorer.lift_motor2.resetEncoder();
+        drivetrain.setRotation(HeadingHolder.getHeading());
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 

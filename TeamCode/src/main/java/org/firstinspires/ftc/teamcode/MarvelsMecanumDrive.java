@@ -28,15 +28,6 @@ public class MarvelsMecanumDrive {
     public double rotationOffset = 0.0;
     public double rotYaw = 0.0;
 
-    public void setStartDirection(double startAngle) {
-        rotationOffset = -startAngle;
-    }
-
-    // ftclib robot-centric mecanum drive code:
-    public void driveRobotCentric (double leftX, double leftY, double rightX){
-        mecanumDrivetrain.driveRobotCentric(leftX,leftY,rightX);
-    }
-
     // ftclib field-centric mecanum drive code:
     public void driveFieldCentric (double leftX, double leftY, double rightX){
         double heading = getOffsetRotation();
@@ -52,6 +43,9 @@ public class MarvelsMecanumDrive {
     }
     public void resetRotation(){
         rotationOffset = getIMURotation();
+    }
+    public void setRotation(double startAngle) {
+        rotationOffset = getIMURotation() - startAngle;
     }
 
 
