@@ -183,6 +183,7 @@ public class PowerplayScorer {
                         passThruTimer.reset();
                         currentPassState = passStates.MOVING_TO_BACK;
                         currentPassPos = passPositions.BACK;
+                        pivotIsFront = false;
                         skip = false;
                     }
                     break;
@@ -192,6 +193,7 @@ public class PowerplayScorer {
                         clawIsPass = false;
                         currentPassState = passStates.IN_BACK;
                         passIsFront = false;
+                        pivotIsFront = false;
                         skip = false;
                     }
                     break;
@@ -225,6 +227,7 @@ public class PowerplayScorer {
                         passThruTimer.reset();
                         currentPassState = passStates.MOVING_TO_FRONT;
                         currentPassPos = passPositions.FRONT;
+                        pivotIsFront = true;
                         skip = false;
                     }
                     break;
@@ -234,6 +237,7 @@ public class PowerplayScorer {
                         clawIsPass = false;
                         currentPassState = passStates.IN_FRONT;
                         passIsFront = true;
+                        pivotIsFront = true;
                         skip = false;
                     }
                     break;
