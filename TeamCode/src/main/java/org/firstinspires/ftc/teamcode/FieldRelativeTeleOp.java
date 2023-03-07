@@ -235,8 +235,22 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             if (useOverrideMode) {
                 myTelemetry.addData("Robot is in", "fully manual scoring mode");
+                scorer.green1.setState(false);
+                scorer.green2.setState(false);
+                scorer.red1.setState(true);
+                scorer.red2.setState(true);
+            } else if (useStackHeights) {
+                myTelemetry.addData("Robot is in", "semi-automated stack heights mode");
+                scorer.green1.setState(true);
+                scorer.green2.setState(true);
+                scorer.red1.setState(true);
+                scorer.red2.setState(true);
             } else {
                 myTelemetry.addData("Robot is in", "semi-automated scoring mode");
+                scorer.green1.setState(true);
+                scorer.green2.setState(true);
+                scorer.red1.setState(false);
+                scorer.red2.setState(false);
             }
 
             myTelemetry.addData("Lift target height", scorer.targetLiftPosName);

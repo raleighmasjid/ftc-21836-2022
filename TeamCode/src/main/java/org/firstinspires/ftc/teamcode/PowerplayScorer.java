@@ -29,6 +29,10 @@ public class PowerplayScorer {
     public PIDFController liftController;
     public String targetLiftPosName;
     public DigitalChannel limitSwitch;
+    public DigitalChannel red1;
+    public DigitalChannel green1;
+    public DigitalChannel red2;
+    public DigitalChannel green2;
     public double targetLiftPos;
     public double liftVelocity;
     public static ElapsedTime passThruTimer;
@@ -83,6 +87,17 @@ public class PowerplayScorer {
 
         limitSwitch = hw.get(DigitalChannel.class, "limit switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+
+        red1 = hw.get(DigitalChannel.class, "red1");
+        green1 = hw.get(DigitalChannel.class, "green1");
+        red1.setMode(DigitalChannel.Mode.OUTPUT);
+        green1.setMode(DigitalChannel.Mode.OUTPUT);
+
+        red2 = hw.get(DigitalChannel.class, "red2");
+        green2 = hw.get(DigitalChannel.class, "green2");
+        red2.setMode(DigitalChannel.Mode.OUTPUT);
+        green2.setMode(DigitalChannel.Mode.OUTPUT);
+
     }
 
     //  lift motor encoder resolution (ticks):
