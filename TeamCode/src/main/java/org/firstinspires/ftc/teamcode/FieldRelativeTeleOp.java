@@ -152,11 +152,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     }
                 }
 
-                scorer.targetLiftPos = Math.min(
-                        TeleOpConfig.LIFT_MANUAL_CONTROL_SCALE * control2LeftY + scorer.liftController.getSetPoint(),
-                        TeleOpConfig.HEIGHT_TALL
-                );
-
                 // Lift encoder reset
                 if (control2RShoulder.wasJustPressed()) {
                     scorer.useLiftPIDF = false;

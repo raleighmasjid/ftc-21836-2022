@@ -33,7 +33,6 @@ public class TeleOpConfig {
 
     public static double LIFT_RESET_VELOCITY = -0.2;
     public static double LIFT_MAX_DOWN_VELOCITY = -0.45;
-    public static double LIFT_MANUAL_CONTROL_SCALE = 0.5; // inches
     public static double PRECISION_MODE_SCALE = 0.3;
 
     public static double CLAW_CLOSED_ANGLE = 165;
