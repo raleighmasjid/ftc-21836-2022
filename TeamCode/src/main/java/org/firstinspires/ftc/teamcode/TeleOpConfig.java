@@ -20,7 +20,7 @@ public class TeleOpConfig {
     public static double LIFT_P = 0.3;
     public static double LIFT_I = 0;
     public static double LIFT_D = 0;
-    public static double LIFT_F = 0.004;
+    public static double LIFT_F = 0.00013;
 
     public static double LIFT_MAX_JERK = 120; // inches per second^3
     public static double LIFT_MAX_ACCEL = 48; // inches per second^2
