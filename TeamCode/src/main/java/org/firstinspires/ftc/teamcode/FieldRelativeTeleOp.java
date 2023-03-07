@@ -101,6 +101,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2LeftY = Gamepad2.getLeftY();
 
 
+            scorer.readLiftEncoder();
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassServos();
