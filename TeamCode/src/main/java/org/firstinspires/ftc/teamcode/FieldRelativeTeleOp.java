@@ -244,9 +244,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 myTelemetry.addData("Robot is in", "semi-automated scoring mode");
             }
 
-            myTelemetry.addData("Lift target position", scorer.targetLiftPosName);
-            myTelemetry.addData("Lift current encoder value", scorer.lift_motor2.encoder.getPosition());
-            myTelemetry.addData("Lift target encoder value", scorer.targetLiftPos);
+            myTelemetry.addData("Lift target height", scorer.targetLiftPosName);
+            myTelemetry.addData("Lift current position (inches)", scorer.liftEncoderReading);
+            myTelemetry.addData("Lift target position (inches)", scorer.targetLiftPos);
             myTelemetry.addData("Lift motor power output", scorer.liftVelocity);
 
             myTelemetry.addData("Passthrough status", scorer.currentPassState);

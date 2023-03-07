@@ -96,6 +96,11 @@ public class PowerplayScorer {
     public boolean skip = false;
     public boolean useLiftPIDF = true;
 
+    public double liftEncoderReading;
+    public void readLiftEncoder() {
+        liftEncoderReading = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
+    }
+
     public enum passStates {
         MOVING_TO_FRONT,
         IN_FRONT,
@@ -120,7 +125,7 @@ public class PowerplayScorer {
                 passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
                 break;
             case PIVOT_POS:
-                if (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                if (liftEncoderReading >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
                     passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
                     passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
                 } else {
@@ -154,7 +159,7 @@ public class PowerplayScorer {
                     skip = false;
                     break;
                 case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skip || lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skip || liftEncoderReading >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
                         passThruTimer.reset();
                         currentPassState = passStates.PIVOTING;
                         pivotIsFront = false;
@@ -212,7 +217,7 @@ public class PowerplayScorer {
                     }
                     break;
                 case MOVING_TO_FRONT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (lift_motor2.encoder.getPosition() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skip) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (liftEncoderReading >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skip) {
                         passThruTimer.reset();
                         clawIsPass = false;
                         currentPassState = passStates.IN_FRONT;
@@ -278,7 +283,9 @@ public class PowerplayScorer {
         liftController.setSetPoint(targetLiftPos);
 
         if (useLiftPIDF && !liftController.atSetPoint()) {
-            liftVelocity = liftController.calculate(lift_motor2.getCurrentPosition());
+            liftVelocity = liftController.calculate(
+                    (lift_motor2.getCurrentPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH)
+            );
 
             if (liftVelocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
                 liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
@@ -311,7 +318,7 @@ public class PowerplayScorer {
 
 
         if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasLifted) {
-            targetLiftPos = liftController.getSetPoint() + 150;
+            targetLiftPos = liftController.getSetPoint() + 5;
             liftClawTimer.reset();
             hasLifted = true;
         }

@@ -132,7 +132,7 @@ public class AutonomousTesting extends LinearOpMode {
 //                })
 //                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
-                    scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
+                    scorer.targetLiftPos = scorer.liftController.getSetPoint() + 5;
                 })
                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .splineToSplineHeading(new Pose2d(centerPathX, firstScoringY, facingLeft), facingForward, scoringVeloCap, accelerationCap)
@@ -434,12 +434,6 @@ public class AutonomousTesting extends LinearOpMode {
                 myTelemetry.addData("Limit switch", "is triggered");
             }
 
-            if (scorer.limitSwitch.getState()) {
-                myTelemetry.addData("Limit switch", "is not triggered");
-            } else {
-                myTelemetry.addData("Limit switch", "is triggered");
-            }
-
             if (!scorer.clawIsOpen){
                 myTelemetry.addData("Claw is", "closed");
             } else if (scorer.clawIsPass) {
@@ -448,13 +442,12 @@ public class AutonomousTesting extends LinearOpMode {
                 myTelemetry.addData("Claw is", "open");
             }
 
-            myTelemetry.addData("Lift target encoder value", scorer.targetLiftPosName);
-            myTelemetry.addData("Lift encoder", scorer.lift_motor2.encoder.getPosition());
-            myTelemetry.addData("Lift target height", scorer.targetLiftPos);
+            myTelemetry.addData("Lift target height", scorer.targetLiftPosName);
+            myTelemetry.addData("Lift current position (inches)", scorer.liftEncoderReading);
+            myTelemetry.addData("Lift target position (inches)", scorer.targetLiftPos);
             myTelemetry.addData("Lift motor power output", scorer.liftVelocity);
 
             myTelemetry.addData("Passthrough status", scorer.currentPassState);
-            myTelemetry.addData("Passthrough position", scorer.currentPassPos);
 
             myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
             myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
