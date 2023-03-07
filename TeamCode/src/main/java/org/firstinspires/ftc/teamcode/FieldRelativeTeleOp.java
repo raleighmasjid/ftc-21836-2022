@@ -9,8 +9,6 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-
 import java.util.List;
 
 
@@ -253,8 +251,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             }
 
             myTelemetry.addData("Lift target height", scorer.targetLiftPosName);
-            myTelemetry.addData("Lift current position (inches)", scorer.liftEncoderReading);
-            myTelemetry.addData("Lift target position (inches)", scorer.targetLiftPos);
+            myTelemetry.addData("Lift current position (inches)", scorer.currentLiftHeight);
+            myTelemetry.addData("Lift target position (inches)", scorer.targetLiftHeight);
             myTelemetry.addData("Lift motor power output", scorer.liftVelocity);
 
             myTelemetry.addData("Passthrough status", scorer.currentPassState);

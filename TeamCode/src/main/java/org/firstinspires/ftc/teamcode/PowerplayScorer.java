@@ -33,7 +33,7 @@ public class PowerplayScorer {
     public DigitalChannel green1;
     public DigitalChannel red2;
     public DigitalChannel green2;
-    public double targetLiftPos;
+    public double targetLiftHeight;
     public double liftVelocity;
     private static ElapsedTime passThruTimer;
     private static ElapsedTime liftClawTimer;
@@ -77,7 +77,7 @@ public class PowerplayScorer {
         lift_motor3.setInverted(true);
 
         lift_motor2.resetEncoder();
-        targetLiftPos = TeleOpConfig.HEIGHT_ONE;
+        targetLiftHeight = TeleOpConfig.HEIGHT_ONE;
         targetLiftPosName = liftHeights.ONE.name();
 
         passThruTimer = new ElapsedTime();
@@ -111,7 +111,7 @@ public class PowerplayScorer {
     private boolean skip = false;
     public boolean useLiftPIDF = true;
 
-    public double liftEncoderReading;
+    public double currentLiftHeight;
 
     public enum passStates {
         MOVING_TO_FRONT,
@@ -137,7 +137,7 @@ public class PowerplayScorer {
                 passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
                 break;
             case PIVOT_POS:
-                if (liftEncoderReading >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                if (currentLiftHeight >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
                     passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
                     passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
                 } else {
@@ -171,7 +171,7 @@ public class PowerplayScorer {
                     skip = false;
                     break;
                 case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skip || liftEncoderReading >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skip || currentLiftHeight >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
                         passThruTimer.reset();
                         currentPassState = passStates.PIVOTING;
                         pivotIsFront = false;
@@ -229,7 +229,7 @@ public class PowerplayScorer {
                     }
                     break;
                 case MOVING_TO_FRONT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (liftEncoderReading >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skip) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (currentLiftHeight >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skip) {
                         passThruTimer.reset();
                         clawIsPass = false;
                         currentPassState = passStates.IN_FRONT;
@@ -253,50 +253,50 @@ public class PowerplayScorer {
 
         switch (height){
             case ONE:
-                targetLiftPos = TeleOpConfig.HEIGHT_ONE;
+                targetLiftHeight = TeleOpConfig.HEIGHT_ONE;
                 targetLiftPosName = liftHeights.ONE.name();
                 break;
             case TWO:
-                targetLiftPos = TeleOpConfig.HEIGHT_TWO;
+                targetLiftHeight = TeleOpConfig.HEIGHT_TWO;
                 targetLiftPosName = liftHeights.TWO.name();
                 break;
             case THREE:
-                targetLiftPos = TeleOpConfig.HEIGHT_THREE;
+                targetLiftHeight = TeleOpConfig.HEIGHT_THREE;
                 targetLiftPosName = liftHeights.THREE.name();
                 break;
             case FOUR:
-                targetLiftPos = TeleOpConfig.HEIGHT_FOUR;
+                targetLiftHeight = TeleOpConfig.HEIGHT_FOUR;
                 targetLiftPosName = liftHeights.FOUR.name();
                 break;
             case FIVE:
-                targetLiftPos = TeleOpConfig.HEIGHT_FIVE;
+                targetLiftHeight = TeleOpConfig.HEIGHT_FIVE;
                 targetLiftPosName = liftHeights.FIVE.name();
                 break;
             case GROUND:
-                targetLiftPos = TeleOpConfig.HEIGHT_GROUND;
+                targetLiftHeight = TeleOpConfig.HEIGHT_GROUND;
                 targetLiftPosName = liftHeights.GROUND.name();
                 break;
             case LOW:
-                targetLiftPos = TeleOpConfig.HEIGHT_LOW;
+                targetLiftHeight = TeleOpConfig.HEIGHT_LOW;
                 targetLiftPosName = liftHeights.LOW.name();
                 break;
             case MED:
-                targetLiftPos = TeleOpConfig.HEIGHT_MEDIUM;
+                targetLiftHeight = TeleOpConfig.HEIGHT_MEDIUM;
                 targetLiftPosName = liftHeights.MED.name();
                 break;
             case TALL:
-                targetLiftPos = TeleOpConfig.HEIGHT_TALL;
+                targetLiftHeight = TeleOpConfig.HEIGHT_TALL;
                 targetLiftPosName = liftHeights.TALL.name();
                 break;
         }
     }
 
     public void runLiftToPos() {
-        liftEncoderReading = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
-        liftController.setSetPoint(targetLiftPos);
+        currentLiftHeight = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
+        liftController.setSetPoint(targetLiftHeight);
 
         if (useLiftPIDF && !liftController.atSetPoint()) {
-            liftVelocity = liftController.calculate(liftEncoderReading);
+            liftVelocity = liftController.calculate(currentLiftHeight);
 
             if (liftVelocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
                 liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
@@ -314,7 +314,7 @@ public class PowerplayScorer {
 
     public void resetLiftEncoder() {
         lift_motor2.resetEncoder();
-        liftEncoderReading = 0;
+        currentLiftHeight = 0;
     }
 
     public void toggleClaw () {
@@ -334,7 +334,7 @@ public class PowerplayScorer {
 
 
         if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasLifted) {
-            targetLiftPos = liftController.getSetPoint() + 5;
+            targetLiftHeight = liftController.getSetPoint() + 5;
             liftClawTimer.reset();
             hasLifted = true;
         }
@@ -347,7 +347,7 @@ public class PowerplayScorer {
     }
 
     public void dropClaw () {
-        targetLiftPos = TeleOpConfig.HEIGHT_ONE;
+        targetLiftHeight = TeleOpConfig.HEIGHT_ONE;
         clawIsOpen = true;
     }
 

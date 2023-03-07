@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.HeadingHolder;
 import org.firstinspires.ftc.teamcode.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.TeleOpConfig;
@@ -133,7 +132,7 @@ public class AutonomousTesting extends LinearOpMode {
 //                })
 //                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
-                    scorer.targetLiftPos += 5;
+                    scorer.targetLiftHeight += 5;
                 })
                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .splineToSplineHeading(new Pose2d(centerPathX, firstScoringY, facingLeft), facingForward, scoringVeloCap, accelerationCap)
@@ -444,8 +443,8 @@ public class AutonomousTesting extends LinearOpMode {
             }
 
             myTelemetry.addData("Lift target height", scorer.targetLiftPosName);
-            myTelemetry.addData("Lift current position (inches)", scorer.liftEncoderReading);
-            myTelemetry.addData("Lift target position (inches)", scorer.targetLiftPos);
+            myTelemetry.addData("Lift current position (inches)", scorer.currentLiftHeight);
+            myTelemetry.addData("Lift target position (inches)", scorer.targetLiftHeight);
             myTelemetry.addData("Lift motor power output", scorer.liftVelocity);
 
             myTelemetry.addData("Passthrough status", scorer.currentPassState);
