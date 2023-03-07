@@ -19,14 +19,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class PowerplayScorer {
 
-    public MotorEx lift_motor1;
-    public MotorEx lift_motor2;
-    public MotorEx lift_motor3;
-    public SimpleServo clawRight;
-    public SimpleServo clawPivot;
-    public SimpleServo passThruRight;
-    public SimpleServo passThruLeft;
-    public PIDFController liftController;
+    private MotorEx lift_motor1;
+    private MotorEx lift_motor2;
+    private MotorEx lift_motor3;
+    private SimpleServo clawRight;
+    private SimpleServo clawPivot;
+    private SimpleServo passThruRight;
+    private SimpleServo passThruLeft;
+    private PIDFController liftController;
     public String targetLiftPosName;
     public DigitalChannel limitSwitch;
     public DigitalChannel red1;
@@ -35,8 +35,8 @@ public class PowerplayScorer {
     public DigitalChannel green2;
     public double targetLiftPos;
     public double liftVelocity;
-    public static ElapsedTime passThruTimer;
-    public static ElapsedTime liftClawTimer;
+    private static ElapsedTime passThruTimer;
+    private static ElapsedTime liftClawTimer;
 
     // the following is the code that runs during initialization
     public void init(HardwareMap hw) {
@@ -101,14 +101,14 @@ public class PowerplayScorer {
     }
 
     //  lift motor encoder resolution (ticks):
-    public static final double LIFT_TICKS = 145.1;
+    private static final double LIFT_TICKS = 145.1;
 
     public boolean clawIsOpen = true;
     public boolean clawIsPass = false;
     public boolean passIsFront = true;
-    public boolean pivotIsFront = true;
+    private boolean pivotIsFront = true;
     // override variable--when true, skips the timer to switch to next state immediately
-    public boolean skip = false;
+    private boolean skip = false;
     public boolean useLiftPIDF = true;
 
     public double liftEncoderReading;
@@ -312,11 +312,16 @@ public class PowerplayScorer {
         lift_motor3.set(velocity);
     }
 
+    public void resetLiftEncoder() {
+        lift_motor2.resetEncoder();
+        liftEncoderReading = 0;
+    }
+
     public void toggleClaw () {
         clawIsOpen = !clawIsOpen;
     }
 
-    public boolean hasLifted = true;
+    private boolean hasLifted = true;
 
     public void runClaw () {
         if (!clawIsOpen){

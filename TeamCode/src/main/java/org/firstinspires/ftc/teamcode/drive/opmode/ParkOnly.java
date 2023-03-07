@@ -247,7 +247,7 @@ public class ParkOnly extends LinearOpMode {
             }
 
             myTelemetry.addData("Lift position:", scorer.targetLiftPosName);
-            myTelemetry.addData("Lift encoder raw output:", scorer.lift_motor2.encoder.getPosition());
+            myTelemetry.addData("Lift encoder raw output:", scorer.liftEncoderReading);
             myTelemetry.addData("Lift target pos:", scorer.targetLiftPos);
             myTelemetry.addData("Lift motors output", scorer.liftVelocity);
 

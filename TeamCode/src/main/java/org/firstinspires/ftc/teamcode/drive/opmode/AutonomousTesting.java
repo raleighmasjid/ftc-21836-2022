@@ -133,7 +133,7 @@ public class AutonomousTesting extends LinearOpMode {
 //                })
 //                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
-                    scorer.targetLiftPos = scorer.liftController.getSetPoint() + 5;
+                    scorer.targetLiftPos += 5;
                 })
                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .splineToSplineHeading(new Pose2d(centerPathX, firstScoringY, facingLeft), facingForward, scoringVeloCap, accelerationCap)
@@ -450,9 +450,9 @@ public class AutonomousTesting extends LinearOpMode {
 
             myTelemetry.addData("Passthrough status", scorer.currentPassState);
 
-            myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
-            myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
-            myTelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
+//            myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
+//            myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
+//            myTelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
 
             myTelemetry.update();
 

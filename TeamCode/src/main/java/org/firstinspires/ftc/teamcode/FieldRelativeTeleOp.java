@@ -62,7 +62,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         boolean useOverrideMode = false;
         boolean useStackHeights = false;
         scorer.useLiftPIDF = true;
-        scorer.lift_motor2.resetEncoder();
+        scorer.resetLiftEncoder();
         drivetrain.setRotation(HeadingHolder.getHeading());
 
 
@@ -118,7 +118,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     scorer.toggleClaw();
                 }
                 if (control2RShoulder.wasJustPressed()) {
-                    scorer.lift_motor2.resetEncoder();
+                    scorer.resetLiftEncoder();
                 }
 
                 scorer.runLift(control2LeftY);
@@ -162,7 +162,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     } else {
                         scorer.useLiftPIDF = true;
                         scorer.setLiftPos(PowerplayScorer.liftHeights.ONE);
-                        scorer.lift_motor2.resetEncoder();
+                        scorer.resetLiftEncoder();
                         liftHasReset = true;
                     }
                 }
@@ -259,9 +259,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             myTelemetry.addData("Passthrough status", scorer.currentPassState);
 
-            myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
-            myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
-            myTelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
+//            myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
+//            myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
+//            myTelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
 //            myTelemetry.addData("Hub 0 draw", hubs.get(0).getCurrent(CurrentUnit.AMPS));
 //            myTelemetry.addData("Hub 0 name", hubs.get(0).getDeviceName());
 //            myTelemetry.addData("Hub 1 draw", hubs.get(1).getCurrent(CurrentUnit.AMPS));
