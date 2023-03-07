@@ -97,9 +97,6 @@ public class PowerplayScorer {
     public boolean useLiftPIDF = true;
 
     public double liftEncoderReading;
-    public void readLiftEncoder() {
-        liftEncoderReading = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
-    }
 
     public enum passStates {
         MOVING_TO_FRONT,
@@ -280,12 +277,11 @@ public class PowerplayScorer {
     }
 
     public void runLiftToPos() {
+        liftEncoderReading = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
         liftController.setSetPoint(targetLiftPos);
 
         if (useLiftPIDF && !liftController.atSetPoint()) {
-            liftVelocity = liftController.calculate(
-                    (lift_motor2.getCurrentPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH)
-            );
+            liftVelocity = liftController.calculate(liftEncoderReading);
 
             if (liftVelocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
                 liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;

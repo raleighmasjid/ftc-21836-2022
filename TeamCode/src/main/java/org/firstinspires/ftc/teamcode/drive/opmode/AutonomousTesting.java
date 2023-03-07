@@ -395,7 +395,6 @@ public class AutonomousTesting extends LinearOpMode {
 
             drive.update();
 
-            scorer.readLiftEncoder();
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassServos();

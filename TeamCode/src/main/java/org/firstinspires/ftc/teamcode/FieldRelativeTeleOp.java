@@ -101,11 +101,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2LeftY = Gamepad2.getLeftY();
 
 
-            scorer.readLiftEncoder();
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassServos();
-            scorer.runLiftToPos();
 
             if (control2X.wasJustPressed()) {
                 useOverrideMode = !useOverrideMode;
@@ -140,6 +138,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             } else {
 
+                scorer.runLiftToPos();
                 scorer.runPassStates();
 
                 if(control2Y.wasJustPressed()){
