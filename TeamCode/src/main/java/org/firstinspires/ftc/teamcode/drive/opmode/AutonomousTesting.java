@@ -35,6 +35,7 @@ public class AutonomousTesting extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline signalSleeveDetectionPipeline;
+    List<LynxModule> hubs;
 
     // Lens intrinsics
     // UNITS ARE PIXELS
@@ -291,9 +292,9 @@ public class AutonomousTesting extends LinearOpMode {
 
         drive.followTrajectorySequenceAsync(trajectory1);
 
-        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+        hubs = hardwareMap.getAll(LynxModule.class);
 
-        for (LynxModule hub : allHubs) {
+        for (LynxModule hub : hubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
 
@@ -389,7 +390,7 @@ public class AutonomousTesting extends LinearOpMode {
 
         while(opModeIsActive()) {
 
-            for (LynxModule hub : allHubs) {
+            for (LynxModule hub : hubs) {
                 hub.clearBulkCache();
             }
 

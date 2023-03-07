@@ -65,9 +65,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         scorer.lift_motor2.resetEncoder();
         drivetrain.setRotation(HeadingHolder.getHeading());
 
-        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
-        for (LynxModule hub : allHubs) {
+        for (LynxModule hub : hubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
 
@@ -76,7 +75,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 //      teleop control loop
         while (opModeIsActive()) {
 
-            for (LynxModule hub : allHubs) {
+            for (LynxModule hub : hubs) {
                 hub.clearBulkCache();
             }
 
