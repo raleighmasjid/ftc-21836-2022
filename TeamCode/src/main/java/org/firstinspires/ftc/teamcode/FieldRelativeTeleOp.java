@@ -101,6 +101,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassthroughServos();
+            if (control2LShoulder.wasJustPressed()) {
+                scorer.togglePivot(); //pivot override
+            }
 
             if (control2X.wasJustPressed()) {
                 useOverrideMode = !useOverrideMode;
@@ -110,9 +113,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             if (useOverrideMode) {
 
-                if (control2LShoulder.wasJustPressed()) {
-                    scorer.togglePivot(); //pivot override
-                }
                 if (control2B.wasJustPressed()) {
                     scorer.toggleClaw();
                 }
