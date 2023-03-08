@@ -132,22 +132,22 @@ public class AutonomousTesting extends LinearOpMode {
 //                })
 //                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
-                    scorer.targetLiftHeight += 5;
+                    scorer.setTargetLiftPosition(scorer.getTargetLiftPosition() + 5);
                 })
                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .splineToSplineHeading(new Pose2d(centerPathX, firstScoringY, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                    scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.MED);
                 })
                 .lineTo(new Vector2d(31.5, firstScoringY))
                 .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
+                    scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.FIVE);
                     scorer.clawIsOpen = true;
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .lineTo(new Vector2d(centerPathX, firstScoringY))
                 .addTemporalMarker(() -> {
-                    scorer.togglePassthrough();
+                    scorer.triggerPassthrough();
                 })
                 .setReversed(true)
                 .lineTo(parkingZone2)
@@ -164,22 +164,22 @@ public class AutonomousTesting extends LinearOpMode {
                 })
                 .waitSeconds(stackWait)
                 .addTemporalMarker(() ->{
-                    scorer.togglePassthrough();
+                    scorer.triggerPassthrough();
                 })
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                    scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.MED);
                 })
                 .addTemporalMarker(() -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
+                    scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.FOUR);
                     scorer.clawIsOpen = true;
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
-                    scorer.togglePassthrough();
+                    scorer.triggerPassthrough();
                 })
                 .splineTo(turnPos, facingRight)
                 .splineTo(
@@ -193,22 +193,22 @@ public class AutonomousTesting extends LinearOpMode {
                 })
                 .waitSeconds(stackWait)
                 .addTemporalMarker(() ->{
-                    scorer.togglePassthrough();
+                    scorer.triggerPassthrough();
                 })
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                    scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.MED);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
+                    scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.THREE);
                     scorer.clawIsOpen = true;
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
-                    scorer.togglePassthrough();
+                    scorer.triggerPassthrough();
                 })
                 .splineTo(turnPos, facingRight)
                 .splineTo(
@@ -222,22 +222,22 @@ public class AutonomousTesting extends LinearOpMode {
                 })
                 .waitSeconds(stackWait)
                 .addTemporalMarker(() ->{
-                    scorer.togglePassthrough();
+                    scorer.triggerPassthrough();
                 })
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                    scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.MED);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
+                    scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.TWO);
                     scorer.clawIsOpen = true;
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
-                    scorer.togglePassthrough();
+                    scorer.triggerPassthrough();
                 })
                 .splineTo(turnPos, facingRight)
                 .splineTo(
@@ -251,13 +251,13 @@ public class AutonomousTesting extends LinearOpMode {
                 })
                 .waitSeconds(stackWait)
                 .addTemporalMarker(() ->{
-                    scorer.togglePassthrough();
+                    scorer.triggerPassthrough();
                 })
                 .setReversed(false)
                 .splineTo(turnPos, facingLeft)
                 .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
                 .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
+                    scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.MED);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
                     scorer.dropClaw();
@@ -361,8 +361,8 @@ public class AutonomousTesting extends LinearOpMode {
 //            sleep(20);
             scorer.runClaw();
             scorer.runPivot();
-            scorer.runPassServos();
-            scorer.runPassStates();
+            scorer.runPassthroughServos();
+            scorer.runPassthroughStates();
         }
 
         //START IS HERE//
@@ -397,9 +397,9 @@ public class AutonomousTesting extends LinearOpMode {
 
             scorer.runClaw();
             scorer.runPivot();
-            scorer.runPassServos();
-            scorer.runPassStates();
-            scorer.runLiftToPos();
+            scorer.runPassthroughServos();
+            scorer.runPassthroughStates();
+            scorer.runLiftToPosition();
 
 
             // parking statement
@@ -436,18 +436,18 @@ public class AutonomousTesting extends LinearOpMode {
 
             if (!scorer.clawIsOpen){
                 myTelemetry.addData("Claw is", "closed");
-            } else if (scorer.clawIsPass) {
+            } else if (scorer.clawIsFlipping) {
                 myTelemetry.addData("Claw is", "half-closed");
             } else {
                 myTelemetry.addData("Claw is", "open");
             }
 
-            myTelemetry.addData("Lift target height", scorer.targetLiftPosName);
-            myTelemetry.addData("Lift current position (inches)", scorer.currentLiftHeight);
-            myTelemetry.addData("Lift target position (inches)", scorer.targetLiftHeight);
+            myTelemetry.addData("Lift target height", scorer.getTargetLiftPositionName());
+            myTelemetry.addData("Lift current position (inches)", scorer.getCurrentLiftPosition());
+            myTelemetry.addData("Lift target position (inches)", scorer.getTargetLiftPosition());
             myTelemetry.addData("Lift motor power output", scorer.liftVelocity);
 
-            myTelemetry.addData("Passthrough status", scorer.currentPassState);
+            myTelemetry.addData("Passthrough status", scorer.getCurrentPassthroughState());
 
 //            myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
 //            myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));

@@ -24,27 +24,35 @@ public class PowerplayScorer {
     private MotorEx lift_motor3;
     private SimpleServo clawRight;
     private SimpleServo clawPivot;
-    private SimpleServo passThruRight;
-    private SimpleServo passThruLeft;
+    private SimpleServo passthroughRight;
+    private SimpleServo passthroughLeft;
     private PIDFController liftController;
-    public String targetLiftPosName;
+    private String targetLiftPositionName;
     public DigitalChannel limitSwitch;
-    public DigitalChannel red1;
-    public DigitalChannel green1;
-    public DigitalChannel red2;
-    public DigitalChannel green2;
-    public double targetLiftHeight;
+    public DigitalChannel LED1red;
+    public DigitalChannel LED1green;
+    public DigitalChannel LED2red;
+    public DigitalChannel LED2green;
+    private double currentLiftPosition = 0;
+    private double targetLiftPosition;
     public double liftVelocity;
-    private static ElapsedTime passThruTimer;
+    private static ElapsedTime passthroughTimer;
     private static ElapsedTime liftClawTimer;
+    public boolean clawIsOpen = true;
+    public boolean clawIsFlipping = false;
+    private boolean passthroughInFront = true;
+    private boolean pivotIsFront = true;
+    // override variable--when true, skips the timer to switch to next state immediately
+    private boolean skipPassthroughState = false;
+    public boolean useLiftPIDF = true;
 
     // the following is the code that runs during initialization
     public void init(HardwareMap hw) {
 
         clawRight = new SimpleServo(hw,"claw right",0,300);
         clawPivot = new SimpleServo(hw, "claw pivot",0,300);
-        passThruRight = new SimpleServo(hw, "passthrough 1",0,300);
-        passThruLeft = new SimpleServo(hw, "passthrough 2",0,300);
+        passthroughRight = new SimpleServo(hw, "passthrough 1",0,300);
+        passthroughLeft = new SimpleServo(hw, "passthrough 2",0,300);
 
         lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, MAX_RPM);
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
@@ -77,43 +85,35 @@ public class PowerplayScorer {
         lift_motor3.setInverted(true);
 
         lift_motor2.resetEncoder();
-        targetLiftHeight = TeleOpConfig.HEIGHT_ONE;
-        targetLiftPosName = liftHeights.ONE.name();
+        targetLiftPosition = TeleOpConfig.HEIGHT_ONE;
+        targetLiftPositionName = liftPositions.ONE.name();
 
-        passThruTimer = new ElapsedTime();
-        passThruTimer.reset();
+        passthroughTimer = new ElapsedTime();
+        passthroughTimer.reset();
         liftClawTimer = new ElapsedTime();
         liftClawTimer.reset();
 
         limitSwitch = hw.get(DigitalChannel.class, "limit switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
-        red1 = hw.get(DigitalChannel.class, "red1");
-        green1 = hw.get(DigitalChannel.class, "green1");
-        red1.setMode(DigitalChannel.Mode.OUTPUT);
-        green1.setMode(DigitalChannel.Mode.OUTPUT);
+        LED1red = hw.get(DigitalChannel.class, "red1");
+        LED1green = hw.get(DigitalChannel.class, "green1");
+        LED1red.setMode(DigitalChannel.Mode.OUTPUT);
+        LED1green.setMode(DigitalChannel.Mode.OUTPUT);
 
-        red2 = hw.get(DigitalChannel.class, "red2");
-        green2 = hw.get(DigitalChannel.class, "green2");
-        red2.setMode(DigitalChannel.Mode.OUTPUT);
-        green2.setMode(DigitalChannel.Mode.OUTPUT);
+        LED2red = hw.get(DigitalChannel.class, "red2");
+        LED2green = hw.get(DigitalChannel.class, "green2");
+        LED2red.setMode(DigitalChannel.Mode.OUTPUT);
+        LED2green.setMode(DigitalChannel.Mode.OUTPUT);
 
     }
 
     //  lift motor encoder resolution (ticks):
     private static final double LIFT_TICKS = 145.1;
 
-    public boolean clawIsOpen = true;
-    public boolean clawIsPass = false;
-    public boolean passIsFront = true;
-    private boolean pivotIsFront = true;
-    // override variable--when true, skips the timer to switch to next state immediately
-    private boolean skip = false;
-    public boolean useLiftPIDF = true;
 
-    public double currentLiftHeight;
 
-    public enum passStates {
+    private enum passthroughStates {
         MOVING_TO_FRONT,
         IN_FRONT,
         MOVING_TO_PIVOT,
@@ -121,186 +121,221 @@ public class PowerplayScorer {
         MOVING_TO_BACK,
         IN_BACK
     }
-    public enum passPositions {
+    private enum passthroughPositions {
         FRONT,
         PIVOT_POS,
         BACK
     }
 
-    public passStates currentPassState = passStates.IN_FRONT;
-    public passPositions currentPassPos = passPositions.FRONT;
+    private passthroughStates currentPassthroughState = passthroughStates.IN_FRONT;
+    private passthroughPositions currentPassthroughPosition = passthroughPositions.FRONT;
 
-    public void runPassServos () {
-        switch (currentPassPos) {
+    public passthroughStates getCurrentPassthroughState () {
+        return currentPassthroughState;
+    }
+
+    public void runPassthroughServos() {
+        switch (currentPassthroughPosition) {
             case FRONT:
-                passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
-                passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
+                passthroughRight.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
+                passthroughLeft.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
                 break;
             case PIVOT_POS:
-                if (currentLiftHeight >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
+                if (currentLiftPosition >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                    passthroughRight.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
+                    passthroughLeft.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
                 } else {
-                    passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_PIVOT_ANGLE);
-                    passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_PIVOT_ANGLE);
+                    passthroughRight.turnToAngle(TeleOpConfig.PASS_RIGHT_PIVOT_ANGLE);
+                    passthroughLeft.turnToAngle(TeleOpConfig.PASS_LEFT_PIVOT_ANGLE);
                 }
                 break;
             case BACK:
-                passThruRight.turnToAngle(TeleOpConfig.PASS_RIGHT_BACK_ANGLE);
-                passThruLeft.turnToAngle(TeleOpConfig.PASS_LEFT_BACK_ANGLE);
+                passthroughRight.turnToAngle(TeleOpConfig.PASS_RIGHT_BACK_ANGLE);
+                passthroughLeft.turnToAngle(TeleOpConfig.PASS_LEFT_BACK_ANGLE);
                 break;
             default:
-                currentPassPos = passPositions.FRONT;
+                currentPassthroughPosition = passthroughPositions.FRONT;
                 break;
         }
     }
 
 
-    public void runPassStates() {
-        if (passIsFront) {
-            switch (currentPassState) {
+    public void runPassthroughStates() {
+        if (passthroughInFront) {
+            switch (currentPassthroughState) {
                 case IN_FRONT:
+                    passthroughTimer.reset();
+                    skipPassthroughState = false;
+                    pivotIsFront = true;
+                    passthroughInFront = true;
+                    break;
                 case IN_BACK:
-                    passThruTimer.reset();
-                    skip = false;
+                    passthroughTimer.reset();
+                    skipPassthroughState = false;
+                    pivotIsFront = false;
+                    passthroughInFront = false;
                     break;
                 case MOVING_TO_FRONT:
-                    passThruTimer.reset();
-                    currentPassState = passStates.MOVING_TO_PIVOT;
-                    currentPassPos = passPositions.PIVOT_POS;
-                    skip = false;
+                    passthroughTimer.reset();
+                    currentPassthroughState = passthroughStates.MOVING_TO_PIVOT;
+                    currentPassthroughPosition = passthroughPositions.PIVOT_POS;
+                    skipPassthroughState = false;
                     break;
                 case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skip || currentLiftHeight >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
-                        passThruTimer.reset();
-                        currentPassState = passStates.PIVOTING;
+                    if ((passthroughTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skipPassthroughState || currentLiftPosition >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                        passthroughTimer.reset();
+                        currentPassthroughState = passthroughStates.PIVOTING;
                         pivotIsFront = false;
-                        skip = false;
+                        skipPassthroughState = false;
                     }
                     break;
                 case PIVOTING:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_BACK_TIME) || skip) {
-                        passThruTimer.reset();
-                        currentPassState = passStates.MOVING_TO_BACK;
-                        currentPassPos = passPositions.BACK;
+                    if ((passthroughTimer.seconds() >= TeleOpConfig.PIVOTING_TO_BACK_TIME) || skipPassthroughState) {
+                        passthroughTimer.reset();
+                        currentPassthroughState = passthroughStates.MOVING_TO_BACK;
+                        currentPassthroughPosition = passthroughPositions.BACK;
                         pivotIsFront = false;
-                        skip = false;
+                        skipPassthroughState = false;
                     }
                     break;
                 case MOVING_TO_BACK:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_BACK_TIME) || skip) {
-                        passThruTimer.reset();
-                        clawIsPass = false;
-                        currentPassState = passStates.IN_BACK;
-                        passIsFront = false;
+                    if ((passthroughTimer.seconds() >= TeleOpConfig.PIVOT_TO_BACK_TIME) || skipPassthroughState) {
+                        passthroughTimer.reset();
+                        clawIsFlipping = false;
+                        currentPassthroughState = passthroughStates.IN_BACK;
+                        passthroughInFront = false;
                         pivotIsFront = false;
-                        skip = false;
+                        skipPassthroughState = false;
                     }
                     break;
                 default:
-                    currentPassState = passStates.IN_FRONT;
+                    currentPassthroughState = passthroughStates.IN_FRONT;
                     break;
             }
         } else {
-            switch (currentPassState) {
+            switch (currentPassthroughState) {
                 case IN_BACK:
+                    passthroughTimer.reset();
+                    skipPassthroughState = false;
+                    pivotIsFront = false;
+                    passthroughInFront = false;
+                    break;
                 case IN_FRONT:
-                    passThruTimer.reset();
-                    skip = false;
+                    passthroughTimer.reset();
+                    skipPassthroughState = false;
+                    pivotIsFront = true;
+                    passthroughInFront = true;
                     break;
                 case MOVING_TO_BACK:
-                    passThruTimer.reset();
-                    currentPassState = passStates.MOVING_TO_PIVOT;
-                    currentPassPos = passPositions.PIVOT_POS;
-                    skip = false;
+                    passthroughTimer.reset();
+                    currentPassthroughState = passthroughStates.MOVING_TO_PIVOT;
+                    currentPassthroughPosition = passthroughPositions.PIVOT_POS;
+                    skipPassthroughState = false;
                     break;
                 case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.BACK_TO_PIVOT_TIME) || skip) {
-                        passThruTimer.reset();
-                        currentPassState = passStates.PIVOTING;
+                    if ((passthroughTimer.seconds() >= TeleOpConfig.BACK_TO_PIVOT_TIME) || skipPassthroughState) {
+                        passthroughTimer.reset();
+                        currentPassthroughState = passthroughStates.PIVOTING;
                         pivotIsFront = true;
-                        skip = false;
+                        skipPassthroughState = false;
                     }
                     break;
                 case PIVOTING:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_FRONT_TIME) || skip) {
-                        passThruTimer.reset();
-                        currentPassState = passStates.MOVING_TO_FRONT;
-                        currentPassPos = passPositions.FRONT;
+                    if ((passthroughTimer.seconds() >= TeleOpConfig.PIVOTING_TO_FRONT_TIME) || skipPassthroughState) {
+                        passthroughTimer.reset();
+                        currentPassthroughState = passthroughStates.MOVING_TO_FRONT;
+                        currentPassthroughPosition = passthroughPositions.FRONT;
                         pivotIsFront = true;
-                        skip = false;
+                        skipPassthroughState = false;
                     }
                     break;
                 case MOVING_TO_FRONT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (currentLiftHeight >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skip) {
-                        passThruTimer.reset();
-                        clawIsPass = false;
-                        currentPassState = passStates.IN_FRONT;
-                        passIsFront = true;
+                    if ((passthroughTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (currentLiftPosition >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skipPassthroughState) {
+                        passthroughTimer.reset();
+                        clawIsFlipping = false;
+                        currentPassthroughState = passthroughStates.IN_FRONT;
+                        passthroughInFront = true;
                         pivotIsFront = true;
-                        skip = false;
+                        skipPassthroughState = false;
                     }
                     break;
                 default:
-                    currentPassState = passStates.IN_BACK;
+                    currentPassthroughState = passthroughStates.IN_BACK;
                     break;
             }
         }
     }
 
 
-    public enum liftHeights {
+    public enum liftPositions {
             ONE, TWO, THREE, FOUR, FIVE, GROUND, LOW, MED, TALL
     }
 
-    public void setLiftPos(liftHeights height) {
+    public void setTargetLiftPosition(liftPositions height) {
 
         switch (height){
             case ONE:
-                targetLiftHeight = TeleOpConfig.HEIGHT_ONE;
-                targetLiftPosName = liftHeights.ONE.name();
+                targetLiftPosition = TeleOpConfig.HEIGHT_ONE;
+                targetLiftPositionName = liftPositions.ONE.name();
                 break;
             case TWO:
-                targetLiftHeight = TeleOpConfig.HEIGHT_TWO;
-                targetLiftPosName = liftHeights.TWO.name();
+                targetLiftPosition = TeleOpConfig.HEIGHT_TWO;
+                targetLiftPositionName = liftPositions.TWO.name();
                 break;
             case THREE:
-                targetLiftHeight = TeleOpConfig.HEIGHT_THREE;
-                targetLiftPosName = liftHeights.THREE.name();
+                targetLiftPosition = TeleOpConfig.HEIGHT_THREE;
+                targetLiftPositionName = liftPositions.THREE.name();
                 break;
             case FOUR:
-                targetLiftHeight = TeleOpConfig.HEIGHT_FOUR;
-                targetLiftPosName = liftHeights.FOUR.name();
+                targetLiftPosition = TeleOpConfig.HEIGHT_FOUR;
+                targetLiftPositionName = liftPositions.FOUR.name();
                 break;
             case FIVE:
-                targetLiftHeight = TeleOpConfig.HEIGHT_FIVE;
-                targetLiftPosName = liftHeights.FIVE.name();
+                targetLiftPosition = TeleOpConfig.HEIGHT_FIVE;
+                targetLiftPositionName = liftPositions.FIVE.name();
                 break;
             case GROUND:
-                targetLiftHeight = TeleOpConfig.HEIGHT_GROUND;
-                targetLiftPosName = liftHeights.GROUND.name();
+                targetLiftPosition = TeleOpConfig.HEIGHT_GROUND;
+                targetLiftPositionName = liftPositions.GROUND.name();
                 break;
             case LOW:
-                targetLiftHeight = TeleOpConfig.HEIGHT_LOW;
-                targetLiftPosName = liftHeights.LOW.name();
+                targetLiftPosition = TeleOpConfig.HEIGHT_LOW;
+                targetLiftPositionName = liftPositions.LOW.name();
                 break;
             case MED:
-                targetLiftHeight = TeleOpConfig.HEIGHT_MEDIUM;
-                targetLiftPosName = liftHeights.MED.name();
+                targetLiftPosition = TeleOpConfig.HEIGHT_MEDIUM;
+                targetLiftPositionName = liftPositions.MED.name();
                 break;
             case TALL:
-                targetLiftHeight = TeleOpConfig.HEIGHT_TALL;
-                targetLiftPosName = liftHeights.TALL.name();
+                targetLiftPosition = TeleOpConfig.HEIGHT_TALL;
+                targetLiftPositionName = liftPositions.TALL.name();
                 break;
         }
     }
 
-    public void runLiftToPos() {
-        currentLiftHeight = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
-        liftController.setSetPoint(targetLiftHeight);
+    public void setTargetLiftPosition(double height) {
+        targetLiftPosition = height;
+        targetLiftPositionName = Double.toString(height);
+    }
+
+    public double getTargetLiftPosition() {
+        return targetLiftPosition;
+    }
+
+    public double getCurrentLiftPosition() {
+        return currentLiftPosition;
+    }
+
+    public String getTargetLiftPositionName() {
+        return targetLiftPositionName;
+    }
+
+    public void runLiftToPosition() {
+        currentLiftPosition = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
+        liftController.setSetPoint(targetLiftPosition);
 
         if (useLiftPIDF && !liftController.atSetPoint()) {
-            liftVelocity = liftController.calculate(currentLiftHeight);
+            liftVelocity = liftController.calculate(currentLiftPosition);
 
             if (liftVelocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
                 liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
@@ -318,40 +353,40 @@ public class PowerplayScorer {
 
     public void resetLiftEncoder() {
         lift_motor2.resetEncoder();
-        currentLiftHeight = 0;
+        currentLiftPosition = 0;
     }
 
     public void toggleClaw () {
         clawIsOpen = !clawIsOpen;
     }
 
-    private boolean hasLifted = true;
+    private boolean clawHasLifted = true;
 
     public void runClaw () {
         if (!clawIsOpen){
             clawRight.turnToAngle(TeleOpConfig.CLAW_CLOSED_ANGLE);
-        } else if (clawIsPass) {
+        } else if (clawIsFlipping) {
             clawRight.turnToAngle(TeleOpConfig.CLAW_PASS_ANGLE);
         } else {
             clawRight.turnToAngle(TeleOpConfig.CLAW_OPEN_ANGLE);
         }
 
 
-        if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !hasLifted) {
-            targetLiftHeight = liftController.getSetPoint() + 5;
+        if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !clawHasLifted) {
+            setTargetLiftPosition(getTargetLiftPosition() + 5);
             liftClawTimer.reset();
-            hasLifted = true;
+            clawHasLifted = true;
         }
     }
 
     public void liftClaw () {
         clawIsOpen = false;
         liftClawTimer.reset();
-        hasLifted = false;
+        clawHasLifted = false;
     }
 
     public void dropClaw () {
-        targetLiftHeight = TeleOpConfig.HEIGHT_ONE;
+        targetLiftPosition = TeleOpConfig.HEIGHT_ONE;
         clawIsOpen = true;
     }
 
@@ -368,16 +403,26 @@ public class PowerplayScorer {
         }
     }
 
-    public void togglePassthrough () {
-        if ((currentPassState != passStates.IN_FRONT) && (currentPassState != passStates.IN_BACK)) {
-            passIsFront = !passIsFront;
-            skip = true;
+    public void triggerPassthrough() {
+        if ((currentPassthroughState != passthroughStates.IN_FRONT) && (currentPassthroughState != passthroughStates.IN_BACK)) {
+            passthroughInFront = !passthroughInFront;
+            skipPassthroughState = true;
         } else {
-            clawIsPass = true;
-            passThruTimer.reset();
-            currentPassState = passStates.MOVING_TO_PIVOT;
-            currentPassPos = passPositions.PIVOT_POS;
-            skip = false;
+            clawIsFlipping = true;
+            passthroughTimer.reset();
+            currentPassthroughState = passthroughStates.MOVING_TO_PIVOT;
+            currentPassthroughPosition = passthroughPositions.PIVOT_POS;
+            skipPassthroughState = false;
+        }
+    }
+
+    public void togglePassthrough () {
+        if (currentPassthroughState != passthroughStates.IN_FRONT) {
+            currentPassthroughPosition = passthroughPositions.FRONT;
+            currentPassthroughState = passthroughStates.IN_FRONT;
+        } else {
+            currentPassthroughPosition = passthroughPositions.BACK;
+            currentPassthroughState = passthroughStates.IN_BACK;
         }
     }
 }
