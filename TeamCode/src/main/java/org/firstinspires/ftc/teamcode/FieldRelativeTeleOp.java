@@ -58,7 +58,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double precisionScale;
         boolean liftHasReset = true;
         boolean useOverrideMode = false;
-        boolean useStackHeights = false;
+        boolean useStackPositions = false;
         scorer.useLiftPIDF = true;
         scorer.resetLiftEncoder();
         drivetrain.setRotation(HeadingHolder.getHeading());
@@ -97,43 +97,45 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             control2LeftY = Gamepad2.getLeftY();
 
-
             scorer.runClaw();
             scorer.runPivot();
-            scorer.runPassthroughServos();
+            scorer.runPassThruServos();
+
             if (control2LShoulder.wasJustPressed()) {
-                scorer.togglePivot(); //pivot override
+                scorer.togglePivot();
             }
 
             if (control2X.wasJustPressed()) {
                 useOverrideMode = !useOverrideMode;
                 scorer.useLiftPIDF = !scorer.useLiftPIDF;
-                scorer.setTargetLiftPosition(scorer.getCurrentLiftPosition());
+                scorer.setTargetLiftPos(scorer.getCurrentLiftPos());
             }
 
             if (useOverrideMode) {
 
+                scorer.runLift(control2LeftY);
+
                 if (control2B.wasJustPressed()) {
                     scorer.toggleClaw();
                 }
+
                 if (control2RShoulder.wasJustPressed()) {
                     scorer.resetLiftEncoder();
                 }
 
-                scorer.runLift(control2LeftY);
-
                 if(control2Y.wasJustPressed()){
-                    scorer.togglePassthrough();
+                    scorer.togglePassThru();
                 }
 
             } else {
 
-                scorer.runLiftToPosition();
-                scorer.runPassthroughStates();
+                scorer.runLiftToPos();
+                scorer.runPassThruStates();
 
                 if(control2Y.wasJustPressed()){
-                    scorer.triggerPassthrough();
+                    scorer.triggerPassThru();
                 }
+
                 if (control2B.wasJustPressed()) {
                     if (scorer.clawIsOpen) {
                         scorer.liftClaw();
@@ -142,47 +144,47 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     }
                 }
 
-                // Lift encoder reset
                 if (control2RShoulder.wasJustPressed()) {
                     scorer.useLiftPIDF = false;
                     liftHasReset = false;
                 }
+
                 if (!liftHasReset) {
                     if (scorer.limitSwitch.getState()) {
                         scorer.runLift(TeleOpConfig.LIFT_RESET_VELOCITY);
                     } else {
                         scorer.useLiftPIDF = true;
-                        scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.ONE);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.ONE);
                         scorer.resetLiftEncoder();
                         liftHasReset = true;
                     }
                 }
 
                 if(control2A.wasJustPressed()){
-                    useStackHeights = !useStackHeights;
+                    useStackPositions = !useStackPositions;
                 }
 
-                if (useStackHeights) {
+                if (useStackPositions) {
                     // Lift stack height triggers
                     if (control2Up.wasJustPressed()) {
-                        scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.FIVE);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.FIVE);
                     } else if (control2Left.wasJustPressed()) {
-                        scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.FOUR);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.FOUR);
                     } else if (control2Right.wasJustPressed()) {
-                        scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.THREE);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.THREE);
                     } else if (control2Down.wasJustPressed()) {
-                        scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.TWO);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.TWO);
                     }
                 } else {
                     // Lift junction height triggers
                     if (control2Up.wasJustPressed()) {
-                        scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.TALL);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.TALL);
                     } else if (control2Left.wasJustPressed()) {
-                        scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.MED);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
                     } else if (control2Right.wasJustPressed()) {
-                        scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.LOW);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.LOW);
                     } else if (control2Down.wasJustPressed()) {
-                        scorer.setTargetLiftPosition(PowerplayScorer.liftPositions.GROUND);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.GROUND);
                     }
                 }
             }
@@ -217,7 +219,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             if (!scorer.clawIsOpen){
                 myTelemetry.addData("Claw is", "closed");
-            } else if (scorer.clawIsFlipping) {
+            } else if (scorer.passThruIsMoving) {
                 myTelemetry.addData("Claw is", "half-closed");
             } else {
                 myTelemetry.addData("Claw is", "open");
@@ -229,7 +231,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.LED2green.setState(false);
                 scorer.LED1red.setState(true);
                 scorer.LED2red.setState(true);
-            } else if (useStackHeights) {
+            } else if (useStackPositions) {
                 myTelemetry.addData("Robot is in", "semi-automated stack heights mode");
                 scorer.LED1green.setState(true);
                 scorer.LED2green.setState(true);
@@ -243,12 +245,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.LED2red.setState(false);
             }
 
-            myTelemetry.addData("Lift target height", scorer.getTargetLiftPositionName());
-            myTelemetry.addData("Lift current position (inches)", scorer.getCurrentLiftPosition());
-            myTelemetry.addData("Lift target position (inches)", scorer.getTargetLiftPosition());
+            myTelemetry.addData("Lift target height", scorer.getTargetLiftPosName());
+            myTelemetry.addData("Lift current position (inches)", scorer.getCurrentLiftPos());
+            myTelemetry.addData("Lift target position (inches)", scorer.getTargetLiftPos());
             myTelemetry.addData("Lift motor power output", scorer.liftVelocity);
 
-            myTelemetry.addData("Passthrough status", scorer.getCurrentPassthroughState());
+            myTelemetry.addData("Passthrough status", scorer.getCurrentPassThruState());
 
 //            myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
 //            myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));

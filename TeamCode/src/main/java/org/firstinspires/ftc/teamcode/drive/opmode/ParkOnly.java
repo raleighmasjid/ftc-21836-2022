@@ -232,7 +232,7 @@ public class ParkOnly extends LinearOpMode {
                 myTelemetry.addData("Limit switch", "is triggered");
             }
 
-            if (scorer.clawIsFlipping) {
+            if (scorer.passThruIsMoving) {
                 myTelemetry.addData("Claw is", "passing through");
             } else if (scorer.clawIsOpen){
                 myTelemetry.addData("Claw is", "open");
@@ -240,12 +240,12 @@ public class ParkOnly extends LinearOpMode {
                 myTelemetry.addData("Claw is", "closed");
             }
 
-            myTelemetry.addData("Lift position:", scorer.getTargetLiftPositionName());
-            myTelemetry.addData("Lift encoder raw output:", scorer.getCurrentLiftPosition());
-            myTelemetry.addData("Lift target pos:", scorer.getTargetLiftPosition());
+            myTelemetry.addData("Lift position:", scorer.getTargetLiftPosName());
+            myTelemetry.addData("Lift encoder raw output:", scorer.getCurrentLiftPos());
+            myTelemetry.addData("Lift target pos:", scorer.getTargetLiftPos());
             myTelemetry.addData("Lift motors output", scorer.liftVelocity);
 
-            myTelemetry.addData("Passthrough status", scorer.getCurrentPassthroughState());
+            myTelemetry.addData("Passthrough status", scorer.getCurrentPassThruState());
 
             myTelemetry.update();
 
