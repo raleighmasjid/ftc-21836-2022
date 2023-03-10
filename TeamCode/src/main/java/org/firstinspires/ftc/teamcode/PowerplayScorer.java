@@ -328,11 +328,21 @@ public class PowerplayScorer {
     }
 
     public double getCurrentLiftPos() {
+        readLiftPos();
         return currentLiftPos;
     }
 
-    public void runLiftToPos() {
+    public void readLiftPos () {
         currentLiftPos = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
+    }
+
+    public void resetLiftEncoder () {
+        lift_motor2.resetEncoder();
+        currentLiftPos = 0;
+    }
+
+    public void runLiftToPos() {
+        readLiftPos();
         liftController.setSetPoint(targetLiftPos);
 
         if (useLiftPIDF && !liftController.atSetPoint()) {
@@ -346,15 +356,10 @@ public class PowerplayScorer {
         }
     }
 
-    public void runLift(double velocity) {
+    public void runLift (double velocity) {
         lift_motor1.set(velocity);
         lift_motor2.set(velocity);
         lift_motor3.set(velocity);
-    }
-
-    public void resetLiftEncoder() {
-        lift_motor2.resetEncoder();
-        currentLiftPos = 0;
     }
 
     public void toggleClaw () {
