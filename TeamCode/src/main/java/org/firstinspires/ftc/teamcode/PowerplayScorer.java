@@ -42,8 +42,7 @@ public class PowerplayScorer {
     public boolean passThruIsMoving = false;
     private boolean passThruInFront = true;
     private boolean pivotIsFront = true;
-    // override variable--when true, skips the timer to switch to next state immediately
-    private boolean skipPassThruState = false;
+    private boolean skipCurrentPassThruState = false;
     public boolean useLiftPIDF = true;
 
     // the following is the code that runs during initialization
@@ -128,14 +127,14 @@ public class PowerplayScorer {
     }
 
     private passThruState currentPassThruState = passThruState.IN_FRONT;
-    private passThruPos currentPassthroughPos = passThruPos.FRONT;
+    private passThruPos currentPassThruPos = passThruPos.FRONT;
 
     public passThruState getCurrentPassThruState() {
         return currentPassThruState;
     }
 
     public void runPassThruServos() {
-        switch (currentPassthroughPos) {
+        switch (currentPassThruPos) {
             case FRONT:
                 passThruServoR.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
                 passThruServoL.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
@@ -154,7 +153,7 @@ public class PowerplayScorer {
                 passThruServoL.turnToAngle(TeleOpConfig.PASS_LEFT_BACK_ANGLE);
                 break;
             default:
-                currentPassthroughPos = passThruPos.FRONT;
+                currentPassThruPos = passThruPos.FRONT;
                 break;
         }
     }
@@ -165,47 +164,47 @@ public class PowerplayScorer {
             switch (currentPassThruState) {
                 case IN_FRONT:
                     passThruTimer.reset();
-                    skipPassThruState = false;
+                    skipCurrentPassThruState = false;
                     pivotIsFront = true;
                     passThruInFront = true;
                     break;
                 case IN_BACK:
                     passThruTimer.reset();
-                    skipPassThruState = false;
+                    skipCurrentPassThruState = false;
                     pivotIsFront = false;
                     passThruInFront = false;
                     break;
                 case MOVING_TO_FRONT:
                     passThruTimer.reset();
                     currentPassThruState = passThruState.MOVING_TO_PIVOT;
-                    currentPassthroughPos = passThruPos.PIVOT_POS;
-                    skipPassThruState = false;
+                    currentPassThruPos = passThruPos.PIVOT_POS;
+                    skipCurrentPassThruState = false;
                     break;
                 case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skipPassThruState || currentLiftPos >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skipCurrentPassThruState || currentLiftPos >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
                         passThruTimer.reset();
                         currentPassThruState = passThruState.PIVOTING;
                         pivotIsFront = false;
-                        skipPassThruState = false;
+                        skipCurrentPassThruState = false;
                     }
                     break;
                 case PIVOTING:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_BACK_TIME) || skipPassThruState) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_BACK_TIME) || skipCurrentPassThruState) {
                         passThruTimer.reset();
                         currentPassThruState = passThruState.MOVING_TO_BACK;
-                        currentPassthroughPos = passThruPos.BACK;
+                        currentPassThruPos = passThruPos.BACK;
                         pivotIsFront = false;
-                        skipPassThruState = false;
+                        skipCurrentPassThruState = false;
                     }
                     break;
                 case MOVING_TO_BACK:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_BACK_TIME) || skipPassThruState) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_BACK_TIME) || skipCurrentPassThruState) {
                         passThruTimer.reset();
                         passThruIsMoving = false;
                         currentPassThruState = passThruState.IN_BACK;
                         passThruInFront = false;
                         pivotIsFront = false;
-                        skipPassThruState = false;
+                        skipCurrentPassThruState = false;
                     }
                     break;
                 default:
@@ -216,47 +215,47 @@ public class PowerplayScorer {
             switch (currentPassThruState) {
                 case IN_BACK:
                     passThruTimer.reset();
-                    skipPassThruState = false;
+                    skipCurrentPassThruState = false;
                     pivotIsFront = false;
                     passThruInFront = false;
                     break;
                 case IN_FRONT:
                     passThruTimer.reset();
-                    skipPassThruState = false;
+                    skipCurrentPassThruState = false;
                     pivotIsFront = true;
                     passThruInFront = true;
                     break;
                 case MOVING_TO_BACK:
                     passThruTimer.reset();
                     currentPassThruState = passThruState.MOVING_TO_PIVOT;
-                    currentPassthroughPos = passThruPos.PIVOT_POS;
-                    skipPassThruState = false;
+                    currentPassThruPos = passThruPos.PIVOT_POS;
+                    skipCurrentPassThruState = false;
                     break;
                 case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.BACK_TO_PIVOT_TIME) || skipPassThruState) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.BACK_TO_PIVOT_TIME) || skipCurrentPassThruState) {
                         passThruTimer.reset();
                         currentPassThruState = passThruState.PIVOTING;
                         pivotIsFront = true;
-                        skipPassThruState = false;
+                        skipCurrentPassThruState = false;
                     }
                     break;
                 case PIVOTING:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_FRONT_TIME) || skipPassThruState) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_FRONT_TIME) || skipCurrentPassThruState) {
                         passThruTimer.reset();
                         currentPassThruState = passThruState.MOVING_TO_FRONT;
-                        currentPassthroughPos = passThruPos.FRONT;
+                        currentPassThruPos = passThruPos.FRONT;
                         pivotIsFront = true;
-                        skipPassThruState = false;
+                        skipCurrentPassThruState = false;
                     }
                     break;
                 case MOVING_TO_FRONT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (currentLiftPos >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skipPassThruState) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (currentLiftPos >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skipCurrentPassThruState) {
                         passThruTimer.reset();
                         passThruIsMoving = false;
                         currentPassThruState = passThruState.IN_FRONT;
                         passThruInFront = true;
                         pivotIsFront = true;
-                        skipPassThruState = false;
+                        skipCurrentPassThruState = false;
                     }
                     break;
                 default:
@@ -412,22 +411,22 @@ public class PowerplayScorer {
     public void triggerPassThru() {
         if ((currentPassThruState != passThruState.IN_FRONT) && (currentPassThruState != passThruState.IN_BACK)) {
             passThruInFront = !passThruInFront;
-            skipPassThruState = true;
+            skipCurrentPassThruState = true;
         } else {
             passThruIsMoving = true;
             passThruTimer.reset();
             currentPassThruState = passThruState.MOVING_TO_PIVOT;
-            currentPassthroughPos = passThruPos.PIVOT_POS;
-            skipPassThruState = false;
+            currentPassThruPos = passThruPos.PIVOT_POS;
+            skipCurrentPassThruState = false;
         }
     }
 
     public void togglePassThru() {
         if (currentPassThruState != passThruState.IN_FRONT) {
-            currentPassthroughPos = passThruPos.FRONT;
+            currentPassThruPos = passThruPos.FRONT;
             currentPassThruState = passThruState.IN_FRONT;
         } else {
-            currentPassthroughPos = passThruPos.BACK;
+            currentPassThruPos = passThruPos.BACK;
             currentPassThruState = passThruState.IN_BACK;
         }
     }
