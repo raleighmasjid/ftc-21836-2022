@@ -45,7 +45,6 @@ public class PowerplayScorer {
     private boolean skipCurrentPassThruState = false;
     public boolean useLiftPIDF = true;
 
-    // the following is the code that runs during initialization
     public void init(HardwareMap hw) {
 
         clawServo = new SimpleServo(hw,"claw right",0,300);
@@ -109,8 +108,6 @@ public class PowerplayScorer {
 
     //  lift motor encoder resolution (ticks):
     private static final double LIFT_TICKS = 145.1;
-
-
 
     private enum passThruState {
         MOVING_TO_FRONT,
