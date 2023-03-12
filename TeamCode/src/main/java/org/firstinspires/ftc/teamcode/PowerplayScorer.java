@@ -358,6 +358,10 @@ public class PowerplayScorer {
         lift_motor3.set(velocity);
     }
 
+    public double getLiftVelocity () {
+        return liftVelocity;
+    }
+
     public void toggleClaw () {
         clawIsOpen = !clawIsOpen;
     }

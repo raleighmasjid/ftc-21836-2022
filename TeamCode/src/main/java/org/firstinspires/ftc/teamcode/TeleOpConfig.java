@@ -5,19 +5,19 @@ import com.acmerobotics.dashboard.config.Config;
 public class TeleOpConfig {
     // inches
     public static double HEIGHT_ONE = 0;
-    public static double HEIGHT_TWO = 1.35;
-    public static double HEIGHT_THREE = 2.67;
-    public static double HEIGHT_FOUR = 3.5;
+    public static double HEIGHT_TWO = 1.25;
+    public static double HEIGHT_THREE = 2.5;
+    public static double HEIGHT_FOUR = 3.75;
     public static double HEIGHT_FIVE = 5;
     // inches
-    public static double HEIGHT_GROUND = 1;
-    public static double HEIGHT_LOW = 16.67;
-    public static double HEIGHT_MEDIUM = 26.7;
-    public static double HEIGHT_TALL = 38.425;
+    public static double HEIGHT_GROUND = 0.95;
+    public static double HEIGHT_LOW = 15.8365;
+    public static double HEIGHT_MEDIUM = 25.365;
+    public static double HEIGHT_TALL = 36.50375;
     // inches
-    public static double MINIMUM_PIVOT_HEIGHT = 3.5;
+    public static double MINIMUM_PIVOT_HEIGHT = 3.325;
 
-    public static double LIFT_P = 0.3;
+    public static double LIFT_P = 0.315789473684;
     public static double LIFT_I = 0;
     public static double LIFT_D = 0;
     public static double LIFT_F = 0.00013;
@@ -26,10 +26,10 @@ public class TeleOpConfig {
     public static double LIFT_MAX_ACCEL = 48; // inches per second^2
     public static double LIFT_MAX_VELO = 30; // inches per second
 
-    public static double LIFT_TICKS_PER_INCH = 0.033355;
+    public static double LIFT_TICKS_PER_INCH = 0.03168725;
     // inches
-    public static double LIFT_E_TOLERANCE = 0.035;
-    public static double LIFT_V_TOLERANCE = 0.335;
+    public static double LIFT_E_TOLERANCE = 0.03168725;
+    public static double LIFT_V_TOLERANCE = 0.3168725;
 
     public static double LIFT_RESET_VELOCITY = -0.2;
     public static double LIFT_MAX_DOWN_VELOCITY = -0.45;

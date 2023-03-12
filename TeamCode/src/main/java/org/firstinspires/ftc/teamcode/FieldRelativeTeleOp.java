@@ -58,7 +58,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double precisionScale;
         boolean liftHasReset = true;
         boolean useOverrideMode = false;
-        boolean useStackPositions = false;
         scorer.useLiftPIDF = true;
         scorer.resetLiftEncoder();
         drivetrain.setRotation(HeadingHolder.getHeading());
@@ -160,11 +159,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     }
                 }
 
-                if(control2A.wasJustPressed()){
-                    useStackPositions = !useStackPositions;
-                }
-
-                if (useStackPositions) {
+                if (control2A.isDown()) {
                     // Lift stack height triggers
                     if (control2Up.wasJustPressed()) {
                         scorer.setTargetLiftPos(PowerplayScorer.liftPos.FIVE);
@@ -184,7 +179,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     } else if (control2Right.wasJustPressed()) {
                         scorer.setTargetLiftPos(PowerplayScorer.liftPos.LOW);
                     } else if (control2Down.wasJustPressed()) {
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.GROUND);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.ONE);
                     }
                 }
             }
@@ -226,29 +221,29 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             }
 
             if (useOverrideMode) {
-                myTelemetry.addData("Robot is in", "fully manual scoring mode");
+                myTelemetry.addData("Robot is in", "manual override mode");
                 scorer.LED1green.setState(false);
                 scorer.LED2green.setState(false);
                 scorer.LED1red.setState(true);
                 scorer.LED2red.setState(true);
-            } else if (useStackPositions) {
-                myTelemetry.addData("Robot is in", "semi-automated stack heights mode");
+            } else if (control2A.isDown()) {
+                myTelemetry.addData("Robot is in", "stack heights mode");
                 scorer.LED1green.setState(true);
                 scorer.LED2green.setState(true);
                 scorer.LED1red.setState(true);
                 scorer.LED2red.setState(true);
             } else {
-                myTelemetry.addData("Robot is in", "semi-automated scoring mode");
+                myTelemetry.addData("Robot is in", "junction heights mode");
                 scorer.LED1green.setState(true);
                 scorer.LED2green.setState(true);
                 scorer.LED1red.setState(false);
                 scorer.LED2red.setState(false);
             }
 
-            myTelemetry.addData("Lift target height", scorer.getTargetLiftPosName());
+            myTelemetry.addData("Lift target named position", scorer.getTargetLiftPosName());
             myTelemetry.addData("Lift current position (inches)", scorer.getCurrentLiftPos());
             myTelemetry.addData("Lift target position (inches)", scorer.getTargetLiftPos());
-            myTelemetry.addData("Lift motor power output", scorer.liftVelocity);
+            myTelemetry.addData("Lift motor power output", scorer.getLiftVelocity());
 
             myTelemetry.addData("Passthrough status", scorer.getCurrentPassThruState());
 
