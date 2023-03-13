@@ -141,8 +141,7 @@ public class AutonomousTesting extends LinearOpMode {
                 })
                 .lineTo(new Vector2d(31.5, firstScoringY))
                 .addTemporalMarker(() -> {
-                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.FIVE);
-                    scorer.clawIsOpen = true;
+                    scorer.dropClaw(PowerplayScorer.liftPos.FIVE);
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .lineTo(new Vector2d(centerPathX, firstScoringY))
@@ -173,8 +172,7 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
                 })
                 .addTemporalMarker(() -> {
-                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.FOUR);
-                    scorer.clawIsOpen = true;
+                    scorer.dropClaw(PowerplayScorer.liftPos.FOUR);
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
@@ -202,8 +200,7 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.THREE);
-                    scorer.clawIsOpen = true;
+                    scorer.dropClaw(PowerplayScorer.liftPos.THREE);
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
@@ -231,8 +228,7 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.TWO);
-                    scorer.clawIsOpen = true;
+                    scorer.dropClaw(PowerplayScorer.liftPos.TWO);
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
