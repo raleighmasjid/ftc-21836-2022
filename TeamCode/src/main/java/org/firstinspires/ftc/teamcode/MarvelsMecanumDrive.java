@@ -45,7 +45,7 @@ public class MarvelsMecanumDrive {
         rotationOffset = getIMURotation();
     }
     public void setRotation(double startAngle) {
-        rotationOffset = getIMURotation() - startAngle + 90;
+        rotationOffset = getIMURotation() - startAngle + 90.0;
     }
 
 
