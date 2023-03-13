@@ -424,12 +424,6 @@ public class AutonomousTesting extends LinearOpMode {
 
 
             //everything below is telemetry
-            if (scorer.limitSwitch.getState()) {
-                myTelemetry.addData("Limit switch", "is not triggered");
-            } else {
-                myTelemetry.addData("Limit switch", "is triggered");
-            }
-
             if (!scorer.clawIsOpen){
                 myTelemetry.addData("Claw is", "closed");
             } else if (scorer.passThruIsMoving) {
@@ -438,10 +432,10 @@ public class AutonomousTesting extends LinearOpMode {
                 myTelemetry.addData("Claw is", "open");
             }
 
-            myTelemetry.addData("Lift target height", scorer.getTargetLiftPosName());
+            myTelemetry.addData("Lift target named position", scorer.getTargetLiftPosName());
             myTelemetry.addData("Lift current position (inches)", scorer.getCurrentLiftPos());
             myTelemetry.addData("Lift target position (inches)", scorer.getTargetLiftPos());
-            myTelemetry.addData("Lift motor power output", scorer.liftVelocity);
+            myTelemetry.addData("Lift motor power output", scorer.getLiftVelocity());
 
             myTelemetry.addData("Passthrough status", scorer.getCurrentPassThruState());
 

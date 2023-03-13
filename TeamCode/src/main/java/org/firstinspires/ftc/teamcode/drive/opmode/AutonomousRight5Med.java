@@ -430,7 +430,7 @@ public class AutonomousRight5Med extends LinearOpMode {
             myTelemetry.addData("Lift named target position", scorer.getTargetLiftPosName());
             myTelemetry.addData("Lift current position", scorer.getCurrentLiftPos());
             myTelemetry.addData("Lift target position", scorer.getTargetLiftPos());
-            myTelemetry.addData("Lift motor power output", scorer.liftVelocity);
+            myTelemetry.addData("Lift motor power output", scorer.getLiftVelocity());
 
             myTelemetry.addData("Passthrough status", scorer.getCurrentPassThruState());
 

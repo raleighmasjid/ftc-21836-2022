@@ -35,7 +35,7 @@ public class PowerplayScorer {
     private double currentLiftPos = 0;
     private double targetLiftPos;
     private String targetLiftPosName;
-    public double liftVelocity;
+    private double liftVelocity;
     private static ElapsedTime passThruTimer;
     private static ElapsedTime liftClawTimer;
     public boolean clawIsOpen = true;
