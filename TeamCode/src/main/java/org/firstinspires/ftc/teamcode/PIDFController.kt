@@ -49,7 +49,7 @@ class PIDFController
     } else {
         1.0/TeleOpConfig.LIFT_kI
     }
-    private val lastTargetPosition = 0.0
+    private var lastTargetPosition = 0.0
 
     /**
      * Target position (that is, the controller setpoint).
@@ -129,6 +129,7 @@ class PIDFController
             lastError = error
             lastUpdateTimestamp = currentTimestamp
             lastFilterEstimate = currentFilterEstimate
+            lastTargetPosition = targetPosition
             0.0
         } else {
             val dt = currentTimestamp - lastUpdateTimestamp
@@ -139,12 +140,16 @@ class PIDFController
                 errorSum = -integralMax
             }
             errorSum += 0.5 * (error + lastError) * dt
+            if (sign(lastTargetPosition) != sign(targetPosition)) {
+                reset()
+            }
             currentFilterEstimate = (a * lastFilterEstimate) + ((1-a) * (error - lastError))
             val errorDeriv = currentFilterEstimate / dt
 
             lastError = error
             lastUpdateTimestamp = currentTimestamp
             lastFilterEstimate = currentFilterEstimate
+            lastTargetPosition = targetPosition
 
             // note: we'd like to refactor this with Kinematics.calculateMotorFeedforward() but kF complicates the
             // determination of the sign of kStatic
