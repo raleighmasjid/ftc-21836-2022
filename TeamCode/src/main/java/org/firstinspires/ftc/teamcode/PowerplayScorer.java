@@ -3,7 +3,8 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_RPM;
 
-import com.arcrobotics.ftclib.controller.PIDFController;
+import com.acmerobotics.roadrunner.control.PIDFController;
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
@@ -56,19 +57,12 @@ public class PowerplayScorer {
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
         lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, MAX_RPM);
 
-        liftController = new PIDFController(
+        PIDCoefficients liftCoefficients = new PIDCoefficients(
                 TeleOpConfig.LIFT_P,
                 TeleOpConfig.LIFT_I,
-                TeleOpConfig.LIFT_D,
-                TeleOpConfig.LIFT_F
+                TeleOpConfig.LIFT_D
         );
-        liftController.setPIDF(
-                TeleOpConfig.LIFT_P,
-                TeleOpConfig.LIFT_I,
-                TeleOpConfig.LIFT_D,
-                TeleOpConfig.LIFT_F
-        );
-        liftController.setTolerance(TeleOpConfig.LIFT_E_TOLERANCE, TeleOpConfig.LIFT_V_TOLERANCE);
+        liftController = new PIDFController(liftCoefficients);
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -337,19 +331,25 @@ public class PowerplayScorer {
         currentLiftPos = 0;
     }
 
+    public boolean liftAtTargetPos() {
+        return Math.abs(getTargetLiftPos() - getCurrentLiftPos()) <= TeleOpConfig.LIFT_E_TOLERANCE;
+    }
+
     public void runLiftToPos() {
         readLiftPos();
-        liftController.setSetPoint(targetLiftPos);
+        liftController.setTargetPosition(targetLiftPos);
+        liftVelocity = 0;
 
-        if (useLiftPIDF && !liftController.atSetPoint()) {
-            liftVelocity = liftController.calculate(getCurrentLiftPos());
+        if (useLiftPIDF && !liftAtTargetPos()) {
+            liftVelocity = liftController.update(getCurrentLiftPos());
 
             if (liftVelocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
                 liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
             }
-
-            runLift(liftVelocity);
         }
+
+        liftVelocity += TeleOpConfig.LIFT_F;
+        runLift(liftVelocity);
     }
 
     public void runLift (double velocity) {
