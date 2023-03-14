@@ -58,9 +58,9 @@ public class PowerplayScorer {
         lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, MAX_RPM);
 
         PIDCoefficients liftCoefficients = new PIDCoefficients(
-                TeleOpConfig.LIFT_P,
-                TeleOpConfig.LIFT_I,
-                TeleOpConfig.LIFT_D
+                TeleOpConfig.LIFT_kP,
+                TeleOpConfig.LIFT_kI,
+                TeleOpConfig.LIFT_kD
         );
         liftController = new PIDFController(liftCoefficients);
 
@@ -349,7 +349,7 @@ public class PowerplayScorer {
                 }
             }
 
-            liftVelocity += TeleOpConfig.LIFT_F;
+            liftVelocity += TeleOpConfig.LIFT_kG;
             runLift(liftVelocity);
         }
     }

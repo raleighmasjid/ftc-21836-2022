@@ -17,10 +17,13 @@ public class TeleOpConfig {
     // inches
     public static double MINIMUM_PIVOT_HEIGHT = 3.325;
 
-    public static double LIFT_P = 0.315789473684;
-    public static double LIFT_I = 0;
-    public static double LIFT_D = 0;
-    public static double LIFT_F = 0.00013;
+    public static double LIFT_kP = 0.315789473684;
+    public static double LIFT_kI = 0;
+    public static double LIFT_kD = 0;
+    public static double LIFT_kV = 0;
+    public static double LIFT_kA = 0;
+    public static double LIFT_kS = 0;
+    public static double LIFT_kG = 0.00013;
 
     public static double LIFT_MAX_JERK = 120; // inches per second^3
     public static double LIFT_MAX_ACCEL = 48; // inches per second^2
