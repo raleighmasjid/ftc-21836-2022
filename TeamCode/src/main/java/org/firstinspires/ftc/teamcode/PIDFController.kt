@@ -44,6 +44,12 @@ class PIDFController
     private var a = TeleOpConfig.LIFT_FILTER_GAIN // a can be anything from 0 < a < 1
     private var lastFilterEstimate = 0.0
     private var currentFilterEstimate = 0.0
+    private val integralMax = if(TeleOpConfig.LIFT_kI == 0.0) {
+        10.0
+    } else {
+        1.0/TeleOpConfig.LIFT_kI
+    }
+    private val lastTargetPosition = 0.0
 
     /**
      * Target position (that is, the controller setpoint).
@@ -122,9 +128,16 @@ class PIDFController
         return if (lastUpdateTimestamp.isNaN()) {
             lastError = error
             lastUpdateTimestamp = currentTimestamp
+            lastFilterEstimate = currentFilterEstimate
             0.0
         } else {
             val dt = currentTimestamp - lastUpdateTimestamp
+            if (errorSum > integralMax) {
+                errorSum = integralMax
+            }
+            if (errorSum < -integralMax){
+                errorSum = -integralMax
+            }
             errorSum += 0.5 * (error + lastError) * dt
             currentFilterEstimate = (a * lastFilterEstimate) + ((1-a) * (error - lastError))
             val errorDeriv = currentFilterEstimate / dt
