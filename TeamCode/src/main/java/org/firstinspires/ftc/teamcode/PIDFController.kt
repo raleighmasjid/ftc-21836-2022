@@ -24,13 +24,14 @@ class PIDFController
  * @param clock clock
  */
 @JvmOverloads constructor(
-        private val pid: PIDCoefficients,
-        private val kV: Double = 0.0,
-        private val kA: Double = 0.0,
-        private val kStatic: Double = 0.0,
-        private val kF: (Double, Double?) -> Double = { _, _ -> 0.0 },
-        private val clock: NanoClock = NanoClock.system()
+    private var pid: PIDCoefficients,
+    private var kV: Double = 0.0,
+    private var kA: Double = 0.0,
+    private var kStatic: Double = 0.0,
+    private var kF: (Double, Double?) -> Double = { _, _ -> 0.0 },
+    private val clock: NanoClock = NanoClock.system()
 ) {
+    lateinit var coefficients: PIDCoefficients
     private var errorSum: Double = 0.0
     private var lastUpdateTimestamp: Double = Double.NaN
 
@@ -44,12 +45,24 @@ class PIDFController
     private var a = TeleOpConfig.LIFT_FILTER_GAIN // a can be anything from 0 < a < 1
     private var lastFilterEstimate = 0.0
     private var currentFilterEstimate = 0.0
-    private val integralMax = if(TeleOpConfig.LIFT_kI == 0.0) {
+    private var integralMax = if(TeleOpConfig.LIFT_kI == 0.0) {
         10.0
     } else {
         1.0/TeleOpConfig.LIFT_kI
     }
     private var lastTargetPosition = 0.0
+
+    fun setCoefficients(
+        pid: PIDCoefficients,
+        kV: Double = 0.0,
+        kA: Double = 0.0,
+        kStatic: Double = 0.0
+    ) {
+        this.pid = pid
+        this.kV = kV
+        this.kA = kA
+        this.kStatic = kStatic
+    }
 
     /**
      * Target position (that is, the controller setpoint).
