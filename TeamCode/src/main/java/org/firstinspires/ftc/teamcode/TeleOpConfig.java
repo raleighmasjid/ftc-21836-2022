@@ -25,6 +25,8 @@ public class TeleOpConfig {
     public static double LIFT_kS = 0;
     public static double LIFT_kG = 0.00013;
 
+    public static double LIFT_FILTER_GAIN = 0.8;
+
     public static double LIFT_MAX_JERK = 120; // inches per second^3
     public static double LIFT_MAX_ACCEL = 48; // inches per second^2
     public static double LIFT_MAX_VELO = 30; // inches per second

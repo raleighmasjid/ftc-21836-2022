@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_RPM;
 
-import com.acmerobotics.roadrunner.control.PIDFController;
+import org.firstinspires.ftc.teamcode.PIDFController;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
