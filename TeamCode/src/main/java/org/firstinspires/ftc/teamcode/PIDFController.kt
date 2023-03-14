@@ -133,18 +133,21 @@ class PIDFController
             0.0
         } else {
             val dt = currentTimestamp - lastUpdateTimestamp
+            currentFilterEstimate = (a * lastFilterEstimate) + ((1-a) * (error - lastError))
+            val errorDeriv = currentFilterEstimate / dt
+
             if (errorSum > integralMax) {
                 errorSum = integralMax
             }
             if (errorSum < -integralMax){
                 errorSum = -integralMax
             }
-            errorSum += 0.5 * (error + lastError) * dt
+            if (-errorDeriv <= TeleOpConfig.LIFT_INTEGRAL_MIN_VELO && errorDeriv >= -TeleOpConfig.LIFT_INTEGRAL_MIN_VELO) {
+                errorSum += 0.5 * (error + lastError) * dt
+            }
             if (sign(lastTargetPosition) != sign(targetPosition)) {
                 reset()
             }
-            currentFilterEstimate = (a * lastFilterEstimate) + ((1-a) * (error - lastError))
-            val errorDeriv = currentFilterEstimate / dt
 
             lastError = error
             lastUpdateTimestamp = currentTimestamp
