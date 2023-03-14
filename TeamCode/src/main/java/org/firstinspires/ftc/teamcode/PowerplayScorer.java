@@ -338,18 +338,20 @@ public class PowerplayScorer {
     public void runLiftToPos() {
         readLiftPos();
         liftController.setTargetPosition(targetLiftPos);
-        liftVelocity = 0;
 
-        if (useLiftPIDF && !liftAtTargetPos()) {
-            liftVelocity = liftController.update(getCurrentLiftPos());
+        if (useLiftPIDF) {
+            liftVelocity = 0;
+            if (!liftAtTargetPos()) {
+                liftVelocity = liftController.update(getCurrentLiftPos());
 
-            if (liftVelocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
-                liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
+                if (liftVelocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
+                    liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
+                }
             }
-        }
 
-        liftVelocity += TeleOpConfig.LIFT_F;
-        runLift(liftVelocity);
+            liftVelocity += TeleOpConfig.LIFT_F;
+            runLift(liftVelocity);
+        }
     }
 
     public void runLift (double velocity) {
