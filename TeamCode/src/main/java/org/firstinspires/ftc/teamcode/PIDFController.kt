@@ -48,7 +48,7 @@ class PIDFController
     private var integralMax = if(TeleOpConfig.LIFT_kI == 0.0) {
         10.0
     } else {
-        1.0/TeleOpConfig.LIFT_kI
+        0.3/TeleOpConfig.LIFT_kI
     }
     private var lastTargetPosition = 0.0
 
@@ -65,7 +65,7 @@ class PIDFController
         this.integralMax = if(TeleOpConfig.LIFT_kI == 0.0) {
             10.0
         } else {
-            1.0/TeleOpConfig.LIFT_kI
+            0.3/TeleOpConfig.LIFT_kI
         }
         this.a = TeleOpConfig.LIFT_FILTER_GAIN
     }
