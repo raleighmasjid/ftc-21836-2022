@@ -161,7 +161,7 @@ class PIDFController
             if (errorSum < -integralMax){
                 errorSum = -integralMax
             }
-            if (-errorDeriv <= TeleOpConfig.LIFT_INTEGRAL_MIN_VELO && errorDeriv >= -TeleOpConfig.LIFT_INTEGRAL_MIN_VELO) {
+            if (-errorDeriv <= TeleOpConfig.LIFT_INTEGRAL_MIN_VELO && -errorDeriv >= -TeleOpConfig.LIFT_INTEGRAL_MIN_VELO) {
                 errorSum += 0.5 * (error + lastError) * dt
             }
             if (sign(lastTargetPosition) != sign(targetPosition)) {
