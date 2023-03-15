@@ -62,6 +62,12 @@ class PIDFController
         this.kV = kV
         this.kA = kA
         this.kStatic = kStatic
+        this.integralMax = if(TeleOpConfig.LIFT_kI == 0.0) {
+            10.0
+        } else {
+            1.0/TeleOpConfig.LIFT_kI
+        }
+        this.a = TeleOpConfig.LIFT_FILTER_GAIN
     }
 
     /**
