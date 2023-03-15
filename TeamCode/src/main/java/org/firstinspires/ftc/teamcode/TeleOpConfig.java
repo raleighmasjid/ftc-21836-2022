@@ -33,9 +33,8 @@ public class TeleOpConfig {
     public static double LIFT_MAX_VELO = 30; // inches per second
 
     public static double LIFT_TICKS_PER_INCH = 0.03168725;
-    // inches
-    public static double LIFT_E_TOLERANCE = 0.03168725;
-    public static double LIFT_V_TOLERANCE = 0.3168725;
+
+    public static double LIFT_E_TOLERANCE = 0.03168725; // inches
 
     public static double LIFT_RESET_VELOCITY = -0.2;
     public static double LIFT_MAX_DOWN_VELOCITY = -0.45;
@@ -46,8 +45,6 @@ public class TeleOpConfig {
     public static double CLAW_OPEN_ANGLE = 115;
 
     public static double CLAW_CLOSING_TIME = 0.3;
-
-    public static double AUTON_START_DELAY = 0.16;
 
     public static double PIVOT_FRONT_ANGLE = 198;
     public static double PIVOT_BACK_ANGLE = 2;
