@@ -61,7 +61,13 @@ public class PowerplayScorer {
                 TeleOpConfig.LIFT_kI,
                 TeleOpConfig.LIFT_kD
         );
-        liftController = new PIDFController(liftCoefficients);
+        liftController = new PIDFController(
+                liftCoefficients,
+                TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
+                TeleOpConfig.LIFT_FILTER_GAIN
+        );
+        liftController.setPositionTolerance(TeleOpConfig.LIFT_E_TOLERANCE);
+        liftController.setOutputBounds(-1.0, 1.0);
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -330,30 +336,23 @@ public class PowerplayScorer {
         currentLiftPos = 0;
     }
 
-    public boolean liftAtTargetPos() {
-        return Math.abs(getTargetLiftPos() - getCurrentLiftPos()) <= TeleOpConfig.LIFT_E_TOLERANCE;
-    }
-
     public void runLiftToPos() {
         readLiftPos();
         liftController.setTargetPosition(targetLiftPos);
 
         if (useLiftPIDF) {
-            liftVelocity = 0;
-            if (!liftAtTargetPos()) {
-                liftVelocity = liftController.update(getCurrentLiftPos());
+            double velocity = liftController.update(getCurrentLiftPos());
 
-                if (liftVelocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
-                    liftVelocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
-                }
+            if (velocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
+                velocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
             }
 
-            liftVelocity += TeleOpConfig.LIFT_kG;
-            runLift(liftVelocity);
+            runLift(velocity);
         }
     }
 
     public void runLift (double velocity) {
+        liftVelocity = velocity;
         lift_motor1.set(velocity);
         lift_motor2.set(velocity);
         lift_motor3.set(velocity);

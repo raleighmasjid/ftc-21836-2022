@@ -25,6 +25,8 @@ class PIDFController
  */
 @JvmOverloads constructor(
     private var pid: PIDCoefficients,
+    private var maxIntegrationVelocity: Double = 0.0,
+    private var filterGain: Double = 0.0,
     private var kV: Double = 0.0,
     private var kA: Double = 0.0,
     private var kStatic: Double = 0.0,
@@ -42,32 +44,26 @@ class PIDFController
     private var outputBounded: Boolean = false
     private var minOutput: Double = 0.0
     private var maxOutput: Double = 0.0
-    private var a = TeleOpConfig.LIFT_FILTER_GAIN // a can be anything from 0 < a < 1
     private var lastFilterEstimate = 0.0
     private var currentFilterEstimate = 0.0
-    private var integralMax = if(TeleOpConfig.LIFT_kI == 0.0) {
-        10.0
-    } else {
-        0.3/TeleOpConfig.LIFT_kI
-    }
+    private var integrate = true
     private var lastTargetPosition = 0.0
+    private var positionTolerance: Double = 5.0
 
-    fun setCoefficients(
+    fun setGains(
         pid: PIDCoefficients,
+        maxIntegrationVelocity: Double = 0.0,
+        filterGain: Double = 0.0,
         kV: Double = 0.0,
         kA: Double = 0.0,
         kStatic: Double = 0.0
     ) {
         this.pid = pid
+        this.maxIntegrationVelocity = maxIntegrationVelocity
+        this.filterGain = filterGain
         this.kV = kV
         this.kA = kA
         this.kStatic = kStatic
-        this.integralMax = if(TeleOpConfig.LIFT_kI == 0.0) {
-            10.0
-        } else {
-            0.3/TeleOpConfig.LIFT_kI
-        }
-        this.a = TeleOpConfig.LIFT_FILTER_GAIN
     }
 
     /**
@@ -131,6 +127,14 @@ class PIDFController
         return error
     }
 
+    fun setPositionTolerance(tolerance: Double) {
+        positionTolerance = tolerance
+    }
+
+    fun atTargetPosition(measuredPosition: Double): Boolean {
+        return abs(getPositionError(measuredPosition)) <= positionTolerance
+    }
+
     /**
      * Run a single iteration of the controller.
      *
@@ -152,19 +156,16 @@ class PIDFController
             0.0
         } else {
             val dt = currentTimestamp - lastUpdateTimestamp
-            currentFilterEstimate = (a * lastFilterEstimate) + ((1-a) * (error - lastError))
+            currentFilterEstimate = (filterGain * lastFilterEstimate) + ((1-filterGain) * (error - lastError))
             val errorDeriv = currentFilterEstimate / dt
 
-            if (errorSum > integralMax) {
-                errorSum = integralMax
-            }
-            if (errorSum < -integralMax){
-                errorSum = -integralMax
-            }
-            if (abs(errorDeriv) <= TeleOpConfig.LIFT_INTEGRAL_MIN_VELO) {
+            if (integrate && abs(errorDeriv) <= maxIntegrationVelocity) {
                 errorSum += 0.5 * (error + lastError) * dt
             }
             if (sign(error) != sign(lastError)) {
+                reset()
+            }
+            if (error == 0.0) {
                 reset()
             }
 
@@ -179,6 +180,8 @@ class PIDFController
                 pid.kD * (measuredVelocity?.let { targetVelocity - it } ?: errorDeriv) +
                 kV * targetVelocity + kA * targetAcceleration + kF(measuredPosition, measuredVelocity)
             val output = if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput + sign(baseOutput) * kStatic
+
+            integrate = !(abs(output) >= maxOutput && sign(output) == sign(error))
 
             if (outputBounded) {
                 max(minOutput, min(output, maxOutput))
