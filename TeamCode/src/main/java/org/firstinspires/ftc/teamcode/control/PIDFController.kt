@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.control
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.util.NanoClock

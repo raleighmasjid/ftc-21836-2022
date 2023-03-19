@@ -100,9 +100,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runPivot();
             scorer.runPassThruServos();
 
-            if (control2LShoulder.wasJustPressed()) {
-                scorer.togglePivot();
-            }
 
             if (control2X.wasJustPressed()) {
                 useOverrideMode = !useOverrideMode;
@@ -122,6 +119,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     scorer.resetLiftEncoder();
                 }
 
+                if (control2LShoulder.wasJustPressed()) {
+                    scorer.togglePivot();
+                }
+
                 if(control2Y.wasJustPressed()){
                     scorer.togglePassThru();
                 }
@@ -133,6 +134,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if(control2Y.wasJustPressed()){
                     scorer.triggerPassThru();
+                }
+
+                if (control2LShoulder.wasJustPressed()) {
+                    scorer.togglePivot();
                 }
 
                 if (control2B.wasJustPressed()) {
