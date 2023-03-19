@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.HeadingHolder;
 import org.firstinspires.ftc.teamcode.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.TeleOpConfig;
 import org.firstinspires.ftc.teamcode.auton.AprilTagDetectionPipeline;
@@ -97,6 +98,7 @@ public class AutonomousRight5Med extends LinearOpMode {
         Vector2d parkingZone1 = new Vector2d(13, -12.5);
         Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
         Vector2d parkingZone3 = new Vector2d(57, -12.5);
+        HeadingHolder.setHeading(0.0);
 
         TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
