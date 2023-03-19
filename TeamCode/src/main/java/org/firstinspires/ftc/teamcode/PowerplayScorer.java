@@ -45,7 +45,7 @@ public class PowerplayScorer {
     private boolean skipCurrentPassThruState = false;
     public boolean useLiftPIDF = true;
 
-    public void init(HardwareMap hw) {
+    public void init (HardwareMap hw) {
 
         clawServo = new SimpleServo(hw,"claw right",0,300);
         pivotServo = new SimpleServo(hw, "claw pivot",0,300);
@@ -129,7 +129,7 @@ public class PowerplayScorer {
         return currentPassThruState;
     }
 
-    public void runPassThruServos() {
+    public void runPassThruServos () {
         switch (currentPassThruPos) {
             case FRONT:
                 passThruServoR.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
@@ -155,7 +155,7 @@ public class PowerplayScorer {
     }
 
 
-    public void runPassThruStates() {
+    public void runPassThruStates () {
         if (passThruInFront) {
             switch (currentPassThruState) {
                 case IN_FRONT:
@@ -266,7 +266,7 @@ public class PowerplayScorer {
             ONE, TWO, THREE, FOUR, FIVE, GROUND, LOW, MED, TALL
     }
 
-    public void setTargetLiftPos(liftPos height) {
+    public void setTargetLiftPos (liftPos height) {
 
         switch (height){
             case ONE:
@@ -309,20 +309,20 @@ public class PowerplayScorer {
         
     }
 
-    public void setTargetLiftPos(double height) {
+    public void setTargetLiftPos (double height) {
         targetLiftPos = height;
         targetLiftPosName = Double.toString(height);
     }
 
-    public double getTargetLiftPos() {
+    public double getTargetLiftPos () {
         return targetLiftPos;
     }
 
-    public String getTargetLiftPosName() {
+    public String getTargetLiftPosName () {
         return targetLiftPosName;
     }
 
-    public double getCurrentLiftPos() {
+    public double getCurrentLiftPos () {
         readLiftPos();
         return currentLiftPos;
     }
@@ -336,7 +336,7 @@ public class PowerplayScorer {
         currentLiftPos = 0;
     }
 
-    public void runLiftToPos() {
+    public void runLiftToPos () {
         readLiftPos();
         liftController.setTargetPosition(targetLiftPos);
 
@@ -406,14 +406,14 @@ public class PowerplayScorer {
     }
 
     public void runPivot () {
-        if(pivotIsFront) {
+        if (pivotIsFront) {
             pivotServo.turnToAngle(TeleOpConfig.PIVOT_FRONT_ANGLE);
         } else {
             pivotServo.turnToAngle(TeleOpConfig.PIVOT_BACK_ANGLE);
         }
     }
 
-    public void triggerPassThru() {
+    public void triggerPassThru () {
         if ((currentPassThruState != passThruState.IN_FRONT) && (currentPassThruState != passThruState.IN_BACK)) {
             passThruInFront = !passThruInFront;
             skipCurrentPassThruState = true;
@@ -426,7 +426,7 @@ public class PowerplayScorer {
         }
     }
 
-    public void togglePassThru() {
+    public void togglePassThru () {
         if (currentPassThruState != passThruState.IN_FRONT) {
             currentPassThruPos = passThruPos.FRONT;
             currentPassThruState = passThruState.IN_FRONT;

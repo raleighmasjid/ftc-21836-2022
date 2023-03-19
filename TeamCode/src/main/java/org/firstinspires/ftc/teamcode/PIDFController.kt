@@ -33,7 +33,6 @@ class PIDFController
     private var kF: (Double, Double?) -> Double = { _, _ -> 0.0 },
     private val clock: NanoClock = NanoClock.system()
 ) {
-    lateinit var coefficients: PIDCoefficients
     private var errorSum: Double = 0.0
     private var lastUpdateTimestamp: Double = Double.NaN
 
@@ -44,10 +43,9 @@ class PIDFController
     private var outputBounded: Boolean = false
     private var minOutput: Double = 0.0
     private var maxOutput: Double = 0.0
-    private var lastFilterEstimate = 0.0
-    private var currentFilterEstimate = 0.0
-    private var integrate = true
-    private var lastTargetPosition = 0.0
+
+    private var lastFilterEstimate: Double = 0.0
+    private var integrate: Boolean = true
     private var positionTolerance: Double = 5.0
 
     fun setGains(
@@ -84,8 +82,7 @@ class PIDFController
     /**
      * Error computed in the last call to [update].
      */
-    var lastError: Double = 0.0
-        private set
+    private var lastError: Double = 0.0
 
     /**
      * Sets bound on the input of the controller. The min and max values are considered modularly-equivalent (that is,
@@ -148,31 +145,23 @@ class PIDFController
     ): Double {
         val currentTimestamp = clock.seconds()
         val error = getPositionError(measuredPosition)
+        val currentFilterEstimate = (filterGain * lastFilterEstimate) + ((1-filterGain) * (error - lastError))
         return if (lastUpdateTimestamp.isNaN()) {
             lastError = error
             lastUpdateTimestamp = currentTimestamp
             lastFilterEstimate = currentFilterEstimate
-            lastTargetPosition = targetPosition
             0.0
         } else {
             val dt = currentTimestamp - lastUpdateTimestamp
-            currentFilterEstimate = (filterGain * lastFilterEstimate) + ((1-filterGain) * (error - lastError))
             val errorDeriv = currentFilterEstimate / dt
 
-            if (integrate && abs(errorDeriv) <= maxIntegrationVelocity) {
-                errorSum += 0.5 * (error + lastError) * dt
-            }
-            if (sign(error) != sign(lastError)) {
-                reset()
-            }
-            if (error == 0.0) {
-                reset()
-            }
+            errorSum += if (integrate) (0.5 * (error + lastError) * dt) else 0.0
+
+            if (sign(error) != sign(lastError) || error == 0.0) {reset()}
 
             lastError = error
             lastUpdateTimestamp = currentTimestamp
             lastFilterEstimate = currentFilterEstimate
-            lastTargetPosition = targetPosition
 
             // note: we'd like to refactor this with Kinematics.calculateMotorFeedforward() but kF complicates the
             // determination of the sign of kStatic
@@ -181,7 +170,7 @@ class PIDFController
                 kV * targetVelocity + kA * targetAcceleration + kF(measuredPosition, measuredVelocity)
             val output = if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput + sign(baseOutput) * kStatic
 
-            integrate = !(abs(output) >= maxOutput && sign(output) == sign(error))
+            integrate = !(abs(output) > min(maxOutput, maxIntegrationVelocity) && sign(output) == sign(error))
 
             if (outputBounded) {
                 max(minOutput, min(output, maxOutput))
