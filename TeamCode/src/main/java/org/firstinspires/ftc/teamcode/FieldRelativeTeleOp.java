@@ -191,8 +191,14 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
 
             // Field-centric reset
-            if (Gamepad1.isDown(GamepadKeys.Button.A)) {
+            if (Gamepad1.isDown(GamepadKeys.Button.Y)) {
                 drivetrain.resetRotation();
+            } else if (Gamepad1.isDown(GamepadKeys.Button.X)) {
+                drivetrain.setRotation(90.0);
+            } else if (Gamepad1.isDown(GamepadKeys.Button.A)) {
+                drivetrain.setRotation(180.0);
+            } else if (Gamepad1.isDown(GamepadKeys.Button.B)) {
+                drivetrain.setRotation(270.0);
             }
 
 
