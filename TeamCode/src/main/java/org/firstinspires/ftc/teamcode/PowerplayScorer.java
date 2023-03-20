@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_RPM;
 
-import org.firstinspires.ftc.teamcode.control.PIDFController;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
@@ -11,6 +10,8 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.control.PIDFController;
 
 /**
  * Contains 3-motor automated lift, 3-state claw, and state-machine-controlled passthrough functions
@@ -33,18 +34,18 @@ public class PowerplayScorer {
     public DigitalChannel LED1green;
     public DigitalChannel LED2red;
     public DigitalChannel LED2green;
-    private double currentLiftPos = 0;
+    private double currentLiftPos;
     private double targetLiftPos;
     private String targetLiftPosName;
     private double liftVelocity;
     private static ElapsedTime passThruTimer;
     private static ElapsedTime liftClawTimer;
-    public boolean clawIsOpen = true;
-    public boolean passThruIsMoving = false;
-    private boolean passThruInFront = true;
-    private boolean pivotIsFront = true;
-    private boolean skipCurrentPassThruState = false;
-    public boolean useLiftPIDF = true;
+    public boolean clawIsOpen;
+    public boolean passThruIsMoving;
+    private boolean passThruInFront;
+    private boolean pivotIsFront;
+    private boolean skipCurrentPassThruState;
+    public boolean useLiftPIDF;
 
     public void init (HardwareMap hw) {
 
@@ -104,6 +105,13 @@ public class PowerplayScorer {
         LED2red.setMode(DigitalChannel.Mode.OUTPUT);
         LED2green.setMode(DigitalChannel.Mode.OUTPUT);
 
+        useLiftPIDF = true;
+        skipCurrentPassThruState = false;
+        pivotIsFront = true;
+        passThruInFront = true;
+        passThruIsMoving = false;
+        clawIsOpen = true;
+        resetLiftEncoder();
     }
 
     //  lift motor encoder resolution (ticks):

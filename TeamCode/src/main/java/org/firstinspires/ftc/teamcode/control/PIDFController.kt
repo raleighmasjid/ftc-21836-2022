@@ -170,7 +170,7 @@ class PIDFController
                 kV * targetVelocity + kA * targetAcceleration + kF(measuredPosition, measuredVelocity)
             val output = if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput + sign(baseOutput) * kStatic
 
-            integrate = !(abs(output) > min(maxOutput, maxIntegrationVelocity) && sign(output) == sign(error))
+            integrate = !(abs(output) >= min(maxOutput, maxIntegrationVelocity) && sign(output) == sign(error))
 
             if (outputBounded) {
                 max(minOutput, min(output, maxOutput))

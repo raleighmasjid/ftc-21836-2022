@@ -27,13 +27,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-//      initializes code:
         scorer.init(hardwareMap);
         drivetrain.init(hardwareMap);
 
         hubs = hardwareMap.getAll(LynxModule.class);
 
-//      instantiates both gamepads:
+//      initializes both gamepads:
         GamepadEx Gamepad1 = new GamepadEx(gamepad1);
         GamepadEx Gamepad2 = new GamepadEx(gamepad2);
 
@@ -58,8 +57,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double precisionScale;
         boolean liftHasReset = true;
         boolean useOverrideMode = false;
-        scorer.useLiftPIDF = true;
-        scorer.resetLiftEncoder();
+        
         drivetrain.setRotation(HeadingHolder.getHeading());
 
 
@@ -96,6 +94,28 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             control2LeftY = Gamepad2.getLeftY();
 
+            // Field-centric reset
+            if (Gamepad1.isDown(GamepadKeys.Button.Y)) {
+                drivetrain.resetRotation();
+            } else if (Gamepad1.isDown(GamepadKeys.Button.X)) {
+                drivetrain.setRotation(90.0);
+            } else if (Gamepad1.isDown(GamepadKeys.Button.A)) {
+                drivetrain.setRotation(180.0);
+            } else if (Gamepad1.isDown(GamepadKeys.Button.B)) {
+                drivetrain.setRotation(270.0);
+            }
+
+            // Precision mode driving triggers
+            if (Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
+                precisionScale = TeleOpConfig.PRECISION_MODE_SCALE;
+            } else {
+                precisionScale = (TeleOpConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
+            }
+
+            control1LeftX *= precisionScale;
+            control1LeftY *= precisionScale;
+            control1RightX *= precisionScale;
+
             if (control2X.wasJustPressed()) {
                 useOverrideMode = !useOverrideMode;
                 scorer.useLiftPIDF = !scorer.useLiftPIDF;
@@ -103,7 +123,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             }
 
             if (useOverrideMode) {
-
                 if (control2RShoulder.wasJustPressed()) {
                     scorer.resetLiftEncoder();
                 }
@@ -116,14 +135,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     scorer.togglePivot();
                 }
 
-                if(control2Y.wasJustPressed()){
+                if (control2Y.wasJustPressed()) {
                     scorer.togglePassThru();
                 }
 
                 scorer.runLift(control2LeftY);
-
             } else {
-
                 if (control2RShoulder.wasJustPressed()) {
                     scorer.useLiftPIDF = false;
                     liftHasReset = false;
@@ -133,6 +150,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     if (scorer.limitSwitch.getState()) {
                         scorer.runLift(TeleOpConfig.LIFT_RESET_VELOCITY);
                     } else {
+                        scorer.useLiftPIDF = true;
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.ONE);
+                        scorer.resetLiftEncoder();
+                        liftHasReset = true;
+                    }
+                    if (control2RShoulder.wasJustPressed()) {
                         scorer.useLiftPIDF = true;
                         scorer.setTargetLiftPos(PowerplayScorer.liftPos.ONE);
                         scorer.resetLiftEncoder();
@@ -164,7 +187,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     }
                 }
 
-                if(control2Y.wasJustPressed()){
+                if (control2Y.wasJustPressed()) {
                     scorer.triggerPassThru();
                 }
 
@@ -184,35 +207,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.runPassThruStates();
             }
 
-
-            // Field-centric reset
-            if (Gamepad1.isDown(GamepadKeys.Button.Y)) {
-                drivetrain.resetRotation();
-            } else if (Gamepad1.isDown(GamepadKeys.Button.X)) {
-                drivetrain.setRotation(90.0);
-            } else if (Gamepad1.isDown(GamepadKeys.Button.A)) {
-                drivetrain.setRotation(180.0);
-            } else if (Gamepad1.isDown(GamepadKeys.Button.B)) {
-                drivetrain.setRotation(270.0);
-            }
-
-
-            // Precision mode driving triggers
-            if (Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
-                precisionScale = TeleOpConfig.PRECISION_MODE_SCALE;
-            } else {
-                precisionScale = (TeleOpConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
-            }
-            control1LeftX *= precisionScale;
-            control1LeftY *= precisionScale;
-            control1RightX *= precisionScale;
-
-
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassThruServos();
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
-
 
             //everything below is telemetry
             if (scorer.limitSwitch.getState()) {
@@ -220,7 +218,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             } else {
                 myTelemetry.addData("Limit switch", "is triggered");
             }
-
+            myTelemetry.addLine();
             if (!scorer.clawIsOpen){
                 myTelemetry.addData("Claw is", "closed");
             } else if (scorer.passThruIsMoving) {
@@ -228,7 +226,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             } else {
                 myTelemetry.addData("Claw is", "open");
             }
-
+            myTelemetry.addLine();
             if (useOverrideMode) {
                 myTelemetry.addData("Robot is in", "manual override mode");
                 scorer.LED1green.setState(false);
@@ -248,22 +246,14 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.LED1red.setState(false);
                 scorer.LED2red.setState(false);
             }
-
-            myTelemetry.addData("Lift target named position", scorer.getTargetLiftPosName());
+            myTelemetry.addLine();
             myTelemetry.addData("Lift current position (inches)", scorer.getCurrentLiftPos());
             myTelemetry.addData("Lift target position (inches)", scorer.getTargetLiftPos());
-            myTelemetry.addData("Lift motor power output", scorer.getLiftVelocity());
-
+            myTelemetry.addData("Lift target position (name)", scorer.getTargetLiftPosName());
+            myTelemetry.addData("Lift velocity", scorer.getLiftVelocity());
+            myTelemetry.addLine();
             myTelemetry.addData("Passthrough status", scorer.getCurrentPassThruState());
-
-//            myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
-//            myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
-//            myTelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
-//            myTelemetry.addData("Hub 0 draw", hubs.get(0).getCurrent(CurrentUnit.AMPS));
-//            myTelemetry.addData("Hub 0 name", hubs.get(0).getDeviceName());
-//            myTelemetry.addData("Hub 1 draw", hubs.get(1).getCurrent(CurrentUnit.AMPS));
-//            myTelemetry.addData("Hub 1 name", hubs.get(1).getDeviceName());
-
+            myTelemetry.addLine();
             myTelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
             myTelemetry.addData("Field-relative heading", drivetrain.rotYaw);
             myTelemetry.addData("Drive speed scale", precisionScale);
