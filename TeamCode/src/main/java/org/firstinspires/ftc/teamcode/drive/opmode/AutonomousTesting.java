@@ -59,6 +59,7 @@ public class AutonomousTesting extends LinearOpMode {
     AprilTagDetection tagOfInterest = null;
 
     PowerplayScorer scorer = new PowerplayScorer();
+    AutonMecanumDrive drivetrain;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -84,7 +85,7 @@ public class AutonomousTesting extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-        AutonMecanumDrive drive = new AutonMecanumDrive(hardwareMap);
+        drivetrain = new AutonMecanumDrive(hardwareMap);
         scorer.init(hardwareMap);
 
         //  Initialize telemetry and dashboard
@@ -124,9 +125,9 @@ public class AutonomousTesting extends LinearOpMode {
         double AUTON_START_DELAY = 0.16;
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
-        drive.setPoseEstimate(startPose);
+        drivetrain.setPoseEstimate(startPose);
 
-        TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
 //                .addTemporalMarker(() -> {
 //                    scorer.clawIsOpen = false;
 //                })
@@ -262,7 +263,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .build()
                 ;
 
-        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
+        TrajectorySequence parkLeft = drivetrain.trajectorySequenceBuilder(trajectory1.end())
                 .setTangent(scoringAngleRight - facingLeft)
                 .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
                 .setTangent(facingLeft)
@@ -271,13 +272,13 @@ public class AutonomousTesting extends LinearOpMode {
                 .build()
                 ;
 
-        TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(trajectory1.end())
+        TrajectorySequence parkMiddle = drivetrain.trajectorySequenceBuilder(trajectory1.end())
                 .setTangent(scoringAngleRight - facingLeft)
                 .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
                 .build()
                 ;
 
-        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(trajectory1.end())
+        TrajectorySequence parkRight = drivetrain.trajectorySequenceBuilder(trajectory1.end())
                 .setReversed(true)
                 .splineTo(turnPos, facingRight)
                 .splineTo(parkingZone3, facingRight)
@@ -285,7 +286,7 @@ public class AutonomousTesting extends LinearOpMode {
                 ;
 
 
-        drive.followTrajectorySequenceAsync(trajectory1);
+        drivetrain.followTrajectorySequenceAsync(trajectory1);
 
         hubs = hardwareMap.getAll(LynxModule.class);
 
@@ -382,46 +383,35 @@ public class AutonomousTesting extends LinearOpMode {
         }
 
 
-
         while(opModeIsActive()) {
 
             for (LynxModule hub : hubs) {
                 hub.clearBulkCache();
             }
 
-            drive.update();
+            if(!hasParked && !drivetrain.isBusy() && (autonomousTimer.seconds() >= 3)) {
 
-            scorer.runClaw();
-            scorer.runPivot();
-            scorer.runPassThruServos();
-            scorer.runPassThruStates();
-            scorer.runLiftToPos();
-
-
-            // parking statement
-            if(
-                    !hasParked &&                       // bot has not yet parked in zone
-                            !drive.isBusy() &&                  // bot is not driving
-                            (autonomousTimer.seconds() >= 3) && // at least 3 seconds into autonomous
-                            (tagOfInterest != null)             // camera has detected any tag
-            ) {
-
-                if (tagOfInterest.id == LEFT) {
-                    drive.followTrajectorySequenceAsync(parkLeft);
-                } else if (tagOfInterest.id == RIGHT) {
-                    drive.followTrajectorySequenceAsync(parkRight);
+                if (tagOfInterest != null) {
+                    if (tagOfInterest.id == LEFT) {
+                        drivetrain.followTrajectorySequenceAsync(parkLeft);
+                    } else if (tagOfInterest.id == RIGHT) {
+                        drivetrain.followTrajectorySequenceAsync(parkRight);
+                    } else {
+                        drivetrain.followTrajectorySequenceAsync(parkMiddle);
+                    }
                 } else {
-                    drive.followTrajectorySequenceAsync(parkMiddle);
+                    drivetrain.followTrajectorySequenceAsync(parkMiddle);
                 }
 
                 hasParked = true;
             }
 
-            if (tagOfInterest == null) {
-                drive.followTrajectorySequenceAsync(parkMiddle);
-            }
-
-
+            drivetrain.update();
+            scorer.runClaw();
+            scorer.runPivot();
+            scorer.runPassThruServos();
+            scorer.runPassThruStates();
+            scorer.runLiftToPos();
 
             //everything below is telemetry
             if (!scorer.clawIsOpen){

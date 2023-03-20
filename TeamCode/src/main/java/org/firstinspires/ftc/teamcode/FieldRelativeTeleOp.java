@@ -96,11 +96,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             control2LeftY = Gamepad2.getLeftY();
 
-            scorer.runClaw();
-            scorer.runPivot();
-            scorer.runPassThruServos();
-
-
             if (control2X.wasJustPressed()) {
                 useOverrideMode = !useOverrideMode;
                 scorer.useLiftPIDF = !scorer.useLiftPIDF;
@@ -109,14 +104,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             if (useOverrideMode) {
 
-                scorer.runLift(control2LeftY);
+                if (control2RShoulder.wasJustPressed()) {
+                    scorer.resetLiftEncoder();
+                }
 
                 if (control2B.wasJustPressed()) {
                     scorer.toggleClaw();
-                }
-
-                if (control2RShoulder.wasJustPressed()) {
-                    scorer.resetLiftEncoder();
                 }
 
                 if (control2LShoulder.wasJustPressed()) {
@@ -127,26 +120,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     scorer.togglePassThru();
                 }
 
+                scorer.runLift(control2LeftY);
+
             } else {
-
-                scorer.runLiftToPos();
-                scorer.runPassThruStates();
-
-                if(control2Y.wasJustPressed()){
-                    scorer.triggerPassThru();
-                }
-
-                if (control2LShoulder.wasJustPressed()) {
-                    scorer.togglePivot();
-                }
-
-                if (control2B.wasJustPressed()) {
-                    if (scorer.clawIsOpen) {
-                        scorer.liftClaw();
-                    } else {
-                        scorer.dropClaw();
-                    }
-                }
 
                 if (control2RShoulder.wasJustPressed()) {
                     scorer.useLiftPIDF = false;
@@ -187,6 +163,25 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                         scorer.setTargetLiftPos(PowerplayScorer.liftPos.ONE);
                     }
                 }
+
+                if(control2Y.wasJustPressed()){
+                    scorer.triggerPassThru();
+                }
+
+                if (control2LShoulder.wasJustPressed()) {
+                    scorer.togglePivot();
+                }
+
+                if (control2B.wasJustPressed()) {
+                    if (scorer.clawIsOpen) {
+                        scorer.liftClaw();
+                    } else {
+                        scorer.dropClaw();
+                    }
+                }
+
+                scorer.runLiftToPos();
+                scorer.runPassThruStates();
             }
 
 
@@ -213,6 +208,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control1RightX *= precisionScale;
 
 
+            scorer.runClaw();
+            scorer.runPivot();
+            scorer.runPassThruServos();
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
 
