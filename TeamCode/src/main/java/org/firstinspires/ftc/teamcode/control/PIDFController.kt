@@ -46,7 +46,7 @@ class PIDFController
 
     private var lastFilterEstimate: Double = 0.0
     private var integrate: Boolean = true
-    private var positionTolerance: Double = 5.0
+    var positionTolerance: Double = 5.0
 
     fun setGains(
         pid: PIDCoefficients,
@@ -122,10 +122,6 @@ class PIDFController
             }
         }
         return error
-    }
-
-    fun setPositionTolerance(tolerance: Double) {
-        positionTolerance = tolerance
     }
 
     fun atTargetPosition(measuredPosition: Double): Boolean {
