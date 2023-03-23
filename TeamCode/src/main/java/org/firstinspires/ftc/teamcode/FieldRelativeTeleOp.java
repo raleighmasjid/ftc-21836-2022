@@ -17,7 +17,7 @@ import java.util.List;
 public class FieldRelativeTeleOp extends LinearOpMode {
 
     PowerplayScorer scorer = new PowerplayScorer();
-    MarvelsMecanumDrive drivetrain = new MarvelsMecanumDrive();
+    TeleOpMecanumDrive drivetrain = new TeleOpMecanumDrive();
     List<LynxModule> hubs;
 
     @Override
@@ -93,6 +93,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control1RightX = Gamepad1.getRightX();
 
             control2LeftY = Gamepad2.getLeftY();
+
+            scorer.readLiftPos();
+            scorer.updateLiftGains();
 
             // Field-centric reset
             if (Gamepad1.isDown(GamepadKeys.Button.Y)) {

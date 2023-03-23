@@ -4,6 +4,9 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_RPM;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.profile.MotionProfile;
+import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
+import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
@@ -29,6 +32,8 @@ public class PowerplayScorer {
     private SimpleServo passThruServoR;
     private SimpleServo passThruServoL;
     private PIDFController liftController;
+    private MotionProfile liftProfile;
+    private ElapsedTime liftTimer;
     public DigitalChannel limitSwitch;
     public DigitalChannel LED1red;
     public DigitalChannel LED1green;
@@ -58,15 +63,17 @@ public class PowerplayScorer {
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
         lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, MAX_RPM);
 
-        PIDCoefficients liftCoefficients = new PIDCoefficients(
-                TeleOpConfig.LIFT_kP,
-                TeleOpConfig.LIFT_kI,
-                TeleOpConfig.LIFT_kD
-        );
         liftController = new PIDFController(
-                liftCoefficients,
+                new PIDCoefficients(
+                        TeleOpConfig.LIFT_kP,
+                        TeleOpConfig.LIFT_kI,
+                        TeleOpConfig.LIFT_kD
+                ),
                 TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
-                TeleOpConfig.LIFT_FILTER_GAIN
+                TeleOpConfig.LIFT_FILTER_GAIN,
+                TeleOpConfig.LIFT_kV,
+                TeleOpConfig.LIFT_kA,
+                TeleOpConfig.LIFT_kS
         );
         liftController.setPositionTolerance(TeleOpConfig.LIFT_E_TOLERANCE);
         liftController.setOutputBounds(-1.0, 1.0);
@@ -86,11 +93,15 @@ public class PowerplayScorer {
         lift_motor2.resetEncoder();
         targetLiftPos = TeleOpConfig.HEIGHT_ONE;
         targetLiftPosName = liftPos.ONE.name();
+        currentLiftPos = 0;
+        updateLiftProfile();
 
         passThruTimer = new ElapsedTime();
         passThruTimer.reset();
         liftClawTimer = new ElapsedTime();
         liftClawTimer.reset();
+        liftTimer = new ElapsedTime();
+        liftTimer.reset();
 
         limitSwitch = hw.get(DigitalChannel.class, "limit switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -270,13 +281,11 @@ public class PowerplayScorer {
         }
     }
 
-
     public enum liftPos {
             ONE, TWO, THREE, FOUR, FIVE, GROUND, LOW, MED, TALL
     }
 
     public void setTargetLiftPos (liftPos height) {
-
         switch (height){
             case ONE:
                 targetLiftPos = TeleOpConfig.HEIGHT_ONE;
@@ -315,12 +324,39 @@ public class PowerplayScorer {
                 targetLiftPosName = liftPos.TALL.name();
                 break;
         }
-        
+        updateLiftProfile();
     }
 
     public void setTargetLiftPos (double height) {
         targetLiftPos = height;
         targetLiftPosName = Double.toString(height);
+        updateLiftProfile();
+    }
+
+    public void updateLiftProfile () {
+        liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
+                new MotionState(currentLiftPos, 0, 0),
+                new MotionState(targetLiftPos, 0, 0),
+                TeleOpConfig.LIFT_MAX_VELO,
+                TeleOpConfig.LIFT_MAX_ACCEL,
+                TeleOpConfig.LIFT_MAX_JERK
+        );
+        liftTimer.reset();
+    }
+
+    public void updateLiftGains () {
+        liftController.setGains(
+                new PIDCoefficients(
+                        TeleOpConfig.LIFT_kP,
+                        TeleOpConfig.LIFT_kI,
+                        TeleOpConfig.LIFT_kD
+                ),
+                TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
+                TeleOpConfig.LIFT_FILTER_GAIN,
+                TeleOpConfig.LIFT_kV,
+                TeleOpConfig.LIFT_kA,
+                TeleOpConfig.LIFT_kS
+        );
     }
 
     public double getTargetLiftPos () {
@@ -332,11 +368,10 @@ public class PowerplayScorer {
     }
 
     public double getCurrentLiftPos () {
-        readLiftPos();
         return currentLiftPos;
     }
 
-    private void readLiftPos () {
+    public void readLiftPos () {
         currentLiftPos = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
     }
 
@@ -346,17 +381,14 @@ public class PowerplayScorer {
     }
 
     public void runLiftToPos () {
-        readLiftPos();
-        liftController.setTargetPosition(targetLiftPos);
+        MotionState liftState = liftProfile.get(liftTimer.seconds());
+
+        liftController.setTargetPosition(liftState.getX());
+        liftController.setTargetVelocity(liftState.getV());
+        liftController.setTargetAcceleration(liftState.getA());
 
         if (useLiftPIDF) {
-            double velocity = liftController.update(currentLiftPos);
-
-            if (velocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
-                velocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
-            }
-
-            runLift(velocity);
+            runLift(liftController.update(currentLiftPos) + TeleOpConfig.LIFT_kG);
         }
     }
 

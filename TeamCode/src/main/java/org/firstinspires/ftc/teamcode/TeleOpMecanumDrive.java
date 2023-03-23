@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 
 
-public class MarvelsMecanumDrive {
+public class TeleOpMecanumDrive {
     HardwareMap hw;
     public MotorEx motor_frontLeft;
     public MotorEx motor_frontRight;

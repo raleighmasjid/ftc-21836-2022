@@ -406,12 +406,13 @@ public class AutonomousTesting extends LinearOpMode {
                 hasParked = true;
             }
 
-            drivetrain.update();
+            scorer.readLiftPos();
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassThruServos();
             scorer.runPassThruStates();
             scorer.runLiftToPos();
+            drivetrain.update();
 
             //everything below is telemetry
             if (!scorer.clawIsOpen){
