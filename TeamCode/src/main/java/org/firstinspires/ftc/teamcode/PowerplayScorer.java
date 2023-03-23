@@ -145,7 +145,7 @@ public class PowerplayScorer {
                 passThruServoL.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
                 break;
             case PIVOT_POS:
-                if (getCurrentLiftPos() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                if (currentLiftPos >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
                     passThruServoR.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
                     passThruServoL.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
                 } else {
@@ -186,7 +186,7 @@ public class PowerplayScorer {
                     skipCurrentPassThruState = false;
                     break;
                 case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skipCurrentPassThruState || getCurrentLiftPos() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skipCurrentPassThruState || currentLiftPos >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
                         passThruTimer.reset();
                         currentPassThruState = passThruState.PIVOTING;
                         pivotIsFront = false;
@@ -254,7 +254,7 @@ public class PowerplayScorer {
                     }
                     break;
                 case MOVING_TO_FRONT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (getCurrentLiftPos() >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skipCurrentPassThruState) {
+                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (currentLiftPos >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skipCurrentPassThruState) {
                         passThruTimer.reset();
                         passThruIsMoving = false;
                         currentPassThruState = passThruState.IN_FRONT;
@@ -350,7 +350,7 @@ public class PowerplayScorer {
         liftController.setTargetPosition(targetLiftPos);
 
         if (useLiftPIDF) {
-            double velocity = liftController.update(getCurrentLiftPos());
+            double velocity = liftController.update(currentLiftPos);
 
             if (velocity < TeleOpConfig.LIFT_MAX_DOWN_VELOCITY) {
                 velocity = TeleOpConfig.LIFT_MAX_DOWN_VELOCITY;
