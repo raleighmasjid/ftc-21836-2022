@@ -253,7 +253,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             myTelemetry.addData("Lift current position (inches)", scorer.getCurrentLiftPos());
             myTelemetry.addData("Lift target position (inches)", scorer.getTargetLiftPos());
             myTelemetry.addData("Lift target position (name)", scorer.getTargetLiftPosName());
-            myTelemetry.addData("Lift velocity", scorer.getLiftVelocity());
+            myTelemetry.addData("Lift velocity", scorer.getLiftVeloCommand());
             myTelemetry.addLine();
             myTelemetry.addData("Passthrough status", scorer.getCurrentPassThruState());
             myTelemetry.addLine();

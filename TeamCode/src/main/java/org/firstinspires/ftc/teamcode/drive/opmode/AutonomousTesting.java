@@ -426,7 +426,7 @@ public class AutonomousTesting extends LinearOpMode {
             myTelemetry.addData("Lift target named position", scorer.getTargetLiftPosName());
             myTelemetry.addData("Lift current position (inches)", scorer.getCurrentLiftPos());
             myTelemetry.addData("Lift target position (inches)", scorer.getTargetLiftPos());
-            myTelemetry.addData("Lift motor power output", scorer.getLiftVelocity());
+            myTelemetry.addData("Lift motor power output", scorer.getLiftVeloCommand());
 
             myTelemetry.addData("Passthrough status", scorer.getCurrentPassThruState());
 

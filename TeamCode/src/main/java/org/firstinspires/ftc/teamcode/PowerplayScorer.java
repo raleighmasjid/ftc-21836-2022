@@ -33,16 +33,21 @@ public class PowerplayScorer {
     private SimpleServo passThruServoL;
     private PIDFController liftController;
     private MotionProfile liftProfile;
-    private ElapsedTime liftTimer;
+    private ElapsedTime liftProfileTimer;
+    private ElapsedTime liftDerivTimer;
     public DigitalChannel limitSwitch;
     public DigitalChannel LED1red;
     public DigitalChannel LED1green;
     public DigitalChannel LED2red;
     public DigitalChannel LED2green;
+    private double currentLiftAccel;
+    private double lastLiftVelo;
+    private double currentLiftVelo;
+    private double lastLiftPos;
     private double currentLiftPos;
     private double targetLiftPos;
     private String targetLiftPosName;
-    private double liftVelocity;
+    private double liftVeloCommand;
     private static ElapsedTime passThruTimer;
     private static ElapsedTime liftClawTimer;
     public boolean clawIsOpen;
@@ -100,8 +105,8 @@ public class PowerplayScorer {
         passThruTimer.reset();
         liftClawTimer = new ElapsedTime();
         liftClawTimer.reset();
-        liftTimer = new ElapsedTime();
-        liftTimer.reset();
+        liftProfileTimer = new ElapsedTime();
+        liftProfileTimer.reset();
 
         limitSwitch = hw.get(DigitalChannel.class, "limit switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -341,7 +346,7 @@ public class PowerplayScorer {
                 TeleOpConfig.LIFT_MAX_ACCEL,
                 TeleOpConfig.LIFT_MAX_JERK
         );
-        liftTimer.reset();
+        liftProfileTimer.reset();
     }
 
     public void updateLiftGains () {
@@ -381,7 +386,7 @@ public class PowerplayScorer {
     }
 
     public void runLiftToPos () {
-        MotionState liftState = liftProfile.get(liftTimer.seconds());
+        MotionState liftState = liftProfile.get(liftProfileTimer.seconds());
 
         liftController.setTargetPosition(liftState.getX());
         liftController.setTargetVelocity(liftState.getV());
@@ -393,14 +398,14 @@ public class PowerplayScorer {
     }
 
     public void runLift (double velocity) {
-        liftVelocity = velocity;
+        liftVeloCommand = velocity;
         lift_motor1.set(velocity);
         lift_motor2.set(velocity);
         lift_motor3.set(velocity);
     }
 
-    public double getLiftVelocity () {
-        return liftVelocity;
+    public double getLiftVeloCommand() {
+        return liftVeloCommand;
     }
 
     public void toggleClaw () {
