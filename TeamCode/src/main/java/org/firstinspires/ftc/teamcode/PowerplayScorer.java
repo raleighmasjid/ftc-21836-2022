@@ -505,8 +505,9 @@ public class PowerplayScorer {
         }
         myTelemetry.addLine();
         myTelemetry.addData("Lift current position (in)", currentLiftPos);
-        myTelemetry.addData("Lift target position (in)", targetLiftPos);
-        myTelemetry.addData("Lift target position (name)", targetLiftPosName);
+        myTelemetry.addData("Lift target position (in)", liftState.getX());
+        myTelemetry.addData("Lift end target position (in)", targetLiftPos);
+        myTelemetry.addData("Lift end target position (name)", targetLiftPosName);
         myTelemetry.addLine();
         myTelemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
         myTelemetry.addData("Lift target velocity (in/s)", liftState.getV());
