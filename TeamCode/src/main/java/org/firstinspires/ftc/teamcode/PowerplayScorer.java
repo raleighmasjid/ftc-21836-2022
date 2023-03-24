@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_RPM;
 
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
@@ -33,6 +34,7 @@ public class PowerplayScorer {
     private SimpleServo passThruServoL;
     private PIDFController liftController;
     private MotionProfile liftProfile;
+    private MotionState liftState;
     private ElapsedTime liftProfileTimer;
     private ElapsedTime liftDerivTimer;
     public DigitalChannel limitSwitch;
@@ -40,6 +42,7 @@ public class PowerplayScorer {
     public DigitalChannel LED1green;
     public DigitalChannel LED2red;
     public DigitalChannel LED2green;
+    private double lastTimestamp;
     private double currentLiftAccel;
     private double lastLiftVelo;
     private double currentLiftVelo;
@@ -47,7 +50,6 @@ public class PowerplayScorer {
     private double currentLiftPos;
     private double targetLiftPos;
     private String targetLiftPosName;
-    private double liftVeloCommand;
     private static ElapsedTime passThruTimer;
     private static ElapsedTime liftClawTimer;
     public boolean clawIsOpen;
@@ -56,6 +58,7 @@ public class PowerplayScorer {
     private boolean pivotIsFront;
     private boolean skipCurrentPassThruState;
     public boolean useLiftPIDF;
+    private boolean clawHasLifted;
 
     public void init (HardwareMap hw) {
 
@@ -98,7 +101,12 @@ public class PowerplayScorer {
         lift_motor2.resetEncoder();
         targetLiftPos = TeleOpConfig.HEIGHT_ONE;
         targetLiftPosName = liftPos.ONE.name();
+        currentLiftAccel = 0;
+        lastLiftVelo = 0;
+        currentLiftVelo = 0;
+        lastLiftPos = 0;
         currentLiftPos = 0;
+        lastTimestamp = 0;
         updateLiftProfile();
 
         passThruTimer = new ElapsedTime();
@@ -107,6 +115,8 @@ public class PowerplayScorer {
         liftClawTimer.reset();
         liftProfileTimer = new ElapsedTime();
         liftProfileTimer.reset();
+        liftDerivTimer = new ElapsedTime();
+        liftDerivTimer.reset();
 
         limitSwitch = hw.get(DigitalChannel.class, "limit switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -121,6 +131,7 @@ public class PowerplayScorer {
         LED2red.setMode(DigitalChannel.Mode.OUTPUT);
         LED2green.setMode(DigitalChannel.Mode.OUTPUT);
 
+        clawHasLifted = true;
         useLiftPIDF = true;
         skipCurrentPassThruState = false;
         pivotIsFront = true;
@@ -149,10 +160,6 @@ public class PowerplayScorer {
 
     private passThruState currentPassThruState = passThruState.IN_FRONT;
     private passThruPos currentPassThruPos = passThruPos.FRONT;
-
-    public passThruState getCurrentPassThruState() {
-        return currentPassThruState;
-    }
 
     public void runPassThruServos () {
         switch (currentPassThruPos) {
@@ -368,10 +375,6 @@ public class PowerplayScorer {
         return targetLiftPos;
     }
 
-    public String getTargetLiftPosName () {
-        return targetLiftPosName;
-    }
-
     public double getCurrentLiftPos () {
         return currentLiftPos;
     }
@@ -386,7 +389,14 @@ public class PowerplayScorer {
     }
 
     public void runLiftToPos () {
-        MotionState liftState = liftProfile.get(liftProfileTimer.seconds());
+        double currentTimeStamp = liftDerivTimer.seconds();
+        double dt = currentTimeStamp - lastTimestamp;
+        if (dt == 0) {
+            dt = 0.002;
+        }
+        currentLiftVelo = (currentLiftPos - lastLiftPos) / dt;
+        currentLiftAccel = (currentLiftVelo - lastLiftVelo) / dt;
+        liftState = liftProfile.get(liftProfileTimer.seconds());
 
         liftController.setTargetPosition(liftState.getX());
         liftController.setTargetVelocity(liftState.getV());
@@ -395,24 +405,21 @@ public class PowerplayScorer {
         if (useLiftPIDF) {
             runLift(liftController.update(currentLiftPos) + TeleOpConfig.LIFT_kG);
         }
+
+        lastLiftPos = currentLiftPos;
+        lastLiftVelo = currentLiftVelo;
+        lastTimestamp = currentTimeStamp;
     }
 
-    public void runLift (double velocity) {
-        liftVeloCommand = velocity;
-        lift_motor1.set(velocity);
-        lift_motor2.set(velocity);
-        lift_motor3.set(velocity);
-    }
-
-    public double getLiftVeloCommand() {
-        return liftVeloCommand;
+    public void runLift (double veloCommand) {
+        lift_motor1.set(veloCommand);
+        lift_motor2.set(veloCommand);
+        lift_motor3.set(veloCommand);
     }
 
     public void toggleClaw () {
         clawIsOpen = !clawIsOpen;
     }
-
-    private boolean clawHasLifted = true;
 
     public void runClaw () {
         if (!clawIsOpen){
@@ -480,5 +487,33 @@ public class PowerplayScorer {
             currentPassThruPos = passThruPos.BACK;
             currentPassThruState = passThruState.IN_BACK;
         }
+    }
+
+    public void printTelemetry (MultipleTelemetry myTelemetry) {
+        if (limitSwitch.getState()) {
+            myTelemetry.addData("Limit switch", "is not triggered");
+        } else {
+            myTelemetry.addData("Limit switch", "is triggered");
+        }
+        myTelemetry.addLine();
+        if (!clawIsOpen){
+            myTelemetry.addData("Claw is", "closed");
+        } else if (passThruIsMoving) {
+            myTelemetry.addData("Claw is", "half-closed");
+        } else {
+            myTelemetry.addData("Claw is", "open");
+        }
+        myTelemetry.addLine();
+        myTelemetry.addData("Lift current position (in)", currentLiftPos);
+        myTelemetry.addData("Lift target position (in)", targetLiftPos);
+        myTelemetry.addData("Lift target position (name)", targetLiftPosName);
+        myTelemetry.addLine();
+        myTelemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
+        myTelemetry.addData("Lift target velocity (in/s)", liftState.getV());
+        myTelemetry.addLine();
+        myTelemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
+        myTelemetry.addData("Lift target acceleration (in/s^2)", liftState.getA());
+        myTelemetry.addLine();
+        myTelemetry.addData("Passthrough status", currentPassThruState);
     }
 }

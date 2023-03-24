@@ -415,25 +415,7 @@ public class AutonomousTesting extends LinearOpMode {
             drivetrain.update();
 
             //everything below is telemetry
-            if (!scorer.clawIsOpen){
-                myTelemetry.addData("Claw is", "closed");
-            } else if (scorer.passThruIsMoving) {
-                myTelemetry.addData("Claw is", "half-closed");
-            } else {
-                myTelemetry.addData("Claw is", "open");
-            }
-
-            myTelemetry.addData("Lift target named position", scorer.getTargetLiftPosName());
-            myTelemetry.addData("Lift current position (inches)", scorer.getCurrentLiftPos());
-            myTelemetry.addData("Lift target position (inches)", scorer.getTargetLiftPos());
-            myTelemetry.addData("Lift motor power output", scorer.getLiftVeloCommand());
-
-            myTelemetry.addData("Passthrough status", scorer.getCurrentPassThruState());
-
-//            myTelemetry.addData("Current draw lift 1",scorer.lift_motor1.motorEx.getCurrent(CurrentUnit.AMPS));
-//            myTelemetry.addData("Current draw lift 2",scorer.lift_motor2.motorEx.getCurrent(CurrentUnit.AMPS));
-//            myTelemetry.addData("Current draw lift 3",scorer.lift_motor3.motorEx.getCurrent(CurrentUnit.AMPS));
-
+            scorer.printTelemetry(myTelemetry);
             myTelemetry.update();
 
         }

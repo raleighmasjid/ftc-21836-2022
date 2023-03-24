@@ -150,15 +150,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 }
 
                 if (!liftHasReset) {
-                    if (scorer.limitSwitch.getState()) {
+                    if (scorer.limitSwitch.getState() && !control2RShoulder.wasJustPressed()) {
                         scorer.runLift(TeleOpConfig.LIFT_RESET_VELOCITY);
                     } else {
-                        scorer.useLiftPIDF = true;
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.ONE);
-                        scorer.resetLiftEncoder();
-                        liftHasReset = true;
-                    }
-                    if (control2RShoulder.wasJustPressed()) {
                         scorer.useLiftPIDF = true;
                         scorer.setTargetLiftPos(PowerplayScorer.liftPos.ONE);
                         scorer.resetLiftEncoder();
@@ -216,20 +210,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             //everything below is telemetry
-            if (scorer.limitSwitch.getState()) {
-                myTelemetry.addData("Limit switch", "is not triggered");
-            } else {
-                myTelemetry.addData("Limit switch", "is triggered");
-            }
-            myTelemetry.addLine();
-            if (!scorer.clawIsOpen){
-                myTelemetry.addData("Claw is", "closed");
-            } else if (scorer.passThruIsMoving) {
-                myTelemetry.addData("Claw is", "half-closed");
-            } else {
-                myTelemetry.addData("Claw is", "open");
-            }
-            myTelemetry.addLine();
             if (useOverrideMode) {
                 myTelemetry.addData("Robot is in", "manual override mode");
                 scorer.LED1green.setState(false);
@@ -250,17 +230,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.LED2red.setState(false);
             }
             myTelemetry.addLine();
-            myTelemetry.addData("Lift current position (inches)", scorer.getCurrentLiftPos());
-            myTelemetry.addData("Lift target position (inches)", scorer.getTargetLiftPos());
-            myTelemetry.addData("Lift target position (name)", scorer.getTargetLiftPosName());
-            myTelemetry.addData("Lift velocity", scorer.getLiftVeloCommand());
-            myTelemetry.addLine();
-            myTelemetry.addData("Passthrough status", scorer.getCurrentPassThruState());
-            myTelemetry.addLine();
-            myTelemetry.addData("Status", "power: x:" + control1LeftX + " y:" + control1LeftY + " z:" + control1RightX);
-            myTelemetry.addData("Field-relative heading", drivetrain.rotYaw);
-            myTelemetry.addData("Drive speed scale", precisionScale);
-
+            scorer.printTelemetry(myTelemetry);
             myTelemetry.update();
         }
     }
