@@ -347,7 +347,7 @@ public class PowerplayScorer {
 
     public void updateLiftProfile () {
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-            new MotionState(currentLiftPos, 0, 0),
+            new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel),
             new MotionState(targetLiftPos, 0, 0),
             TeleOpConfig.LIFT_MAX_VELO,
             TeleOpConfig.LIFT_MAX_ACCEL,
@@ -403,7 +403,7 @@ public class PowerplayScorer {
         liftController.setTargetAcceleration(liftState.getA());
 
         if (useLiftPIDF) {
-            runLift(liftController.update(currentLiftPos) + TeleOpConfig.LIFT_kG);
+            runLift(liftController.update(currentLiftPos, currentLiftVelo) + TeleOpConfig.LIFT_kG);
         }
 
         lastLiftPos = currentLiftPos;
