@@ -347,27 +347,27 @@ public class PowerplayScorer {
 
     public void updateLiftProfile () {
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(currentLiftPos, 0, 0),
-                new MotionState(targetLiftPos, 0, 0),
-                TeleOpConfig.LIFT_MAX_VELO,
-                TeleOpConfig.LIFT_MAX_ACCEL,
-                TeleOpConfig.LIFT_MAX_JERK
+            new MotionState(currentLiftPos, 0, 0),
+            new MotionState(targetLiftPos, 0, 0),
+            TeleOpConfig.LIFT_MAX_VELO,
+            TeleOpConfig.LIFT_MAX_ACCEL,
+            TeleOpConfig.LIFT_MAX_JERK
         );
         liftProfileTimer.reset();
     }
 
     public void updateLiftGains () {
         liftController.setGains(
-                new PIDCoefficients(
-                        TeleOpConfig.LIFT_kP,
-                        TeleOpConfig.LIFT_kI,
-                        TeleOpConfig.LIFT_kD
-                ),
-                TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
-                TeleOpConfig.LIFT_FILTER_GAIN,
-                TeleOpConfig.LIFT_kV,
-                TeleOpConfig.LIFT_kA,
-                TeleOpConfig.LIFT_kS
+            new PIDCoefficients(
+                TeleOpConfig.LIFT_kP,
+                TeleOpConfig.LIFT_kI,
+                TeleOpConfig.LIFT_kD
+            ),
+            TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
+            TeleOpConfig.LIFT_FILTER_GAIN,
+            TeleOpConfig.LIFT_kV,
+            TeleOpConfig.LIFT_kA,
+            TeleOpConfig.LIFT_kS
         );
     }
 
