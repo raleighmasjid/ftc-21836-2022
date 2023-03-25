@@ -43,7 +43,9 @@ public class PowerplayScorer {
     public DigitalChannel LED2red;
     public DigitalChannel LED2green;
     private double lastTimestamp;
+    private double currentLiftAccel;
     private double lastLiftVelo;
+    private double currentLiftVelo;
     private double lastLiftPos;
     private double currentLiftPos;
     private double targetLiftPos;
@@ -99,7 +101,9 @@ public class PowerplayScorer {
         lift_motor2.resetEncoder();
         targetLiftPos = TeleOpConfig.HEIGHT_ONE;
         targetLiftPosName = liftPos.ONE.name();
+        currentLiftAccel = 0;
         lastLiftVelo = 0;
+        currentLiftVelo = 0;
         lastLiftPos = 0;
         currentLiftPos = 0;
         lastTimestamp = 0;
@@ -385,6 +389,13 @@ public class PowerplayScorer {
     }
 
     public void runLiftToPos () {
+        double currentTimeStamp = liftDerivTimer.seconds();
+        double dt = currentTimeStamp - lastTimestamp;
+        if (dt == 0) {
+            dt = 0.002;
+        }
+        currentLiftVelo = (currentLiftPos - lastLiftPos) / dt;
+        currentLiftAccel = (currentLiftVelo - lastLiftVelo) / dt;
         liftState = liftProfile.get(liftProfileTimer.seconds());
 
         liftController.setTargetPosition(liftState.getX());
@@ -394,6 +405,10 @@ public class PowerplayScorer {
         if (useLiftPIDF) {
             runLift(liftController.update(currentLiftPos) + TeleOpConfig.LIFT_kG);
         }
+
+        lastLiftPos = currentLiftPos;
+        lastLiftVelo = currentLiftVelo;
+        lastTimestamp = currentTimeStamp;
     }
 
     public void runLift (double veloCommand) {
@@ -475,17 +490,6 @@ public class PowerplayScorer {
     }
 
     public void printTelemetry (MultipleTelemetry myTelemetry) {
-        double currentTimeStamp = liftDerivTimer.seconds();
-        double dt = currentTimeStamp - lastTimestamp;
-        if (dt == 0) {
-            dt = 0.002;
-        }
-        double currentLiftVelo = (currentLiftPos - lastLiftPos) / dt;
-        double currentLiftAccel = (currentLiftVelo - lastLiftVelo) / dt;
-        lastLiftPos = currentLiftPos;
-        lastLiftVelo = currentLiftVelo;
-        lastTimestamp = currentTimeStamp;
-
         if (limitSwitch.getState()) {
             myTelemetry.addData("Limit switch", "is not triggered");
         } else {
