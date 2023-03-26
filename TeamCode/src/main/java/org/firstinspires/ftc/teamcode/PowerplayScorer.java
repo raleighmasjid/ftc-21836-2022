@@ -403,7 +403,11 @@ public class PowerplayScorer {
         liftController.setTargetAcceleration(liftState.getA());
 
         if (useLiftPIDF) {
-            runLift(liftController.update(currentLiftPos, currentLiftVelo) + TeleOpConfig.LIFT_kG);
+            double command = liftController.update(currentLiftPos, currentLiftVelo);
+            if (currentLiftPos > 0.0) {
+                command += TeleOpConfig.LIFT_kG;
+            }
+            runLift(command);
         }
 
         lastLiftPos = currentLiftPos;
