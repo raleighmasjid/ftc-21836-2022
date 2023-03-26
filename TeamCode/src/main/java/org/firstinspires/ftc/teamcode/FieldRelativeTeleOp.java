@@ -154,7 +154,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                         scorer.runLift(TeleOpConfig.LIFT_RESET_VELOCITY);
                     } else {
                         scorer.useLiftPIDF = true;
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.ONE);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.FLOOR);
                         scorer.resetLiftEncoder();
                         liftHasReset = true;
                     }
@@ -180,7 +180,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     } else if (control2Right.wasJustPressed()) {
                         scorer.setTargetLiftPos(PowerplayScorer.liftPos.LOW);
                     } else if (control2Down.wasJustPressed()) {
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.ONE);
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.FLOOR);
                     }
                 }
 

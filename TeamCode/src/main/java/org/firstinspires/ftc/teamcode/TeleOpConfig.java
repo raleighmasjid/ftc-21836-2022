@@ -4,13 +4,12 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class TeleOpConfig {
     // inches
-    public static double HEIGHT_ONE = 0;
+    public static double HEIGHT_FLOOR = 0;
     public static double HEIGHT_TWO = 1.25;
     public static double HEIGHT_THREE = 2.5;
     public static double HEIGHT_FOUR = 3.75;
     public static double HEIGHT_FIVE = 5;
     // inches
-    public static double HEIGHT_GROUND = 0.95;
     public static double HEIGHT_LOW = 15.8365;
     public static double HEIGHT_MEDIUM = 25.365;
     public static double HEIGHT_TALL = 36.50375;
@@ -36,7 +35,6 @@ public class TeleOpConfig {
     public static double LIFT_TICKS_PER_INCH = 0.03168725;
 
     public static double LIFT_RESET_VELOCITY = -0.2;
-    public static double LIFT_MAX_DOWN_VELOCITY = -0.45;
     public static double PRECISION_MODE_SCALE = 0.3;
 
     public static double CLAW_CLOSED_ANGLE = 165;

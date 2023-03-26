@@ -99,8 +99,8 @@ public class PowerplayScorer {
         lift_motor3.setInverted(true);
 
         lift_motor2.resetEncoder();
-        targetLiftPos = TeleOpConfig.HEIGHT_ONE;
-        targetLiftPosName = liftPos.ONE.name();
+        targetLiftPos = TeleOpConfig.HEIGHT_FLOOR;
+        targetLiftPosName = liftPos.FLOOR.name();
         currentLiftAccel = 0;
         lastLiftVelo = 0;
         currentLiftVelo = 0;
@@ -294,14 +294,14 @@ public class PowerplayScorer {
     }
 
     public enum liftPos {
-            ONE, TWO, THREE, FOUR, FIVE, GROUND, LOW, MED, TALL
+        FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
     }
 
     public void setTargetLiftPos (liftPos height) {
         switch (height){
-            case ONE:
-                targetLiftPos = TeleOpConfig.HEIGHT_ONE;
-                targetLiftPosName = liftPos.ONE.name();
+            case FLOOR:
+                targetLiftPos = TeleOpConfig.HEIGHT_FLOOR;
+                targetLiftPosName = liftPos.FLOOR.name();
                 break;
             case TWO:
                 targetLiftPos = TeleOpConfig.HEIGHT_TWO;
@@ -318,10 +318,6 @@ public class PowerplayScorer {
             case FIVE:
                 targetLiftPos = TeleOpConfig.HEIGHT_FIVE;
                 targetLiftPosName = liftPos.FIVE.name();
-                break;
-            case GROUND:
-                targetLiftPos = TeleOpConfig.HEIGHT_GROUND;
-                targetLiftPosName = liftPos.GROUND.name();
                 break;
             case LOW:
                 targetLiftPos = TeleOpConfig.HEIGHT_LOW;
@@ -404,7 +400,7 @@ public class PowerplayScorer {
 
         if (useLiftPIDF) {
             double command = liftController.update(currentLiftPos, currentLiftVelo);
-            if (currentLiftPos > 0.0) {
+            if (currentLiftPos > TeleOpConfig.LIFT_E_TOLERANCE) {
                 command += TeleOpConfig.LIFT_kG;
             }
             runLift(command);
@@ -449,7 +445,7 @@ public class PowerplayScorer {
     }
 
     public void dropClaw () {
-        setTargetLiftPos(liftPos.ONE);
+        setTargetLiftPos(liftPos.FLOOR);
         clawIsOpen = true;
     }
 
@@ -509,15 +505,15 @@ public class PowerplayScorer {
         }
         myTelemetry.addLine();
         myTelemetry.addData("Lift current position (in)", currentLiftPos);
-        myTelemetry.addData("Lift target position (in)", liftState.getX());
-        myTelemetry.addData("Lift end target position (in)", targetLiftPos);
-        myTelemetry.addData("Lift end target position (name)", targetLiftPosName);
+        myTelemetry.addData("Lift profile position (in)", liftState.getX());
+        myTelemetry.addData("Lift target position (in)", targetLiftPos);
+        myTelemetry.addData("Lift target position (name)", targetLiftPosName);
         myTelemetry.addLine();
         myTelemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
-        myTelemetry.addData("Lift target velocity (in/s)", liftState.getV());
+        myTelemetry.addData("Lift profile velocity (in/s)", liftState.getV());
         myTelemetry.addLine();
         myTelemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
-        myTelemetry.addData("Lift target acceleration (in/s^2)", liftState.getA());
+        myTelemetry.addData("Lift profile acceleration (in/s^2)", liftState.getA());
         myTelemetry.addLine();
         myTelemetry.addData("Passthrough status", currentPassThruState);
     }
