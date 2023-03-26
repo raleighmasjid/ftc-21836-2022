@@ -71,6 +71,21 @@ public class PowerplayScorer {
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
         lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, MAX_RPM);
 
+        limitSwitch = hw.get(DigitalChannel.class, "limit switch");
+
+        LED1red = hw.get(DigitalChannel.class, "LED1red");
+        LED1green = hw.get(DigitalChannel.class, "LED1green");
+
+        LED2red = hw.get(DigitalChannel.class, "LED2red");
+        LED2green = hw.get(DigitalChannel.class, "LED2green");
+
+        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+
+        LED1red.setMode(DigitalChannel.Mode.OUTPUT);
+        LED1green.setMode(DigitalChannel.Mode.OUTPUT);
+        LED2red.setMode(DigitalChannel.Mode.OUTPUT);
+        LED2green.setMode(DigitalChannel.Mode.OUTPUT);
+
         liftController = new PIDFController(
                 new PIDCoefficients(
                         TeleOpConfig.LIFT_kP,
@@ -98,16 +113,13 @@ public class PowerplayScorer {
         lift_motor2.setInverted(false);
         lift_motor3.setInverted(true);
 
-        lift_motor2.resetEncoder();
-        targetLiftPos = TeleOpConfig.HEIGHT_FLOOR;
-        targetLiftPosName = liftPos.FLOOR.name();
-        currentLiftAccel = 0;
-        lastLiftVelo = 0;
-        currentLiftVelo = 0;
-        lastLiftPos = 0;
-        currentLiftPos = 0;
-        lastTimestamp = 0;
-        updateLiftProfile();
+        clawHasLifted = true;
+        useLiftPIDF = true;
+        skipCurrentPassThruState = false;
+        pivotIsFront = true;
+        passThruInFront = true;
+        passThruIsMoving = false;
+        clawIsOpen = true;
 
         passThruTimer = new ElapsedTime();
         passThruTimer.reset();
@@ -118,27 +130,16 @@ public class PowerplayScorer {
         liftDerivTimer = new ElapsedTime();
         liftDerivTimer.reset();
 
-        limitSwitch = hw.get(DigitalChannel.class, "limit switch");
-        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
-
-        LED1red = hw.get(DigitalChannel.class, "LED1red");
-        LED1green = hw.get(DigitalChannel.class, "LED1green");
-        LED1red.setMode(DigitalChannel.Mode.OUTPUT);
-        LED1green.setMode(DigitalChannel.Mode.OUTPUT);
-
-        LED2red = hw.get(DigitalChannel.class, "LED2red");
-        LED2green = hw.get(DigitalChannel.class, "LED2green");
-        LED2red.setMode(DigitalChannel.Mode.OUTPUT);
-        LED2green.setMode(DigitalChannel.Mode.OUTPUT);
-
-        clawHasLifted = true;
-        useLiftPIDF = true;
-        skipCurrentPassThruState = false;
-        pivotIsFront = true;
-        passThruInFront = true;
-        passThruIsMoving = false;
-        clawIsOpen = true;
+        targetLiftPos = TeleOpConfig.HEIGHT_FLOOR;
+        targetLiftPosName = liftPos.FLOOR.name();
+        currentLiftAccel = 0;
+        lastLiftVelo = 0;
+        currentLiftVelo = 0;
+        lastLiftPos = 0;
+        currentLiftPos = 0;
+        lastTimestamp = 0;
         resetLiftEncoder();
+        updateLiftProfile();
     }
 
     //  lift motor encoder resolution (ticks):

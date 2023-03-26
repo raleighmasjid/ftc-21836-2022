@@ -45,6 +45,7 @@ public class LiftTuningTeleOp extends LinearOpMode {
         double control2LeftY;
         boolean useOverrideMode = false;
         double targetLiftPos = TeleOpConfig.HEIGHT_TALL;
+        boolean loop = true;
 
         for (LynxModule hub : hubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
@@ -79,7 +80,7 @@ public class LiftTuningTeleOp extends LinearOpMode {
                     targetLiftPos = scorer.getCurrentLiftPos();
                 }
                 useOverrideMode = !useOverrideMode;
-                scorer.useLiftPIDF = !scorer.useLiftPIDF;
+                loop = true;
             }
 
             if (useOverrideMode) {
@@ -89,20 +90,36 @@ public class LiftTuningTeleOp extends LinearOpMode {
 
                 scorer.runLift(control2LeftY);
             } else {
-                if (control2Up.wasJustPressed()) {
-                    targetLiftPos = TeleOpConfig.HEIGHT_TALL;
-                } else if (control2Left.wasJustPressed()) {
-                    targetLiftPos = TeleOpConfig.HEIGHT_MEDIUM;
-                } else if (control2Right.wasJustPressed()) {
-                    targetLiftPos = TeleOpConfig.HEIGHT_LOW;
-                } else if (control2Down.wasJustPressed()) {
-                    targetLiftPos = TeleOpConfig.HEIGHT_FLOOR;
+                if (control2RShoulder.wasJustPressed()) {
+                    loop = !loop;
                 }
 
-                if (scorer.getCurrentLiftPos() == TeleOpConfig.HEIGHT_FLOOR) {
-                    scorer.setTargetLiftPos(targetLiftPos);
-                } else if (scorer.getCurrentLiftPos() == targetLiftPos) {
-                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.FLOOR);
+                if (loop) {
+                    if (control2Up.wasJustPressed()) {
+                        targetLiftPos = TeleOpConfig.HEIGHT_TALL;
+                    } else if (control2Left.wasJustPressed()) {
+                        targetLiftPos = TeleOpConfig.HEIGHT_MEDIUM;
+                    } else if (control2Right.wasJustPressed()) {
+                        targetLiftPos = TeleOpConfig.HEIGHT_LOW;
+                    } else if (control2Down.wasJustPressed()) {
+                        targetLiftPos = TeleOpConfig.HEIGHT_FLOOR;
+                    }
+
+                    if (scorer.getCurrentLiftPos() == TeleOpConfig.HEIGHT_FLOOR) {
+                        scorer.setTargetLiftPos(targetLiftPos);
+                    } else if (scorer.getCurrentLiftPos() == targetLiftPos) {
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.FLOOR);
+                    }
+                } else {
+                    if (control2Up.wasJustPressed()) {
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.TALL);
+                    } else if (control2Left.wasJustPressed()) {
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
+                    } else if (control2Right.wasJustPressed()) {
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.LOW);
+                    } else if (control2Down.wasJustPressed()) {
+                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.FLOOR);
+                    }
                 }
 
                 scorer.runLiftToPos();
