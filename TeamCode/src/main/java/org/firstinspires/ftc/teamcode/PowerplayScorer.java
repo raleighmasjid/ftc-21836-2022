@@ -512,14 +512,12 @@ public class PowerplayScorer {
         myTelemetry.addLine();
         myTelemetry.addData("Lift current position (in)", currentLiftPos);
         myTelemetry.addData("Lift profile position (in)", liftState.getX());
-        myTelemetry.addData("Lift target position (in)", targetLiftPos);
         myTelemetry.addData("Lift target position (name)", targetLiftPosName);
         myTelemetry.addLine();
         myTelemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
         myTelemetry.addData("Lift profile velocity (in/s)", liftState.getV());
         myTelemetry.addLine();
         myTelemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
-        myTelemetry.addData("Lift profile acceleration (in/s^2)", liftState.getA());
         myTelemetry.addLine();
         myTelemetry.addData("Passthrough status", currentPassThruState);
     }
