@@ -93,7 +93,7 @@ public class PowerplayScorer {
                         TeleOpConfig.LIFT_kD
                 ),
                 TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
-                TeleOpConfig.LIFT_FILTER_GAIN,
+                TeleOpConfig.LIFT_PID_FILTER_GAIN,
                 TeleOpConfig.LIFT_kV,
                 TeleOpConfig.LIFT_kA,
                 TeleOpConfig.LIFT_kS
@@ -132,14 +132,16 @@ public class PowerplayScorer {
 
         targetLiftPos = TeleOpConfig.HEIGHT_FLOOR;
         targetLiftPosName = liftPos.FLOOR.name();
-        currentLiftAccel = 0;
-        lastLiftVelo = 0;
-        currentLiftVelo = 0;
-        lastLiftPos = 0;
-        currentLiftPos = 0;
-        lastTimestamp = 0;
+        currentLiftAccel = 0.0;
+        lastLiftVelo = 0.0;
+        currentLiftVelo = 0.0;
+        lastLiftPos = 0.0;
+        currentLiftPos = 0.0;
+        lastTimestamp = 0.0;
         resetLiftEncoder();
         updateLiftProfile();
+        readLiftPos();
+        liftState = liftProfile.get(0.0);
     }
 
     //  lift motor encoder resolution (ticks):
@@ -361,7 +363,7 @@ public class PowerplayScorer {
                 TeleOpConfig.LIFT_kD
             ),
             TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
-            TeleOpConfig.LIFT_FILTER_GAIN,
+            TeleOpConfig.LIFT_PID_FILTER_GAIN,
             TeleOpConfig.LIFT_kV,
             TeleOpConfig.LIFT_kA,
             TeleOpConfig.LIFT_kS
@@ -378,41 +380,44 @@ public class PowerplayScorer {
 
     public void readLiftPos () {
         currentLiftPos = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
-    }
 
-    public void resetLiftEncoder () {
-        lift_motor2.resetEncoder();
-        currentLiftPos = 0;
-    }
-
-    public void runLiftToPos () {
         double currentTimeStamp = liftDerivTimer.seconds();
         double dt = currentTimeStamp - lastTimestamp;
         if (dt == 0) {
             dt = 0.002;
         }
         currentLiftVelo = (currentLiftPos - lastLiftPos) / dt;
+        currentLiftVelo = (TeleOpConfig.LIFT_VELO_FILTER_GAIN * lastLiftVelo) + ((1-TeleOpConfig.LIFT_VELO_FILTER_GAIN) * currentLiftVelo);
         currentLiftAccel = (currentLiftVelo - lastLiftVelo) / dt;
-        liftState = liftProfile.get(liftProfileTimer.seconds());
-
-        liftController.setTargetPosition(liftState.getX());
-        liftController.setTargetVelocity(liftState.getV());
-        liftController.setTargetAcceleration(liftState.getA());
-
-        if (useLiftPIDF) {
-            double command = liftController.update(currentLiftPos, currentLiftVelo);
-            if (currentLiftPos > TeleOpConfig.LIFT_E_TOLERANCE) {
-                command += TeleOpConfig.LIFT_kG;
-            }
-            runLift(command);
-        }
 
         lastLiftPos = currentLiftPos;
         lastLiftVelo = currentLiftVelo;
         lastTimestamp = currentTimeStamp;
     }
 
+    public void resetLiftEncoder () {
+        lift_motor2.resetEncoder();
+        currentLiftPos = 0.0;
+        currentLiftVelo = 0.0;
+        currentLiftAccel = 0.0;
+    }
+
+        public void runLiftToPos () {
+            liftState = liftProfile.get(liftProfileTimer.seconds());
+
+        liftController.setTargetPosition(liftState.getX());
+        liftController.setTargetVelocity(liftState.getV());
+        liftController.setTargetAcceleration(liftState.getA());
+
+        if (useLiftPIDF) {
+            runLift(liftController.update(currentLiftPos, currentLiftVelo));
+        }
+    }
+
     public void runLift (double veloCommand) {
+        if (currentLiftPos > TeleOpConfig.LIFT_E_TOLERANCE) {
+            veloCommand += TeleOpConfig.LIFT_kG;
+        }
         lift_motor1.set(veloCommand);
         lift_motor2.set(veloCommand);
         lift_motor3.set(veloCommand);
