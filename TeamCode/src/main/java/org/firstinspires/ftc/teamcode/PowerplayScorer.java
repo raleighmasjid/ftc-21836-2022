@@ -397,8 +397,6 @@ public class PowerplayScorer {
 
     public void resetLiftEncoder () {
         lift_motor2.resetEncoder();
-        targetLiftPos = TeleOpConfig.HEIGHT_FLOOR;
-        targetLiftPosName = liftPos.FLOOR.name();
         currentLiftAccel = 0.0;
         lastLiftVelo = 0.0;
         currentLiftVelo = 0.0;
@@ -406,7 +404,7 @@ public class PowerplayScorer {
         currentLiftPos = 0.0;
         lastTimestamp = 0.0;
         liftController.reset();
-        updateLiftProfile();
+        setTargetLiftPos(TeleOpConfig.HEIGHT_FLOOR);
         liftState = liftProfile.get(0.0);
     }
 
