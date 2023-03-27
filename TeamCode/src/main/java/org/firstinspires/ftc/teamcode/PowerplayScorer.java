@@ -423,9 +423,7 @@ public class PowerplayScorer {
     }
 
     public void runLift (double veloCommand) {
-        if (currentLiftPos > TeleOpConfig.LIFT_E_TOLERANCE) {
-            veloCommand += getLiftGravityFF();
-        }
+        veloCommand += getLiftGravityFF();
         lift_motor1.set(veloCommand);
         lift_motor2.set(veloCommand);
         lift_motor3.set(veloCommand);
