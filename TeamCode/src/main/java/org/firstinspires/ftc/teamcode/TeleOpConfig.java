@@ -14,10 +14,9 @@ public class TeleOpConfig {
     public static double HEIGHT_MEDIUM = 25.365;
     public static double HEIGHT_TALL = 36.50375;
     // inches
-    public static double STAGES_FOUR = 0;
-    public static double STAGES_THREE = 0;
-    public static double STAGES_TWO = 0;
-    public static double STAGES_ONE = 0;
+    public static double STAGES_FOUR = 28.8;
+    public static double STAGES_THREE = 19.2;
+    public static double STAGES_TWO = 9.6;
     public static double MINIMUM_PIVOT_HEIGHT = 3.325;
     // inches per second
     public static double LIFT_kG_FOUR = 0.2;
@@ -40,7 +39,7 @@ public class TeleOpConfig {
 
     public static double LIFT_INTEGRATION_MAX_VELO = 0.5;
     public static double LIFT_PID_FILTER_GAIN = 0.8;
-    public static double LIFT_E_TOLERANCE = 0.03168725; // inches
+    public static double LIFT_E_TOLERANCE = 0.15843625; // inches
 
     public static double LIFT_TICKS_PER_INCH = 0.03168725;
 
