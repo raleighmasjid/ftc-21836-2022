@@ -438,7 +438,7 @@ public class PowerplayScorer {
             veloCommand = TeleOpConfig.LIFT_kG_THREE;
         } else if (currentLiftPos >= TeleOpConfig.STAGES_TWO) {
             veloCommand = TeleOpConfig.LIFT_kG_TWO;
-        } else if (currentLiftPos >= TeleOpConfig.STAGES_ONE) {
+        } else if (currentLiftPos > TeleOpConfig.LIFT_E_TOLERANCE) {
             veloCommand = TeleOpConfig.LIFT_kG_ONE;
         }
 
