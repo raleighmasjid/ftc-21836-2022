@@ -397,13 +397,21 @@ public class PowerplayScorer {
 
     public void resetLiftEncoder () {
         lift_motor2.resetEncoder();
-        currentLiftPos = 0.0;
-        currentLiftVelo = 0.0;
+        targetLiftPos = TeleOpConfig.HEIGHT_FLOOR;
+        targetLiftPosName = liftPos.FLOOR.name();
         currentLiftAccel = 0.0;
+        lastLiftVelo = 0.0;
+        currentLiftVelo = 0.0;
+        lastLiftPos = 0.0;
+        currentLiftPos = 0.0;
+        lastTimestamp = 0.0;
+        liftController.reset();
+        updateLiftProfile();
+        liftState = liftProfile.get(0.0);
     }
 
-        public void runLiftToPos () {
-            liftState = liftProfile.get(liftProfileTimer.seconds());
+    public void runLiftToPos () {
+        liftState = liftProfile.get(liftProfileTimer.seconds());
 
         liftController.setTargetPosition(liftState.getX());
         liftController.setTargetVelocity(liftState.getV());
@@ -416,11 +424,27 @@ public class PowerplayScorer {
 
     public void runLift (double veloCommand) {
         if (currentLiftPos > TeleOpConfig.LIFT_E_TOLERANCE) {
-            veloCommand += TeleOpConfig.LIFT_kG;
+            veloCommand += getLiftGravityFF();
         }
         lift_motor1.set(veloCommand);
         lift_motor2.set(veloCommand);
         lift_motor3.set(veloCommand);
+    }
+
+    private double getLiftGravityFF () {
+        double veloCommand = 0.0;
+
+        if (currentLiftPos >= TeleOpConfig.STAGES_FOUR) {
+            veloCommand = TeleOpConfig.LIFT_kG_FOUR;
+        } else if (currentLiftPos >= TeleOpConfig.STAGES_THREE) {
+            veloCommand = TeleOpConfig.LIFT_kG_THREE;
+        } else if (currentLiftPos >= TeleOpConfig.STAGES_TWO) {
+            veloCommand = TeleOpConfig.LIFT_kG_TWO;
+        } else if (currentLiftPos >= TeleOpConfig.STAGES_ONE) {
+            veloCommand = TeleOpConfig.LIFT_kG_ONE;
+        }
+
+        return veloCommand;
     }
 
     public void toggleClaw () {
@@ -518,6 +542,8 @@ public class PowerplayScorer {
         myTelemetry.addData("Lift profile velocity (in/s)", liftState.getV());
         myTelemetry.addLine();
         myTelemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
+        myTelemetry.addLine();
+        myTelemetry.addData("Lift gravity feedforward (in/s)", getLiftGravityFF());
         myTelemetry.addLine();
         myTelemetry.addData("Passthrough status", currentPassThruState);
     }
