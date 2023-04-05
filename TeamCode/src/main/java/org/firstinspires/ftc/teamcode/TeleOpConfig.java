@@ -32,6 +32,7 @@ public class TeleOpConfig {
     public static double LIFT_kS = 0.007;
 
     public static double LIFT_VELO_FILTER_GAIN = 0.796;
+    public static double LIFT_ACCEL_FILTER_GAIN = 0.8;
 
     public static double LIFT_MAX_VELO = 36; // inches per second
     public static double LIFT_MAX_ACCEL = 48; // inches per second^2

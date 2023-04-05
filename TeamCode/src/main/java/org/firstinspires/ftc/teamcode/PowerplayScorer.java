@@ -43,6 +43,7 @@ public class PowerplayScorer {
     public DigitalChannel LED2red;
     public DigitalChannel LED2green;
     private double lastTimestamp;
+    private double lastLiftAccel;
     private double currentLiftAccel;
     private double lastLiftVelo;
     private double currentLiftVelo;
@@ -389,9 +390,11 @@ public class PowerplayScorer {
         currentLiftVelo = (currentLiftPos - lastLiftPos) / dt;
         currentLiftVelo = (TeleOpConfig.LIFT_VELO_FILTER_GAIN * lastLiftVelo) + ((1-TeleOpConfig.LIFT_VELO_FILTER_GAIN) * currentLiftVelo);
         currentLiftAccel = (currentLiftVelo - lastLiftVelo) / dt;
+        currentLiftAccel = (TeleOpConfig.LIFT_ACCEL_FILTER_GAIN * lastLiftAccel) + ((1-TeleOpConfig.LIFT_ACCEL_FILTER_GAIN) * currentLiftAccel);
 
         lastLiftPos = currentLiftPos;
         lastLiftVelo = currentLiftVelo;
+        lastLiftAccel = currentLiftAccel;
         lastTimestamp = currentTimeStamp;
     }
 
