@@ -350,7 +350,7 @@ public class PowerplayScorer {
     public void updateLiftProfile () {
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
             new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
-            new MotionState(targetLiftPos, 0, 0),
+            new MotionState(targetLiftPos, 0, 0, 0),
             TeleOpConfig.LIFT_MAX_VELO,
             TeleOpConfig.LIFT_MAX_ACCEL,
             TeleOpConfig.LIFT_MAX_JERK
