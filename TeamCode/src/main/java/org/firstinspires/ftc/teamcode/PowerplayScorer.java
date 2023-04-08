@@ -43,6 +43,8 @@ public class PowerplayScorer {
     public DigitalChannel LED2red;
     public DigitalChannel LED2green;
     private double lastTimestamp;
+    private double lastLiftJerk;
+    private double currentLiftJerk;
     private double lastLiftAccel;
     private double currentLiftAccel;
     private double lastLiftVelo;
@@ -95,9 +97,9 @@ public class PowerplayScorer {
                 ),
                 TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
                 TeleOpConfig.LIFT_PID_FILTER_GAIN,
-                TeleOpConfig.LIFT_kV,
-                TeleOpConfig.LIFT_kA,
-                TeleOpConfig.LIFT_kS
+                TeleOpConfig.LIFT_kV_UP,
+                TeleOpConfig.LIFT_kA_UP,
+                TeleOpConfig.LIFT_kS_UP
         );
         liftController.setPositionTolerance(TeleOpConfig.LIFT_E_TOLERANCE);
         liftController.setOutputBounds(-1.0, 1.0);
@@ -353,22 +355,38 @@ public class PowerplayScorer {
             TeleOpConfig.LIFT_MAX_ACCEL,
             TeleOpConfig.LIFT_MAX_JERK
         );
+        updateLiftGains();
         liftProfileTimer.reset();
     }
 
     public void updateLiftGains () {
-        liftController.setGains(
-            new PIDCoefficients(
-                TeleOpConfig.LIFT_kP,
-                TeleOpConfig.LIFT_kI,
-                TeleOpConfig.LIFT_kD
-            ),
-            TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
-            TeleOpConfig.LIFT_PID_FILTER_GAIN,
-            TeleOpConfig.LIFT_kV,
-            TeleOpConfig.LIFT_kA,
-            TeleOpConfig.LIFT_kS
-        );
+        if (targetLiftPos > currentLiftPos) {
+            liftController.setGains(
+                    new PIDCoefficients(
+                            TeleOpConfig.LIFT_kP,
+                            TeleOpConfig.LIFT_kI,
+                            TeleOpConfig.LIFT_kD
+                    ),
+                    TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
+                    TeleOpConfig.LIFT_PID_FILTER_GAIN,
+                    TeleOpConfig.LIFT_kV_UP,
+                    TeleOpConfig.LIFT_kA_UP,
+                    TeleOpConfig.LIFT_kS_UP
+            );
+        } else {
+            liftController.setGains(
+                    new PIDCoefficients(
+                            TeleOpConfig.LIFT_kP,
+                            TeleOpConfig.LIFT_kI,
+                            TeleOpConfig.LIFT_kD
+                    ),
+                    TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
+                    TeleOpConfig.LIFT_PID_FILTER_GAIN,
+                    TeleOpConfig.LIFT_kV_DOWN,
+                    TeleOpConfig.LIFT_kA_DOWN,
+                    TeleOpConfig.LIFT_kS_DOWN
+            );
+        }
     }
 
     public double getTargetLiftPos () {
@@ -391,10 +409,13 @@ public class PowerplayScorer {
         currentLiftVelo = (TeleOpConfig.LIFT_VELO_FILTER_GAIN * lastLiftVelo) + ((1-TeleOpConfig.LIFT_VELO_FILTER_GAIN) * currentLiftVelo);
         currentLiftAccel = (currentLiftVelo - lastLiftVelo) / dt;
         currentLiftAccel = (TeleOpConfig.LIFT_ACCEL_FILTER_GAIN * lastLiftAccel) + ((1-TeleOpConfig.LIFT_ACCEL_FILTER_GAIN) * currentLiftAccel);
+        currentLiftJerk = (currentLiftAccel - lastLiftAccel) / dt;
+        currentLiftJerk = (TeleOpConfig.LIFT_JERK_FILTER_GAIN * lastLiftJerk) + ((1-TeleOpConfig.LIFT_JERK_FILTER_GAIN) * currentLiftJerk);
 
         lastLiftPos = currentLiftPos;
         lastLiftVelo = currentLiftVelo;
         lastLiftAccel = currentLiftAccel;
+        lastLiftJerk = currentLiftJerk;
         lastTimestamp = currentTimeStamp;
     }
 
@@ -537,12 +558,16 @@ public class PowerplayScorer {
         myTelemetry.addData("Lift profile position (in)", liftState.getX());
         myTelemetry.addData("Lift target position (name)", targetLiftPosName);
         myTelemetry.addLine();
+        myTelemetry.addData("Lift position error (in)", (targetLiftPos - currentLiftPos));
+        myTelemetry.addLine();
         myTelemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
         myTelemetry.addData("Lift profile velocity (in/s)", liftState.getV());
         myTelemetry.addLine();
+        myTelemetry.addData("Lift gravity feedforward (in/s)", getLiftGravityFF());
+        myTelemetry.addLine();
         myTelemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         myTelemetry.addLine();
-        myTelemetry.addData("Lift gravity feedforward (in/s)", getLiftGravityFF());
+        myTelemetry.addData("Lift current jerk (in/s^3)", currentLiftJerk);
         myTelemetry.addLine();
         myTelemetry.addData("Passthrough status", currentPassThruState);
     }

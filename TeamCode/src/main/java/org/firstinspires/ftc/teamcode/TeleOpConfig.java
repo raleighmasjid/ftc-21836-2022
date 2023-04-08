@@ -19,27 +19,31 @@ public class TeleOpConfig {
     public static double STAGES_TWO = 9.6;
     public static double MINIMUM_PIVOT_HEIGHT = 3.325;
     // inches per second
-    public static double LIFT_kG_FOUR = 0.2;
-    public static double LIFT_kG_THREE = 0.12;
-    public static double LIFT_kG_TWO = 0.08;
-    public static double LIFT_kG_ONE = 0.03;
+    public static double LIFT_kG_FOUR = 0.075;
+    public static double LIFT_kG_THREE = 0.055;
+    public static double LIFT_kG_TWO = 0.025;
+    public static double LIFT_kG_ONE = 0.0;
 
     public static double LIFT_kP = 0.0;
     public static double LIFT_kI = 0.0;
     public static double LIFT_kD = 0.0;
-    public static double LIFT_kV = 0.028;
-    public static double LIFT_kA = 0.004;
-    public static double LIFT_kS = 0.007;
+    public static double LIFT_kV_UP = 0.0;
+    public static double LIFT_kA_UP = 0.0;
+    public static double LIFT_kS_UP = 0.0;
+    public static double LIFT_kV_DOWN = 0.0;
+    public static double LIFT_kA_DOWN = 0.0;
+    public static double LIFT_kS_DOWN = 0.0;
 
     public static double LIFT_VELO_FILTER_GAIN = 0.796;
-    public static double LIFT_ACCEL_FILTER_GAIN = 0.8;
+    public static double LIFT_ACCEL_FILTER_GAIN = 0.95;
+    public static double LIFT_JERK_FILTER_GAIN = 0.95;
 
-    public static double LIFT_MAX_VELO = 36; // inches per second
-    public static double LIFT_MAX_ACCEL = 48; // inches per second^2
-    public static double LIFT_MAX_JERK = 120; // inches per second^3
+    public static double LIFT_MAX_VELO = 10; // inches per second
+    public static double LIFT_MAX_ACCEL = 10; // inches per second^2
+    public static double LIFT_MAX_JERK = 10; // inches per second^3
 
-    public static double LIFT_INTEGRATION_MAX_VELO = 0.5;
-    public static double LIFT_PID_FILTER_GAIN = 0.8;
+    public static double LIFT_INTEGRATION_MAX_VELO = 0.8;
+    public static double LIFT_PID_FILTER_GAIN = 0.98;
     public static double LIFT_E_TOLERANCE = 0.15843625; // inches
 
     public static double LIFT_TICKS_PER_INCH = 0.03168725;
