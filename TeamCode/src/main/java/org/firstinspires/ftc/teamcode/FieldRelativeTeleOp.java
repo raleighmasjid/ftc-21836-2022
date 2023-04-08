@@ -95,7 +95,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2LeftY = Gamepad2.getLeftY();
 
             scorer.readLiftPos();
-            scorer.updateLiftGains();
 
             // Field-centric reset
             if (Gamepad1.isDown(GamepadKeys.Button.Y)) {
