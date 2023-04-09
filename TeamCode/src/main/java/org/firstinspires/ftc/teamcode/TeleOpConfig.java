@@ -44,7 +44,7 @@ public class TeleOpConfig {
 
     public static double LIFT_INTEGRATION_MAX_VELO = 0.8;
     public static double LIFT_PID_FILTER_GAIN = 0.98;
-    public static double LIFT_E_TOLERANCE = 0.15843625; // inches
+    public static double LIFT_POS_TOLERANCE = 0.15843625; // inches
 
     public static double LIFT_TICKS_PER_INCH = 0.03168725;
 

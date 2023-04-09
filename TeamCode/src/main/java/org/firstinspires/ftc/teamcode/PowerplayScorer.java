@@ -101,7 +101,7 @@ public class PowerplayScorer {
                 TeleOpConfig.LIFT_kA_UP,
                 TeleOpConfig.LIFT_kS_UP
         );
-        liftController.setPositionTolerance(TeleOpConfig.LIFT_E_TOLERANCE);
+        liftController.setPositionTolerance(TeleOpConfig.LIFT_POS_TOLERANCE);
         liftController.setOutputBounds(-1.0, 1.0);
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -460,7 +460,7 @@ public class PowerplayScorer {
             veloCommand = TeleOpConfig.LIFT_kG_THREE;
         } else if (currentLiftPos >= TeleOpConfig.STAGES_TWO) {
             veloCommand = TeleOpConfig.LIFT_kG_TWO;
-        } else if (currentLiftPos > TeleOpConfig.LIFT_E_TOLERANCE) {
+        } else if (currentLiftPos > TeleOpConfig.LIFT_POS_TOLERANCE) {
             veloCommand = TeleOpConfig.LIFT_kG_ONE;
         }
 
