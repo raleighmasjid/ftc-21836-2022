@@ -110,6 +110,9 @@ class PIDFController
             outputBounded = true
             minOutput = min
             maxOutput = max
+            if (maxIntegrationVelocity > maxOutput) {
+                maxIntegrationVelocity = maxOutput;
+            }
         }
     }
 
