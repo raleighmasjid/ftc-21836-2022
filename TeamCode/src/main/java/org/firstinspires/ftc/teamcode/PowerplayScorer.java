@@ -351,6 +351,9 @@ public class PowerplayScorer {
         if (targetLiftPos == currentLiftPos) {
             targetLiftPos += 0.25;
         }
+
+        updateLiftGains();
+
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
             new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
             new MotionState(targetLiftPos, 0, 0, 0),
@@ -358,38 +361,33 @@ public class PowerplayScorer {
             TeleOpConfig.LIFT_MAX_ACCEL,
             TeleOpConfig.LIFT_MAX_JERK
         );
-        updateLiftGains();
+
         liftProfileTimer.reset();
     }
 
-    private void updateLiftGains () {
-        if (targetLiftPos > currentLiftPos) {
-            liftController.setGains(
-                    new PIDCoefficients(
-                            TeleOpConfig.LIFT_kP,
-                            TeleOpConfig.LIFT_kI,
-                            TeleOpConfig.LIFT_kD
-                    ),
-                    TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
-                    TeleOpConfig.LIFT_PID_FILTER_GAIN,
-                    TeleOpConfig.LIFT_kV_UP,
-                    TeleOpConfig.LIFT_kA_UP,
-                    TeleOpConfig.LIFT_kS_UP
-            );
-        } else if (targetLiftPos < currentLiftPos) {
-            liftController.setGains(
-                    new PIDCoefficients(
-                            TeleOpConfig.LIFT_kP,
-                            TeleOpConfig.LIFT_kI,
-                            TeleOpConfig.LIFT_kD
-                    ),
-                    TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
-                    TeleOpConfig.LIFT_PID_FILTER_GAIN,
-                    TeleOpConfig.LIFT_kV_DOWN,
-                    TeleOpConfig.LIFT_kA_DOWN,
-                    TeleOpConfig.LIFT_kS_DOWN
-            );
+    public void updateLiftGains () {
+        double kV = TeleOpConfig.LIFT_kV_UP;
+        double kA = TeleOpConfig.LIFT_kA_UP;
+        double kS = TeleOpConfig.LIFT_kS_UP;
+
+        if (targetLiftPos < currentLiftPos) {
+            kV = TeleOpConfig.LIFT_kV_DOWN;
+            kA = TeleOpConfig.LIFT_kA_DOWN;
+            kS = TeleOpConfig.LIFT_kS_DOWN;
         }
+
+        liftController.setGains(
+                new PIDCoefficients(
+                        TeleOpConfig.LIFT_kP,
+                        TeleOpConfig.LIFT_kI,
+                        TeleOpConfig.LIFT_kD
+                ),
+                TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
+                TeleOpConfig.LIFT_PID_FILTER_GAIN,
+                kV,
+                kA,
+                kS
+        );
     }
 
     public double getTargetLiftPos () {
@@ -569,8 +567,6 @@ public class PowerplayScorer {
         myTelemetry.addLine();
         myTelemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
         myTelemetry.addData("Lift profile velocity (in/s)", liftState.getV());
-        myTelemetry.addLine();
-        myTelemetry.addData("Lift gravity feedforward (in/s)", getLiftGravityFF());
         myTelemetry.addLine();
         myTelemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         myTelemetry.addLine();
