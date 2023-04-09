@@ -439,6 +439,10 @@ public class PowerplayScorer {
         liftController.setTargetVelocity(liftState.getV());
         liftController.setTargetAcceleration(liftState.getA());
 
+        if (liftController.atTargetPosition(currentLiftPos)) {
+            liftController.reset();
+        }
+
         if (useLiftPIDF) {
             runLift(liftController.update(currentLiftPos, currentLiftVelo));
         }
