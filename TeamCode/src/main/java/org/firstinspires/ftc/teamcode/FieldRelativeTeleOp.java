@@ -126,7 +126,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             if (useOverrideMode) {
                 if (control2RShoulder.wasJustPressed()) {
-                    scorer.resetLiftEncoder();
+                    scorer.resetLift();
                 }
 
                 if (control2B.wasJustPressed()) {
@@ -154,7 +154,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     } else {
                         scorer.useLiftPIDF = true;
                         scorer.setTargetLiftPos(PowerplayScorer.liftPos.FLOOR);
-                        scorer.resetLiftEncoder();
+                        scorer.resetLift();
                         liftHasReset = true;
                     }
                 }

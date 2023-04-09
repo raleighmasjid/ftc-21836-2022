@@ -141,7 +141,7 @@ public class PowerplayScorer {
         lastLiftPos = 0.0;
         currentLiftPos = 0.0;
         lastTimestamp = 0.0;
-        resetLiftEncoder();
+        resetLift();
         updateLiftProfile();
         readLiftPos();
         liftState = liftProfile.get(0.0);
@@ -420,7 +420,7 @@ public class PowerplayScorer {
         lastTimestamp = currentTimeStamp;
     }
 
-    public void resetLiftEncoder () {
+    public void resetLift () {
         lift_motor2.resetEncoder();
         currentLiftAccel = 0.0;
         lastLiftVelo = 0.0;
