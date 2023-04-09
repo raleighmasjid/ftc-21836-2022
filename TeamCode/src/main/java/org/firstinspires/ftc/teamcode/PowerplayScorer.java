@@ -359,7 +359,7 @@ public class PowerplayScorer {
         liftProfileTimer.reset();
     }
 
-    public void updateLiftGains () {
+    private void updateLiftGains () {
         if (targetLiftPos > currentLiftPos) {
             liftController.setGains(
                     new PIDCoefficients(
@@ -373,7 +373,7 @@ public class PowerplayScorer {
                     TeleOpConfig.LIFT_kA_UP,
                     TeleOpConfig.LIFT_kS_UP
             );
-        } else {
+        } else if (targetLiftPos < currentLiftPos) {
             liftController.setGains(
                     new PIDCoefficients(
                             TeleOpConfig.LIFT_kP,
