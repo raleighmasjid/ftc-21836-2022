@@ -348,6 +348,9 @@ public class PowerplayScorer {
     }
 
     public void updateLiftProfile () {
+        if (targetLiftPos == currentLiftPos) {
+            targetLiftPos += 0.25;
+        }
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
             new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
             new MotionState(targetLiftPos, 0, 0, 0),
