@@ -56,6 +56,7 @@ public class TeleOpConfig {
     public static double CLAW_OPEN_ANGLE = 115;
 
     public static double CLAW_CLOSING_TIME = 0.3;
+    public static double CLAW_DROP_TIME = 0.0;
 
     public static double PIVOT_FRONT_ANGLE = 198;
     public static double PIVOT_BACK_ANGLE = 2;

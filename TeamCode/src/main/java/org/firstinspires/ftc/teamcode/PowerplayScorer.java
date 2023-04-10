@@ -55,6 +55,7 @@ public class PowerplayScorer {
     private String targetLiftPosName;
     private static ElapsedTime passThruTimer;
     private static ElapsedTime liftClawTimer;
+    private static ElapsedTime dropClawTimer;
     public boolean clawIsOpen;
     public boolean passThruIsMoving;
     private boolean passThruInFront;
@@ -62,6 +63,7 @@ public class PowerplayScorer {
     private boolean skipCurrentPassThruState;
     public boolean useLiftPIDF;
     private boolean clawHasLifted;
+    private boolean clawHasDropped;
 
     public void init (HardwareMap hw) {
 
@@ -117,6 +119,7 @@ public class PowerplayScorer {
         lift_motor3.setInverted(true);
 
         clawHasLifted = true;
+        clawHasDropped = true;
         useLiftPIDF = true;
         skipCurrentPassThruState = false;
         pivotIsFront = true;
@@ -128,6 +131,8 @@ public class PowerplayScorer {
         passThruTimer.reset();
         liftClawTimer = new ElapsedTime();
         liftClawTimer.reset();
+        dropClawTimer = new ElapsedTime();
+        dropClawTimer.reset();
         liftProfileTimer = new ElapsedTime();
         liftProfileTimer.reset();
         liftDerivTimer = new ElapsedTime();
@@ -480,12 +485,17 @@ public class PowerplayScorer {
             double heightIncrease = 2;
 
             if (currentLiftPos > TeleOpConfig.LIFT_POS_TOLERANCE) {
-                heightIncrease = 5;
+                heightIncrease = 6;
             }
 
             setTargetLiftPos(Math.min(getTargetLiftPos() + heightIncrease, TeleOpConfig.HEIGHT_TALL));
             liftClawTimer.reset();
             clawHasLifted = true;
+        }
+
+        if ((dropClawTimer.seconds() >= TeleOpConfig.CLAW_DROP_TIME) && !clawHasDropped) {
+            clawIsOpen = true;
+            clawHasDropped = true;
         }
     }
 
@@ -497,12 +507,14 @@ public class PowerplayScorer {
 
     public void dropClaw () {
         setTargetLiftPos(liftPos.FLOOR);
-        clawIsOpen = true;
+        dropClawTimer.reset();
+        clawHasDropped = false;
     }
 
     public void dropClaw (liftPos height) {
         setTargetLiftPos(height);
-        clawIsOpen = true;
+        dropClawTimer.reset();
+        clawHasDropped = false;
     }
 
     public void togglePivot () {
