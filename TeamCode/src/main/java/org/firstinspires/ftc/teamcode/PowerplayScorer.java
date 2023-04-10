@@ -477,12 +477,10 @@ public class PowerplayScorer {
 
 
         if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !clawHasLifted) {
-            double heightIncrease;
+            double heightIncrease = 2;
 
             if (currentLiftPos > TeleOpConfig.LIFT_POS_TOLERANCE) {
                 heightIncrease = 5;
-            } else {
-                heightIncrease = 2;
             }
 
             setTargetLiftPos(Math.min(getTargetLiftPos() + heightIncrease, TeleOpConfig.HEIGHT_TALL));
