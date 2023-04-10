@@ -45,6 +45,7 @@ class PIDFController
     private var maxOutput: Double = 0.0
 
     private var lastFilterEstimate: Double = 0.0
+    var currentFilterEstimate: Double = 0.0
     private var integrate: Boolean = true
     var positionTolerance: Double = 5.0
 
@@ -144,7 +145,7 @@ class PIDFController
     ): Double {
         val currentTimestamp = clock.seconds()
         val error = getPositionError(measuredPosition)
-        val currentFilterEstimate = (filterGain * lastFilterEstimate) + ((1-filterGain) * (error - lastError))
+        currentFilterEstimate = (filterGain * lastFilterEstimate) + ((1-filterGain) * (error - lastError))
         return if (lastUpdateTimestamp.isNaN()) {
             lastError = error
             lastUpdateTimestamp = currentTimestamp

@@ -562,7 +562,7 @@ public class PowerplayScorer {
         myTelemetry.addData("Lift profile position (in)", liftState.getX());
         myTelemetry.addData("Lift target position (name)", targetLiftPosName);
         myTelemetry.addLine();
-        myTelemetry.addData("Lift position error (in)", (liftState.getX() - currentLiftPos));
+        myTelemetry.addData("Lift position error (in)", liftController.getCurrentFilterEstimate());
         myTelemetry.addLine();
         myTelemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
         myTelemetry.addData("Lift profile velocity (in/s)", liftState.getV());
