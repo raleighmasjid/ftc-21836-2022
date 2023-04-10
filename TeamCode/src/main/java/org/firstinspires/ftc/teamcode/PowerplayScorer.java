@@ -420,11 +420,8 @@ public class PowerplayScorer {
         lastLiftPos = 0.0;
         currentLiftPos = 0.0;
         lastTimestamp = 0.0;
-        readLiftPos();
         liftController.reset();
         setTargetLiftPos(liftPos.FLOOR);
-        updateLiftProfile();
-        liftState = liftProfile.get(0.0);
     }
 
     public void runLiftToPos () {
