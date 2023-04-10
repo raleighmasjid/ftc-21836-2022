@@ -341,8 +341,6 @@ public class PowerplayScorer {
             targetLiftPos += 0.25;
         }
 
-        updateLiftGains();
-
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
             new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
             new MotionState(targetLiftPos, 0, 0, 0),
@@ -436,6 +434,7 @@ public class PowerplayScorer {
         }
 
         if (useLiftPIDF) {
+            updateLiftGains();
             runLift(liftController.update(currentLiftPos));
         }
     }
