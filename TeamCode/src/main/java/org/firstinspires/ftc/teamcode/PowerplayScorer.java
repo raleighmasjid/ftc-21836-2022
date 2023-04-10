@@ -133,18 +133,7 @@ public class PowerplayScorer {
         liftDerivTimer = new ElapsedTime();
         liftDerivTimer.reset();
 
-        targetLiftPos = TeleOpConfig.HEIGHT_FLOOR;
-        targetLiftPosName = liftPos.FLOOR.name();
-        currentLiftAccel = 0.0;
-        lastLiftVelo = 0.0;
-        currentLiftVelo = 0.0;
-        lastLiftPos = 0.0;
-        currentLiftPos = 0.0;
-        lastTimestamp = 0.0;
         resetLift();
-        updateLiftProfile();
-        readLiftPos();
-        liftState = liftProfile.get(0.0);
     }
 
     //  lift motor encoder resolution (ticks):
@@ -422,14 +411,19 @@ public class PowerplayScorer {
 
     public void resetLift () {
         lift_motor2.resetEncoder();
+        lastLiftJerk = 0.0;
+        currentLiftJerk = 0.0;
+        lastLiftAccel = 0.0;
         currentLiftAccel = 0.0;
         lastLiftVelo = 0.0;
         currentLiftVelo = 0.0;
         lastLiftPos = 0.0;
         currentLiftPos = 0.0;
         lastTimestamp = 0.0;
+        readLiftPos();
         liftController.reset();
-        setTargetLiftPos(TeleOpConfig.HEIGHT_FLOOR);
+        setTargetLiftPos(liftPos.FLOOR);
+        updateLiftProfile();
         liftState = liftProfile.get(0.0);
     }
 
@@ -445,7 +439,7 @@ public class PowerplayScorer {
         }
 
         if (useLiftPIDF) {
-            runLift(liftController.update(currentLiftPos, currentLiftVelo));
+            runLift(liftController.update(currentLiftPos));
         }
     }
 
