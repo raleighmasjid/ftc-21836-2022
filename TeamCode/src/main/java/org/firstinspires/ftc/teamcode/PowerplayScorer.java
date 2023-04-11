@@ -356,8 +356,8 @@ public class PowerplayScorer {
         if (targetLiftPos == currentLiftPos) {
             targetLiftPos += 0.25;
         } else if (targetLiftPos < currentLiftPos) {
-            double maxV = TeleOpConfig.LIFT_MAX_DOWN_VELO;
-            double maxA = TeleOpConfig.LIFT_MAX_DOWN_ACCEL;
+            maxV = TeleOpConfig.LIFT_MAX_DOWN_VELO;
+            maxA = TeleOpConfig.LIFT_MAX_DOWN_ACCEL;
         }
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
