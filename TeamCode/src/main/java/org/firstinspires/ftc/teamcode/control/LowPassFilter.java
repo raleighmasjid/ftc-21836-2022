@@ -8,12 +8,12 @@ public class LowPassFilter {
     private double lastEstimate = 0.0;
     private final ArrayList<Double> pastEstimates = new ArrayList<>();
 
-    public void setGains (double estimateGain, int count) {
-        this.filterGain = estimateGain;
-        if (count == 0) {
-            count = 1;
+    public void setGains (double filterGain, int pastEstimatesCount) {
+        this.filterGain = filterGain;
+        if (pastEstimatesCount == 0) {
+            pastEstimatesCount = 1;
         }
-        pastEstimatesCount = count;
+        this.pastEstimatesCount = pastEstimatesCount;
     }
 
     public void resetPastEstimates() {
