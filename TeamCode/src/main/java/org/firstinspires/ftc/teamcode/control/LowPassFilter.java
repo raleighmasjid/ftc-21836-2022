@@ -6,7 +6,7 @@ public class LowPassFilter {
     private double filterGain = 0.0;
     private int pastEstimatesCount = 5;
     private double lastEstimate = 0.0;
-    private ArrayList<Double> pastEstimates = new ArrayList<Double>();
+    private final ArrayList<Double> pastEstimates = new ArrayList<>();
 
     public void setGains (double estimateGain, int count) {
         this.filterGain = estimateGain;
@@ -14,10 +14,6 @@ public class LowPassFilter {
             count = 1;
         }
         pastEstimatesCount = count;
-    }
-
-    public void setGains (double filterGain) {
-        this.filterGain = filterGain;
     }
 
     public void resetPastEstimates() {

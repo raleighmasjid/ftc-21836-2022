@@ -50,7 +50,6 @@ public class PowerplayScorer {
     private double currentLiftJerk;
     private double currentLiftAccel;
     private double currentLiftVelo;
-    private double lastLiftPos;
     private double currentLiftPos;
     private double targetLiftPos;
     private String targetLiftPosName;
@@ -405,6 +404,7 @@ public class PowerplayScorer {
     }
 
     public void readLiftPos () {
+        double lastLiftPos = currentLiftPos;
         currentLiftPos = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
 
         double currentTimeStamp = liftDerivTimer.seconds();
@@ -415,16 +415,12 @@ public class PowerplayScorer {
 
         veloEstimator.setGains(TeleOpConfig.LIFT_VELO_FILTER_GAIN, TeleOpConfig.LIFT_VELO_ESTIMATE_COUNT);
         accelEstimator.setGains(TeleOpConfig.LIFT_ACCEL_FILTER_GAIN, TeleOpConfig.LIFT_ACCEL_ESTIMATE_COUNT);
-        veloEstimator.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN, TeleOpConfig.LIFT_JERK_ESTIMATE_COUNT);
+        jerkEstimator.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN, TeleOpConfig.LIFT_JERK_ESTIMATE_COUNT);
 
-        currentLiftVelo = (currentLiftPos - lastLiftPos) / dt;
-        currentLiftVelo = veloEstimator.getEstimate(currentLiftVelo);
-        currentLiftAccel = (currentLiftVelo - veloEstimator.getLastEstimate()) / dt;
-        currentLiftAccel = accelEstimator.getEstimate(currentLiftAccel);
-        currentLiftJerk = (currentLiftAccel - accelEstimator.getLastEstimate()) / dt;
-        currentLiftJerk = jerkEstimator.getEstimate(currentLiftJerk);
+        currentLiftVelo = veloEstimator.getEstimate((currentLiftPos - lastLiftPos) / dt);
+        currentLiftAccel = accelEstimator.getEstimate((currentLiftVelo - veloEstimator.getLastEstimate()) / dt);
+        currentLiftJerk = jerkEstimator.getEstimate((currentLiftAccel - accelEstimator.getLastEstimate()) / dt);
 
-        lastLiftPos = currentLiftPos;
         lastTimestamp = currentTimeStamp;
     }
 
@@ -432,7 +428,6 @@ public class PowerplayScorer {
         jerkEstimator.resetPastEstimates();
         accelEstimator.resetPastEstimates();
         veloEstimator.resetPastEstimates();
-        lastLiftPos = 0.0;
 
         currentLiftJerk = 0.0;
         currentLiftAccel = 0.0;
@@ -498,7 +493,6 @@ public class PowerplayScorer {
         } else {
             clawServo.turnToAngle(TeleOpConfig.CLAW_OPEN_ANGLE);
         }
-
 
         if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !clawHasLifted) {
             double heightIncrease = 2;
