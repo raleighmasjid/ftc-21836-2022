@@ -105,6 +105,14 @@ public class PowerplayScorer {
         );
         liftController.setPositionTolerance(TeleOpConfig.LIFT_POS_TOLERANCE);
         liftController.setOutputBounds(-1.0, 1.0);
+        
+        liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
+            new MotionState(0.0, 0.0, 0.0, 0.0),
+            new MotionState(0.0, 0.0, 0.0, 0.0),
+            TeleOpConfig.LIFT_MAX_UP_VELO,
+            TeleOpConfig.LIFT_MAX_UP_ACCEL,
+            TeleOpConfig.LIFT_MAX_JERK
+        );
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
