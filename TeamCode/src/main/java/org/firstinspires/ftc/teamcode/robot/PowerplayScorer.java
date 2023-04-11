@@ -93,34 +93,34 @@ public class PowerplayScorer {
 
         liftController = new PIDFController(
                 new PIDCoefficients(
-                        TeleOpConfig.LIFT_kP,
-                        TeleOpConfig.LIFT_kI,
-                        TeleOpConfig.LIFT_kD
+                        RobotConfig.LIFT_kP,
+                        RobotConfig.LIFT_kI,
+                        RobotConfig.LIFT_kD
                 ),
-                TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
-                TeleOpConfig.LIFT_PID_FILTER_GAIN,
-                TeleOpConfig.LIFT_kV,
-                TeleOpConfig.LIFT_kA,
-                TeleOpConfig.LIFT_kS
+                RobotConfig.LIFT_INTEGRATION_MAX_VELO,
+                RobotConfig.LIFT_PID_FILTER_GAIN,
+                RobotConfig.LIFT_kV,
+                RobotConfig.LIFT_kA,
+                RobotConfig.LIFT_kS
         );
-        liftController.setPositionTolerance(TeleOpConfig.LIFT_POS_TOLERANCE);
+        liftController.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
         liftController.setOutputBounds(-1.0, 1.0);
         
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
             new MotionState(0.0, 0.0, 0.0, 0.0),
             new MotionState(0.0, 0.0, 0.0, 0.0),
-            TeleOpConfig.LIFT_MAX_UP_VELO,
-            TeleOpConfig.LIFT_MAX_UP_ACCEL,
-            TeleOpConfig.LIFT_MAX_JERK
+            RobotConfig.LIFT_MAX_UP_VELO,
+            RobotConfig.LIFT_MAX_UP_ACCEL,
+            RobotConfig.LIFT_MAX_JERK
         );
 
         veloFilter = new LowPassFilter();
         accelFilter = new LowPassFilter();
         jerkFilter = new LowPassFilter();
 
-        veloFilter.setGains(TeleOpConfig.LIFT_VELO_FILTER_GAIN, TeleOpConfig.LIFT_VELO_ESTIMATE_COUNT);
-        accelFilter.setGains(TeleOpConfig.LIFT_ACCEL_FILTER_GAIN, TeleOpConfig.LIFT_ACCEL_ESTIMATE_COUNT);
-        veloFilter.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN, TeleOpConfig.LIFT_JERK_ESTIMATE_COUNT);
+        veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
+        accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
+        veloFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -180,21 +180,21 @@ public class PowerplayScorer {
     public void runPassThruServos () {
         switch (currentPassThruPos) {
             case FRONT:
-                passThruServoR.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
-                passThruServoL.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
+                passThruServoR.turnToAngle(RobotConfig.PASS_RIGHT_FRONT_ANGLE);
+                passThruServoL.turnToAngle(RobotConfig.PASS_LEFT_FRONT_ANGLE);
                 break;
             case PIVOT_POS:
-                if (currentLiftPos >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
-                    passThruServoR.turnToAngle(TeleOpConfig.PASS_RIGHT_FRONT_ANGLE);
-                    passThruServoL.turnToAngle(TeleOpConfig.PASS_LEFT_FRONT_ANGLE);
+                if (currentLiftPos >= RobotConfig.MINIMUM_PIVOT_HEIGHT) {
+                    passThruServoR.turnToAngle(RobotConfig.PASS_RIGHT_FRONT_ANGLE);
+                    passThruServoL.turnToAngle(RobotConfig.PASS_LEFT_FRONT_ANGLE);
                 } else {
-                    passThruServoR.turnToAngle(TeleOpConfig.PASS_RIGHT_PIVOT_ANGLE);
-                    passThruServoL.turnToAngle(TeleOpConfig.PASS_LEFT_PIVOT_ANGLE);
+                    passThruServoR.turnToAngle(RobotConfig.PASS_RIGHT_PIVOT_ANGLE);
+                    passThruServoL.turnToAngle(RobotConfig.PASS_LEFT_PIVOT_ANGLE);
                 }
                 break;
             case BACK:
-                passThruServoR.turnToAngle(TeleOpConfig.PASS_RIGHT_BACK_ANGLE);
-                passThruServoL.turnToAngle(TeleOpConfig.PASS_LEFT_BACK_ANGLE);
+                passThruServoR.turnToAngle(RobotConfig.PASS_RIGHT_BACK_ANGLE);
+                passThruServoL.turnToAngle(RobotConfig.PASS_LEFT_BACK_ANGLE);
                 break;
             default:
                 currentPassThruPos = passThruPos.FRONT;
@@ -225,7 +225,7 @@ public class PowerplayScorer {
                     skipCurrentPassThruState = false;
                     break;
                 case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.FRONT_TO_PIVOT_TIME) || skipCurrentPassThruState || currentLiftPos >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) {
+                    if ((passThruTimer.seconds() >= RobotConfig.FRONT_TO_PIVOT_TIME) || skipCurrentPassThruState || currentLiftPos >= RobotConfig.MINIMUM_PIVOT_HEIGHT) {
                         passThruTimer.reset();
                         currentPassThruState = passThruState.PIVOTING;
                         pivotIsFront = false;
@@ -233,7 +233,7 @@ public class PowerplayScorer {
                     }
                     break;
                 case PIVOTING:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_BACK_TIME) || skipCurrentPassThruState) {
+                    if ((passThruTimer.seconds() >= RobotConfig.PIVOTING_TO_BACK_TIME) || skipCurrentPassThruState) {
                         passThruTimer.reset();
                         currentPassThruState = passThruState.MOVING_TO_BACK;
                         currentPassThruPos = passThruPos.BACK;
@@ -242,7 +242,7 @@ public class PowerplayScorer {
                     }
                     break;
                 case MOVING_TO_BACK:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_BACK_TIME) || skipCurrentPassThruState) {
+                    if ((passThruTimer.seconds() >= RobotConfig.PIVOT_TO_BACK_TIME) || skipCurrentPassThruState) {
                         passThruTimer.reset();
                         passThruIsMoving = false;
                         currentPassThruState = passThruState.IN_BACK;
@@ -276,7 +276,7 @@ public class PowerplayScorer {
                     skipCurrentPassThruState = false;
                     break;
                 case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.BACK_TO_PIVOT_TIME) || skipCurrentPassThruState) {
+                    if ((passThruTimer.seconds() >= RobotConfig.BACK_TO_PIVOT_TIME) || skipCurrentPassThruState) {
                         passThruTimer.reset();
                         currentPassThruState = passThruState.PIVOTING;
                         pivotIsFront = true;
@@ -284,7 +284,7 @@ public class PowerplayScorer {
                     }
                     break;
                 case PIVOTING:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOTING_TO_FRONT_TIME) || skipCurrentPassThruState) {
+                    if ((passThruTimer.seconds() >= RobotConfig.PIVOTING_TO_FRONT_TIME) || skipCurrentPassThruState) {
                         passThruTimer.reset();
                         currentPassThruState = passThruState.MOVING_TO_FRONT;
                         currentPassThruPos = passThruPos.FRONT;
@@ -293,7 +293,7 @@ public class PowerplayScorer {
                     }
                     break;
                 case MOVING_TO_FRONT:
-                    if ((passThruTimer.seconds() >= TeleOpConfig.PIVOT_TO_FRONT_TIME) || (currentLiftPos >= TeleOpConfig.MINIMUM_PIVOT_HEIGHT) || skipCurrentPassThruState) {
+                    if ((passThruTimer.seconds() >= RobotConfig.PIVOT_TO_FRONT_TIME) || (currentLiftPos >= RobotConfig.MINIMUM_PIVOT_HEIGHT) || skipCurrentPassThruState) {
                         passThruTimer.reset();
                         passThruIsMoving = false;
                         currentPassThruState = passThruState.IN_FRONT;
@@ -316,35 +316,35 @@ public class PowerplayScorer {
     public void setTargetLiftPos (liftPos height) {
         switch (height){
             case FLOOR:
-                targetLiftPos = TeleOpConfig.HEIGHT_FLOOR;
+                targetLiftPos = RobotConfig.HEIGHT_FLOOR;
                 targetLiftPosName = liftPos.FLOOR.name();
                 break;
             case TWO:
-                targetLiftPos = TeleOpConfig.HEIGHT_TWO;
+                targetLiftPos = RobotConfig.HEIGHT_TWO;
                 targetLiftPosName = liftPos.TWO.name();
                 break;
             case THREE:
-                targetLiftPos = TeleOpConfig.HEIGHT_THREE;
+                targetLiftPos = RobotConfig.HEIGHT_THREE;
                 targetLiftPosName = liftPos.THREE.name();
                 break;
             case FOUR:
-                targetLiftPos = TeleOpConfig.HEIGHT_FOUR;
+                targetLiftPos = RobotConfig.HEIGHT_FOUR;
                 targetLiftPosName = liftPos.FOUR.name();
                 break;
             case FIVE:
-                targetLiftPos = TeleOpConfig.HEIGHT_FIVE;
+                targetLiftPos = RobotConfig.HEIGHT_FIVE;
                 targetLiftPosName = liftPos.FIVE.name();
                 break;
             case LOW:
-                targetLiftPos = TeleOpConfig.HEIGHT_LOW;
+                targetLiftPos = RobotConfig.HEIGHT_LOW;
                 targetLiftPosName = liftPos.LOW.name();
                 break;
             case MED:
-                targetLiftPos = TeleOpConfig.HEIGHT_MEDIUM;
+                targetLiftPos = RobotConfig.HEIGHT_MEDIUM;
                 targetLiftPosName = liftPos.MED.name();
                 break;
             case TALL:
-                targetLiftPos = TeleOpConfig.HEIGHT_TALL;
+                targetLiftPos = RobotConfig.HEIGHT_TALL;
                 targetLiftPosName = liftPos.TALL.name();
                 break;
         }
@@ -358,14 +358,14 @@ public class PowerplayScorer {
     }
 
     public void updateLiftProfile () {
-        double maxV = TeleOpConfig.LIFT_MAX_UP_VELO;
-        double maxA = TeleOpConfig.LIFT_MAX_UP_ACCEL;
+        double maxV = RobotConfig.LIFT_MAX_UP_VELO;
+        double maxA = RobotConfig.LIFT_MAX_UP_ACCEL;
         
         if (targetLiftPos == currentLiftPos) {
             targetLiftPos += 0.25;
         } else if (targetLiftPos < currentLiftPos) {
-            maxV = TeleOpConfig.LIFT_MAX_DOWN_VELO;
-            maxA = TeleOpConfig.LIFT_MAX_DOWN_ACCEL;
+            maxV = RobotConfig.LIFT_MAX_DOWN_VELO;
+            maxA = RobotConfig.LIFT_MAX_DOWN_ACCEL;
         }
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
@@ -373,7 +373,7 @@ public class PowerplayScorer {
             new MotionState(targetLiftPos, 0, 0, 0),
             maxV,
             maxA,
-            TeleOpConfig.LIFT_MAX_JERK
+            RobotConfig.LIFT_MAX_JERK
         );
 
         liftProfileTimer.reset();
@@ -382,17 +382,17 @@ public class PowerplayScorer {
     public void updateLiftGains () {
         liftController.setGains(
                 new PIDCoefficients(
-                        TeleOpConfig.LIFT_kP,
-                        TeleOpConfig.LIFT_kI,
-                        TeleOpConfig.LIFT_kD
+                        RobotConfig.LIFT_kP,
+                        RobotConfig.LIFT_kI,
+                        RobotConfig.LIFT_kD
                 ),
-                TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
-                TeleOpConfig.LIFT_PID_FILTER_GAIN,
-                TeleOpConfig.LIFT_kV,
-                TeleOpConfig.LIFT_kA,
-                TeleOpConfig.LIFT_kS
+                RobotConfig.LIFT_INTEGRATION_MAX_VELO,
+                RobotConfig.LIFT_PID_FILTER_GAIN,
+                RobotConfig.LIFT_kV,
+                RobotConfig.LIFT_kA,
+                RobotConfig.LIFT_kS
         );
-        liftController.setPositionTolerance(TeleOpConfig.LIFT_POS_TOLERANCE);
+        liftController.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
     }
 
     public double getTargetLiftPos () {
@@ -412,11 +412,11 @@ public class PowerplayScorer {
             dt = 0.002;
         }
 
-        veloFilter.setGains(TeleOpConfig.LIFT_VELO_FILTER_GAIN, TeleOpConfig.LIFT_VELO_ESTIMATE_COUNT);
-        accelFilter.setGains(TeleOpConfig.LIFT_ACCEL_FILTER_GAIN, TeleOpConfig.LIFT_ACCEL_ESTIMATE_COUNT);
-        jerkFilter.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN, TeleOpConfig.LIFT_JERK_ESTIMATE_COUNT);
+        veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
+        accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
+        jerkFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
 
-        currentLiftPos = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
+        currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_TICKS_PER_INCH;
         currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
         currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - veloFilter.getLastEstimate()) / dt);
         currentLiftJerk = jerkFilter.getEstimate((currentLiftAccel - accelFilter.getLastEstimate()) / dt);
@@ -468,14 +468,14 @@ public class PowerplayScorer {
     private double getLiftGravityFF () {
         double veloCommand = 0.0;
 
-        if (currentLiftPos >= TeleOpConfig.STAGES_FOUR) {
-            veloCommand = TeleOpConfig.LIFT_kG_FOUR;
-        } else if (currentLiftPos >= TeleOpConfig.STAGES_THREE) {
-            veloCommand = TeleOpConfig.LIFT_kG_THREE;
-        } else if (currentLiftPos >= TeleOpConfig.STAGES_TWO) {
-            veloCommand = TeleOpConfig.LIFT_kG_TWO;
-        } else if (currentLiftPos > TeleOpConfig.LIFT_POS_TOLERANCE) {
-            veloCommand = TeleOpConfig.LIFT_kG_ONE;
+        if (currentLiftPos >= RobotConfig.STAGES_FOUR) {
+            veloCommand = RobotConfig.LIFT_kG_FOUR;
+        } else if (currentLiftPos >= RobotConfig.STAGES_THREE) {
+            veloCommand = RobotConfig.LIFT_kG_THREE;
+        } else if (currentLiftPos >= RobotConfig.STAGES_TWO) {
+            veloCommand = RobotConfig.LIFT_kG_TWO;
+        } else if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) {
+            veloCommand = RobotConfig.LIFT_kG_ONE;
         }
 
         return veloCommand;
@@ -487,26 +487,26 @@ public class PowerplayScorer {
 
     public void runClaw () {
         if (!clawIsOpen){
-            clawServo.turnToAngle(TeleOpConfig.CLAW_CLOSED_ANGLE);
+            clawServo.turnToAngle(RobotConfig.CLAW_CLOSED_ANGLE);
         } else if (passThruIsMoving) {
-            clawServo.turnToAngle(TeleOpConfig.CLAW_PASS_ANGLE);
+            clawServo.turnToAngle(RobotConfig.CLAW_PASS_ANGLE);
         } else {
-            clawServo.turnToAngle(TeleOpConfig.CLAW_OPEN_ANGLE);
+            clawServo.turnToAngle(RobotConfig.CLAW_OPEN_ANGLE);
         }
 
-        if ((liftClawTimer.seconds() >= TeleOpConfig.CLAW_CLOSING_TIME) && !clawHasLifted) {
+        if ((liftClawTimer.seconds() >= RobotConfig.CLAW_CLOSING_TIME) && !clawHasLifted) {
             double heightIncrease = 2;
 
-            if (currentLiftPos > TeleOpConfig.LIFT_POS_TOLERANCE) {
+            if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) {
                 heightIncrease = 6;
             }
 
-            setTargetLiftPos(Math.min(getTargetLiftPos() + heightIncrease, TeleOpConfig.HEIGHT_TALL));
+            setTargetLiftPos(Math.min(getTargetLiftPos() + heightIncrease, RobotConfig.HEIGHT_TALL));
             liftClawTimer.reset();
             clawHasLifted = true;
         }
 
-        if ((dropClawTimer.seconds() >= TeleOpConfig.CLAW_DROP_TIME) && !clawHasDropped) {
+        if ((dropClawTimer.seconds() >= RobotConfig.CLAW_DROP_TIME) && !clawHasDropped) {
             clawIsOpen = true;
             clawHasDropped = true;
         }
@@ -536,9 +536,9 @@ public class PowerplayScorer {
 
     public void runPivot () {
         if (pivotIsFront) {
-            pivotServo.turnToAngle(TeleOpConfig.PIVOT_FRONT_ANGLE);
+            pivotServo.turnToAngle(RobotConfig.PIVOT_FRONT_ANGLE);
         } else {
-            pivotServo.turnToAngle(TeleOpConfig.PIVOT_BACK_ANGLE);
+            pivotServo.turnToAngle(RobotConfig.PIVOT_BACK_ANGLE);
         }
     }
 

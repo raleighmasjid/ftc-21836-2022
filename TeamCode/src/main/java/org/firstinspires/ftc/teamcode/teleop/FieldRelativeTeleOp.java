@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
-import org.firstinspires.ftc.teamcode.robot.TeleOpConfig;
+import org.firstinspires.ftc.teamcode.robot.RobotConfig;
 
 import java.util.List;
 
@@ -113,9 +113,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             // Precision mode driving triggers
             if (Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
-                precisionScale = TeleOpConfig.PRECISION_MODE_SCALE;
+                precisionScale = RobotConfig.PRECISION_MODE_SCALE;
             } else {
-                precisionScale = (TeleOpConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
+                precisionScale = (RobotConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
             }
 
             control1LeftX *= precisionScale;
@@ -154,7 +154,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if (!liftHasReset) {
                     if (scorer.limitSwitch.getState() && !control2RShoulder.wasJustPressed()) {
-                        scorer.runLift(TeleOpConfig.LIFT_RESET_VELOCITY);
+                        scorer.runLift(RobotConfig.LIFT_RESET_VELOCITY);
                     } else {
                         scorer.useLiftPIDF = true;
                         scorer.setTargetLiftPos(PowerplayScorer.liftPos.FLOOR);

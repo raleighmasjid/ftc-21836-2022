@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
-import org.firstinspires.ftc.teamcode.robot.TeleOpConfig;
+import org.firstinspires.ftc.teamcode.robot.RobotConfig;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.autonomous.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.autonomous.DriveConstants;
@@ -40,10 +40,10 @@ public class AutonomousTesting extends LinearOpMode {
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
     // You will need to do your own calibration for other configurations!
-    double fx = TeleOpConfig.fx;
-    double fy = TeleOpConfig.fy;
-    double cx = TeleOpConfig.cx;
-    double cy = TeleOpConfig.cy;
+    double fx = RobotConfig.fx;
+    double fy = RobotConfig.fy;
+    double cx = RobotConfig.cx;
+    double cy = RobotConfig.cy;
 
     // UNITS ARE METERS
     double tagSize = 0.166;

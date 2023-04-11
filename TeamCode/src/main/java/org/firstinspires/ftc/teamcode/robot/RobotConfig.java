@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.acmerobotics.dashboard.config.Config;
 
 @Config
-public class TeleOpConfig {
+public class RobotConfig {
     // inches
     public static double HEIGHT_FLOOR = 0;
     public static double HEIGHT_TWO = 1.25;
