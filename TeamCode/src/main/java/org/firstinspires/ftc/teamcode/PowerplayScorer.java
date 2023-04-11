@@ -44,9 +44,9 @@ public class PowerplayScorer {
     public DigitalChannel LED2red;
     public DigitalChannel LED2green;
     private double lastTimestamp;
-    private LowPassFilter jerkEstimator;
-    private LowPassFilter accelEstimator;
-    private LowPassFilter veloEstimator;
+    private LowPassFilter jerkFilter;
+    private LowPassFilter accelFilter;
+    private LowPassFilter veloFilter;
     private double currentLiftJerk;
     private double currentLiftAccel;
     private double currentLiftVelo;
@@ -114,13 +114,13 @@ public class PowerplayScorer {
             TeleOpConfig.LIFT_MAX_JERK
         );
 
-        veloEstimator = new LowPassFilter();
-        accelEstimator = new LowPassFilter();
-        jerkEstimator = new LowPassFilter();
+        veloFilter = new LowPassFilter();
+        accelFilter = new LowPassFilter();
+        jerkFilter = new LowPassFilter();
 
-        veloEstimator.setGains(TeleOpConfig.LIFT_VELO_FILTER_GAIN, TeleOpConfig.LIFT_VELO_ESTIMATE_COUNT);
-        accelEstimator.setGains(TeleOpConfig.LIFT_ACCEL_FILTER_GAIN, TeleOpConfig.LIFT_ACCEL_ESTIMATE_COUNT);
-        veloEstimator.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN, TeleOpConfig.LIFT_JERK_ESTIMATE_COUNT);
+        veloFilter.setGains(TeleOpConfig.LIFT_VELO_FILTER_GAIN, TeleOpConfig.LIFT_VELO_ESTIMATE_COUNT);
+        accelFilter.setGains(TeleOpConfig.LIFT_ACCEL_FILTER_GAIN, TeleOpConfig.LIFT_ACCEL_ESTIMATE_COUNT);
+        veloFilter.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN, TeleOpConfig.LIFT_JERK_ESTIMATE_COUNT);
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -405,29 +405,29 @@ public class PowerplayScorer {
 
     public void readLiftPos () {
         double lastLiftPos = currentLiftPos;
-        currentLiftPos = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
-
         double currentTimeStamp = liftDerivTimer.seconds();
         double dt = currentTimeStamp - lastTimestamp;
+
         if (dt == 0) {
             dt = 0.002;
         }
 
-        veloEstimator.setGains(TeleOpConfig.LIFT_VELO_FILTER_GAIN, TeleOpConfig.LIFT_VELO_ESTIMATE_COUNT);
-        accelEstimator.setGains(TeleOpConfig.LIFT_ACCEL_FILTER_GAIN, TeleOpConfig.LIFT_ACCEL_ESTIMATE_COUNT);
-        jerkEstimator.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN, TeleOpConfig.LIFT_JERK_ESTIMATE_COUNT);
+        veloFilter.setGains(TeleOpConfig.LIFT_VELO_FILTER_GAIN, TeleOpConfig.LIFT_VELO_ESTIMATE_COUNT);
+        accelFilter.setGains(TeleOpConfig.LIFT_ACCEL_FILTER_GAIN, TeleOpConfig.LIFT_ACCEL_ESTIMATE_COUNT);
+        jerkFilter.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN, TeleOpConfig.LIFT_JERK_ESTIMATE_COUNT);
 
-        currentLiftVelo = veloEstimator.getEstimate((currentLiftPos - lastLiftPos) / dt);
-        currentLiftAccel = accelEstimator.getEstimate((currentLiftVelo - veloEstimator.getLastEstimate()) / dt);
-        currentLiftJerk = jerkEstimator.getEstimate((currentLiftAccel - accelEstimator.getLastEstimate()) / dt);
+        currentLiftPos = lift_motor2.encoder.getPosition() * TeleOpConfig.LIFT_TICKS_PER_INCH;
+        currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
+        currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - veloFilter.getLastEstimate()) / dt);
+        currentLiftJerk = jerkFilter.getEstimate((currentLiftAccel - accelFilter.getLastEstimate()) / dt);
 
         lastTimestamp = currentTimeStamp;
     }
 
     public void resetLift () {
-        jerkEstimator.resetPastEstimates();
-        accelEstimator.resetPastEstimates();
-        veloEstimator.resetPastEstimates();
+        jerkFilter.resetPastEstimates();
+        accelFilter.resetPastEstimates();
+        veloFilter.resetPastEstimates();
 
         currentLiftJerk = 0.0;
         currentLiftAccel = 0.0;
