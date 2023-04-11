@@ -129,21 +129,13 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             }
 
             if (useOverrideMode) {
-                if (control2RShoulder.wasJustPressed()) {
-                    scorer.resetLift();
-                }
+                if (control2RShoulder.wasJustPressed()) scorer.resetLift();
 
-                if (control2B.wasJustPressed()) {
-                    scorer.toggleClaw();
-                }
+                if (control2B.wasJustPressed()) scorer.toggleClaw();
 
-                if (control2LShoulder.wasJustPressed()) {
-                    scorer.togglePivot();
-                }
+                if (control2LShoulder.wasJustPressed()) scorer.togglePivot();
 
-                if (control2Y.wasJustPressed()) {
-                    scorer.togglePassThru();
-                }
+                if (control2Y.wasJustPressed()) scorer.togglePassThru();
 
                 scorer.runLift(control2LeftY);
             } else {
@@ -165,42 +157,25 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if (control2A.isDown()) {
                     // Lift stack height triggers
-                    if (control2Up.wasJustPressed()) {
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.FIVE);
-                    } else if (control2Left.wasJustPressed()) {
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.FOUR);
-                    } else if (control2Right.wasJustPressed()) {
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.THREE);
-                    } else if (control2Down.wasJustPressed()) {
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.TWO);
-                    }
+                    if (control2Up.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.FIVE);
+                    else if (control2Left.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.FOUR);
+                    else if (control2Right.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.THREE);
+                    else if (control2Down.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.TWO);
                 } else {
                     // Lift junction height triggers
-                    if (control2Up.wasJustPressed()) {
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.TALL);
-                    } else if (control2Left.wasJustPressed()) {
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
-                    } else if (control2Right.wasJustPressed()) {
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.LOW);
-                    } else if (control2Down.wasJustPressed()) {
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.FLOOR);
-                    }
+                    if (control2Up.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.TALL);
+                    else if (control2Left.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
+                    else if (control2Right.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.LOW);
+                    else if (control2Down.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.FLOOR);
                 }
 
-                if (control2Y.wasJustPressed()) {
-                    scorer.triggerPassThru();
-                }
+                if (control2Y.wasJustPressed()) scorer.triggerPassThru();
 
-                if (control2LShoulder.wasJustPressed()) {
-                    scorer.togglePivot();
-                }
+                if (control2LShoulder.wasJustPressed()) scorer.togglePivot();
 
                 if (control2B.wasJustPressed()) {
-                    if (scorer.clawIsOpen) {
-                        scorer.liftClaw();
-                    } else {
-                        scorer.dropClaw();
-                    }
+                    if (scorer.clawIsOpen) scorer.liftClaw();
+                    else scorer.dropClaw();
                 }
 
                 scorer.runLiftToPos();

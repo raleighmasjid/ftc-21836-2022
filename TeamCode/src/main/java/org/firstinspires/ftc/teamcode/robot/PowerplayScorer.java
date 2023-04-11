@@ -361,9 +361,8 @@ public class PowerplayScorer {
         double maxV = RobotConfig.LIFT_MAX_UP_VELO;
         double maxA = RobotConfig.LIFT_MAX_UP_ACCEL;
         
-        if (targetLiftPos == currentLiftPos) {
-            targetLiftPos += 0.25;
-        } else if (targetLiftPos < currentLiftPos) {
+        if (targetLiftPos == currentLiftPos) targetLiftPos += 0.25;
+        else if (targetLiftPos < currentLiftPos) {
             maxV = RobotConfig.LIFT_MAX_DOWN_VELO;
             maxA = RobotConfig.LIFT_MAX_DOWN_ACCEL;
         }
@@ -408,9 +407,7 @@ public class PowerplayScorer {
         double currentTimeStamp = liftDerivTimer.seconds();
         double dt = currentTimeStamp - lastTimestamp;
 
-        if (dt == 0) {
-            dt = 0.002;
-        }
+        if (dt == 0) dt = 0.002;
 
         veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
         accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
@@ -448,9 +445,7 @@ public class PowerplayScorer {
         liftController.setTargetVelocity(liftState.getV());
         liftController.setTargetAcceleration(liftState.getA());
 
-        if (liftController.atTargetPosition(currentLiftPos)) {
-            liftController.reset();
-        }
+        if (liftController.atTargetPosition(currentLiftPos)) liftController.reset();
 
         if (useLiftPIDF) {
             updateLiftGains();
@@ -468,15 +463,10 @@ public class PowerplayScorer {
     private double getLiftGravityFF () {
         double veloCommand = 0.0;
 
-        if (currentLiftPos >= RobotConfig.STAGES_FOUR) {
-            veloCommand = RobotConfig.LIFT_kG_FOUR;
-        } else if (currentLiftPos >= RobotConfig.STAGES_THREE) {
-            veloCommand = RobotConfig.LIFT_kG_THREE;
-        } else if (currentLiftPos >= RobotConfig.STAGES_TWO) {
-            veloCommand = RobotConfig.LIFT_kG_TWO;
-        } else if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) {
-            veloCommand = RobotConfig.LIFT_kG_ONE;
-        }
+        if (currentLiftPos >= RobotConfig.STAGES_FOUR) veloCommand = RobotConfig.LIFT_kG_FOUR;
+        else if (currentLiftPos >= RobotConfig.STAGES_THREE) veloCommand = RobotConfig.LIFT_kG_THREE;
+        else if (currentLiftPos >= RobotConfig.STAGES_TWO) veloCommand = RobotConfig.LIFT_kG_TWO;
+        else if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) veloCommand = RobotConfig.LIFT_kG_ONE;
 
         return veloCommand;
     }
@@ -497,9 +487,7 @@ public class PowerplayScorer {
         if ((liftClawTimer.seconds() >= RobotConfig.CLAW_CLOSING_TIME) && !clawHasLifted) {
             double heightIncrease = 2;
 
-            if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) {
-                heightIncrease = 6;
-            }
+            if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) heightIncrease = 6;
 
             setTargetLiftPos(Math.min(getTargetLiftPos() + heightIncrease, RobotConfig.HEIGHT_TALL));
             liftClawTimer.reset();
@@ -535,11 +523,8 @@ public class PowerplayScorer {
     }
 
     public void runPivot () {
-        if (pivotIsFront) {
-            pivotServo.turnToAngle(RobotConfig.PIVOT_FRONT_ANGLE);
-        } else {
-            pivotServo.turnToAngle(RobotConfig.PIVOT_BACK_ANGLE);
-        }
+        if (pivotIsFront) pivotServo.turnToAngle(RobotConfig.PIVOT_FRONT_ANGLE);
+        else pivotServo.turnToAngle(RobotConfig.PIVOT_BACK_ANGLE);
     }
 
     public void triggerPassThru () {

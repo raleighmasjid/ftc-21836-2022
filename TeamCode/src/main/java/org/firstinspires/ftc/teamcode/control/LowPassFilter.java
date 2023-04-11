@@ -10,9 +10,7 @@ public class LowPassFilter {
 
     public void setGains (double filterGain, int pastEstimatesCount) {
         this.filterGain = filterGain;
-        if (pastEstimatesCount == 0) {
-            pastEstimatesCount = 1;
-        }
+        if (pastEstimatesCount == 0) pastEstimatesCount = 1;
         this.pastEstimatesCount = pastEstimatesCount;
     }
 
@@ -27,18 +25,14 @@ public class LowPassFilter {
 
     public double getEstimate (double measurement) {
         double total = 0.0;
-        for (Double estimate : pastEstimates) {
-            total += estimate;
-        }
+        for (Double estimate : pastEstimates) total += estimate;
         double size = pastEstimates.size();
         lastEstimate = total / size;
 
         double newEstimate = filterGain * lastEstimate + (1 - filterGain) * measurement;
 
         pastEstimates.add(newEstimate);
-        if (pastEstimates.size() > pastEstimatesCount) {
-            pastEstimates.remove(0);
-        }
+        if (pastEstimates.size() > pastEstimatesCount) pastEstimates.remove(0);
 
         return newEstimate;
     }
