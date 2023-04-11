@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.control;
 
 //Class created to store the last known heading of the gyro
 public class HeadingHolder {
