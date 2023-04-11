@@ -119,9 +119,9 @@ public class PowerplayScorer {
         accelEstimator = new LowPassFilter();
         jerkEstimator = new LowPassFilter();
 
-        veloEstimator.setGains(TeleOpConfig.LIFT_VELO_FILTER_GAIN);
-        accelEstimator.setGains(TeleOpConfig.LIFT_ACCEL_FILTER_GAIN);
-        veloEstimator.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN);
+        veloEstimator.setGains(TeleOpConfig.LIFT_VELO_FILTER_GAIN, TeleOpConfig.LIFT_VELO_ESTIMATE_COUNT);
+        accelEstimator.setGains(TeleOpConfig.LIFT_ACCEL_FILTER_GAIN, TeleOpConfig.LIFT_ACCEL_ESTIMATE_COUNT);
+        veloEstimator.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN, TeleOpConfig.LIFT_JERK_ESTIMATE_COUNT);
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -412,6 +412,11 @@ public class PowerplayScorer {
         if (dt == 0) {
             dt = 0.002;
         }
+
+        veloEstimator.setGains(TeleOpConfig.LIFT_VELO_FILTER_GAIN, TeleOpConfig.LIFT_VELO_ESTIMATE_COUNT);
+        accelEstimator.setGains(TeleOpConfig.LIFT_ACCEL_FILTER_GAIN, TeleOpConfig.LIFT_ACCEL_ESTIMATE_COUNT);
+        veloEstimator.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN, TeleOpConfig.LIFT_JERK_ESTIMATE_COUNT);
+
         currentLiftVelo = (currentLiftPos - lastLiftPos) / dt;
         currentLiftVelo = veloEstimator.getEstimate(currentLiftVelo);
         currentLiftAccel = (currentLiftVelo - veloEstimator.getLastEstimate()) / dt;
@@ -424,9 +429,9 @@ public class PowerplayScorer {
     }
 
     public void resetLift () {
-        jerkEstimator.resetLastEstimate();
-        accelEstimator.resetLastEstimate();
-        veloEstimator.resetLastEstimate();
+        jerkEstimator.resetPastEstimates();
+        accelEstimator.resetPastEstimates();
+        veloEstimator.resetPastEstimates();
         lastLiftPos = 0.0;
 
         currentLiftJerk = 0.0;

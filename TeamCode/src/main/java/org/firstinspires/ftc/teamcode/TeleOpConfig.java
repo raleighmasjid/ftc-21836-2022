@@ -35,6 +35,10 @@ public class TeleOpConfig {
     public static double LIFT_ACCEL_FILTER_GAIN = 0.95;
     public static double LIFT_JERK_FILTER_GAIN = 0.95;
 
+    public static int LIFT_VELO_ESTIMATE_COUNT = 5;
+    public static int LIFT_ACCEL_ESTIMATE_COUNT = 5;
+    public static int LIFT_JERK_ESTIMATE_COUNT = 5;
+
     public static double LIFT_MAX_UP_VELO = 10; // inches per second
     public static double LIFT_MAX_UP_ACCEL = 10; // inches per second^2
     
