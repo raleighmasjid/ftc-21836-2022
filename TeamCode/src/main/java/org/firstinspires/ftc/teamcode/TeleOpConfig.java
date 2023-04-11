@@ -37,11 +37,11 @@ public class TeleOpConfig {
 
     public static double LIFT_MAX_UP_VELO = 10; // inches per second
     public static double LIFT_MAX_UP_ACCEL = 10; // inches per second^2
-    public static double LIFT_MAX_UP_JERK = 10; // inches per second^3
     
     public static double LIFT_MAX_DOWN_VELO = 10; // inches per second
     public static double LIFT_MAX_DOWN_ACCEL = 10; // inches per second^2
-    public static double LIFT_MAX_DOWN_JERK = 10; // inches per second^3
+    
+    public static double LIFT_MAX_JERK = 10; // inches per second^3
 
     public static double LIFT_INTEGRATION_MAX_VELO = 0.8;
     public static double LIFT_PID_FILTER_GAIN = 0.98;
