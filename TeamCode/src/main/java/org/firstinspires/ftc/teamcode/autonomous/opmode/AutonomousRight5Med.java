@@ -13,12 +13,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
-import org.firstinspires.ftc.teamcode.PowerplayScorer;
-import org.firstinspires.ftc.teamcode.TeleOpConfig;
+import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
+import org.firstinspires.ftc.teamcode.robot.TeleOpConfig;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.autonomous.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.autonomous.DriveConstants;
-import org.firstinspires.ftc.teamcode.control.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
