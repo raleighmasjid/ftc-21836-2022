@@ -99,9 +99,9 @@ public class PowerplayScorer {
                 ),
                 TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
                 TeleOpConfig.LIFT_PID_FILTER_GAIN,
-                TeleOpConfig.LIFT_kV_UP,
-                TeleOpConfig.LIFT_kA_UP,
-                TeleOpConfig.LIFT_kS_UP
+                TeleOpConfig.LIFT_kV,
+                TeleOpConfig.LIFT_kA,
+                TeleOpConfig.LIFT_kS
         );
         liftController.setPositionTolerance(TeleOpConfig.LIFT_POS_TOLERANCE);
         liftController.setOutputBounds(-1.0, 1.0);
@@ -342,15 +342,21 @@ public class PowerplayScorer {
     }
 
     public void updateLiftProfile () {
+        double maxV = TeleOpConfig.LIFT_MAX_UP_VELO;
+        double maxA = TeleOpConfig.LIFT_MAX_UP_ACCEL;
+        
         if (targetLiftPos == currentLiftPos) {
             targetLiftPos += 0.25;
+        } else if (targetLiftPos < currentLiftPos) {
+            double maxV = TeleOpConfig.LIFT_MAX_DOWN_VELO;
+            double maxA = TeleOpConfig.LIFT_MAX_DOWN_ACCEL;
         }
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
             new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
             new MotionState(targetLiftPos, 0, 0, 0),
-            TeleOpConfig.LIFT_MAX_VELO,
-            TeleOpConfig.LIFT_MAX_ACCEL,
+            maxV,
+            maxA,
             TeleOpConfig.LIFT_MAX_JERK
         );
 
@@ -358,16 +364,6 @@ public class PowerplayScorer {
     }
 
     public void updateLiftGains () {
-        double kV = TeleOpConfig.LIFT_kV_UP;
-        double kA = TeleOpConfig.LIFT_kA_UP;
-        double kS = TeleOpConfig.LIFT_kS_UP;
-
-        if (targetLiftPos < currentLiftPos) {
-            kV = TeleOpConfig.LIFT_kV_DOWN;
-            kA = TeleOpConfig.LIFT_kA_DOWN;
-            kS = TeleOpConfig.LIFT_kS_DOWN;
-        }
-
         liftController.setGains(
                 new PIDCoefficients(
                         TeleOpConfig.LIFT_kP,
@@ -376,10 +372,11 @@ public class PowerplayScorer {
                 ),
                 TeleOpConfig.LIFT_INTEGRATION_MAX_VELO,
                 TeleOpConfig.LIFT_PID_FILTER_GAIN,
-                kV,
-                kA,
-                kS
+                TeleOpConfig.LIFT_kV,
+                TeleOpConfig.LIFT_kA,
+                TeleOpConfig.LIFT_kS
         );
+        liftController.setPositionTolerance(TeleOpConfig.LIFT_POS_TOLERANCE);
     }
 
     public double getTargetLiftPos () {
