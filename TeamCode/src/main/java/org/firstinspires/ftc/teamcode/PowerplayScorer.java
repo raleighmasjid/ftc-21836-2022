@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.control.LowPassFilter;
 import org.firstinspires.ftc.teamcode.control.PIDFController;
 
 /**
@@ -43,11 +44,11 @@ public class PowerplayScorer {
     public DigitalChannel LED2red;
     public DigitalChannel LED2green;
     private double lastTimestamp;
-    private double lastLiftJerk;
+    private LowPassFilter jerkEstimator;
+    private LowPassFilter accelEstimator;
+    private LowPassFilter veloEstimator;
     private double currentLiftJerk;
-    private double lastLiftAccel;
     private double currentLiftAccel;
-    private double lastLiftVelo;
     private double currentLiftVelo;
     private double lastLiftPos;
     private double currentLiftPos;
@@ -113,6 +114,14 @@ public class PowerplayScorer {
             TeleOpConfig.LIFT_MAX_UP_ACCEL,
             TeleOpConfig.LIFT_MAX_JERK
         );
+
+        veloEstimator = new LowPassFilter();
+        accelEstimator = new LowPassFilter();
+        jerkEstimator = new LowPassFilter();
+
+        veloEstimator.setGains(TeleOpConfig.LIFT_VELO_FILTER_GAIN);
+        accelEstimator.setGains(TeleOpConfig.LIFT_ACCEL_FILTER_GAIN);
+        veloEstimator.setGains(TeleOpConfig.LIFT_JERK_FILTER_GAIN);
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -404,31 +413,31 @@ public class PowerplayScorer {
             dt = 0.002;
         }
         currentLiftVelo = (currentLiftPos - lastLiftPos) / dt;
-        currentLiftVelo = (TeleOpConfig.LIFT_VELO_FILTER_GAIN * lastLiftVelo) + ((1-TeleOpConfig.LIFT_VELO_FILTER_GAIN) * currentLiftVelo);
-        currentLiftAccel = (currentLiftVelo - lastLiftVelo) / dt;
-        currentLiftAccel = (TeleOpConfig.LIFT_ACCEL_FILTER_GAIN * lastLiftAccel) + ((1-TeleOpConfig.LIFT_ACCEL_FILTER_GAIN) * currentLiftAccel);
-        currentLiftJerk = (currentLiftAccel - lastLiftAccel) / dt;
-        currentLiftJerk = (TeleOpConfig.LIFT_JERK_FILTER_GAIN * lastLiftJerk) + ((1-TeleOpConfig.LIFT_JERK_FILTER_GAIN) * currentLiftJerk);
+        currentLiftVelo = veloEstimator.getEstimate(currentLiftVelo);
+        currentLiftAccel = (currentLiftVelo - veloEstimator.getLastEstimate()) / dt;
+        currentLiftAccel = accelEstimator.getEstimate(currentLiftAccel);
+        currentLiftJerk = (currentLiftAccel - accelEstimator.getLastEstimate()) / dt;
+        currentLiftJerk = jerkEstimator.getEstimate(currentLiftJerk);
 
         lastLiftPos = currentLiftPos;
-        lastLiftVelo = currentLiftVelo;
-        lastLiftAccel = currentLiftAccel;
-        lastLiftJerk = currentLiftJerk;
         lastTimestamp = currentTimeStamp;
     }
 
     public void resetLift () {
-        lift_motor2.resetEncoder();
-        lastLiftJerk = 0.0;
-        currentLiftJerk = 0.0;
-        lastLiftAccel = 0.0;
-        currentLiftAccel = 0.0;
-        lastLiftVelo = 0.0;
-        currentLiftVelo = 0.0;
+        jerkEstimator.resetLastEstimate();
+        accelEstimator.resetLastEstimate();
+        veloEstimator.resetLastEstimate();
         lastLiftPos = 0.0;
+
+        currentLiftJerk = 0.0;
+        currentLiftAccel = 0.0;
+        currentLiftVelo = 0.0;
         currentLiftPos = 0.0;
+
         lastTimestamp = 0.0;
+        lift_motor2.resetEncoder();
         liftController.reset();
+
         setTargetLiftPos(liftPos.FLOOR);
     }
 
