@@ -30,7 +30,8 @@ public class LowPassFilter {
         for (Double estimate : pastEstimates) {
             total += estimate;
         }
-        lastEstimate = total / pastEstimatesCount;
+        double size = pastEstimates.size();
+        lastEstimate = total / size;
 
         double newEstimate = filterGain * lastEstimate + (1 - filterGain) * measurement;
 
