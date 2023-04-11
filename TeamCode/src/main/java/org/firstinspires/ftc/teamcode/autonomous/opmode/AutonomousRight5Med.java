@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.autonomous.opmode;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -17,8 +16,8 @@ import org.firstinspires.ftc.teamcode.HeadingHolder;
 import org.firstinspires.ftc.teamcode.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.TeleOpConfig;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.drive.AutonMecanumDrive;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.autonomous.AutonMecanumDrive;
+import org.firstinspires.ftc.teamcode.autonomous.DriveConstants;
 import org.firstinspires.ftc.teamcode.control.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -26,15 +25,13 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
-@Autonomous(name= "Active Testing", group = "21836 Backup")
-public class AutonomousTesting extends LinearOpMode {
+@Autonomous(name= "Right - 1+4 medium", group = "21836 Autonomous")
+public class AutonomousRight5Med extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline signalSleeveDetectionPipeline;
-    List<LynxModule> hubs;
 
     // Lens intrinsics
     // UNITS ARE PIXELS
@@ -59,7 +56,6 @@ public class AutonomousTesting extends LinearOpMode {
     AprilTagDetection tagOfInterest = null;
 
     PowerplayScorer scorer = new PowerplayScorer();
-    AutonMecanumDrive drivetrain;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -85,7 +81,7 @@ public class AutonomousTesting extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-        drivetrain = new AutonMecanumDrive(hardwareMap);
+        AutonMecanumDrive drive = new AutonMecanumDrive(hardwareMap);
         scorer.init(hardwareMap);
 
         //  Initialize telemetry and dashboard
@@ -102,7 +98,7 @@ public class AutonomousTesting extends LinearOpMode {
         Vector2d parkingZone1 = new Vector2d(13, -12.5);
         Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
         Vector2d parkingZone3 = new Vector2d(57, -12.5);
-        HeadingHolder.setHeading(90.0);
+        HeadingHolder.setHeading(0.0);
 
         TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
         TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
@@ -125,13 +121,13 @@ public class AutonomousTesting extends LinearOpMode {
         double AUTON_START_DELAY = 0.16;
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
-        drivetrain.setPoseEstimate(startPose);
+        drive.setPoseEstimate(startPose);
 
-        TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
-//                .addTemporalMarker(() -> {
-//                    scorer.clawIsOpen = false;
-//                })
-//                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
+        TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+                .addTemporalMarker(() -> {
+                    scorer.clawIsOpen = false;
+                })
+                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
                     scorer.setTargetLiftPos(scorer.getTargetLiftPos() + 5);
                 })
@@ -142,7 +138,8 @@ public class AutonomousTesting extends LinearOpMode {
                 })
                 .lineTo(new Vector2d(31.5, firstScoringY))
                 .addTemporalMarker(() -> {
-                    scorer.dropClaw(PowerplayScorer.liftPos.FIVE);
+                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.FIVE);
+                    scorer.clawIsOpen = true;
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .lineTo(new Vector2d(centerPathX, firstScoringY))
@@ -173,7 +170,8 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
                 })
                 .addTemporalMarker(() -> {
-                    scorer.dropClaw(PowerplayScorer.liftPos.FOUR);
+                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.FOUR);
+                    scorer.clawIsOpen = true;
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
@@ -201,7 +199,8 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-                    scorer.dropClaw(PowerplayScorer.liftPos.THREE);
+                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.THREE);
+                    scorer.clawIsOpen = true;
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
@@ -229,7 +228,8 @@ public class AutonomousTesting extends LinearOpMode {
                     scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-                    scorer.dropClaw(PowerplayScorer.liftPos.TWO);
+                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.TWO);
+                    scorer.clawIsOpen = true;
                 })
                 .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .setReversed(true)
@@ -263,7 +263,7 @@ public class AutonomousTesting extends LinearOpMode {
                 .build()
                 ;
 
-        TrajectorySequence parkLeft = drivetrain.trajectorySequenceBuilder(trajectory1.end())
+        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(trajectory1.end())
                 .setTangent(scoringAngleRight - facingLeft)
                 .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
                 .setTangent(facingLeft)
@@ -272,13 +272,13 @@ public class AutonomousTesting extends LinearOpMode {
                 .build()
                 ;
 
-        TrajectorySequence parkMiddle = drivetrain.trajectorySequenceBuilder(trajectory1.end())
+        TrajectorySequence parkMiddle = drive.trajectorySequenceBuilder(trajectory1.end())
                 .setTangent(scoringAngleRight - facingLeft)
                 .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
                 .build()
                 ;
 
-        TrajectorySequence parkRight = drivetrain.trajectorySequenceBuilder(trajectory1.end())
+        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(trajectory1.end())
                 .setReversed(true)
                 .splineTo(turnPos, facingRight)
                 .splineTo(parkingZone3, facingRight)
@@ -286,20 +286,12 @@ public class AutonomousTesting extends LinearOpMode {
                 ;
 
 
-        drivetrain.followTrajectorySequenceAsync(trajectory1);
-
-        hubs = hardwareMap.getAll(LynxModule.class);
-
-        for (LynxModule hub : hubs) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
-        }
 
         /*
          * The INIT-loop:
          * This REPLACES waitForStart!
          */
 
-        scorer.clawIsOpen = false;
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = signalSleeveDetectionPipeline.getLatestDetections();
 
@@ -355,20 +347,15 @@ public class AutonomousTesting extends LinearOpMode {
             }
 
             telemetry.update();
-//            sleep(20);
-            scorer.runClaw();
-            scorer.runPivot();
-            scorer.runPassThruServos();
-            scorer.runPassThruStates();
+            sleep(20);
         }
 
         //START IS HERE//
+        autonomousTimer.reset();
 
         dashboard.stopCameraStream();
         camera.stopStreaming();
         camera.closeCameraDevice();
-
-        autonomousTimer.reset();
 
         if(tagOfInterest != null)
         {
@@ -383,36 +370,41 @@ public class AutonomousTesting extends LinearOpMode {
         }
 
 
+        drive.followTrajectorySequenceAsync(trajectory1);
+
         while(opModeIsActive()) {
 
-            for (LynxModule hub : hubs) {
-                hub.clearBulkCache();
-            }
+            drive.update();
 
-            if(!hasParked && !drivetrain.isBusy() && (autonomousTimer.seconds() >= 3)) {
-
-                if (tagOfInterest != null) {
-                    if (tagOfInterest.id == LEFT) {
-                        drivetrain.followTrajectorySequenceAsync(parkLeft);
-                    } else if (tagOfInterest.id == RIGHT) {
-                        drivetrain.followTrajectorySequenceAsync(parkRight);
-                    } else {
-                        drivetrain.followTrajectorySequenceAsync(parkMiddle);
-                    }
-                } else {
-                    drivetrain.followTrajectorySequenceAsync(parkMiddle);
-                }
-
-                hasParked = true;
-            }
-
-            scorer.readLiftPos();
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassThruServos();
             scorer.runPassThruStates();
             scorer.runLiftToPos();
-            drivetrain.update();
+
+
+            // parking statement
+            if(
+                    !hasParked &&                       // bot has not yet parked in zone
+                            !drive.isBusy() &&                  // bot is not driving
+                            (autonomousTimer.seconds() >= 3) && // at least 3 seconds into autonomous
+                            (tagOfInterest != null)             // camera has detected any tag
+            ) {
+
+                if (tagOfInterest.id == LEFT) {
+                    drive.followTrajectorySequenceAsync(parkLeft);
+                } else if (tagOfInterest.id == RIGHT) {
+                    drive.followTrajectorySequenceAsync(parkRight);
+                } else {
+                    drive.followTrajectorySequenceAsync(parkMiddle);
+                }
+
+                hasParked = true;
+            }
+
+            if (tagOfInterest == null) {
+                drive.followTrajectorySequenceAsync(parkMiddle);
+            }
 
             //everything below is telemetry
             scorer.printTelemetry(myTelemetry);
