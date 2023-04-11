@@ -27,20 +27,21 @@ public class TeleOpConfig {
     public static double LIFT_kP = 0.0;
     public static double LIFT_kI = 0.0;
     public static double LIFT_kD = 0.0;
-    public static double LIFT_kV_UP = 0.0;
-    public static double LIFT_kA_UP = 0.0;
-    public static double LIFT_kS_UP = 0.0;
-    public static double LIFT_kV_DOWN = 0.0;
-    public static double LIFT_kA_DOWN = 0.0;
-    public static double LIFT_kS_DOWN = 0.0;
+    public static double LIFT_kV = 0.0;
+    public static double LIFT_kA = 0.0;
+    public static double LIFT_kS = 0.0;
 
     public static double LIFT_VELO_FILTER_GAIN = 0.796;
     public static double LIFT_ACCEL_FILTER_GAIN = 0.95;
     public static double LIFT_JERK_FILTER_GAIN = 0.95;
 
-    public static double LIFT_MAX_VELO = 10; // inches per second
-    public static double LIFT_MAX_ACCEL = 10; // inches per second^2
-    public static double LIFT_MAX_JERK = 10; // inches per second^3
+    public static double LIFT_MAX_UP_VELO = 10; // inches per second
+    public static double LIFT_MAX_UP_ACCEL = 10; // inches per second^2
+    public static double LIFT_MAX_UP_JERK = 10; // inches per second^3
+    
+    public static double LIFT_MAX_DOWN_VELO = 10; // inches per second
+    public static double LIFT_MAX_DOWN_ACCEL = 10; // inches per second^2
+    public static double LIFT_MAX_DOWN_JERK = 10; // inches per second^3
 
     public static double LIFT_INTEGRATION_MAX_VELO = 0.8;
     public static double LIFT_PID_FILTER_GAIN = 0.98;
