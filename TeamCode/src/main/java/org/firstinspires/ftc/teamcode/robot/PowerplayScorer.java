@@ -406,8 +406,9 @@ public class PowerplayScorer {
         double lastLiftPos = currentLiftPos;
         double lastLiftVelo = currentLiftVelo;
         double lastLiftAccel = currentLiftAccel;
-        double dt = liftDerivTimer.seconds() - lastTimestamp;
-        lastTimestamp += dt;
+        double currentTimeStamp = liftDerivTimer.seconds();
+        double dt = currentTimeStamp - lastTimestamp;
+        lastTimestamp = currentTimeStamp;
 
         if (dt == 0) dt = 0.002;
 
