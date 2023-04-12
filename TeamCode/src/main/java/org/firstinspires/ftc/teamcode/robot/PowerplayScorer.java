@@ -404,8 +404,10 @@ public class PowerplayScorer {
 
     public void readLiftPos () {
         double lastLiftPos = currentLiftPos;
-        double currentTimeStamp = liftDerivTimer.seconds();
-        double dt = currentTimeStamp - lastTimestamp;
+        double lastLiftVelo = currentLiftVelo;
+        double lastLiftAccel = currentLiftAccel;
+        double dt = liftDerivTimer.seconds() - lastTimestamp;
+        lastTimestamp += dt;
 
         if (dt == 0) dt = 0.002;
 
@@ -415,10 +417,8 @@ public class PowerplayScorer {
 
         currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_TICKS_PER_INCH;
         currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
-        currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - veloFilter.getLastEstimate()) / dt);
-        currentLiftJerk = jerkFilter.getEstimate((currentLiftAccel - accelFilter.getLastEstimate()) / dt);
-
-        lastTimestamp = currentTimeStamp;
+        currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
+        currentLiftJerk = jerkFilter.getEstimate((currentLiftAccel - lastLiftAccel) / dt);
     }
 
     public void resetLift () {
@@ -463,10 +463,10 @@ public class PowerplayScorer {
     private double getLiftGravityFF () {
         double veloCommand = 0.0;
 
-        if (currentLiftPos >= RobotConfig.STAGES_FOUR) veloCommand = RobotConfig.LIFT_kG_FOUR;
-        else if (currentLiftPos >= RobotConfig.STAGES_THREE) veloCommand = RobotConfig.LIFT_kG_THREE;
-        else if (currentLiftPos >= RobotConfig.STAGES_TWO) veloCommand = RobotConfig.LIFT_kG_TWO;
-        else if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) veloCommand = RobotConfig.LIFT_kG_ONE;
+        if      (currentLiftPos >= RobotConfig.STAGES_FOUR)         veloCommand = RobotConfig.LIFT_kG_FOUR;
+        else if (currentLiftPos >= RobotConfig.STAGES_THREE)        veloCommand = RobotConfig.LIFT_kG_THREE;
+        else if (currentLiftPos >= RobotConfig.STAGES_TWO)          veloCommand = RobotConfig.LIFT_kG_TWO;
+        else if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE)   veloCommand = RobotConfig.LIFT_kG_ONE;
 
         return veloCommand;
     }
