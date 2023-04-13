@@ -157,7 +157,7 @@ class PIDFController
 
             errorSum += if (integrate) (0.5 * (error + lastError) * dt) else 0.0
 
-            if (sign(error) != sign(lastError) || error == 0.0) {reset()}
+            if (sign(error) != sign(lastError)) reset()
 
             lastError = error
             lastUpdateTimestamp = currentTimestamp
