@@ -120,7 +120,7 @@ public class PowerplayScorer {
 
         veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
         accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
-        veloFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
+        jerkFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -406,10 +406,10 @@ public class PowerplayScorer {
         double lastLiftPos = currentLiftPos;
         double lastLiftVelo = currentLiftVelo;
         double lastLiftAccel = currentLiftAccel;
+
         double currentTimeStamp = liftDerivTimer.seconds();
         double dt = currentTimeStamp - lastTimestamp;
         lastTimestamp = currentTimeStamp;
-
         if (dt == 0) dt = 0.002;
 
         veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
@@ -423,9 +423,9 @@ public class PowerplayScorer {
     }
 
     public void resetLift () {
-        jerkFilter.resetPastEstimates();
-        accelFilter.resetPastEstimates();
-        veloFilter.resetPastEstimates();
+        jerkFilter.resetPastValues();
+        accelFilter.resetPastValues();
+        veloFilter.resetPastValues();
 
         currentLiftJerk = 0.0;
         currentLiftAccel = 0.0;

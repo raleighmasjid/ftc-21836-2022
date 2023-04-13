@@ -4,31 +4,31 @@ import java.util.ArrayList;
 
 public class LowPassFilter {
     private double filterGain = 0.0;
-    private int pastEstimatesCount = 5;
-    private final ArrayList<Double> pastEstimates = new ArrayList<>();
+    private int pastValuesCount = 5;
+    private final ArrayList<Double> pastValues = new ArrayList<>();
 
-    public void setGains (double filterGain, int pastEstimatesCount) {
-        if (pastEstimatesCount == 0) pastEstimatesCount = 1;
+    public void setGains (double filterGain, int pastValuesCount) {
+        if (pastValuesCount == 0) pastValuesCount = 1;
         this.filterGain = filterGain;
-        this.pastEstimatesCount = pastEstimatesCount;
+        this.pastValuesCount = pastValuesCount;
     }
 
-    public void resetPastEstimates() {
-        pastEstimates.clear();
-        pastEstimates.add(0.0);
+    public void resetPastValues () {
+        pastValues.clear();
+        pastValues.add(0.0);
     }
 
-    public double getEstimate (double measurement) {
-        double estimateAvg = 0.0;
-        for (Double estimate : pastEstimates) estimateAvg += estimate;
-        double size = pastEstimates.size();
-        estimateAvg = estimateAvg / size;
+    public double getEstimate (double newValue) {
+        double pastValuesAvg = 0.0;
+        for (Double pastValue : pastValues) pastValuesAvg += pastValue;
+        double size = pastValues.size();
+        pastValuesAvg = pastValuesAvg / size;
 
-        double newEstimate = filterGain * estimateAvg + (1 - filterGain) * measurement;
+        double estimate = filterGain * pastValuesAvg + (1 - filterGain) * newValue;
 
-        pastEstimates.add(newEstimate);
-        if (pastEstimates.size() > pastEstimatesCount) pastEstimates.remove(0);
+        pastValues.add(newValue);
+        if (pastValues.size() > pastValuesCount) pastValues.remove(0);
 
-        return newEstimate;
+        return estimate;
     }
 }
