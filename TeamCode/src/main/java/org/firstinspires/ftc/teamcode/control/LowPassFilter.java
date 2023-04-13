@@ -19,16 +19,14 @@ public class LowPassFilter {
     }
 
     public double getEstimate (double newValue) {
-        double pastValuesAvg = 0.0;
-        for (Double pastValue : pastValues) pastValuesAvg += pastValue;
+        double pastValuesTotal = 0.0;
+        for (Double pastValue : pastValues) pastValuesTotal += pastValue;
         double size = pastValues.size();
-        pastValuesAvg = pastValuesAvg / size;
-
-        double estimate = filterGain * pastValuesAvg + (1 - filterGain) * newValue;
+        double pastValuesAvg = pastValuesTotal / size;
 
         pastValues.add(newValue);
-        if (pastValues.size() > pastValuesCount) pastValues.remove(0);
+        if (size > pastValuesCount) pastValues.remove(0);
 
-        return estimate;
+        return filterGain * pastValuesAvg + (1 - filterGain) * newValue;
     }
 }
