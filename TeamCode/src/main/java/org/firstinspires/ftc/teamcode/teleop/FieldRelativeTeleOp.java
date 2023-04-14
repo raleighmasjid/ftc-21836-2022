@@ -42,11 +42,16 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
         ButtonReader control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A); // cone-flipping arms
         ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); // claw
-        ButtonReader control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X); // override-automated mode
+        ButtonReader control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X); // pivot
         ButtonReader control2Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); // passthrough
 
-        ButtonReader control2LShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.LEFT_BUMPER); // pivot
-        ButtonReader control2RShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.RIGHT_BUMPER); // stack heights or reset
+        ButtonReader control2LShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.LEFT_BUMPER); // stack heights / lift reset
+        ButtonReader control2RShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.RIGHT_BUMPER); // override-automated mode
+
+        ButtonReader control1Up = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_UP);
+        ButtonReader control1Left = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_LEFT);
+        ButtonReader control1Right = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_RIGHT);
+        ButtonReader control1Down = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_DOWN);
 
         ButtonReader control2Up = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_UP);
         ButtonReader control2Left = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_LEFT);
@@ -81,6 +86,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2LShoulder.readValue();
             control2RShoulder.readValue();
 
+            control1Up.readValue();
+            control1Left.readValue();
+            control1Right.readValue();
+            control1Down.readValue();
+
             control2Up.readValue();
             control2Left.readValue();
             control2Right.readValue();
@@ -95,10 +105,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.readLiftPos();
 
             // Field-centric reset
-            if (Gamepad1.isDown(GamepadKeys.Button.Y)) drivetrain.resetRotation();
-            else if (Gamepad1.isDown(GamepadKeys.Button.X)) drivetrain.setRotation(90.0);
-            else if (Gamepad1.isDown(GamepadKeys.Button.A)) drivetrain.setRotation(180.0);
-            else if (Gamepad1.isDown(GamepadKeys.Button.B)) drivetrain.setRotation(270.0);
+            if (control1Up.wasJustPressed()) drivetrain.resetRotation();
+            else if (control1Left.wasJustPressed()) drivetrain.setRotation(90.0);
+            else if (control1Down.wasJustPressed()) drivetrain.setRotation(180.0);
+            else if (control1Right.wasJustPressed()) drivetrain.setRotation(270.0);
 
             // Precision mode driving triggers
             precisionScale = (Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) ?
@@ -110,24 +120,24 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control1LeftY *= precisionScale;
             control1RightX *= precisionScale;
 
-            if (control2X.wasJustPressed()) {
+            if (control2RShoulder.wasJustPressed()) {
                 if (useOverrideMode) scorer.setTargetLiftPos(scorer.getCurrentLiftPos());
                 useOverrideMode = !useOverrideMode;
                 scorer.useLiftPIDF = !scorer.useLiftPIDF;
             }
 
             if (useOverrideMode) {
-                if (control2RShoulder.wasJustPressed()) scorer.resetLift();
+                if (control2LShoulder.wasJustPressed()) scorer.resetLift();
 
                 if (control2B.wasJustPressed()) scorer.toggleClaw();
 
-                if (control2LShoulder.wasJustPressed()) scorer.togglePivot();
+                if (control2X.wasJustPressed()) scorer.togglePivot();
 
                 if (control2Y.wasJustPressed()) scorer.togglePassThru();
 
                 scorer.runLift(control2LeftY);
             } else {
-                if (control2RShoulder.isDown()) {
+                if (control2LShoulder.isDown()) {
                     // Lift stack height triggers
                     if (control2Up.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.FIVE);
                     else if (control2Left.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.FOUR);
@@ -165,7 +175,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.LED1red.setState(true);
                 scorer.LED2red.setState(true);
             } else {
-                if (control2RShoulder.isDown()) myTelemetry.addData("Robot is in", "stack heights mode");
+                if (control2LShoulder.isDown()) myTelemetry.addData("Robot is in", "stack heights mode");
                 else                            myTelemetry.addData("Robot is in", "junction heights mode");
                 scorer.LED1green.setState(true);
                 scorer.LED2green.setState(true);
