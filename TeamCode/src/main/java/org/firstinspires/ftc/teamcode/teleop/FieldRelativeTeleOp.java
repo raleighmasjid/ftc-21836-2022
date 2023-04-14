@@ -95,14 +95,16 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.readLiftPos();
 
             // Field-centric reset
-            if (Gamepad1.isDown(GamepadKeys.Button.Y))  drivetrain.resetRotation();
+            if (Gamepad1.isDown(GamepadKeys.Button.Y)) drivetrain.resetRotation();
             else if (Gamepad1.isDown(GamepadKeys.Button.X)) drivetrain.setRotation(90.0);
             else if (Gamepad1.isDown(GamepadKeys.Button.A)) drivetrain.setRotation(180.0);
             else if (Gamepad1.isDown(GamepadKeys.Button.B)) drivetrain.setRotation(270.0);
 
             // Precision mode driving triggers
-            if (Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) precisionScale = RobotConfig.PRECISION_MODE_SCALE;
-            else precisionScale = (RobotConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
+            precisionScale = (Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) ?
+                    RobotConfig.PRECISION_MODE_SCALE :
+                    (RobotConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1
+            ;
 
             control1LeftX *= precisionScale;
             control1LeftY *= precisionScale;
