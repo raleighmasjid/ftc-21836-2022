@@ -59,7 +59,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         double control2LeftY;
 
         double precisionScale;
-        boolean liftHasReset = true;
         boolean useOverrideMode = false;
         
         drivetrain.setRotation(HeadingHolder.getHeading());
@@ -126,22 +125,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 scorer.runLift(control2LeftY);
             } else {
-                if (control2RShoulder.wasJustPressed()) {
-                    scorer.useLiftPIDF = false;
-                    liftHasReset = false;
-                }
-
-                if (!liftHasReset) {
-                    if (scorer.limitSwitch.getState() && !control2RShoulder.wasJustPressed()) {
-                        scorer.runLift(RobotConfig.LIFT_RESET_VELOCITY);
-                    } else {
-                        scorer.useLiftPIDF = true;
-                        scorer.setTargetLiftPos(PowerplayScorer.liftPos.FLOOR);
-                        scorer.resetLift();
-                        liftHasReset = true;
-                    }
-                }
-
                 if (control2A.isDown()) {
                     // Lift stack height triggers
                     if (control2Up.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.FIVE);
