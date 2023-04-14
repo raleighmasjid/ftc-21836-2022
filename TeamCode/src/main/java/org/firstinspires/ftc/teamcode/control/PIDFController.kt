@@ -53,12 +53,12 @@ class PIDFController
 
     fun setGains(
         pid: PIDCoefficients,
-        maxIntegrationVelocity: Double = 0.0,
-        filterGain: Double = 0.0,
-        kV: Double = 0.0,
-        kA: Double = 0.0,
-        kStatic: Double = 0.0
+        maxIntegrationVelocity: Double = this.maxIntegrationVelocity,
+        filterGain: Double = this.filterGain,
         estimateCount: Int = this.estimateCount,
+        kV: Double = this.kV,
+        kA: Double = this.kA,
+        kStatic: Double = this.kStatic
     ) {
         this.pid = pid
         this.maxIntegrationVelocity = maxIntegrationVelocity
@@ -116,9 +116,7 @@ class PIDFController
             outputBounded = true
             minOutput = min
             maxOutput = max
-            if (maxIntegrationVelocity > maxOutput) {
-                maxIntegrationVelocity = maxOutput;
-            }
+            maxIntegrationVelocity = min(maxOutput, maxIntegrationVelocity)
         }
     }
 
