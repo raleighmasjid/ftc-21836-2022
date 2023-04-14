@@ -141,8 +141,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if (control2Y.wasJustPressed()) scorer.triggerPassThru();
 
-                if (control2LShoulder.wasJustPressed()) scorer.togglePivot();
-
                 if (control2B.wasJustPressed()) {
                     if (scorer.clawIsOpen) scorer.liftClaw();
                     else scorer.dropClaw();
