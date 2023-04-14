@@ -125,7 +125,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 scorer.runLift(control2LeftY);
             } else {
-                if (control2A.isDown()) {
+                if (control2RShoulder.isDown()) {
                     // Lift stack height triggers
                     if (control2Up.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.FIVE);
                     else if (control2Left.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.FOUR);
@@ -164,14 +164,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.LED2green.setState(false);
                 scorer.LED1red.setState(true);
                 scorer.LED2red.setState(true);
-            } else if (control2A.isDown()) {
-                myTelemetry.addData("Robot is in", "stack heights mode");
-                scorer.LED1green.setState(true);
-                scorer.LED2green.setState(true);
-                scorer.LED1red.setState(true);
-                scorer.LED2red.setState(true);
             } else {
-                myTelemetry.addData("Robot is in", "junction heights mode");
+                if (control2RShoulder.isDown()) myTelemetry.addData("Robot is in", "stack heights mode");
+                else                            myTelemetry.addData("Robot is in", "junction heights mode");
                 scorer.LED1green.setState(true);
                 scorer.LED2green.setState(true);
                 scorer.LED1red.setState(false);
