@@ -110,9 +110,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control1RightX *= precisionScale;
 
             if (control2X.wasJustPressed()) {
+                if (useOverrideMode) scorer.setTargetLiftPos(scorer.getCurrentLiftPos());
                 useOverrideMode = !useOverrideMode;
                 scorer.useLiftPIDF = !scorer.useLiftPIDF;
-                scorer.setTargetLiftPos(scorer.getCurrentLiftPos());
             }
 
             if (useOverrideMode) {
