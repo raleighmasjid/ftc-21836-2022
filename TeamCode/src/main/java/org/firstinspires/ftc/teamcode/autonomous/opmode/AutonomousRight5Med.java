@@ -129,7 +129,7 @@ public class AutonomousRight5Med extends LinearOpMode {
                 })
                 .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
                 .addTemporalMarker(() -> {
-                    scorer.setTargetLiftPos(scorer.getTargetLiftPos() + 5);
+                    scorer.setTargetLiftPos(scorer.getCurrentLiftPos() + 5);
                 })
                 .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
                 .splineToSplineHeading(new Pose2d(centerPathX, firstScoringY, facingLeft), facingForward, scoringVeloCap, accelerationCap)

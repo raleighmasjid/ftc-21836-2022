@@ -358,7 +358,7 @@ public class PowerplayScorer {
         updateLiftProfile();
     }
 
-    public void updateLiftProfile () {
+    private void updateLiftProfile () {
         double maxV = RobotConfig.LIFT_MAX_UP_VELO;
         double maxA = RobotConfig.LIFT_MAX_UP_ACCEL;
         
@@ -379,7 +379,7 @@ public class PowerplayScorer {
         liftProfileTimer.reset();
     }
 
-    public void updateLiftGains () {
+    private void updateLiftGains () {
         liftController.setGains(
                 new PIDCoefficients(
                         RobotConfig.LIFT_kP,
@@ -394,10 +394,6 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kS
         );
         liftController.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
-    }
-
-    public double getTargetLiftPos () {
-        return targetLiftPos;
     }
 
     public double getCurrentLiftPos () {
@@ -492,7 +488,7 @@ public class PowerplayScorer {
 
             if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) heightIncrease = 6;
 
-            setTargetLiftPos(Math.min(getTargetLiftPos() + heightIncrease, RobotConfig.HEIGHT_TALL));
+            setTargetLiftPos(Math.min(currentLiftPos + heightIncrease, RobotConfig.HEIGHT_TALL));
             liftClawTimer.reset();
             clawHasLifted = true;
         }
