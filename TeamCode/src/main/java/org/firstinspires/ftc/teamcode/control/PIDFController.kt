@@ -26,7 +26,8 @@ class PIDFController
 @JvmOverloads constructor(
     private var pid: PIDCoefficients,
     private var maxIntegrationVelocity: Double = 0.0,
-    private var filterGain: Double = 0.0,
+    private var filterGain: Double = 0.8,
+    private var estimateCount: Int = 5,
     private var kV: Double = 0.0,
     private var kA: Double = 0.0,
     private var kStatic: Double = 0.0,
@@ -44,10 +45,11 @@ class PIDFController
     private var minOutput: Double = 0.0
     private var maxOutput: Double = 0.0
 
-    private var lastFilterEstimate: Double = 0.0
     var currentFilterEstimate: Double = 0.0
     private var integrate: Boolean = true
     var positionTolerance: Double = 5.0
+
+    private var derivFilter: LowPassFilter = LowPassFilter()
 
     fun setGains(
         pid: PIDCoefficients,
@@ -56,13 +58,16 @@ class PIDFController
         kV: Double = 0.0,
         kA: Double = 0.0,
         kStatic: Double = 0.0
+        estimateCount: Int = this.estimateCount,
     ) {
         this.pid = pid
         this.maxIntegrationVelocity = maxIntegrationVelocity
         this.filterGain = filterGain
+        this.estimateCount = estimateCount
         this.kV = kV
         this.kA = kA
         this.kStatic = kStatic
+        derivFilter.setGains(filterGain, estimateCount)
     }
 
     /**
@@ -145,11 +150,11 @@ class PIDFController
     ): Double {
         val currentTimestamp = clock.seconds()
         val error = getPositionError(measuredPosition)
-        currentFilterEstimate = (filterGain * lastFilterEstimate) + ((1-filterGain) * (error - lastError))
+        val dy = error - lastError
+        currentFilterEstimate = derivFilter.getEstimate(dy)
         return if (lastUpdateTimestamp.isNaN()) {
             lastError = error
             lastUpdateTimestamp = currentTimestamp
-            lastFilterEstimate = currentFilterEstimate
             0.0
         } else {
             val dt = currentTimestamp - lastUpdateTimestamp
@@ -161,7 +166,6 @@ class PIDFController
 
             lastError = error
             lastUpdateTimestamp = currentTimestamp
-            lastFilterEstimate = currentFilterEstimate
 
             // note: we'd like to refactor this with Kinematics.calculateMotorFeedforward() but kF complicates the
             // determination of the sign of kStatic
