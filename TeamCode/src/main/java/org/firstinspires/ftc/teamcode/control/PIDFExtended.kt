@@ -17,6 +17,9 @@ class PIDFController
  * control (the most common kind of feedforward in FTC). [kF] provides a custom feedforward term for other plants.
  *
  * @param pid traditional PID coefficients
+ * @param maxIntegrationVelocity max velocity that integral path will continue integration
+ * @param filterGain derivative filter weight, 0 = unsmoothed, 0.9 = very smoothed, 1 = broken
+ * @param estimateCount number of past values to average when filtering
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
  * @param kStatic additive feedforward constant
@@ -25,7 +28,7 @@ class PIDFController
  */
 @JvmOverloads constructor(
     private var pid: PIDCoefficients,
-    private var maxIntegrationVelocity: Double = 0.0,
+    private var maxIntegrationVelocity: Double = 0.5,
     private var filterGain: Double = 0.8,
     private var estimateCount: Int = 5,
     private var kV: Double = 0.0,
@@ -47,7 +50,7 @@ class PIDFController
 
     var currentFilterEstimate: Double = 0.0
     private var integrate: Boolean = true
-    var positionTolerance: Double = 5.0
+    var positionTolerance: Double = 2.0
 
     private var derivFilter: LowPassFilter = LowPassFilter()
 
