@@ -60,8 +60,8 @@ public class RobotConfig {
     public static double CLAW_PASS_ANGLE = 140;
     public static double CLAW_OPEN_ANGLE = 115;
 
-    public static double CLAW_CLOSING_TIME = 0.3;
-    public static double CLAW_DROP_TIME = 0.0;
+    public static double TIME_CLAW = 0.3;
+    public static double TIME_CLAW_DROP = 0.0;
 
     public static double PIVOT_FRONT_ANGLE = 198;
     public static double PIVOT_BACK_ANGLE = 2;
@@ -72,12 +72,12 @@ public class RobotConfig {
     public static double PASS_BACK_ANGLE = 197;
     public static double PASS_BACK_TILT_ANGLE = 197;
 
-    public static double FRONT_PIVOT_TIME = 0.1;
-    public static double PIVOTING_TIME = 0.65;
-    public static double BACK_PIVOT_TIME = 0.2;
+    public static double TIME_FRONT_PIVOT = 0.1;
+    public static double TIME_PIVOTING = 0.65;
+    public static double TIME_BACK_PIVOT = 0.2;
 
-    public static double fx = 578.272;
-    public static double fy = 578.272;
-    public static double cx = 402.145;
-    public static double cy = 221.506;
+    public static double camera_fx = 578.272;
+    public static double camera_fy = 578.272;
+    public static double camera_cx = 402.145;
+    public static double camera_cy = 221.506;
 }

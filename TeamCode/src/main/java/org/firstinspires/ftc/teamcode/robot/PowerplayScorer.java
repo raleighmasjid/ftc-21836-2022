@@ -230,21 +230,21 @@ public class PowerplayScorer {
                     currentPassThruState = passThruState.FRONT_PIVOT;
                     break;
                 case FRONT_PIVOT:
-                    if (passThruTimer.seconds() >= RobotConfig.FRONT_PIVOT_TIME) {
+                    if (passThruTimer.seconds() >= RobotConfig.TIME_FRONT_PIVOT) {
                         pivotIsFront = false;
                         passThruTimer.reset();
                         currentPassThruState = passThruState.PIVOTING;
                     }
                     break;
                 case PIVOTING:
-                    if (passThruTimer.seconds() >= RobotConfig.PIVOTING_TIME) {
+                    if (passThruTimer.seconds() >= RobotConfig.TIME_PIVOTING) {
                         passThruTimer.reset();
                         currentPassThruPos = passThruPos.BACK;
                         currentPassThruState = passThruState.BACK_PIVOT;
                     }
                     break;
                 case BACK_PIVOT:
-                    if (passThruTimer.seconds() >= RobotConfig.BACK_PIVOT_TIME) {
+                    if (passThruTimer.seconds() >= RobotConfig.TIME_BACK_PIVOT) {
                         passThruInFront = false;
                         passThruIsMoving = false;
                         passThruTimer.reset();
@@ -266,21 +266,21 @@ public class PowerplayScorer {
                     currentPassThruState = passThruState.BACK_PIVOT;
                     break;
                 case BACK_PIVOT:
-                    if (passThruTimer.seconds() >= RobotConfig.BACK_PIVOT_TIME) {
+                    if (passThruTimer.seconds() >= RobotConfig.TIME_BACK_PIVOT) {
                         pivotIsFront = true;
                         passThruTimer.reset();
                         currentPassThruState = passThruState.PIVOTING;
                     }
                     break;
                 case PIVOTING:
-                    if (passThruTimer.seconds() >= RobotConfig.PIVOTING_TIME) {
+                    if (passThruTimer.seconds() >= RobotConfig.TIME_PIVOTING) {
                         passThruTimer.reset();
                         currentPassThruPos = passThruPos.FRONT;
                         currentPassThruState = passThruState.FRONT_PIVOT;
                     }
                     break;
                 case FRONT_PIVOT:
-                    if (passThruTimer.seconds() >= RobotConfig.FRONT_PIVOT_TIME) {
+                    if (passThruTimer.seconds() >= RobotConfig.TIME_FRONT_PIVOT) {
                         passThruInFront = true;
                         passThruIsMoving = false;
                         passThruTimer.reset();
@@ -464,7 +464,7 @@ public class PowerplayScorer {
             clawServo.turnToAngle(RobotConfig.CLAW_OPEN_ANGLE);
         }
 
-        if ((liftClawTimer.seconds() >= RobotConfig.CLAW_CLOSING_TIME) && !clawHasLifted) {
+        if ((liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) && !clawHasLifted) {
             double heightIncrease = 2;
 
             if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) heightIncrease = 6;
@@ -474,7 +474,7 @@ public class PowerplayScorer {
             clawHasLifted = true;
         }
 
-        if ((dropClawTimer.seconds() >= RobotConfig.CLAW_DROP_TIME) && !clawHasDropped) {
+        if ((dropClawTimer.seconds() >= RobotConfig.TIME_CLAW_DROP) && !clawHasDropped) {
             clawIsOpen = true;
             clawHasDropped = true;
         }

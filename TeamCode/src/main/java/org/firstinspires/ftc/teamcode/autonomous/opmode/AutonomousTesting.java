@@ -40,10 +40,10 @@ public class AutonomousTesting extends LinearOpMode {
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
     // You will need to do your own calibration for other configurations!
-    double fx = RobotConfig.fx;
-    double fy = RobotConfig.fy;
-    double cx = RobotConfig.cx;
-    double cy = RobotConfig.cy;
+    double fx = RobotConfig.camera_fx;
+    double fy = RobotConfig.camera_fy;
+    double cx = RobotConfig.camera_cx;
+    double cy = RobotConfig.camera_cy;
 
     // UNITS ARE METERS
     double tagSize = 0.166;
