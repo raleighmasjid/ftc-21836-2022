@@ -60,10 +60,10 @@ public class PowerplayScorer {
     public boolean passThruIsMoving;
     private boolean passThruInFront;
     private boolean pivotIsFront;
-    private boolean skipCurrentPassThruState;
     public boolean useLiftPIDF;
     private boolean clawHasLifted;
     private boolean clawHasDropped;
+    public boolean clawIsTilted;
 
     public void init (HardwareMap hw) {
 
@@ -138,11 +138,11 @@ public class PowerplayScorer {
         clawHasLifted = true;
         clawHasDropped = true;
         useLiftPIDF = true;
-        skipCurrentPassThruState = false;
         pivotIsFront = true;
         passThruInFront = true;
         passThruIsMoving = false;
         clawIsOpen = true;
+        clawIsTilted = false;
 
         passThruTimer = new ElapsedTime();
         passThruTimer.reset();
@@ -162,40 +162,51 @@ public class PowerplayScorer {
     private static final double LIFT_TICKS = 145.1;
 
     private enum passThruState {
-        MOVING_TO_FRONT,
-        IN_FRONT,
-        MOVING_TO_PIVOT,
-        PIVOTING,
-        MOVING_TO_BACK,
-        IN_BACK
-    }
-    private enum passThruPos {
+        START,
         FRONT,
-        PIVOT_POS,
+        FRONT_PIVOT,
+        PIVOTING,
+        BACK_PIVOT,
         BACK
     }
+    private enum passThruPos {
+        FRONT_IDLE,
+        FRONT,
+        PIVOT_POS,
+        BACK,
+        BACK_IDLE
+    }
 
-    private passThruState currentPassThruState = passThruState.IN_FRONT;
-    private passThruPos currentPassThruPos = passThruPos.FRONT;
+    private passThruState currentPassThruState = passThruState.FRONT;
+    private passThruPos currentPassThruPos = passThruPos.FRONT_IDLE;
+
+    private void setPassThruAngle(double angle) {
+        passThruServoR.turnToAngle(angle);
+        passThruServoL.turnToAngle(angle);
+    }
 
     public void runPassThruServos () {
         switch (currentPassThruPos) {
+            case FRONT_IDLE:
+                if (clawIsTilted) currentPassThruPos = passThruPos.FRONT;
+                break;
             case FRONT:
-                passThruServoR.turnToAngle(RobotConfig.PASS_RIGHT_FRONT_ANGLE);
-                passThruServoL.turnToAngle(RobotConfig.PASS_LEFT_FRONT_ANGLE);
+                if (!clawIsTilted) {
+                    setPassThruAngle(RobotConfig.PASS_FRONT_ANGLE);
+                    currentPassThruPos = passThruPos.FRONT_IDLE;
+                } else setPassThruAngle(RobotConfig.PASS_FRONT_TILT_ANGLE);
                 break;
             case PIVOT_POS:
-                if (currentLiftPos >= RobotConfig.MINIMUM_PIVOT_HEIGHT) {
-                    passThruServoR.turnToAngle(RobotConfig.PASS_RIGHT_FRONT_ANGLE);
-                    passThruServoL.turnToAngle(RobotConfig.PASS_LEFT_FRONT_ANGLE);
-                } else {
-                    passThruServoR.turnToAngle(RobotConfig.PASS_RIGHT_PIVOT_ANGLE);
-                    passThruServoL.turnToAngle(RobotConfig.PASS_LEFT_PIVOT_ANGLE);
-                }
+                setPassThruAngle(RobotConfig.PASS_PIVOT_ANGLE);
+                break;
+            case BACK_IDLE:
+                if (clawIsTilted) currentPassThruPos = passThruPos.BACK;
                 break;
             case BACK:
-                passThruServoR.turnToAngle(RobotConfig.PASS_RIGHT_BACK_ANGLE);
-                passThruServoL.turnToAngle(RobotConfig.PASS_LEFT_BACK_ANGLE);
+                if (!clawIsTilted) {
+                    setPassThruAngle(RobotConfig.PASS_BACK_ANGLE);
+                    currentPassThruPos = passThruPos.BACK_IDLE;
+                } else setPassThruAngle(RobotConfig.PASS_BACK_TILT_ANGLE);
                 break;
             default:
                 currentPassThruPos = passThruPos.FRONT;
@@ -207,104 +218,74 @@ public class PowerplayScorer {
     public void runPassThruStates () {
         if (passThruInFront) {
             switch (currentPassThruState) {
-                case IN_FRONT:
+                default:
+                case BACK:
+                case FRONT:
                     passThruTimer.reset();
-                    skipCurrentPassThruState = false;
-                    pivotIsFront = true;
-                    passThruInFront = true;
                     break;
-                case IN_BACK:
+                case START:
+                    passThruIsMoving = true;
                     passThruTimer.reset();
-                    skipCurrentPassThruState = false;
-                    pivotIsFront = false;
-                    passThruInFront = false;
-                    break;
-                case MOVING_TO_FRONT:
-                    passThruTimer.reset();
-                    currentPassThruState = passThruState.MOVING_TO_PIVOT;
                     currentPassThruPos = passThruPos.PIVOT_POS;
-                    skipCurrentPassThruState = false;
+                    currentPassThruState = passThruState.FRONT_PIVOT;
                     break;
-                case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= RobotConfig.FRONT_TO_PIVOT_TIME) || skipCurrentPassThruState || currentLiftPos >= RobotConfig.MINIMUM_PIVOT_HEIGHT) {
+                case FRONT_PIVOT:
+                    if (passThruTimer.seconds() >= RobotConfig.FRONT_PIVOT_TIME) {
+                        pivotIsFront = false;
                         passThruTimer.reset();
                         currentPassThruState = passThruState.PIVOTING;
-                        pivotIsFront = false;
-                        skipCurrentPassThruState = false;
                     }
                     break;
                 case PIVOTING:
-                    if ((passThruTimer.seconds() >= RobotConfig.PIVOTING_TO_BACK_TIME) || skipCurrentPassThruState) {
+                    if (passThruTimer.seconds() >= RobotConfig.PIVOTING_TIME) {
                         passThruTimer.reset();
-                        currentPassThruState = passThruState.MOVING_TO_BACK;
                         currentPassThruPos = passThruPos.BACK;
-                        pivotIsFront = false;
-                        skipCurrentPassThruState = false;
+                        currentPassThruState = passThruState.BACK_PIVOT;
                     }
                     break;
-                case MOVING_TO_BACK:
-                    if ((passThruTimer.seconds() >= RobotConfig.PIVOT_TO_BACK_TIME) || skipCurrentPassThruState) {
-                        passThruTimer.reset();
-                        passThruIsMoving = false;
-                        currentPassThruState = passThruState.IN_BACK;
+                case BACK_PIVOT:
+                    if (passThruTimer.seconds() >= RobotConfig.BACK_PIVOT_TIME) {
                         passThruInFront = false;
-                        pivotIsFront = false;
-                        skipCurrentPassThruState = false;
+                        passThruIsMoving = false;
+                        passThruTimer.reset();
+                        currentPassThruState = passThruState.BACK;
                     }
-                    break;
-                default:
-                    currentPassThruState = passThruState.IN_FRONT;
                     break;
             }
         } else {
             switch (currentPassThruState) {
-                case IN_BACK:
+                default:
+                case FRONT:
+                case BACK:
                     passThruTimer.reset();
-                    skipCurrentPassThruState = false;
-                    pivotIsFront = false;
-                    passThruInFront = false;
                     break;
-                case IN_FRONT:
+                case START:
+                    passThruIsMoving = true;
                     passThruTimer.reset();
-                    skipCurrentPassThruState = false;
-                    pivotIsFront = true;
-                    passThruInFront = true;
-                    break;
-                case MOVING_TO_BACK:
-                    passThruTimer.reset();
-                    currentPassThruState = passThruState.MOVING_TO_PIVOT;
                     currentPassThruPos = passThruPos.PIVOT_POS;
-                    skipCurrentPassThruState = false;
+                    currentPassThruState = passThruState.BACK_PIVOT;
                     break;
-                case MOVING_TO_PIVOT:
-                    if ((passThruTimer.seconds() >= RobotConfig.BACK_TO_PIVOT_TIME) || skipCurrentPassThruState) {
+                case BACK_PIVOT:
+                    if (passThruTimer.seconds() >= RobotConfig.BACK_PIVOT_TIME) {
+                        pivotIsFront = true;
                         passThruTimer.reset();
                         currentPassThruState = passThruState.PIVOTING;
-                        pivotIsFront = true;
-                        skipCurrentPassThruState = false;
                     }
                     break;
                 case PIVOTING:
-                    if ((passThruTimer.seconds() >= RobotConfig.PIVOTING_TO_FRONT_TIME) || skipCurrentPassThruState) {
+                    if (passThruTimer.seconds() >= RobotConfig.PIVOTING_TIME) {
                         passThruTimer.reset();
-                        currentPassThruState = passThruState.MOVING_TO_FRONT;
                         currentPassThruPos = passThruPos.FRONT;
-                        pivotIsFront = true;
-                        skipCurrentPassThruState = false;
+                        currentPassThruState = passThruState.FRONT_PIVOT;
                     }
                     break;
-                case MOVING_TO_FRONT:
-                    if ((passThruTimer.seconds() >= RobotConfig.PIVOT_TO_FRONT_TIME) || (currentLiftPos >= RobotConfig.MINIMUM_PIVOT_HEIGHT) || skipCurrentPassThruState) {
-                        passThruTimer.reset();
-                        passThruIsMoving = false;
-                        currentPassThruState = passThruState.IN_FRONT;
+                case FRONT_PIVOT:
+                    if (passThruTimer.seconds() >= RobotConfig.FRONT_PIVOT_TIME) {
                         passThruInFront = true;
-                        pivotIsFront = true;
-                        skipCurrentPassThruState = false;
+                        passThruIsMoving = false;
+                        passThruTimer.reset();
+                        currentPassThruState = passThruState.FRONT;
                     }
-                    break;
-                default:
-                    currentPassThruState = passThruState.IN_BACK;
                     break;
             }
         }
@@ -527,25 +508,20 @@ public class PowerplayScorer {
     }
 
     public void triggerPassThru () {
-        if ((currentPassThruState != passThruState.IN_FRONT) && (currentPassThruState != passThruState.IN_BACK)) {
+        if ((currentPassThruState != passThruState.FRONT) && (currentPassThruState != passThruState.BACK)) {
             passThruInFront = !passThruInFront;
-            skipCurrentPassThruState = true;
         } else {
-            passThruIsMoving = true;
-            passThruTimer.reset();
-            currentPassThruState = passThruState.MOVING_TO_PIVOT;
-            currentPassThruPos = passThruPos.PIVOT_POS;
-            skipCurrentPassThruState = false;
+            currentPassThruState = passThruState.START;
         }
     }
 
     public void togglePassThru () {
-        if (currentPassThruState != passThruState.IN_FRONT) {
+        if (currentPassThruState != passThruState.FRONT) {
             currentPassThruPos = passThruPos.FRONT;
-            currentPassThruState = passThruState.IN_FRONT;
+            currentPassThruState = passThruState.FRONT;
         } else {
             currentPassThruPos = passThruPos.BACK;
-            currentPassThruState = passThruState.IN_BACK;
+            currentPassThruState = passThruState.BACK;
         }
     }
 

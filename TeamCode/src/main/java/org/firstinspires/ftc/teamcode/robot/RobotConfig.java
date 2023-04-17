@@ -54,7 +54,6 @@ public class RobotConfig {
 
     public static double LIFT_TICKS_PER_INCH = 0.03168725;
 
-    public static double LIFT_RESET_VELOCITY = -0.2;
     public static double PRECISION_MODE_SCALE = 0.3;
 
     public static double CLAW_CLOSED_ANGLE = 165;
@@ -67,22 +66,15 @@ public class RobotConfig {
     public static double PIVOT_FRONT_ANGLE = 198;
     public static double PIVOT_BACK_ANGLE = 2;
 
-    public static double PASS_RIGHT_FRONT_ANGLE = 5;
-    public static double PASS_RIGHT_BACK_ANGLE = 197;
+    public static double PASS_FRONT_ANGLE = 5;
+    public static double PASS_FRONT_TILT_ANGLE = 5;
+    public static double PASS_PIVOT_ANGLE = 45;
+    public static double PASS_BACK_ANGLE = 197;
+    public static double PASS_BACK_TILT_ANGLE = 197;
 
-    public static double PASS_LEFT_FRONT_ANGLE = 225;
-    public static double PASS_LEFT_BACK_ANGLE = 25;
-
-    public static double PASS_RIGHT_PIVOT_ANGLE = 45;
-    public static double PASS_LEFT_PIVOT_ANGLE = 185;
-
-    public static double FRONT_TO_PIVOT_TIME = 0.1; // time between lifting claw and pivoting
-    public static double PIVOTING_TO_BACK_TIME = 0.65; // time between starting pivoting and moving to back
-    public static double PIVOT_TO_BACK_TIME = 0.2; // time between starting to move to the back and reaching the back
-
-    public static double BACK_TO_PIVOT_TIME = 0.55; //time between moving from back to pivot position
-    public static double PIVOTING_TO_FRONT_TIME = 0.45; // time from starting pivoting to moving down
-    public static double PIVOT_TO_FRONT_TIME = 0.1; // time it takes to get from pivot position to front position
+    public static double FRONT_PIVOT_TIME = 0.1;
+    public static double PIVOTING_TIME = 0.65;
+    public static double BACK_PIVOT_TIME = 0.2;
 
     public static double fx = 578.272;
     public static double fy = 578.272;
