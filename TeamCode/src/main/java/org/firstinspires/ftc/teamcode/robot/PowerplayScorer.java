@@ -300,6 +300,7 @@ public class PowerplayScorer {
     }
 
     public void setTargetLiftPos (liftPos height) {
+        clawIsTilted = false;
         switch (height){
             case FLOOR:
                 targetLiftPos = RobotConfig.HEIGHT_FLOOR;
