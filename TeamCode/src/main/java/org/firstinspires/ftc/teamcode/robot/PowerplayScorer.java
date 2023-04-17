@@ -300,6 +300,7 @@ public class PowerplayScorer {
     }
 
     public void setTargetLiftPos (liftPos height) {
+        boolean tilt = false;
         switch (height){
             case FLOOR:
                 targetLiftPos = RobotConfig.HEIGHT_FLOOR;
@@ -322,18 +323,22 @@ public class PowerplayScorer {
                 targetLiftPosName = liftPos.FIVE.name();
                 break;
             case LOW:
+                tilt = true;
                 targetLiftPos = RobotConfig.HEIGHT_LOW;
                 targetLiftPosName = liftPos.LOW.name();
                 break;
             case MED:
+                tilt = true;
                 targetLiftPos = RobotConfig.HEIGHT_MEDIUM;
                 targetLiftPosName = liftPos.MED.name();
                 break;
             case TALL:
+                tilt = true;
                 targetLiftPos = RobotConfig.HEIGHT_TALL;
                 targetLiftPosName = liftPos.TALL.name();
                 break;
         }
+        clawIsTilted = tilt;
         updateLiftProfile();
     }
 
