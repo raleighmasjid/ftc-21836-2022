@@ -60,6 +60,11 @@ public class RobotConfig {
     public static double CLAW_PASS_ANGLE = 140;
     public static double CLAW_OPEN_ANGLE = 115;
 
+    public static double ARM_L_DOWN_ANGLE = 0;
+    public static double ARM_L_UP_ANGLE = 0;
+    public static double ARM_R_DOWN_ANGLE = 0;
+    public static double ARM_R_UP_ANGLE = 0;
+
     public static double TIME_CLAW = 0.3;
     public static double TIME_CLAW_DROP = 0.0;
 

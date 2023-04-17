@@ -33,6 +33,8 @@ public class PowerplayScorer {
     private SimpleServo pivotServo;
     private SimpleServo passThruServoR;
     private SimpleServo passThruServoL;
+    private SimpleServo coneArmR;
+    private SimpleServo coneArmL;
     private PIDFController liftController;
     private MotionProfile liftProfile;
     private MotionState liftState;
@@ -71,6 +73,8 @@ public class PowerplayScorer {
         pivotServo = new SimpleServo(hw, "claw pivot",0,300);
         passThruServoR = new SimpleServo(hw, "passthrough 1",0,300);
         passThruServoL = new SimpleServo(hw, "passthrough 2",0,300);
+        coneArmR = new SimpleServo(hw, "arm right",0,300);
+        coneArmL = new SimpleServo(hw, "arm left",0,300);
 
         lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, MAX_RPM);
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
@@ -522,6 +526,16 @@ public class PowerplayScorer {
         } else {
             currentPassThruPos = passThruPos.BACK;
             currentPassThruState = passThruState.BACK;
+        }
+    }
+
+    public void runConeArms (boolean down) {
+        if (down) {
+            coneArmL.turnToAngle(RobotConfig.ARM_L_DOWN_ANGLE);
+            coneArmR.turnToAngle(RobotConfig.ARM_R_DOWN_ANGLE);
+        } else {
+            coneArmL.turnToAngle(RobotConfig.ARM_L_UP_ANGLE);
+            coneArmR.turnToAngle(RobotConfig.ARM_R_UP_ANGLE);
         }
     }
 
