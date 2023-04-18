@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomous.opmode;
+package org.firstinspires.ftc.teamcode.autonomous.tuning;
 
 import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_RPM;
 import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.RUN_USING_ENCODER;
@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
-import org.firstinspires.ftc.teamcode.autonomous.AutonMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.LoggingUtil;
 import org.firstinspires.ftc.teamcode.util.RegressionUtil;
 

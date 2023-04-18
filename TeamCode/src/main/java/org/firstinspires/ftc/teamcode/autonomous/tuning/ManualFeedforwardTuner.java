@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomous.opmode;
+package org.firstinspires.ftc.teamcode.autonomous.tuning;
 
 import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_VEL;
@@ -21,7 +21,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.autonomous.AutonMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.AutonMecanumDrive;
 
 import java.util.Objects;
 

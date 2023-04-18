@@ -1,4 +1,16 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.robot;
+
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.kV;
 
 import androidx.annotation.NonNull;
 
@@ -39,18 +51,6 @@ import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_ANG_ACCEL;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.kV;
 
 /*
  * Simple mecanum drive hardware implementation for REV hardware.

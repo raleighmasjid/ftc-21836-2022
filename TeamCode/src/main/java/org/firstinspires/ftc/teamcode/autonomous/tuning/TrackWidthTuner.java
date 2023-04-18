@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomous.opmode;
+package org.firstinspires.ftc.teamcode.autonomous.tuning;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.MovingStatistics;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.teamcode.autonomous.DriveConstants;
-import org.firstinspires.ftc.teamcode.autonomous.AutonMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.AutonMecanumDrive;
 
 /*
  * This routine determines the effective track width. The procedure works by executing a point turn

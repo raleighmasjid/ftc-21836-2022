@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.autonomous.AutonMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.autonomous.DriveConstants;
 import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
