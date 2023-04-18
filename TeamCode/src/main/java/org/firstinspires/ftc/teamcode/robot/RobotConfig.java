@@ -17,7 +17,6 @@ public class RobotConfig {
     public static double STAGES_FOUR = 28.8;
     public static double STAGES_THREE = 19.2;
     public static double STAGES_TWO = 9.6;
-    public static double MINIMUM_PIVOT_HEIGHT = 3.325;
     // inches per second
     public static double LIFT_kG_FOUR = 0.075;
     public static double LIFT_kG_THREE = 0.055;
@@ -66,7 +65,6 @@ public class RobotConfig {
     public static double ARM_R_UP_ANGLE = 0;
 
     public static double TIME_CLAW = 0.3;
-    public static double TIME_CLAW_DROP = 0.0;
 
     public static double PIVOT_FRONT_ANGLE = 198;
     public static double PIVOT_BACK_ANGLE = 2;

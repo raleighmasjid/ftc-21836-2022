@@ -57,14 +57,12 @@ public class PowerplayScorer {
     private String targetLiftPosName;
     private static ElapsedTime passThruTimer;
     private static ElapsedTime liftClawTimer;
-    private static ElapsedTime dropClawTimer;
     public boolean clawIsOpen;
     public boolean passThruIsMoving;
     private boolean passThruInFront;
     private boolean pivotIsFront;
     public boolean useLiftPIDF;
     private boolean clawHasLifted;
-    private boolean clawHasDropped;
     public boolean clawIsTilted;
 
     public void init (HardwareMap hw) {
@@ -140,7 +138,6 @@ public class PowerplayScorer {
         lift_motor3.setInverted(true);
 
         clawHasLifted = true;
-        clawHasDropped = true;
         useLiftPIDF = true;
         pivotIsFront = true;
         passThruInFront = true;
@@ -152,8 +149,6 @@ public class PowerplayScorer {
         passThruTimer.reset();
         liftClawTimer = new ElapsedTime();
         liftClawTimer.reset();
-        dropClawTimer = new ElapsedTime();
-        dropClawTimer.reset();
         liftProfileTimer = new ElapsedTime();
         liftProfileTimer.reset();
         liftDerivTimer = new ElapsedTime();
