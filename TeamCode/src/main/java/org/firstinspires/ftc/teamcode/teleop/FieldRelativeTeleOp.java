@@ -178,8 +178,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.LED1red.setState(true);
                 scorer.LED2red.setState(true);
             } else {
-                if (control2LShoulder.isDown()) myTelemetry.addData("Robot is in", "stack heights mode");
-                else                            myTelemetry.addData("Robot is in", "junction heights mode");
+                myTelemetry.addData("Robot is in", (control2LShoulder.isDown()) ? "stack heights mode" : "junction heights mode");
                 scorer.LED1green.setState(true);
                 scorer.LED2green.setState(true);
                 scorer.LED1red.setState(false);
