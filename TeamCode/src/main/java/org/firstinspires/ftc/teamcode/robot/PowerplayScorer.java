@@ -544,10 +544,6 @@ public class PowerplayScorer {
     }
 
     public void printTelemetry (MultipleTelemetry myTelemetry) {
-        myTelemetry.addData("Limit switch", (limitSwitch.getState()) ? "is not triggered" : "is triggered");
-        myTelemetry.addLine();
-        myTelemetry.addData("Claw is", (clawIsOpen) ? "open" : "closed");
-        myTelemetry.addLine();
         myTelemetry.addData("Lift current position (in)", currentLiftPos);
         myTelemetry.addData("Lift profile position (in)", liftState.getX());
         myTelemetry.addData("Lift target position (name)", targetLiftPosName);
@@ -560,7 +556,5 @@ public class PowerplayScorer {
         myTelemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         myTelemetry.addLine();
         myTelemetry.addData("Lift current jerk (in/s^3)", currentLiftJerk);
-        myTelemetry.addLine();
-        myTelemetry.addData("Passthrough status", currentPassThruState.name());
     }
 }
