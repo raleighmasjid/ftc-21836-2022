@@ -535,18 +535,18 @@ public class PowerplayScorer {
         }
     }
 
-    public void printTelemetry (MultipleTelemetry myTelemetry) {
-        myTelemetry.addData("Lift current position (in)", currentLiftPos);
-        myTelemetry.addData("Lift profile position (in)", liftState.getX());
-        myTelemetry.addData("Lift target position (name)", targetLiftPosName);
-        myTelemetry.addLine();
-        myTelemetry.addData("Lift position error (in)", liftController.getCurrentFilterEstimate());
-        myTelemetry.addLine();
-        myTelemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
-        myTelemetry.addData("Lift profile velocity (in/s)", liftState.getV());
-        myTelemetry.addLine();
-        myTelemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
-        myTelemetry.addLine();
-        myTelemetry.addData("Lift current jerk (in/s^3)", currentLiftJerk);
+    public void printTelemetry (MultipleTelemetry telemetry) {
+        telemetry.addData("Lift current position (in)", currentLiftPos);
+        telemetry.addData("Lift profile position (in)", liftState.getX());
+        telemetry.addData("Lift target position (name)", targetLiftPosName);
+        telemetry.addLine();
+        telemetry.addData("Lift position error (in)", liftController.getCurrentFilterEstimate());
+        telemetry.addLine();
+        telemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
+        telemetry.addData("Lift profile velocity (in/s)", liftState.getV());
+        telemetry.addLine();
+        telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
+        telemetry.addLine();
+        telemetry.addData("Lift current jerk (in/s^3)", currentLiftJerk);
     }
 }
