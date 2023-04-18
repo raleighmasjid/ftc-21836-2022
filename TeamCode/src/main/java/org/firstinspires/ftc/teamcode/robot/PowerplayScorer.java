@@ -358,12 +358,8 @@ public class PowerplayScorer {
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
             new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
             new MotionState(targetLiftPos, 0, 0, 0),
-            goingDown?
-                    RobotConfig.LIFT_MAX_DOWN_VELO:
-                    RobotConfig.LIFT_MAX_UP_VELO,
-            goingDown?
-                    RobotConfig.LIFT_MAX_DOWN_ACCEL:
-                    RobotConfig.LIFT_MAX_UP_ACCEL,
+            goingDown? RobotConfig.LIFT_MAX_DOWN_VELO: RobotConfig.LIFT_MAX_UP_VELO,
+            goingDown? RobotConfig.LIFT_MAX_DOWN_ACCEL: RobotConfig.LIFT_MAX_UP_ACCEL,
             RobotConfig.LIFT_MAX_JERK
         );
 
@@ -505,8 +501,7 @@ public class PowerplayScorer {
     }
 
     public void runPivot () {
-        if (pivotIsFront) pivotServo.turnToAngle(RobotConfig.PIVOT_FRONT_ANGLE);
-        else pivotServo.turnToAngle(RobotConfig.PIVOT_BACK_ANGLE);
+        pivotServo.turnToAngle(pivotIsFront? RobotConfig.PIVOT_FRONT_ANGLE: RobotConfig.PIVOT_BACK_ANGLE);
     }
 
     public void triggerPassThru () {
@@ -526,13 +521,8 @@ public class PowerplayScorer {
     }
 
     public void runConeArms (boolean down) {
-        if (down) {
-            coneArmL.turnToAngle(RobotConfig.ARM_L_DOWN_ANGLE);
-            coneArmR.turnToAngle(RobotConfig.ARM_R_DOWN_ANGLE);
-        } else {
-            coneArmL.turnToAngle(RobotConfig.ARM_L_UP_ANGLE);
-            coneArmR.turnToAngle(RobotConfig.ARM_R_UP_ANGLE);
-        }
+        coneArmL.turnToAngle(down? RobotConfig.ARM_L_DOWN_ANGLE: RobotConfig.ARM_L_UP_ANGLE);
+        coneArmR.turnToAngle(down? RobotConfig.ARM_R_DOWN_ANGLE: RobotConfig.ARM_R_UP_ANGLE);
     }
 
     public void printTelemetry (MultipleTelemetry telemetry) {
