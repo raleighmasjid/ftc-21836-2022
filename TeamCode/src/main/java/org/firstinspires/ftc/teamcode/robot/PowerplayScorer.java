@@ -64,14 +64,12 @@ public class PowerplayScorer {
             currentLiftPos,
             targetLiftPos;
     private String targetLiftPosName;
-    public boolean
-            clawIsOpen,
-            passThruIsMoving,
-            useLiftPIDF,
-            clawIsTilted;
     private boolean
+            clawIsOpen,
             clawHasLifted,
+            clawIsTilted,
             pivotIsFront,
+            passThruIsMoving,
             passThruInFront;
 
     public void init (HardwareMap hw) {
@@ -147,7 +145,6 @@ public class PowerplayScorer {
         lift_motor3.setInverted(true);
 
         clawHasLifted = true;
-        useLiftPIDF = true;
         pivotIsFront = true;
         passThruInFront = true;
         passThruIsMoving = false;
@@ -388,7 +385,8 @@ public class PowerplayScorer {
     }
 
     public void readLiftPos () {
-        double  lastLiftPos = currentLiftPos,
+        double
+                lastLiftPos = currentLiftPos,
                 lastLiftVelo = currentLiftVelo,
                 lastLiftAccel = currentLiftAccel,
 
@@ -433,10 +431,8 @@ public class PowerplayScorer {
 
         if (liftController.atTargetPosition(currentLiftPos)) liftController.reset();
 
-        if (useLiftPIDF) {
-            updateLiftGains();
-            runLift(liftController.update(currentLiftPos));
-        }
+        updateLiftGains();
+        runLift(liftController.update(currentLiftPos));
     }
 
     public void runLift (double veloCommand) {
@@ -457,8 +453,16 @@ public class PowerplayScorer {
         return veloCommand;
     }
 
+    public void toggleTilt () {
+        clawIsTilted ^= true;
+    }
+
     public void toggleClaw () {
-        clawIsOpen = !clawIsOpen;
+        clawIsOpen ^= true;
+    }
+
+    public void triggerClaw () {
+        if (clawIsOpen) liftClaw(); else dropClaw();
     }
 
     public void runClaw () {
@@ -470,7 +474,7 @@ public class PowerplayScorer {
 
         if ((liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) && !clawHasLifted) {
             setTargetLiftPos(Math.min(
-                    currentLiftPos + ((currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) ? 6 : 2), 
+                    currentLiftPos + ((currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE)? 6: 2),
                     RobotConfig.HEIGHT_TALL
             ));
             liftClawTimer.reset();
@@ -497,7 +501,7 @@ public class PowerplayScorer {
     }
 
     public void togglePivot () {
-        pivotIsFront = !pivotIsFront;
+        pivotIsFront ^= true;
     }
 
     public void runPivot () {
@@ -505,9 +509,8 @@ public class PowerplayScorer {
     }
 
     public void triggerPassThru () {
-        if ((currentPassThruState != passThruState.FRONT) && (currentPassThruState != passThruState.BACK)) {
-            passThruInFront = !passThruInFront;
-        } else currentPassThruState = passThruState.START;
+        if ((currentPassThruState != passThruState.FRONT) && (currentPassThruState != passThruState.BACK)) passThruInFront ^= true;
+        else currentPassThruState = passThruState.START;
     }
 
     public void togglePassThru () {

@@ -116,8 +116,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             if (control2RShoulder.wasJustPressed()) {
                 if (useOverrideMode) scorer.setTargetLiftPos(scorer.getCurrentLiftPos());
-                useOverrideMode = !useOverrideMode;
-                scorer.useLiftPIDF = !scorer.useLiftPIDF;
+                useOverrideMode ^= true;
             }
 
             if (useOverrideMode) {
@@ -129,7 +128,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if (control2Y.wasJustPressed()) scorer.togglePassThru();
 
-                if (control2Up.wasJustPressed()) scorer.clawIsTilted = !scorer.clawIsTilted;
+                if (control2Up.wasJustPressed()) scorer.toggleTilt();
 
                 scorer.runLift(control2LeftY);
             } else {
@@ -149,10 +148,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if (control2Y.wasJustPressed()) scorer.triggerPassThru();
 
-                if (control2B.wasJustPressed()) {
-                    if (scorer.clawIsOpen) scorer.liftClaw();
-                    else scorer.dropClaw();
-                }
+                if (control2B.wasJustPressed()) scorer.triggerClaw();
 
                 scorer.runLiftToPos();
                 scorer.runPassThruStates();
