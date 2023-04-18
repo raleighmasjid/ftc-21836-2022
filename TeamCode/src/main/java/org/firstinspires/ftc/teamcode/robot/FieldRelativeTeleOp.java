@@ -38,30 +38,26 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         GamepadEx Gamepad1 = new GamepadEx(gamepad1);
         GamepadEx Gamepad2 = new GamepadEx(gamepad2);
 
-        ButtonReader control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A); // cone-flipping arms
-        ButtonReader control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B); // claw
-        ButtonReader control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X); // pivot
-        ButtonReader control2Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); // passthrough
+        ButtonReader
+                control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A), // cone-flipping arms
+                control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B), // claw
+                control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X), // pivot
+                control2Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y), // passthrough
 
-        ButtonReader control2LShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.LEFT_BUMPER); // stack heights / lift reset
-        ButtonReader control2RShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.RIGHT_BUMPER); // override-automated mode
+                control2LShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.LEFT_BUMPER), // stack heights / lift reset
+                control2RShoulder = new ButtonReader(Gamepad2, GamepadKeys.Button.RIGHT_BUMPER), // override-automated mode
 
-        ButtonReader control1Up = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_UP);
-        ButtonReader control1Left = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_LEFT);
-        ButtonReader control1Right = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_RIGHT);
-        ButtonReader control1Down = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_DOWN);
+                control1Up = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_UP),
+                control1Left = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_LEFT),
+                control1Right = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_RIGHT),
+                control1Down = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_DOWN),
 
-        ButtonReader control2Up = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_UP);
-        ButtonReader control2Left = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_LEFT);
-        ButtonReader control2Right = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_RIGHT);
-        ButtonReader control2Down = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_DOWN);
+                control2Up = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_UP),
+                control2Left = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_LEFT),
+                control2Right = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_RIGHT),
+                control2Down = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_DOWN);
 
-        double control1LeftY;
-        double control1LeftX;
-        double control1RightX;
-        double control2LeftY;
-
-        double precisionScale;
+        double control1LeftY, control1LeftX, control1RightX, control2LeftY, precisionScale;
         boolean useOverrideMode = false;
         
         drivetrain.setRotation(HeadingHolder.getHeading());
@@ -109,8 +105,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             else if (control1Right.wasJustPressed()) drivetrain.setRotation(270.0);
 
             // Precision mode driving triggers
-            precisionScale = (Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) ?
-                    RobotConfig.PRECISION_MODE_SCALE :
+            precisionScale = Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)?
+                    RobotConfig.PRECISION_MODE_SCALE:
                     (RobotConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1
             ;
 
@@ -169,19 +165,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             //everything below is telemetry
-            if (useOverrideMode) {
-                myTelemetry.addData("Robot is in", "manual override mode");
-                scorer.LED1green.setState(false);
-                scorer.LED2green.setState(false);
-                scorer.LED1red.setState(true);
-                scorer.LED2red.setState(true);
-            } else {
-                myTelemetry.addData("Robot is in", (control2LShoulder.isDown()) ? "stack heights mode" : "junction heights mode");
-                scorer.LED1green.setState(true);
-                scorer.LED2green.setState(true);
-                scorer.LED1red.setState(false);
-                scorer.LED2red.setState(false);
-            }
+            myTelemetry.addData("Robot is in", useOverrideMode? "manual override mode" : "automated mode");
+            scorer.LED1green.setState(!useOverrideMode);
+            scorer.LED2green.setState(!useOverrideMode);
+            scorer.LED1red.setState(useOverrideMode);
+            scorer.LED2red.setState(useOverrideMode);
             myTelemetry.addLine();
             scorer.printTelemetry(myTelemetry);
             myTelemetry.update();

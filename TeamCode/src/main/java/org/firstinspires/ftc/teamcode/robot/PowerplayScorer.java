@@ -26,44 +26,53 @@ import org.firstinspires.ftc.teamcode.control.PIDFController;
 
 public class PowerplayScorer {
 
-    private MotorEx lift_motor1;
-    private MotorEx lift_motor2;
-    private MotorEx lift_motor3;
-    private SimpleServo clawServo;
-    private SimpleServo pivotServo;
-    private SimpleServo passThruServoR;
-    private SimpleServo passThruServoL;
-    private SimpleServo coneArmR;
-    private SimpleServo coneArmL;
+    private MotorEx
+            lift_motor1,
+            lift_motor2,
+            lift_motor3;
+    private SimpleServo
+            clawServo,
+            pivotServo,
+            passThruServoR,
+            passThruServoL,
+            coneArmR,
+            coneArmL;
     private PIDFController liftController;
     private MotionProfile liftProfile;
     private MotionState liftState;
-    private ElapsedTime liftProfileTimer;
-    private ElapsedTime liftDerivTimer;
-    public DigitalChannel limitSwitch;
-    public DigitalChannel LED1red;
-    public DigitalChannel LED1green;
-    public DigitalChannel LED2red;
-    public DigitalChannel LED2green;
-    private double lastTimestamp;
-    private LowPassFilter jerkFilter;
-    private LowPassFilter accelFilter;
-    private LowPassFilter veloFilter;
-    private double currentLiftJerk;
-    private double currentLiftAccel;
-    private double currentLiftVelo;
-    private double currentLiftPos;
-    private double targetLiftPos;
+    private ElapsedTime
+            liftProfileTimer,
+            liftDerivTimer;
+    private static ElapsedTime
+            passThruTimer,
+            liftClawTimer;
+    public DigitalChannel
+            limitSwitch,
+            LED1red,
+            LED1green,
+            LED2red,
+            LED2green;
+    private LowPassFilter
+            jerkFilter,
+            accelFilter,
+            veloFilter;
+    private double
+            lastTimestamp,
+            currentLiftJerk,
+            currentLiftAccel,
+            currentLiftVelo,
+            currentLiftPos,
+            targetLiftPos;
     private String targetLiftPosName;
-    private static ElapsedTime passThruTimer;
-    private static ElapsedTime liftClawTimer;
-    public boolean clawIsOpen;
-    public boolean passThruIsMoving;
-    private boolean passThruInFront;
-    private boolean pivotIsFront;
-    public boolean useLiftPIDF;
-    private boolean clawHasLifted;
-    public boolean clawIsTilted;
+    public boolean
+            clawIsOpen,
+            passThruIsMoving,
+            useLiftPIDF,
+            clawIsTilted;
+    private boolean
+            clawHasLifted,
+            pivotIsFront,
+            passThruInFront;
 
     public void init (HardwareMap hw) {
 
@@ -383,12 +392,12 @@ public class PowerplayScorer {
     }
 
     public void readLiftPos () {
-        double lastLiftPos = currentLiftPos;
-        double lastLiftVelo = currentLiftVelo;
-        double lastLiftAccel = currentLiftAccel;
+        double  lastLiftPos = currentLiftPos,
+                lastLiftVelo = currentLiftVelo,
+                lastLiftAccel = currentLiftAccel,
 
-        double currentTimeStamp = liftDerivTimer.seconds();
-        double dt = currentTimeStamp - lastTimestamp;
+                currentTimeStamp = liftDerivTimer.seconds(),
+                dt = currentTimeStamp - lastTimestamp;
         lastTimestamp = currentTimeStamp;
         if (dt == 0) dt = 0.002;
 
@@ -457,13 +466,11 @@ public class PowerplayScorer {
     }
 
     public void runClaw () {
-        if (!clawIsOpen){
-            clawServo.turnToAngle(RobotConfig.CLAW_CLOSED_ANGLE);
-        } else if (passThruIsMoving) {
-            clawServo.turnToAngle(RobotConfig.CLAW_PASS_ANGLE);
-        } else {
-            clawServo.turnToAngle(RobotConfig.CLAW_OPEN_ANGLE);
-        }
+        double angle;
+        if (!clawIsOpen)            angle = RobotConfig.CLAW_CLOSED_ANGLE;
+        else if (passThruIsMoving)  angle = RobotConfig.CLAW_PASS_ANGLE;
+        else                        angle = RobotConfig.CLAW_OPEN_ANGLE;
+        clawServo.turnToAngle(angle);
 
         if ((liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) && !clawHasLifted) {
             setTargetLiftPos(Math.min(
@@ -505,9 +512,7 @@ public class PowerplayScorer {
     public void triggerPassThru () {
         if ((currentPassThruState != passThruState.FRONT) && (currentPassThruState != passThruState.BACK)) {
             passThruInFront = !passThruInFront;
-        } else {
-            currentPassThruState = passThruState.START;
-        }
+        } else currentPassThruState = passThruState.START;
     }
 
     public void togglePassThru () {

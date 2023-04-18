@@ -15,18 +15,14 @@ import org.firstinspires.ftc.teamcode.autonomous.DriveConstants;
 
 public class TeleOpMecanumDrive {
     HardwareMap hw;
-    public MotorEx motor_frontLeft;
-    public MotorEx motor_frontRight;
-    public MotorEx motor_backLeft;
-    public MotorEx motor_backRight;
+    public MotorEx motor_frontLeft, motor_frontRight, motor_backLeft, motor_backRight;
     public IMU imu;
 
     public MecanumDrive mecanumDrivetrain;
 
     private static final double TICKS_PER_REV = DriveConstants.TICKS_PER_REV;
 
-    public double rotationOffset = 0.0;
-    public double rotYaw = 0.0;
+    public double rotationOffset = 0.0, rotYaw = 0.0;
 
     // ftclib field-centric mecanum drive code:
     public void driveFieldCentric (double leftX, double leftY, double rightX){
@@ -38,16 +34,18 @@ public class TeleOpMecanumDrive {
     public double getIMURotation(){
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
+
     public double getOffsetRotation(){
         return getIMURotation() - rotationOffset;
     }
+
     public void resetRotation(){
         rotationOffset = getIMURotation();
     }
+    
     public void setRotation(double startAngle) {
         rotationOffset = getIMURotation() - (startAngle);
     }
-
 
     public void init(HardwareMap hw) {
         // cache the HardwareMap
