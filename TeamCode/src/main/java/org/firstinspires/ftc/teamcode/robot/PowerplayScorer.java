@@ -343,20 +343,18 @@ public class PowerplayScorer {
     }
 
     private void updateLiftProfile () {
-        double maxV = RobotConfig.LIFT_MAX_UP_VELO;
-        double maxA = RobotConfig.LIFT_MAX_UP_ACCEL;
-        
         if (targetLiftPos == currentLiftPos) targetLiftPos += 0.25;
-        else if (targetLiftPos < currentLiftPos) {
-            maxV = RobotConfig.LIFT_MAX_DOWN_VELO;
-            maxA = RobotConfig.LIFT_MAX_DOWN_ACCEL;
-        }
+        boolean goingDown = targetLiftPos < currentLiftPos;
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
             new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
             new MotionState(targetLiftPos, 0, 0, 0),
-            maxV,
-            maxA,
+            goingDown?
+                    RobotConfig.LIFT_MAX_DOWN_VELO:
+                    RobotConfig.LIFT_MAX_UP_VELO,
+            goingDown?
+                    RobotConfig.LIFT_MAX_DOWN_ACCEL:
+                    RobotConfig.LIFT_MAX_UP_ACCEL,
             RobotConfig.LIFT_MAX_JERK
         );
 
