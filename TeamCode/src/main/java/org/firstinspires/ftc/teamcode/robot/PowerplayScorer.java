@@ -473,37 +473,31 @@ public class PowerplayScorer {
         }
 
         if ((liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) && !clawHasLifted) {
-            double heightIncrease = 2;
-
-            if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) heightIncrease = 6;
-
-            setTargetLiftPos(Math.min(currentLiftPos + heightIncrease, RobotConfig.HEIGHT_TALL));
+            setTargetLiftPos(Math.min(
+                    currentLiftPos + ((currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) ? 6 : 2), 
+                    RobotConfig.HEIGHT_TALL
+            ));
             liftClawTimer.reset();
             clawHasLifted = true;
-        }
-
-        if ((dropClawTimer.seconds() >= RobotConfig.TIME_CLAW_DROP) && !clawHasDropped) {
-            clawIsOpen = true;
-            clawHasDropped = true;
         }
     }
 
     public void liftClaw () {
         clawIsOpen = false;
-        liftClawTimer.reset();
         clawHasLifted = false;
+        liftClawTimer.reset();
     }
 
     public void dropClaw () {
+        clawIsOpen = true;
+        clawIsTilted = false;
         setTargetLiftPos(liftPos.FLOOR);
-        dropClawTimer.reset();
-        clawHasDropped = false;
     }
 
     public void dropClaw (liftPos height) {
+        clawIsOpen = true;
+        clawIsTilted = false;
         setTargetLiftPos(height);
-        dropClawTimer.reset();
-        clawHasDropped = false;
     }
 
     public void togglePivot () {
