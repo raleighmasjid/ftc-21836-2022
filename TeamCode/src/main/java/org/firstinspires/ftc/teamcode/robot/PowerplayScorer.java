@@ -69,12 +69,12 @@ public class PowerplayScorer {
 
     public void init (HardwareMap hw) {
 
-        clawServo = new SimpleServo(hw,"claw right",0,300);
-        pivotServo = new SimpleServo(hw, "claw pivot",0,300);
-        passThruServoR = new SimpleServo(hw, "passthrough 1",0,300);
-        passThruServoL = new SimpleServo(hw, "passthrough 2",0,300);
-        coneArmR = new SimpleServo(hw, "arm right",0,300);
-        coneArmL = new SimpleServo(hw, "arm left",0,300);
+        clawServo = new SimpleServo(hw,"claw right",0,355);
+        pivotServo = new SimpleServo(hw, "claw pivot",0,355);
+        passThruServoR = new SimpleServo(hw, "passthrough 1",0,355);
+        passThruServoL = new SimpleServo(hw, "passthrough 2",0,355);
+        coneArmR = new SimpleServo(hw, "arm right",0,280);
+        coneArmL = new SimpleServo(hw, "arm left",0,280);
 
         lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, MAX_RPM);
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
