@@ -161,7 +161,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             //everything below is telemetry
-            myTelemetry.addData("Robot is in", useOverrideMode? "manual override mode" : "automated mode");
+            myTelemetry.addData("Robot is in", useOverrideMode?
+                    "manual override mode":
+                    control2LShoulder.isDown()?
+                            "stack heights mode":
+                            "junction heights mode"
+            );
             scorer.LED1green.setState(!useOverrideMode);
             scorer.LED2green.setState(!useOverrideMode);
             scorer.LED1red.setState(useOverrideMode);

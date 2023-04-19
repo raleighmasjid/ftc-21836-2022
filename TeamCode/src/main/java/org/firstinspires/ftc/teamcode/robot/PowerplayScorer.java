@@ -70,6 +70,7 @@ public class PowerplayScorer {
             clawIsTilted,
             pivotIsFront,
             passThruIsMoving,
+            passThruSwitched,
             passThruInFront;
 
     public void init (HardwareMap hw) {
@@ -115,13 +116,13 @@ public class PowerplayScorer {
         );
         liftController.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
         liftController.setOutputBounds(-1.0, 1.0);
-        
+
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-            new MotionState(0.0, 0.0, 0.0, 0.0),
-            new MotionState(0.0, 0.0, 0.0, 0.0),
-            RobotConfig.LIFT_MAX_UP_VELO,
-            RobotConfig.LIFT_MAX_UP_ACCEL,
-            RobotConfig.LIFT_MAX_JERK
+                new MotionState(0.0, 0.0, 0.0, 0.0),
+                new MotionState(0.0, 0.0, 0.0, 0.0),
+                RobotConfig.LIFT_MAX_UP_VELO,
+                RobotConfig.LIFT_MAX_UP_ACCEL,
+                RobotConfig.LIFT_MAX_JERK
         );
 
         veloFilter = new LowPassFilter();
@@ -150,6 +151,7 @@ public class PowerplayScorer {
         passThruIsMoving = false;
         clawIsOpen = true;
         clawIsTilted = false;
+        passThruSwitched = false;
 
         passThruTimer = new ElapsedTime();
         passThruTimer.reset();
@@ -235,6 +237,7 @@ public class PowerplayScorer {
                     currentPassThruState = passThruState.FRONT_PIVOT;
                     break;
                 case FRONT_PIVOT:
+                    if (passThruSwitched) currentPassThruPos = passThruPos.PIVOT_POS;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_FRONT_PIVOT) {
                         pivotIsFront = false;
                         passThruTimer.reset();
@@ -249,6 +252,7 @@ public class PowerplayScorer {
                     }
                     break;
                 case BACK_PIVOT:
+                    if (passThruSwitched) currentPassThruPos = passThruPos.BACK;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_BACK_PIVOT) {
                         passThruInFront = false;
                         passThruIsMoving = false;
@@ -271,6 +275,7 @@ public class PowerplayScorer {
                     currentPassThruState = passThruState.BACK_PIVOT;
                     break;
                 case BACK_PIVOT:
+                    if (passThruSwitched) currentPassThruPos = passThruPos.PIVOT_POS;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_BACK_PIVOT) {
                         pivotIsFront = true;
                         passThruTimer.reset();
@@ -285,6 +290,7 @@ public class PowerplayScorer {
                     }
                     break;
                 case FRONT_PIVOT:
+                    if (passThruSwitched) currentPassThruPos = passThruPos.FRONT;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_FRONT_PIVOT) {
                         passThruInFront = true;
                         passThruIsMoving = false;
@@ -294,6 +300,7 @@ public class PowerplayScorer {
                     break;
             }
         }
+        passThruSwitched = false;
     }
 
     public enum liftPos {
@@ -353,11 +360,11 @@ public class PowerplayScorer {
         boolean goingDown = targetLiftPos < currentLiftPos;
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-            new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
-            new MotionState(targetLiftPos, 0, 0, 0),
-            goingDown? RobotConfig.LIFT_MAX_DOWN_VELO: RobotConfig.LIFT_MAX_UP_VELO,
-            goingDown? RobotConfig.LIFT_MAX_DOWN_ACCEL: RobotConfig.LIFT_MAX_UP_ACCEL,
-            RobotConfig.LIFT_MAX_JERK
+                new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
+                new MotionState(targetLiftPos, 0, 0, 0),
+                goingDown? RobotConfig.LIFT_MAX_DOWN_VELO: RobotConfig.LIFT_MAX_UP_VELO,
+                goingDown? RobotConfig.LIFT_MAX_DOWN_ACCEL: RobotConfig.LIFT_MAX_UP_ACCEL,
+                RobotConfig.LIFT_MAX_JERK
         );
 
         liftProfileTimer.reset();
@@ -393,7 +400,7 @@ public class PowerplayScorer {
                 currentTimeStamp = liftDerivTimer.seconds(),
                 dt = currentTimeStamp - lastTimestamp;
         lastTimestamp = currentTimeStamp;
-        if (dt == 0) dt = 0.002;
+        dt = dt == 0? 0.002: dt;
 
         veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
         accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
@@ -466,11 +473,7 @@ public class PowerplayScorer {
     }
 
     public void runClaw () {
-        double angle;
-        if (!clawIsOpen)            angle = RobotConfig.CLAW_CLOSED_ANGLE;
-        else if (passThruIsMoving)  angle = RobotConfig.CLAW_PASS_ANGLE;
-        else                        angle = RobotConfig.CLAW_OPEN_ANGLE;
-        clawServo.turnToAngle(angle);
+        clawServo.turnToAngle(clawIsOpen? passThruIsMoving? RobotConfig.CLAW_PASS_ANGLE: RobotConfig.CLAW_OPEN_ANGLE: RobotConfig.CLAW_CLOSED_ANGLE);
 
         if ((liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) && !clawHasLifted) {
             setTargetLiftPos(Math.min(
@@ -509,7 +512,10 @@ public class PowerplayScorer {
     }
 
     public void triggerPassThru () {
-        if ((currentPassThruState != passThruState.FRONT) && (currentPassThruState != passThruState.BACK)) passThruInFront ^= true;
+        if ((currentPassThruState != passThruState.FRONT) && (currentPassThruState != passThruState.BACK)) {
+            passThruInFront ^= true;
+            passThruSwitched = true;
+        }
         else currentPassThruState = passThruState.START;
     }
 
