@@ -398,9 +398,8 @@ public class PowerplayScorer {
                 lastLiftAccel = currentLiftAccel,
 
                 currentTimeStamp = liftDerivTimer.seconds(),
-                dt = currentTimeStamp - lastTimestamp;
+                dt = currentTimeStamp == lastTimestamp? 0.002: currentTimeStamp - lastTimestamp;
         lastTimestamp = currentTimeStamp;
-        dt = dt == 0? 0.002: dt;
 
         veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
         accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
@@ -472,6 +471,14 @@ public class PowerplayScorer {
         if (clawIsOpen) liftClaw(); else dropClaw();
     }
 
+    public void closeClaw () {
+        clawIsOpen = false;
+    }
+
+    public void openClaw () {
+        clawIsOpen = true;
+    }
+
     public void runClaw () {
         clawServo.turnToAngle(clawIsOpen? passThruIsMoving? RobotConfig.CLAW_PASS_ANGLE: RobotConfig.CLAW_OPEN_ANGLE: RobotConfig.CLAW_CLOSED_ANGLE);
 
@@ -486,20 +493,17 @@ public class PowerplayScorer {
     }
 
     public void liftClaw () {
-        clawIsOpen = false;
-        clawHasLifted = false;
+        closeClaw();
         liftClawTimer.reset();
     }
 
     public void dropClaw () {
-        clawIsOpen = true;
-        clawIsTilted = false;
+        openClaw();
         setTargetLiftPos(liftPos.FLOOR);
     }
 
     public void dropClaw (liftPos height) {
-        clawIsOpen = true;
-        clawIsTilted = false;
+        openClaw();
         setTargetLiftPos(height);
     }
 

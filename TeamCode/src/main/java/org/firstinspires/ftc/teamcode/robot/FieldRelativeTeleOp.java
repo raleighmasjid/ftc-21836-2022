@@ -35,8 +35,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         hubs = hardwareMap.getAll(LynxModule.class);
 
 //      initializes both gamepads:
-        GamepadEx Gamepad1 = new GamepadEx(gamepad1);
-        GamepadEx Gamepad2 = new GamepadEx(gamepad2);
+        GamepadEx
+                Gamepad1 = new GamepadEx(gamepad1),
+                Gamepad2 = new GamepadEx(gamepad2);
 
         ButtonReader
                 control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A), // cone-flipping arms
@@ -57,7 +58,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 control2Right = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_RIGHT),
                 control2Down = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_DOWN);
 
-        double control1LeftY, control1LeftX, control1RightX, control2LeftY, precisionScale;
+        double
+                control1LeftY,
+                control1LeftX,
+                control1RightX,
+                control2LeftY,
+                precisionScale;
         boolean useOverrideMode = false;
         
         drivetrain.setRotation(HeadingHolder.getHeading());
