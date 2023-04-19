@@ -57,6 +57,8 @@ public class RobotConfig {
             TIME_FRONT_PIVOT = 0.1,
             TIME_PIVOTING = 0.65,
             TIME_BACK_PIVOT = 0.2,
+            TIME_LIFT_MEDIUM = 0.8,
+            TIME_LIFT_TALL = 1,
             camera_fx = 578.272,
             camera_fy = 578.272,
             camera_cx = 402.145,
