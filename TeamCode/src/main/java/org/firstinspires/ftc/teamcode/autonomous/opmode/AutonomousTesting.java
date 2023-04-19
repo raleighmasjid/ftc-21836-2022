@@ -5,21 +5,17 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.control.HeadingHolder;
-import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
-import org.firstinspires.ftc.teamcode.robot.RobotConfig;
+import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.robot.AutonMecanumDrive;
-import org.firstinspires.ftc.teamcode.autonomous.DriveConstants;
-import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
+import org.firstinspires.ftc.teamcode.robot.RobotConfig;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -93,198 +89,79 @@ public class AutonomousTesting extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         dashboard.startCameraStream(camera,0);
 
-        Vector2d stackPos = new Vector2d(59, -12.5);
-        Vector2d turnPos = new Vector2d(47, -13);
-        Vector2d medScoringPos = new Vector2d(31, -17.5);
+        boolean isRight = false;
+        double side = isRight? 1: -1;
 
-        double centerPathX = 35;
-
-        Vector2d parkingZone1 = new Vector2d(13, -12.5);
-        Vector2d parkingZone2 = new Vector2d(centerPathX, -12.5);
-        Vector2d parkingZone3 = new Vector2d(57, -12.5);
-        HeadingHolder.setHeading(90.0);
-
-        TrajectoryVelocityConstraint stackVeloCap = AutonMecanumDrive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
-        TrajectoryVelocityConstraint scoringVeloCap = AutonMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
-        TrajectoryAccelerationConstraint accelerationCap = AutonMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
+        double centerPathX = side*35;
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double scoringAngleRight = Math.toRadians(215);
 
-        double mediumScoringOffset = 0.1;
-        double liftTime = -0.8;
-        double stackApproachOffset = -0.2;
-        double firstScoringY = -24;
-        double mediumApproachOffset = -0.003;
-        double stackWait = 0.1;
+        double liftTime = 0.8;
 
-        double CLAW_CLOSING_TIME = 0.3;
-        double CLAW_OPEN_TO_DROP_TIME = 0.1;
-        double AUTON_START_DELAY = 0.16;
+        Vector2d stackPos = new Vector2d(side*59, -12.5);
+        Vector2d sideTurnPos = new Vector2d(side*46, -12.5);
+        Pose2d medScoringPos = new Pose2d(side*31, -17.5, Math.toRadians(isRight? 35: 180-35));
+        Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX()-side*24, medScoringPos.getY(), medScoringPos.getHeading());
+        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX()-side*24, sideTurnPos.getY());
+
+        Pose2d parkingZone1 = new Pose2d(side*(isRight? 12.5:57), -12.5, isRight? facingRight: facingLeft);
+        Pose2d parkingZone2 = new Pose2d(centerPathX, -12.5, parkingZone1.getHeading());
+        Pose2d parkingZone3 = new Pose2d(side*(isRight? 57:12.5), -12.5, parkingZone1.getHeading());
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drivetrain.setPoseEstimate(startPose);
 
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
-//                .addTemporalMarker(() -> {
-//                    scorer.clawIsOpen = false;
-//                })
-//                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
-                .addTemporalMarker(() -> {
-                    scorer.setTargetLiftPos(scorer.getCurrentLiftPos() + 5);
-                })
-                .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward, scoringVeloCap, accelerationCap)
-                .splineToSplineHeading(new Pose2d(centerPathX, firstScoringY, facingLeft), facingForward, scoringVeloCap, accelerationCap)
-                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
-                })
-                .lineTo(new Vector2d(31.5, firstScoringY))
-                .addTemporalMarker(() -> {
-                    scorer.dropClaw(PowerplayScorer.liftPos.FIVE);
-                })
-                .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
-                .lineTo(new Vector2d(centerPathX, firstScoringY))
-                .addTemporalMarker(() -> {
-                    scorer.triggerPassThru();
-                })
                 .setReversed(true)
-                .lineTo(parkingZone2)
-                .setTangent(facingRight)
-                .splineTo(turnPos, facingRight)
-                .splineTo(
-                        stackPos,
-                        facingRight,
-                        stackVeloCap,
-                        accelerationCap
-                )
-                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
-                    scorer.liftClaw();
-                })
-                .waitSeconds(stackWait)
-                .addTemporalMarker(() ->{
-                    scorer.triggerPassThru();
-                })
+                .lineToConstantHeading(new Vector2d(centerPathX, -24))
+                .lineTo(parkingZone2.vec())
+                .lineToSplineHeading(medScoringPos)
+                // loop below
                 .setReversed(false)
-                .splineTo(turnPos, facingLeft)
-                .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
-                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
-                })
-                .addTemporalMarker(() -> {
-                    scorer.dropClaw(PowerplayScorer.liftPos.FOUR);
-                })
-                .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
+                .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
+                .splineTo(stackPos, isRight? facingRight: facingLeft)
                 .setReversed(true)
-                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
-                    scorer.triggerPassThru();
-                })
-                .splineTo(turnPos, facingRight)
-                .splineTo(
-                        stackPos,
-                        facingRight,
-                        stackVeloCap,
-                        accelerationCap
-                )
-                .addTemporalMarker(() -> {
-                    scorer.liftClaw();
-                })
-                .waitSeconds(stackWait)
-                .addTemporalMarker(() ->{
-                    scorer.triggerPassThru();
-                })
-                .setReversed(false)
-                .splineTo(turnPos, facingLeft)
-                .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
-                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
-                })
-                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-                    scorer.dropClaw(PowerplayScorer.liftPos.THREE);
-                })
-                .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
-                .setReversed(true)
-                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
-                    scorer.triggerPassThru();
-                })
-                .splineTo(turnPos, facingRight)
-                .splineTo(
-                        new Vector2d(60, -12.5),
-                        facingRight,
-                        stackVeloCap,
-                        accelerationCap
-                )
-                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
-                    scorer.liftClaw();
-                })
-                .waitSeconds(stackWait)
-                .addTemporalMarker(() ->{
-                    scorer.triggerPassThru();
-                })
-                .setReversed(false)
-                .splineTo(turnPos, facingLeft)
-                .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
-                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
-                })
-                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-                    scorer.dropClaw(PowerplayScorer.liftPos.TWO);
-                })
-                .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
-                .setReversed(true)
-                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
-                    scorer.triggerPassThru();
-                })
-                .splineTo(turnPos, facingRight)
-                .splineTo(
-                        new Vector2d(60, -12.5),
-                        facingRight,
-                        stackVeloCap,
-                        accelerationCap
-                )
-                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
-                    scorer.liftClaw();
-                })
-                .waitSeconds(stackWait)
-                .addTemporalMarker(() ->{
-                    scorer.triggerPassThru();
-                })
-                .setReversed(false)
-                .splineTo(turnPos, facingLeft)
-                .splineTo(medScoringPos, scoringAngleRight, scoringVeloCap, accelerationCap)
-                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-                    scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
-                })
-                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-                    scorer.dropClaw();
-                })
-                .waitSeconds(CLAW_OPEN_TO_DROP_TIME)
                 .build()
                 ;
 
-        TrajectorySequence parkLeft = drivetrain.trajectorySequenceBuilder(trajectory1.end())
-                .setTangent(scoringAngleRight - facingLeft)
-                .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
-                .setTangent(facingLeft)
-                .splineTo(new Vector2d(23.5, -12), facingLeft)
-                .splineTo(parkingZone1, facingLeft)
-                .build()
+        TrajectorySequence parkLeft = isRight?
+                drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                        .splineTo(centerTurnPos, isRight? facingLeft: facingRight)
+                        .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+                        .lineToSplineHeading(parkingZone1)
+                        .build():
+                drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                        .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
+                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+                        .setReversed(false)
+                        .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
+                        .splineTo(parkingZone1.vec(), parkingZone1.getHeading())
+                        .build()
                 ;
 
         TrajectorySequence parkMiddle = drivetrain.trajectorySequenceBuilder(trajectory1.end())
-                .setTangent(scoringAngleRight - facingLeft)
-                .lineToSplineHeading(new Pose2d(35, -12.5, facingLeft))
+                .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
+                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+                .lineToSplineHeading(parkingZone2)
                 .build()
                 ;
 
-        TrajectorySequence parkRight = drivetrain.trajectorySequenceBuilder(trajectory1.end())
-                .setReversed(true)
-                .splineTo(turnPos, facingRight)
-                .splineTo(parkingZone3, facingRight)
-                .build()
+        TrajectorySequence parkRight = isRight?
+                drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                        .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
+                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+                        .setReversed(false)
+                        .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
+                        .splineTo(parkingZone3.vec(), parkingZone3.getHeading())
+                        .build():
+                drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                        .splineTo(centerTurnPos, isRight? facingLeft: facingRight)
+                        .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+                        .lineToSplineHeading(parkingZone3)
+                        .build()
                 ;
-
 
         drivetrain.followTrajectorySequenceAsync(trajectory1);
 

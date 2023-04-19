@@ -10,200 +10,46 @@ public class MeepMeep {
     public static void main(String[] args) {
         com.noahbres.meepmeep.MeepMeep meepMeep = new com.noahbres.meepmeep.MeepMeep(700);
 
-        Vector2d stackPos = new Vector2d(59, -12.5);
-        Vector2d turnPos = new Vector2d(46, -13);
-        Vector2d medScoringPos = new Vector2d(31, -17.5);
+        boolean isRight = true;
+        double side = isRight? 1: -1;
 
-        double centerPathX = 35;
+        double centerPathX = side*35;
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double scoringAngleRight = Math.toRadians(215);
-        double turnPosToStack = Math.toRadians(5);
-        double turnPosToPole = facingLeft + turnPosToStack;
 
-        double liftTime = -0.8;
-        double stackApproachOffset = -0.2;
-        double stackWait = 0;
-        double mediumApproachOffset = -0.01;
-        double postScoringWait = 0;
-        double mediumScoringOffset = 0.1;
+        double liftTime = 0.8;
 
-        double CLAW_CLOSING_TIME = 0.3;
-        double AUTON_START_DELAY = 0; //0.16
+        Vector2d stackPos = new Vector2d(side*59, -12.5);
+        Vector2d sideTurnPos = new Vector2d(side*46, -12.5);
+        Pose2d medScoringPos = new Pose2d(side*31, -17.5, Math.toRadians(isRight? 35: 180-35));
+        Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX()-side*24, medScoringPos.getY(), medScoringPos.getHeading());
+        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX()-side*24, sideTurnPos.getY());
 
-        Vector2d parkingZone1 = new Vector2d(13, -12.5);
-        Pose2d parkingZone2 = new Pose2d(35, -12.5, facingLeft);
-        Vector2d parkingZone3 = new Vector2d(57, -12.5);
+        Pose2d parkingZone1 = new Pose2d(side*(isRight? 12.5:57), -12.5, isRight? facingRight: facingLeft);
+        Pose2d parkingZone2 = new Pose2d(centerPathX, -12.5, parkingZone1.getHeading());
+        Pose2d parkingZone3 = new Pose2d(side*(isRight? 57:12.5), -12.5, parkingZone1.getHeading());
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
 
         RoadRunnerBotEntity bot1 = new DefaultBotBuilder(meepMeep)
                 .setDimensions(17, 16)
                 .setStartPose(startPose)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(58, 55, Math.toRadians(140), Math.toRadians(190), 14.25)
                 .followTrajectorySequence(drive->
                         drive.trajectorySequenceBuilder(startPose)
-//                                .addTemporalMarker(() -> {
-////                                    scorer.clawIsOpen = false;
-//                                })
-//                                .waitSeconds(CLAW_CLOSING_TIME + AUTON_START_DELAY)
-                                .addTemporalMarker(() -> {
-//                                    scorer.targetLiftPos = scorer.liftController.getSetPoint() + 150;
-                                })
-                                .splineToSplineHeading(new Pose2d(centerPathX, -53, facingLeft), facingForward)
-                                .splineToSplineHeading(new Pose2d(centerPathX, -24, facingLeft), facingForward)
-                                .splineToSplineHeading(new Pose2d(centerPathX, -15, scoringAngleRight), facingForward)
-                                .setTangent(Math.toRadians(210))
-                                .splineTo(medScoringPos, scoringAngleRight)
-                                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
-                                })
-                                .addTemporalMarker(() -> {
-//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.FIVE);
-//                                    scorer.clawIsOpen = true;
-                                })
-                                .waitSeconds(postScoringWait)
-                                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
-//                                    scorer.togglePassthrough();
-                                })
                                 .setReversed(true)
-                                .splineTo(turnPos, turnPosToStack)
-                                .splineTo(
-                                        stackPos,
-                                        facingRight
-                                )
-                                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
-//                                    scorer.liftClaw();
-                                })
-                                .waitSeconds(stackWait)
-                                .addTemporalMarker(() ->{
-//                                    scorer.togglePassthrough();
-                                })
+                                .lineToConstantHeading(new Vector2d(centerPathX, -24))
+                                .lineTo(parkingZone2.vec())
+                                .lineToSplineHeading(medScoringPos)
+                                // loop below
                                 .setReversed(false)
-                                .splineTo(turnPos, turnPosToPole)
-                                .splineTo(medScoringPos, scoringAngleRight)
-                                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
-                                })
-                                .addTemporalMarker(() -> {
-//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.FOUR);
-//                                    scorer.clawIsOpen = true;
-                                })
-                                .waitSeconds(postScoringWait)
+                                .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
+                                .splineTo(stackPos, isRight? facingRight: facingLeft)
                                 .setReversed(true)
-                                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
-//                                    scorer.togglePassthrough();
-                                })
-                                .splineTo(turnPos, turnPosToStack)
-                                .splineTo(
-                                        stackPos,
-                                        facingRight
-                                )
-                                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
-//                                    scorer.liftClaw();
-                                })
-                                .waitSeconds(stackWait)
-                                .addTemporalMarker(() ->{
-//                                    scorer.togglePassthrough();
-                                })
-                                .setReversed(false)
-                                .splineTo(turnPos, turnPosToPole)
-                                .splineTo(medScoringPos, scoringAngleRight)
-                                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
-                                })
-                                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.THREE);
-//                                    scorer.clawIsOpen = true;
-                                })
-                                .waitSeconds(postScoringWait)
-                                .setReversed(true)
-                                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
-//                                    scorer.togglePassthrough();
-                                })
-                                .splineTo(turnPos, turnPosToStack)
-                                .splineTo(
-                                        stackPos,
-                                        facingRight
-                                )
-                                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
-//                                    scorer.liftClaw();
-                                })
-                                .waitSeconds(stackWait)
-                                .addTemporalMarker(() ->{
-//                                    scorer.togglePassthrough();
-                                })
-                                .setReversed(false)
-                                .splineTo(turnPos, turnPosToPole)
-                                .splineTo(medScoringPos, scoringAngleRight)
-                                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
-                                })
-                                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.TWO);
-//                                    scorer.clawIsOpen = true;
-                                })
-                                .waitSeconds(postScoringWait)
-                                .setReversed(true)
-                                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
-//                                    scorer.togglePassthrough();
-                                })
-                                .splineTo(turnPos, turnPosToStack)
-                                .splineTo(
-                                        stackPos,
-                                        facingRight
-                                )
-                                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
-//                                    scorer.liftClaw();
-                                })
-                                .waitSeconds(stackWait)
-                                .addTemporalMarker(() ->{
-//                                    scorer.togglePassthrough();
-                                })
-                                .setReversed(false)
-                                .splineTo(turnPos, turnPosToPole)
-                                .splineTo(medScoringPos, scoringAngleRight)
-                                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
-                                })
-                                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-//                                    scorer.dropClaw();
-                                })
-                                .waitSeconds(postScoringWait)
-                                .setReversed(true)
-                                .UNSTABLE_addTemporalMarkerOffset(mediumScoringOffset, () ->{
-//                                    scorer.togglePassthrough();
-                                })
-                                .splineTo(turnPos, turnPosToStack)
-                                .splineTo(
-                                        stackPos,
-                                        facingRight
-                                )
-                                .UNSTABLE_addTemporalMarkerOffset(stackApproachOffset, () -> {
-//                                    scorer.liftClaw();
-                                })
-                                .waitSeconds(stackWait)
-                                .addTemporalMarker(() ->{
-//                                    scorer.togglePassthrough();
-                                })
-                                .setReversed(false)
-                                .splineTo(turnPos, turnPosToPole)
-                                .splineTo(medScoringPos, scoringAngleRight)
-                                .UNSTABLE_addTemporalMarkerOffset(liftTime, () -> {
-//                                    scorer.setLiftPos(PowerplayScorer.liftHeights.MED);
-                                })
-                                .UNSTABLE_addTemporalMarkerOffset(mediumApproachOffset, () -> {
-//                                    scorer.dropClaw();
-                                })
-                                .waitSeconds(postScoringWait)
-                                .setTangent(scoringAngleRight - facingLeft)
-                                .lineToSplineHeading(parkingZone2)
-                                .setTangent(facingLeft)
-                                .splineTo(new Vector2d(23.5, -12), facingLeft)
-                                .splineTo(parkingZone1, facingLeft)
+                                .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
+                                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
                                 .build()
                 )
         ;
