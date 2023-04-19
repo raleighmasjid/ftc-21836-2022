@@ -471,12 +471,8 @@ public class PowerplayScorer {
         if (clawIsOpen) liftClaw(); else dropClaw();
     }
 
-    public void closeClaw () {
-        clawIsOpen = false;
-    }
-
-    public void openClaw () {
-        clawIsOpen = true;
+    public void setClawOpen (boolean open) {
+        clawIsOpen = open;
     }
 
     public void runClaw () {
@@ -493,17 +489,17 @@ public class PowerplayScorer {
     }
 
     public void liftClaw () {
-        closeClaw();
+        clawIsOpen = false;
         liftClawTimer.reset();
     }
 
     public void dropClaw () {
-        openClaw();
+        clawIsOpen = true;
         setTargetLiftPos(liftPos.FLOOR);
     }
 
     public void dropClaw (liftPos height) {
-        openClaw();
+        clawIsOpen = true;
         setTargetLiftPos(height);
     }
 

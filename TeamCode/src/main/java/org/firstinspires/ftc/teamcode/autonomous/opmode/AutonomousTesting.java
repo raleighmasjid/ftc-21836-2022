@@ -299,7 +299,7 @@ public class AutonomousTesting extends LinearOpMode {
          * This REPLACES waitForStart!
          */
 
-        scorer.closeClaw();
+        scorer.setClawOpen(false);
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = signalSleeveDetectionPipeline.getLatestDetections();
 
