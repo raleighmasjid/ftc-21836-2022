@@ -479,13 +479,17 @@ public class PowerplayScorer {
         clawServo.turnToAngle(clawIsOpen? passThruIsMoving? RobotConfig.CLAW_PASS_ANGLE: RobotConfig.CLAW_OPEN_ANGLE: RobotConfig.CLAW_CLOSED_ANGLE);
 
         if ((liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) && !clawHasLifted) {
-            setTargetLiftPos(Math.min(
-                    currentLiftPos + ((currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE)? 6: 2),
-                    RobotConfig.HEIGHT_TALL
-            ));
+            raiseClaw();
             liftClawTimer.reset();
             clawHasLifted = true;
         }
+    }
+
+    public void raiseClaw () {
+        setTargetLiftPos(Math.min(
+                currentLiftPos + ((currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE)? 6: 2),
+                RobotConfig.HEIGHT_TALL
+        ));
     }
 
     public void liftClaw () {

@@ -19,8 +19,6 @@ public class MeepMeep {
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
 
-        double liftTime = 0.8;
-
         Vector2d stackPos = new Vector2d(side*59, -12.5);
         Vector2d sideTurnPos = new Vector2d(side*46, -12.5);
         Pose2d medScoringPos = new Pose2d(side*31, -17.5, Math.toRadians(isRight? 35: 180-35));
