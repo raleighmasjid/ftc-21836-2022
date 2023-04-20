@@ -104,7 +104,6 @@ public class AutonomousTallTesting extends LinearOpMode {
 
         Vector2d stackPos = new Vector2d(side*59, -12.5);
         Vector2d sideTurnPos = new Vector2d(side*46, -12.5);
-        Pose2d medScoringPos = new Pose2d(side*31, -17.5, Math.toRadians(isRight? 35: 180-35));
         Pose2d tallScoringPos = new Pose2d(side*31, -7.5, Math.toRadians(isRight? 135: 180-135));
         Pose2d centerTallScoringPos = new Pose2d(tallScoringPos.getX()-side*24, tallScoringPos.getY(), tallScoringPos.getHeading());
         Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX()-side*24, sideTurnPos.getY());
