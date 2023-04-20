@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Autonomous(name= "Medium Testing", group = "21836 Backup")
-public class AutonomousMedTesting extends LinearOpMode {
+@Autonomous(name= "Tall Testing", group = "21836 Backup")
+public class AutonomousTallTesting extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline signalSleeveDetectionPipeline;
@@ -105,7 +105,8 @@ public class AutonomousMedTesting extends LinearOpMode {
         Vector2d stackPos = new Vector2d(side*59, -12.5);
         Vector2d sideTurnPos = new Vector2d(side*46, -12.5);
         Pose2d medScoringPos = new Pose2d(side*31, -17.5, Math.toRadians(isRight? 35: 180-35));
-        Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX()-side*24, medScoringPos.getY(), medScoringPos.getHeading());
+        Pose2d tallScoringPos = new Pose2d(side*31, -7.5, Math.toRadians(isRight? 135: 180-135));
+        Pose2d centerTallScoringPos = new Pose2d(tallScoringPos.getX()-side*24, tallScoringPos.getY(), tallScoringPos.getHeading());
         Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX()-side*24, sideTurnPos.getY());
 
         Pose2d parkingZone1 = new Pose2d(side*(isRight? 12.5:57), -12.5, isRight? facingRight: facingLeft);
@@ -116,30 +117,29 @@ public class AutonomousMedTesting extends LinearOpMode {
         drivetrain.setPoseEstimate(startPose);
 
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
-                .setReversed(true)
-                .addTemporalMarker(() -> scorer.raiseClaw())
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                .lineTo(parkingZone2.vec())
-                .lineToSplineHeading(medScoringPos)
-                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
+                .setReversed(false)
+                .splineTo(new Vector2d(parkingZone2.getX(), -25), facingForward)
+                .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
+                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                 .addTemporalMarker(() -> scorer.dropClaw(PowerplayScorer.liftPos.FIVE))
                 .waitSeconds(liftAndDropTime)
                 .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                .setReversed(false)
+                .setReversed(true)
+                .setTangent(tallScoringPos.getHeading() + facingLeft)
                 .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
                 .splineTo(stackPos, isRight? facingRight: facingLeft)
                 .addTemporalMarker(() -> scorer.liftClaw())
                 .waitSeconds(liftAndDropTime)
                 .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                // loop below
-                .setReversed(true)
+                .setReversed(false)
                 .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
-                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
-                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
+                .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
+                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                 .addTemporalMarker(() -> scorer.dropClaw(PowerplayScorer.liftPos.FOUR))
                 .waitSeconds(liftAndDropTime)
                 .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                .setReversed(false)
+                .setReversed(true)
+                .setTangent(tallScoringPos.getHeading() + facingLeft)
                 .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
                 .splineTo(stackPos, isRight? facingRight: facingLeft)
                 .addTemporalMarker(() -> scorer.liftClaw())
@@ -150,34 +150,34 @@ public class AutonomousMedTesting extends LinearOpMode {
 
         TrajectorySequence parkLeft = isRight?
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
-                        .setReversed(true)
+                        .setReversed(false)
                         .splineTo(centerTurnPos, isRight? facingLeft: facingRight)
-                        .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
-                        .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
+                        .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading()+facingLeft)
+                        .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                         .addTemporalMarker(() -> scorer.dropClaw())
                         .waitSeconds(liftAndDropTime)
                         .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
                         .lineToSplineHeading(parkingZone1)
                         .build():
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
-                        .setReversed(true)
+                        .setReversed(false)
                         .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
-                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
-                        .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
+                        .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
+                        .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                         .addTemporalMarker(() -> scorer.dropClaw())
                         .waitSeconds(liftAndDropTime)
                         .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                        .setReversed(false)
+                        .setReversed(true)
                         .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
-                        .splineTo(parkingZone1.vec(), parkingZone1.getHeading())
+                        .splineTo(parkingZone1.vec(), facingLeft)
                         .build()
                 ;
 
         TrajectorySequence parkMiddle = drivetrain.trajectorySequenceBuilder(trajectory1.end())
-                .setReversed(true)
+                .setReversed(false)
                 .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
-                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
-                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
+                .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
+                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                 .addTemporalMarker(() -> scorer.dropClaw())
                 .waitSeconds(liftAndDropTime)
                 .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
@@ -187,22 +187,22 @@ public class AutonomousMedTesting extends LinearOpMode {
 
         TrajectorySequence parkRight = isRight?
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
-                        .setReversed(true)
+                        .setReversed(false)
                         .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
-                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
-                        .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
+                        .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
+                        .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                         .addTemporalMarker(() -> scorer.dropClaw())
                         .waitSeconds(liftAndDropTime)
                         .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                        .setReversed(false)
+                        .setReversed(true)
                         .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
-                        .splineTo(parkingZone3.vec(), parkingZone3.getHeading())
+                        .splineTo(parkingZone3.vec(), facingRight)
                         .build():
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
-                        .setReversed(true)
+                        .setReversed(false)
                         .splineTo(centerTurnPos, isRight? facingLeft: facingRight)
-                        .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
-                        .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
+                        .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading()+facingLeft)
+                        .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                         .addTemporalMarker(() -> scorer.dropClaw())
                         .waitSeconds(liftAndDropTime)
                         .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
