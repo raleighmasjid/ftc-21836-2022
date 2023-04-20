@@ -18,6 +18,8 @@ public class MeepMeep {
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
+        double liftAndDropTime = 0.1;
+        double clawToFlipTime = 0.1;
 
         Vector2d stackPos = new Vector2d(side*59, -12.5);
         Vector2d sideTurnPos = new Vector2d(side*46, -12.5);
@@ -35,19 +37,36 @@ public class MeepMeep {
                 .setDimensions(17, 16)
                 .setStartPose(startPose)
                 .setConstraints(58, 55, Math.toRadians(140), Math.toRadians(190), 14.25)
-                .followTrajectorySequence(drive->
-                        drive.trajectorySequenceBuilder(startPose)
+                .followTrajectorySequence(drivetrain->
+                        drivetrain.trajectorySequenceBuilder(startPose)
                                 .setReversed(true)
+//                                .addTemporalMarker(() -> scorer.raiseClaw())
                                 .lineToConstantHeading(new Vector2d(centerPathX, -24))
+//                                .addTemporalMarker(() -> scorer.triggerPassThru())
                                 .lineTo(parkingZone2.vec())
                                 .lineToSplineHeading(medScoringPos)
-                                // loop below
+//                                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
+//                                .addTemporalMarker(() -> scorer.dropClaw(PowerplayScorer.liftPos.FIVE))
+                                .waitSeconds(liftAndDropTime)
+//                                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
                                 .setReversed(false)
                                 .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
                                 .splineTo(stackPos, isRight? facingRight: facingLeft)
+//                                .addTemporalMarker(() -> scorer.liftClaw())
+//                                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                                // loop below
                                 .setReversed(true)
                                 .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
                                 .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+//                                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
+//                                .addTemporalMarker(() -> scorer.dropClaw(PowerplayScorer.liftPos.FOUR))
+                                .waitSeconds(liftAndDropTime)
+//                                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                                .setReversed(false)
+                                .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
+                                .splineTo(stackPos, isRight? facingRight: facingLeft)
+//                                .addTemporalMarker(() -> scorer.liftClaw())
+//                                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
                                 .build()
                 )
         ;
