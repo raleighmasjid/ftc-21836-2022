@@ -32,7 +32,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(group = "drive")
+@Autonomous(name= "Camera Test", group = "21836 Backup")
 public class AprilTagInitDetectionTest extends LinearOpMode {
 
     OpenCvCamera camera;

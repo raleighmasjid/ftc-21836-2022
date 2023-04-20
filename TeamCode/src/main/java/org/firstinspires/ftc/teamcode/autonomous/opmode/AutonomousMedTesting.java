@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Autonomous(name= "Active Testing", group = "21836 Backup")
-public class AutonomousTesting extends LinearOpMode {
+@Autonomous(name= "Medium Testing", group = "21836 Backup")
+public class AutonomousMedTesting extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline signalSleeveDetectionPipeline;
