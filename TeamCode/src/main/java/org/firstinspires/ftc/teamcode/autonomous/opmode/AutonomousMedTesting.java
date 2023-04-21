@@ -38,19 +38,18 @@ public class AutonomousMedTesting extends LinearOpMode {
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
     // You will need to do your own calibration for other configurations!
-    double fx = RobotConfig.camera_fx;
-    double fy = RobotConfig.camera_fy;
-    double cx = RobotConfig.camera_cx;
-    double cy = RobotConfig.camera_cy;
+    double
+            fx = RobotConfig.camera_fx,
+            fy = RobotConfig.camera_fy,
+            cx = RobotConfig.camera_cx,
+            cy = RobotConfig.camera_cy,
+            tagSize = 0.166;
+    int
+            LEFT = 1,
+            MIDDLE = 2,
+            RIGHT = 3;
 
-    // UNITS ARE METERS
-    double tagSize = 0.166;
-
-    int LEFT = 1;
-    int MIDDLE = 2;
-    int RIGHT = 3;
-
-    static ElapsedTime autonomousTimer = new ElapsedTime();
+    ElapsedTime autonomousTimer = new ElapsedTime();
 
     boolean hasParked = false;
 
@@ -134,7 +133,7 @@ public class AutonomousMedTesting extends LinearOpMode {
                 // loop below
                 .setReversed(true)
                 .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
-                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-facingLeft)
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                 .addTemporalMarker(() -> scorer.dropClaw(PowerplayScorer.liftPos.FOUR))
                 .waitSeconds(liftAndDropTime)
@@ -152,7 +151,7 @@ public class AutonomousMedTesting extends LinearOpMode {
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
                         .setReversed(true)
                         .splineTo(centerTurnPos, isRight? facingLeft: facingRight)
-                        .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+                        .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading()-facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                         .addTemporalMarker(() -> scorer.dropClaw())
                         .waitSeconds(liftAndDropTime)
@@ -162,7 +161,7 @@ public class AutonomousMedTesting extends LinearOpMode {
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
                         .setReversed(true)
                         .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
-                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                         .addTemporalMarker(() -> scorer.dropClaw())
                         .waitSeconds(liftAndDropTime)
@@ -176,7 +175,7 @@ public class AutonomousMedTesting extends LinearOpMode {
         TrajectorySequence parkMiddle = drivetrain.trajectorySequenceBuilder(trajectory1.end())
                 .setReversed(true)
                 .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
-                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-facingLeft)
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                 .addTemporalMarker(() -> scorer.dropClaw())
                 .waitSeconds(liftAndDropTime)
@@ -189,7 +188,7 @@ public class AutonomousMedTesting extends LinearOpMode {
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
                         .setReversed(true)
                         .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
-                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                         .addTemporalMarker(() -> scorer.dropClaw())
                         .waitSeconds(liftAndDropTime)
@@ -201,7 +200,7 @@ public class AutonomousMedTesting extends LinearOpMode {
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
                         .setReversed(true)
                         .splineTo(centerTurnPos, isRight? facingLeft: facingRight)
-                        .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
+                        .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading()-facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
                         .addTemporalMarker(() -> scorer.dropClaw())
                         .waitSeconds(liftAndDropTime)
@@ -281,9 +280,6 @@ public class AutonomousMedTesting extends LinearOpMode {
             telemetry.update();
 //            sleep(20);
             scorer.runClaw();
-            scorer.runPivot();
-            scorer.runPassThruServos();
-            scorer.runPassThruStates();
         }
 
         //START IS HERE//
@@ -331,11 +327,11 @@ public class AutonomousMedTesting extends LinearOpMode {
             }
 
             scorer.readLiftPos();
+            scorer.runLiftToPos();
+            scorer.runPassThruStates();
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassThruServos();
-            scorer.runPassThruStates();
-            scorer.runLiftToPos();
             drivetrain.update();
 
             //everything below is telemetry

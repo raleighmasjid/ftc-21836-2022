@@ -38,19 +38,18 @@ public class AutonomousTallTesting extends LinearOpMode {
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
     // You will need to do your own calibration for other configurations!
-    double fx = RobotConfig.camera_fx;
-    double fy = RobotConfig.camera_fy;
-    double cx = RobotConfig.camera_cx;
-    double cy = RobotConfig.camera_cy;
+    double
+            fx = RobotConfig.camera_fx,
+            fy = RobotConfig.camera_fy,
+            cx = RobotConfig.camera_cx,
+            cy = RobotConfig.camera_cy,
+            tagSize = 0.166;
+    int
+            LEFT = 1,
+            MIDDLE = 2,
+            RIGHT = 3;
 
-    // UNITS ARE METERS
-    double tagSize = 0.166;
-
-    int LEFT = 1;
-    int MIDDLE = 2;
-    int RIGHT = 3;
-
-    static ElapsedTime autonomousTimer = new ElapsedTime();
+    ElapsedTime autonomousTimer = new ElapsedTime();
 
     boolean hasParked = false;
 
@@ -117,6 +116,7 @@ public class AutonomousTallTesting extends LinearOpMode {
 
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
                 .setReversed(false)
+                .addTemporalMarker(() -> scorer.raiseClaw())
                 .splineTo(new Vector2d(parkingZone2.getX(), -25), facingForward)
                 .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
@@ -280,9 +280,6 @@ public class AutonomousTallTesting extends LinearOpMode {
             telemetry.update();
 //            sleep(20);
             scorer.runClaw();
-            scorer.runPivot();
-            scorer.runPassThruServos();
-            scorer.runPassThruStates();
         }
 
         //START IS HERE//
@@ -330,11 +327,11 @@ public class AutonomousTallTesting extends LinearOpMode {
             }
 
             scorer.readLiftPos();
+            scorer.runLiftToPos();
+            scorer.runPassThruStates();
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassThruServos();
-            scorer.runPassThruStates();
-            scorer.runLiftToPos();
             drivetrain.update();
 
             //everything below is telemetry
