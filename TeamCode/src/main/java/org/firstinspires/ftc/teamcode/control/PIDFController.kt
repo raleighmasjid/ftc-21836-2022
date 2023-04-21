@@ -18,7 +18,7 @@ class PIDFController
  *
  * @param pid traditional PID coefficients
  * @param maxIntegrationVelocity max velocity that integral path will continue integration
- * @param filterGain derivative filter weight, 0 = unsmoothed, 0.9 = very smoothed, 1 = broken
+ * @param filterGain derivative filter weight, 0 = unsmoothed, 0<x<1 increasingly smoothed, 1 = broken
  * @param estimateCount number of past values to average when filtering
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
@@ -93,20 +93,20 @@ class PIDFController
      */
     private var lastError: Double = 0.0
 
-    /**
-     * Sets bound on the input of the controller. The min and max values are considered modularly-equivalent (that is,
-     * the input wraps around).
-     *
-     * @param min minimum input
-     * @param max maximum input
-     */
-    fun setInputBounds(min: Double, max: Double) {
-        if (min < max) {
-            inputBounded = true
-            minInput = min
-            maxInput = max
-        }
-    }
+//    /**
+//     * Sets bound on the input of the controller. The min and max values are considered modularly-equivalent (that is,
+//     * the input wraps around).
+//     *
+//     * @param min minimum input
+//     * @param max maximum input
+//     */
+//    fun setInputBounds(min: Double, max: Double) {
+//        if (min < max) {
+//            inputBounded = true
+//            minInput = min
+//            maxInput = max
+//        }
+//    }
 
     /**
      * Sets bounds on the output of the controller.
