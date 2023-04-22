@@ -125,6 +125,8 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_MAX_JERK
         );
 
+        liftState = liftProfile.get(0.0);
+
         veloFilter = new LowPassFilter();
         accelFilter = new LowPassFilter();
         jerkFilter = new LowPassFilter();
@@ -356,7 +358,8 @@ public class PowerplayScorer {
     }
 
     private void updateLiftProfile () {
-        if (targetLiftPos == currentLiftPos) targetLiftPos += 0.25;
+//        UNCOMMENT IF NULL POINTER EXCEPTIONS ARE THROWN
+//        if (targetLiftPos == currentLiftPos) targetLiftPos += 0.25;
         boolean goingDown = targetLiftPos < currentLiftPos;
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
@@ -476,7 +479,13 @@ public class PowerplayScorer {
     }
 
     public void runClaw () {
-        clawServo.turnToAngle(clawIsOpen? passThruIsMoving? RobotConfig.CLAW_PASS_ANGLE: RobotConfig.CLAW_OPEN_ANGLE: RobotConfig.CLAW_CLOSED_ANGLE);
+        clawServo.turnToAngle(
+                clawIsOpen?
+                    passThruIsMoving? // open
+                            RobotConfig.CLAW_PASS_ANGLE: // moving
+                            RobotConfig.CLAW_OPEN_ANGLE: // not moving
+                    RobotConfig.CLAW_CLOSED_ANGLE // closed
+        );
 
         if ((liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) && !clawHasLifted) {
             raiseClaw();

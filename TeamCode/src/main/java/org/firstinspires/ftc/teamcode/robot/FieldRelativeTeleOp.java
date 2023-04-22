@@ -64,6 +64,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 control1RightX,
                 control2LeftY,
                 precisionScale;
+
         boolean useOverrideMode = false;
         
         drivetrain.setRotation(HeadingHolder.getHeading());
