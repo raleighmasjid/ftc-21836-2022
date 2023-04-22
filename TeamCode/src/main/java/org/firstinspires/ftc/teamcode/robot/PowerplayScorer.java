@@ -498,8 +498,7 @@ public class PowerplayScorer {
     }
 
     public void dropClaw () {
-        clawIsOpen = true;
-        setTargetLiftPos(liftPos.FLOOR);
+        dropClaw(liftPos.FLOOR);
     }
 
     public void dropClaw (liftPos height) {
