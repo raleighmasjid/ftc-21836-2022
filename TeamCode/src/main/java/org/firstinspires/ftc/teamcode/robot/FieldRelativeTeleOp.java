@@ -66,7 +66,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 precisionScale;
 
         boolean useOverrideMode = false;
-        
+
         drivetrain.setRotation(HeadingHolder.getHeading());
 
         for (LynxModule hub : hubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
@@ -168,16 +168,18 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             //everything below is telemetry
-            myTelemetry.addData("Robot is in", useOverrideMode?
-                    "manual override mode":
-                    control2LShoulder.isDown()?
-                            "stack heights mode":
-                            "junction heights mode"
-            );
             scorer.LED1green.setState(!useOverrideMode);
             scorer.LED2green.setState(!useOverrideMode);
             scorer.LED1red.setState(useOverrideMode);
             scorer.LED2red.setState(useOverrideMode);
+
+            myTelemetry.addData(
+                    "Robot is in", useOverrideMode?
+                            "manual override mode": // override
+                            control2LShoulder.isDown()? // automated
+                                    "stack heights mode": // shoulder button held down
+                                    "junction heights mode" // button not held
+            );
             myTelemetry.addLine();
             scorer.printTelemetry(myTelemetry);
             myTelemetry.update();
