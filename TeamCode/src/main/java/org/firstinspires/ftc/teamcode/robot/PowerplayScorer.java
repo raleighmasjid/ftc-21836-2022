@@ -39,7 +39,7 @@ public class PowerplayScorer {
             coneArmL;
     private PIDFController liftController;
     private MotionProfile liftProfile;
-    private MotionState liftState;
+    public MotionState liftState;
     private ElapsedTime
             liftProfileTimer,
             liftDerivTimer;
@@ -357,6 +357,10 @@ public class PowerplayScorer {
         updateLiftProfile();
     }
 
+    public void setLiftStateToCurrent() {
+        liftState = new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk);
+    }
+
     private void updateLiftProfile () {
 //        UNCOMMENT IF NULL POINTER EXCEPTIONS ARE THROWN
 //        if (targetLiftPos == currentLiftPos) targetLiftPos += 0.25;
@@ -399,7 +403,6 @@ public class PowerplayScorer {
                 lastLiftPos = currentLiftPos,
                 lastLiftVelo = currentLiftVelo,
                 lastLiftAccel = currentLiftAccel,
-
                 currentTimeStamp = liftDerivTimer.seconds(),
                 dt = currentTimeStamp == lastTimestamp? 0.002: currentTimeStamp - lastTimestamp;
         lastTimestamp = currentTimeStamp;
