@@ -149,7 +149,7 @@ public class PowerplayScorer {
         pivotIsFront = true;
         passThruInFront = true;
         passThruIsMoving = false;
-        clawIsOpen = true;
+        setClawOpen(true);
         clawIsTilted = false;
         passThruSwitched = false;
 
@@ -493,7 +493,7 @@ public class PowerplayScorer {
     }
 
     public void liftClaw () {
-        clawIsOpen = false;
+        setClawOpen(false);
         liftClawTimer.reset();
     }
 
@@ -502,7 +502,7 @@ public class PowerplayScorer {
     }
 
     public void dropClaw (liftPos height) {
-        clawIsOpen = true;
+        setClawOpen(true);
         setTargetLiftPos(height);
     }
 
