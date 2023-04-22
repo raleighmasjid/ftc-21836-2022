@@ -39,7 +39,7 @@ public class PowerplayScorer {
             coneArmL;
     private PIDFController liftController;
     private MotionProfile liftProfile;
-    public MotionState liftState;
+    private MotionState liftState;
     private ElapsedTime
             liftProfileTimer,
             liftDerivTimer;
