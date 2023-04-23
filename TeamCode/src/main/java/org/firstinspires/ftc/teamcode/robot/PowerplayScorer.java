@@ -47,7 +47,6 @@ public class PowerplayScorer {
             passThruTimer,
             liftClawTimer;
     private DigitalChannel
-            limitSwitch,
             LED1red,
             LED1green,
             LED2red,
@@ -87,15 +86,10 @@ public class PowerplayScorer {
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
         lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, MAX_RPM);
 
-        limitSwitch = hw.get(DigitalChannel.class, "limit switch");
-
         LED1red = hw.get(DigitalChannel.class, "LED1red");
         LED1green = hw.get(DigitalChannel.class, "LED1green");
-
         LED2red = hw.get(DigitalChannel.class, "LED2red");
         LED2green = hw.get(DigitalChannel.class, "LED2green");
-
-        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         LED1red.setMode(DigitalChannel.Mode.OUTPUT);
         LED1green.setMode(DigitalChannel.Mode.OUTPUT);
