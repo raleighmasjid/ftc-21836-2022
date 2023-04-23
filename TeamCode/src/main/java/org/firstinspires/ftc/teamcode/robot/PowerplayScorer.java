@@ -117,16 +117,6 @@ public class PowerplayScorer {
         liftController.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
         liftController.setOutputBounds(-1.0, 1.0);
 
-        liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(0.0, 0.0, 0.0, 0.0),
-                new MotionState(0.0, 0.0, 0.0, 0.0),
-                RobotConfig.LIFT_MAX_UP_VELO,
-                RobotConfig.LIFT_MAX_UP_ACCEL,
-                RobotConfig.LIFT_MAX_JERK
-        );
-
-        liftState = liftProfile.get(0.0);
-
         veloFilter = new LowPassFilter();
         accelFilter = new LowPassFilter();
         jerkFilter = new LowPassFilter();
@@ -422,16 +412,29 @@ public class PowerplayScorer {
         accelFilter.resetPastValues();
         veloFilter.resetPastValues();
 
+        lastTimestamp = 0.0;
         currentLiftJerk = 0.0;
         currentLiftAccel = 0.0;
         currentLiftVelo = 0.0;
         currentLiftPos = 0.0;
+        targetLiftPos = 0.0;
+        targetLiftPosName = liftPos.FLOOR.name();
+        clawIsTilted = false;
 
-        lastTimestamp = 0.0;
-        lift_motor2.resetEncoder();
+        liftDerivTimer.reset();
+        liftProfileTimer.reset();
         liftController.reset();
+        lift_motor2.resetEncoder();
 
-        setTargetLiftPos(liftPos.FLOOR);
+        liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
+                new MotionState(0.0, 0.0, 0.0, 0.0),
+                new MotionState(0.0, 0.0, 0.0, 0.0),
+                RobotConfig.LIFT_MAX_UP_VELO,
+                RobotConfig.LIFT_MAX_UP_ACCEL,
+                RobotConfig.LIFT_MAX_JERK
+        );
+
+        liftState = new MotionState(0.0, 0.0, 0.0, 0.0);
     }
 
     public void runLiftToPos () {
