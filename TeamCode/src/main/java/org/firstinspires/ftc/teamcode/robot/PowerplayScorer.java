@@ -46,7 +46,7 @@ public class PowerplayScorer {
     private static ElapsedTime
             passThruTimer,
             liftClawTimer;
-    public DigitalChannel
+    private DigitalChannel
             limitSwitch,
             LED1red,
             LED1green,
@@ -63,6 +63,7 @@ public class PowerplayScorer {
             currentLiftVelo,
             currentLiftPos,
             targetLiftPos;
+    private static final double LIFT_TICKS = 145.1;
     private String targetLiftPosName;
     private boolean
             clawIsOpen,
@@ -157,8 +158,12 @@ public class PowerplayScorer {
         resetLift();
     }
 
-    //  lift motor encoder resolution (ticks):
-    private static final double LIFT_TICKS = 145.1;
+    public void setStatusLEDs (boolean green) {
+        LED1green.setState(green);
+        LED2green.setState(green);
+        LED1red.setState(!green);
+        LED2red.setState(!green);
+    }
 
     private enum passThruState {
         START,
@@ -349,6 +354,7 @@ public class PowerplayScorer {
 
     public void setLiftStateToCurrent() {
         liftState = new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk);
+        setTargetLiftPos(currentLiftPos);
     }
 
     private void updateLiftProfile () {
@@ -382,10 +388,6 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kS
         );
         liftController.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
-    }
-
-    public double getCurrentLiftPos () {
-        return currentLiftPos;
     }
 
     public void readLiftPos () {
@@ -549,8 +551,9 @@ public class PowerplayScorer {
     }
 
     public void runConeArms (boolean down) {
-        coneArmL.turnToAngle(down? RobotConfig.ARM_L_DOWN_ANGLE: RobotConfig.ARM_L_UP_ANGLE);
-        coneArmR.turnToAngle(down? RobotConfig.ARM_R_DOWN_ANGLE: RobotConfig.ARM_R_UP_ANGLE);
+        double angle = down? RobotConfig.ARM_DOWN_ANGLE : RobotConfig.ARM_UP_ANGLE;
+        coneArmL.turnToAngle(280.0 - angle);
+        coneArmR.turnToAngle(angle);
     }
 
     public void printTelemetry (MultipleTelemetry telemetry) {

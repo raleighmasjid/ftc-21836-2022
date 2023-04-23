@@ -122,10 +122,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control1RightX *= precisionScale;
 
             if (control2RShoulder.wasJustPressed()) {
-                if (useOverrideMode) {
-                    scorer.setTargetLiftPos(scorer.getCurrentLiftPos());
-                    scorer.setLiftStateToCurrent();
-                }
+                if (useOverrideMode) scorer.setLiftStateToCurrent();
                 useOverrideMode ^= true;
             }
 
@@ -171,11 +168,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             //everything below is telemetry
-            scorer.LED1green.setState(!useOverrideMode);
-            scorer.LED2green.setState(!useOverrideMode);
-            scorer.LED1red.setState(useOverrideMode);
-            scorer.LED2red.setState(useOverrideMode);
-
+            scorer.setStatusLEDs(!useOverrideMode);
             myTelemetry.addData(
                     "Robot is in", useOverrideMode?
                             "manual override mode": // override
