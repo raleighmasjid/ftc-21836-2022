@@ -394,7 +394,8 @@ public class PowerplayScorer {
                 lastLiftVelo = currentLiftVelo,
                 lastLiftAccel = currentLiftAccel,
                 currentTimeStamp = liftDerivTimer.seconds(),
-                dt = currentTimeStamp == lastTimestamp? 0.002: currentTimeStamp - lastTimestamp;
+                dt = currentTimeStamp - lastTimestamp;
+        boolean dtIsZero = dt == 0.0;
         lastTimestamp = currentTimeStamp;
 
         veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
@@ -402,9 +403,9 @@ public class PowerplayScorer {
         jerkFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
 
         currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_TICKS_PER_INCH;
-        currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
-        currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
-        currentLiftJerk = jerkFilter.getEstimate((currentLiftAccel - lastLiftAccel) / dt);
+        currentLiftVelo = dtIsZero? 0.0: (veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt));
+        currentLiftAccel = dtIsZero? 0.0: (accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt));
+        currentLiftJerk = dtIsZero? 0.0: (jerkFilter.getEstimate((currentLiftAccel - lastLiftAccel) / dt));
     }
 
     public void resetLift () {
