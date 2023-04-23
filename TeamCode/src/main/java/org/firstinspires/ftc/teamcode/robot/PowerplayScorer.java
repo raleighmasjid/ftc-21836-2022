@@ -427,15 +427,15 @@ public class PowerplayScorer {
         liftController.reset();
         lift_motor2.resetEncoder();
 
+        liftState = new MotionState(0.0, 0.0, 0.0, 0.0);
+
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(0.0, 0.0, 0.0, 0.0),
-                new MotionState(0.0, 0.0, 0.0, 0.0),
+                liftState,
+                liftState,
                 RobotConfig.LIFT_MAX_UP_VELO,
                 RobotConfig.LIFT_MAX_UP_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
         );
-
-        liftState = new MotionState(0.0, 0.0, 0.0, 0.0);
     }
 
     public void runLiftToPos () {
