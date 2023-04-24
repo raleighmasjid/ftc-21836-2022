@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_RPM;
-
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
@@ -63,6 +61,7 @@ public class PowerplayScorer {
             currentLiftPos,
             targetLiftPos;
     private static final double LIFT_TICKS = 145.1;
+    private static final double LIFT_RPM = 1150;
     private String targetLiftPosName;
     private boolean
             clawIsOpen,
@@ -82,9 +81,9 @@ public class PowerplayScorer {
         coneArmR = new SimpleServo(hw, "arm right",0,280);
         coneArmL = new SimpleServo(hw, "arm left",0,280);
 
-        lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, MAX_RPM);
-        lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, MAX_RPM);
-        lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, MAX_RPM);
+        lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, LIFT_RPM);
+        lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, LIFT_RPM);
+        lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, LIFT_RPM);
 
         LED1red = hw.get(DigitalChannel.class, "LED1red");
         LED1green = hw.get(DigitalChannel.class, "LED1green");
@@ -398,7 +397,7 @@ public class PowerplayScorer {
         accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
         jerkFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
 
-        currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_TICKS_PER_INCH;
+        currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
         currentLiftVelo = dtIsZero? 0.0: (veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt));
         currentLiftAccel = dtIsZero? 0.0: (accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt));
         currentLiftJerk = dtIsZero? 0.0: (jerkFilter.getEstimate((currentLiftAccel - lastLiftAccel) / dt));
