@@ -172,8 +172,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     "Robot is in", useOverrideMode?
                             "manual override mode": // override
                             control2LShoulder.isDown()? // automated
-                                    "stack heights mode": // shoulder button held down
-                                    "junction heights mode" // button not held
+                                    "stack heights mode":
+                                    "junction heights mode"
             );
             myTelemetry.addLine();
             scorer.printTelemetry(myTelemetry);
