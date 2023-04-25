@@ -20,33 +20,68 @@ import org.firstinspires.ftc.teamcode.control.PIDFController;
  * @author Arshad Anas
  * @since 2022/12/24
  */
-
 public class PowerplayScorer {
-
+    /**
+     * Motor geared with two others to power the dual lift system
+     */
     private MotorEx
             lift_motor1,
             lift_motor2,
             lift_motor3;
+    /**
+     * Servo
+     */
     private SimpleServo
             clawServo,
             pivotServo,
             passThruServoR,
             passThruServoL,
-            coneArmR,
-            coneArmL;
+            coneArmServoR,
+            coneArmServoL;
+    /**
+     * PID + feedforward controller for lift
+     */
     private PIDFController liftController;
+    /**
+     * Lift motion profile to track along
+     */
     private MotionProfile liftProfile;
-    private MotionState liftState;
-    private ElapsedTime
-            liftProfileTimer,
-            liftDerivTimer;
-    private static ElapsedTime
-            passThruTimer,
-            liftClawTimer;
+    /**
+     * Latest lift state grabbed from
+     */
+    private MotionState liftProfileState;
+    /**
+     * Name of the named position to run lift to
+     */
+    private String targetLiftPosName;
+    /**
+     * Timer for tracking along lift motion profile
+     */
+    private ElapsedTime liftProfileTimer;
+    /**
+     * Timer for differentiating velocity, acceleration, and jerk
+     */
+    private ElapsedTime liftDerivTimer;
+    /**
+     * Timer to track sequential passthrough events
+     */
+    private static ElapsedTime passThruTimer;
+    /**
+     * Passthrough to track claw closing time before lifting
+     */
+    private static ElapsedTime liftClawTimer;
+    /**
+     * Finite impulse response low-pass filter
+     * Filters out sensor noise amplified through differentiation
+     */
     private LowPassFilter
             jerkFilter,
             accelFilter,
             veloFilter;
+    /**
+     * Timestamp of the last loop
+     * Subtracted from the current timestamp to obtain dt for differentiation
+     */
     private double
             lastTimestamp,
             currentLiftJerk,
@@ -54,26 +89,66 @@ public class PowerplayScorer {
             currentLiftVelo,
             currentLiftPos,
             targetLiftPos;
+    /**
+     * Count of ticks per revolution for lift motors
+     */
     private static final double LIFT_TICKS = 145.1;
+    /**
+     * Revolutions per minute for lift motors
+     */
     private static final double LIFT_RPM = 1150;
-    private String targetLiftPosName;
-    private boolean
-            clawIsOpen,
-            clawHasLifted,
-            clawIsTilted,
-            pivotIsFront,
-            passThruIsMoving,
-            passThruSwitched,
-            passThruInFront;
+    /**
+     * Desired claw position
+     * True if open
+     * False if closed
+     */
+    private boolean clawIsOpen;
+    /**
+     * True by default
+     * False only if liftClaw has been called, and the claw has not yet lifted
+     */
+    private boolean clawHasLifted;
+    /**
+     * Desired tilt state
+     * True if tilted
+     * False if down in default position
+     */
+    private boolean clawIsTilted;
+    /**
+     * Desired pivot state
+     * True if pivot should be oriented for its front position
+     * False if oriented for back position
+     */
+    private boolean pivotIsFront;
+    /**
+     * False by default
+     * True only if passthrough sequence has not yet completed
+     */
+    private boolean passThruIsMoving;
+    /**
+     * False by default
+     * True only if passthrough sequence was triggered while it was still moving
+     */
+    private boolean passThruSwitched;
+    /**
+     * Supposed state of the passthrough
+     * True if front position has been reached
+     * False if back position has been reached
+     */
+    private boolean passThruInFront;
 
+    /**
+     * Initialize internal objects and variables
+     * @param hw Passed-in hardware map from the op mode
+     */
     public void init (HardwareMap hw) {
 
         clawServo = new SimpleServo(hw,"claw right",0,355);
         pivotServo = new SimpleServo(hw, "claw pivot",0,355);
         passThruServoR = new SimpleServo(hw, "passthrough 1",0,355);
         passThruServoL = new SimpleServo(hw, "passthrough 2",0,355);
-        coneArmR = new SimpleServo(hw, "arm right",0,280);
-        coneArmL = new SimpleServo(hw, "arm left",0,280);
+        coneArmServoR = new SimpleServo(hw, "arm right",0,280);
+        coneArmServoL = new SimpleServo(hw, "arm left",0,280);
 
         lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, LIFT_RPM);
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, LIFT_RPM);
@@ -135,6 +210,9 @@ public class PowerplayScorer {
         resetLift();
     }
 
+    /**
+     * State of the passthrough sequence
+     */
     private enum passThruState {
         START,
         FRONT,
@@ -143,6 +221,10 @@ public class PowerplayScorer {
         BACK_PIVOT,
         BACK
     }
+
+    /**
+     * Named position of main passthrough servos
+     */
     private enum passThruPos {
         FRONT_IDLE,
         FRONT,
@@ -151,14 +233,26 @@ public class PowerplayScorer {
         BACK_IDLE
     }
 
+    /**
+     * Current state of passthrough sequence
+     */
     private passThruState currentPassThruState = passThruState.FRONT;
+    /**
+     * Current position of main passthrough servos
+     */
     private passThruPos currentPassThruPos = passThruPos.FRONT_IDLE;
 
+    /**
+     * @param angle Angle to turn main passthrough servos to
+     */
     private void setPassThruAngle(double angle) {
         passThruServoR.turnToAngle(angle);
         passThruServoL.turnToAngle(angle);
     }
 
+    /**
+     * Hold main passthrough servo positions
+     */
     public void runPassThruServos () {
         switch (currentPassThruPos) {
             case FRONT_IDLE:
@@ -188,19 +282,20 @@ public class PowerplayScorer {
         }
     }
 
-
+    /**
+     * Run automated passthrough sequence
+     * Triggered by triggerPassThru()
+     */
     public void runPassThruStates () {
         if (passThruInFront) {
             switch (currentPassThruState) {
                 default:
                 case BACK:
                 case FRONT:
+                    passThruIsMoving = false;
                     passThruTimer.reset();
                     break;
                 case START:
-                    passThruIsMoving = true;
-                    passThruTimer.reset();
-                    currentPassThruPos = passThruPos.PIVOT_POS;
                     currentPassThruState = passThruState.FRONT_PIVOT;
                     break;
                 case FRONT_PIVOT:
@@ -222,7 +317,6 @@ public class PowerplayScorer {
                     if (passThruSwitched) currentPassThruPos = passThruPos.BACK;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_BACK_PIVOT) {
                         passThruInFront = false;
-                        passThruIsMoving = false;
                         passThruTimer.reset();
                         currentPassThruState = passThruState.BACK;
                     }
@@ -233,12 +327,10 @@ public class PowerplayScorer {
                 default:
                 case FRONT:
                 case BACK:
+                    passThruIsMoving = false;
                     passThruTimer.reset();
                     break;
                 case START:
-                    passThruIsMoving = true;
-                    passThruTimer.reset();
-                    currentPassThruPos = passThruPos.PIVOT_POS;
                     currentPassThruState = passThruState.BACK_PIVOT;
                     break;
                 case BACK_PIVOT:
@@ -260,7 +352,6 @@ public class PowerplayScorer {
                     if (passThruSwitched) currentPassThruPos = passThruPos.FRONT;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_FRONT_PIVOT) {
                         passThruInFront = true;
-                        passThruIsMoving = false;
                         passThruTimer.reset();
                         currentPassThruState = passThruState.FRONT;
                     }
@@ -270,10 +361,17 @@ public class PowerplayScorer {
         passThruSwitched = false;
     }
 
+    /**
+     * Named lift position
+     */
     public enum liftPos {
         FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
     }
 
+    /**
+     * Set target for lift motion profile
+     * @param height Desired named position to run to
+     */
     public void setTargetLiftPos (liftPos height) {
         clawIsTilted = false;
         switch (height){
@@ -316,17 +414,28 @@ public class PowerplayScorer {
         updateLiftProfile();
     }
 
+    /**
+     * Set target for lift motion profile
+     * @param height Desired position (in inches) to run to
+     */
     public void setTargetLiftPos (double height) {
         targetLiftPos = height;
         targetLiftPosName = Double.toString(height);
         updateLiftProfile();
     }
 
+    /**
+     * Sets the target lift state to the current lift state
+     * Internal acknowledgement method, use if disabling lift PIDF, moving, and then re-enabling lift PIDF.
+     */
     public void setLiftStateToCurrent() {
-        liftState = new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk);
+        liftProfileState = new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk);
         setTargetLiftPos(currentLiftPos);
     }
 
+    /**
+     * Update lift motion profile with a new target position
+     */
     private void updateLiftProfile () {
 //        UNCOMMENT IF NULL POINTER EXCEPTIONS ARE THROWN
 //        if (targetLiftPos == currentLiftPos) targetLiftPos += 0.25;
@@ -343,6 +452,9 @@ public class PowerplayScorer {
         liftProfileTimer.reset();
     }
 
+    /**
+     * Update lift PIDF controller gains with constants from RobotConfig.java
+     */
     private void updateLiftGains () {
         liftController.setGains(
                 new PIDCoefficients(
@@ -360,6 +472,10 @@ public class PowerplayScorer {
         liftController.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
     }
 
+    /**
+     * Reads lift encoder value and converts to position in inches
+     * Calculates time derivative for velocity, acceleration, and jerk
+     */
     public void readLiftPos () {
         double
                 lastLiftPos = currentLiftPos,
@@ -380,6 +496,9 @@ public class PowerplayScorer {
         currentLiftJerk = dtIsZero? 0.0: (jerkFilter.getEstimate((currentLiftAccel - lastLiftAccel) / dt));
     }
 
+    /**
+     * Resets all internal lift variables
+     */
     public void resetLift () {
         jerkFilter.resetPastValues();
         accelFilter.resetPastValues();
@@ -399,23 +518,26 @@ public class PowerplayScorer {
         liftController.reset();
         lift_motor2.resetEncoder();
 
-        liftState = new MotionState(0.0, 0.0, 0.0, 0.0);
+        liftProfileState = new MotionState(0.0, 0.0, 0.0, 0.0);
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                liftState,
-                liftState,
+                liftProfileState,
+                liftProfileState,
                 RobotConfig.LIFT_MAX_UP_VELO,
                 RobotConfig.LIFT_MAX_UP_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
         );
     }
 
+    /**
+     * Runs lift PIDF controller to track along motion profile
+     */
     public void runLiftToPos () {
-        liftState = liftProfile.get(liftProfileTimer.seconds());
+        liftProfileState = liftProfile.get(liftProfileTimer.seconds());
 
-        liftController.setTargetPosition(liftState.getX());
-        liftController.setTargetVelocity(liftState.getV());
-        liftController.setTargetAcceleration(liftState.getA());
+        liftController.setTargetPosition(liftProfileState.getX());
+        liftController.setTargetVelocity(liftProfileState.getV());
+        liftController.setTargetAcceleration(liftProfileState.getA());
 
         if (liftController.atTargetPosition(currentLiftPos)) liftController.reset();
 
@@ -423,6 +545,10 @@ public class PowerplayScorer {
         runLift(liftController.update(currentLiftPos));
     }
 
+    /**
+     * Run lift motors
+     * @param veloCommand Pass in a velocity between 0 and 1
+     */
     public void runLift (double veloCommand) {
         veloCommand += getLiftGravityFF();
         lift_motor1.set(veloCommand);
@@ -430,6 +556,10 @@ public class PowerplayScorer {
         lift_motor3.set(veloCommand);
     }
 
+    /**
+     * Calculates anti-gravity feedforward for a 4-stage continuous rigged linear slide system
+     * @return Velocity command for lift
+     */
     private double getLiftGravityFF () {
         double veloCommand = 0.0;
 
@@ -441,22 +571,33 @@ public class PowerplayScorer {
         return veloCommand;
     }
 
-    public void toggleTilt () {
-        clawIsTilted ^= true;
+    public void toggleClawTilt() {
+        clawIsTilted = !clawIsTilted;
     }
 
     public void toggleClaw () {
-        clawIsOpen ^= true;
+        clawIsOpen = !clawIsOpen;
     }
 
+    /**
+     * Closes and lift claw if open
+     * Opens and lowers claw if already closed
+     */
     public void triggerClaw () {
         if (clawIsOpen) liftClaw(); else dropClaw();
     }
 
+    /**
+     * Set state of the claw
+     * @param open True if open; false if closed
+     */
     public void setClawOpen (boolean open) {
         clawIsOpen = open;
     }
 
+    /**
+     * Holds claw servo position
+     */
     public void runClaw () {
         clawServo.turnToAngle(
                 clawIsOpen?
@@ -468,11 +609,15 @@ public class PowerplayScorer {
 
         if ((liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) && !clawHasLifted) {
             raiseClaw();
-            liftClawTimer.reset();
             clawHasLifted = true;
         }
     }
 
+    /**
+     * Lifts claw either:
+     *      6 inches if grabbing off stack
+     *      2 inches if grabbing off the floor
+     */
     public void raiseClaw () {
         setTargetLiftPos(Math.min(
                 currentLiftPos + ((currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE)? 6: 2),
@@ -480,36 +625,62 @@ public class PowerplayScorer {
         ));
     }
 
+    /**
+     * Closes claw
+     * Waits for claw to close
+     * Lifts claw
+     */
     public void liftClaw () {
         setClawOpen(false);
+        clawHasLifted = false;
         liftClawTimer.reset();
     }
 
+    /**
+     * Opens claw and runs lift to floor position
+     */
     public void dropClaw () {
         dropClaw(liftPos.FLOOR);
     }
 
+    /**
+     * Opens claw and runs lift to named position
+     * @param height Named position to run lift to
+     */
     public void dropClaw (liftPos height) {
         setClawOpen(true);
         setTargetLiftPos(height);
     }
 
     public void togglePivot () {
-        pivotIsFront ^= true;
+        pivotIsFront = !pivotIsFront;
     }
 
+    /**
+     * Holds pivot servo position
+     */
     public void runPivot () {
         pivotServo.turnToAngle(pivotIsFront? RobotConfig.PIVOT_FRONT_ANGLE: RobotConfig.PIVOT_BACK_ANGLE);
     }
 
+    /**
+     * Activates automated passthrough sequence
+     */
     public void triggerPassThru () {
-        if ((currentPassThruState != passThruState.FRONT) && (currentPassThruState != passThruState.BACK)) {
-            passThruInFront ^= true;
+        if (passThruIsMoving) {
+            passThruInFront = !passThruInFront;
             passThruSwitched = true;
+        } else {
+            passThruTimer.reset();
+            passThruIsMoving = true;
+            currentPassThruPos = passThruPos.PIVOT_POS;
+            currentPassThruState = passThruState.START;
         }
-        else currentPassThruState = passThruState.START;
     }
 
+    /**
+     * Toggles position of main passthrough servos
+     */
     public void togglePassThru () {
         if (currentPassThruState != passThruState.FRONT) {
             currentPassThruPos = passThruPos.FRONT;
@@ -520,21 +691,29 @@ public class PowerplayScorer {
         }
     }
 
+    /**
+     * Holds cone arm servos in position
+     * @param down True if arms are to be down; false if arms should be upright
+     */
     public void runConeArms (boolean down) {
         double angle = down? RobotConfig.ARM_DOWN_ANGLE : RobotConfig.ARM_UP_ANGLE;
-        coneArmL.turnToAngle(280.0 - angle);
-        coneArmR.turnToAngle(angle);
+        coneArmServoL.turnToAngle(280.0 - angle);
+        coneArmServoR.turnToAngle(angle);
     }
 
+    /**
+     * Print relevant telemetry of the system (particularly lift data)
+     * @param telemetry MultipleTelemetry object to add data to
+     */
     public void printTelemetry (MultipleTelemetry telemetry) {
         telemetry.addData("Lift current position (in)", currentLiftPos);
-        telemetry.addData("Lift profile position (in)", liftState.getX());
+        telemetry.addData("Lift profile position (in)", liftProfileState.getX());
         telemetry.addData("Lift target position (name)", targetLiftPosName);
         telemetry.addLine();
         telemetry.addData("Lift position error (in)", liftController.getCurrentFilterEstimate());
         telemetry.addLine();
         telemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
-        telemetry.addData("Lift profile velocity (in/s)", liftState.getV());
+        telemetry.addData("Lift profile velocity (in/s)", liftProfileState.getV());
         telemetry.addLine();
         telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         telemetry.addLine();

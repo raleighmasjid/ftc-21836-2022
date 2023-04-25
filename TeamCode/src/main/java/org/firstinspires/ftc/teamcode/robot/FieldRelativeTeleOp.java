@@ -123,7 +123,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             if (control2RShoulder.wasJustPressed()) {
                 if (useOverrideMode) scorer.setLiftStateToCurrent();
-                useOverrideMode ^= true;
+                useOverrideMode = !useOverrideMode;
             }
 
             if (useOverrideMode) {
@@ -135,7 +135,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if (control2Y.wasJustPressed()) scorer.togglePassThru();
 
-                if (control2Up.wasJustPressed()) scorer.toggleTilt();
+                if (control2Up.wasJustPressed()) scorer.toggleClawTilt();
 
                 scorer.runLift(control2LeftY);
             } else {
