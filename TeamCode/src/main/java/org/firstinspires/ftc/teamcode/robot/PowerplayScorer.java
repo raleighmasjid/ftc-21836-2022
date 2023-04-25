@@ -9,7 +9,6 @@ import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -44,11 +43,6 @@ public class PowerplayScorer {
     private static ElapsedTime
             passThruTimer,
             liftClawTimer;
-    private DigitalChannel
-            LED1red,
-            LED1green,
-            LED2red,
-            LED2green;
     private LowPassFilter
             jerkFilter,
             accelFilter,
@@ -84,16 +78,6 @@ public class PowerplayScorer {
         lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, LIFT_RPM);
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, LIFT_RPM);
         lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, LIFT_RPM);
-
-        LED1red = hw.get(DigitalChannel.class, "LED1red");
-        LED1green = hw.get(DigitalChannel.class, "LED1green");
-        LED2red = hw.get(DigitalChannel.class, "LED2red");
-        LED2green = hw.get(DigitalChannel.class, "LED2green");
-
-        LED1red.setMode(DigitalChannel.Mode.OUTPUT);
-        LED1green.setMode(DigitalChannel.Mode.OUTPUT);
-        LED2red.setMode(DigitalChannel.Mode.OUTPUT);
-        LED2green.setMode(DigitalChannel.Mode.OUTPUT);
 
         liftController = new PIDFController(
                 new PIDCoefficients(
@@ -149,13 +133,6 @@ public class PowerplayScorer {
         liftDerivTimer.reset();
 
         resetLift();
-    }
-
-    public void setStatusLEDs (boolean green) {
-        LED1green.setState(green);
-        LED2green.setState(green);
-        LED1red.setState(!green);
-        LED2red.setState(!green);
     }
 
     private enum passThruState {

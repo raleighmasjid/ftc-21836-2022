@@ -168,7 +168,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             //everything below is telemetry
-            scorer.setStatusLEDs(!useOverrideMode);
             myTelemetry.addData(
                     "Robot is in", useOverrideMode?
                             "manual override mode": // override
