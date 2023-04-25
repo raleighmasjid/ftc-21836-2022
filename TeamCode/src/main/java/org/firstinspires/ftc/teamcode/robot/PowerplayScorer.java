@@ -22,15 +22,12 @@ import org.firstinspires.ftc.teamcode.control.PIDFController;
  */
 public class PowerplayScorer {
     /**
-     * Motor geared with two others to power the dual lift system
+     * Motor powering the dual lift system
      */
     private MotorEx
             lift_motor1,
             lift_motor2,
             lift_motor3;
-    /**
-     * Servo
-     */
     private SimpleServo
             clawServo,
             pivotServo,
@@ -47,7 +44,11 @@ public class PowerplayScorer {
      */
     private MotionProfile liftProfile;
     /**
-     * Latest target lift state grabbed from motion profile
+     * Timer for tracking along lift motion profile
+     */
+    private ElapsedTime liftProfileTimer;
+    /**
+     * Lift state grabbed from motion profile
      */
     private MotionState profileLiftState;
     /**
@@ -59,17 +60,9 @@ public class PowerplayScorer {
      */
     private String targetLiftPosName;
     /**
-     * Timer for tracking along lift motion profile
-     */
-    private ElapsedTime liftProfileTimer;
-    /**
      * Timer for differentiating velocity, acceleration, and jerk
      */
     private ElapsedTime liftDerivTimer;
-    /**
-     * Timer to track sequential passthrough events
-     */
-    private static ElapsedTime passThruTimer;
     /**
      * Passthrough to track claw closing time before lifting
      */
@@ -126,6 +119,10 @@ public class PowerplayScorer {
      * False if back position has been reached
      */
     private boolean passThruInFront;
+    /**
+     * Timer to track sequential passthrough events
+     */
+    private static ElapsedTime passThruTimer;
     /**
      * Count of ticks per revolution for lift motors
      */
@@ -249,7 +246,7 @@ public class PowerplayScorer {
      */
     private void setPassThruAngle(double angle) {
         passThruServoR.turnToAngle(angle);
-        passThruServoL.turnToAngle(angle);
+        passThruServoL.turnToAngle(355.0 - angle);
     }
 
     /**
@@ -262,21 +259,21 @@ public class PowerplayScorer {
                 break;
             case FRONT:
                 if (!clawIsTilted) {
-                    setPassThruAngle(RobotConfig.PASS_FRONT_ANGLE);
+                    setPassThruAngle(RobotConfig.ANGLE_PASS_FRONT);
                     currentPassThruPos = passThruPos.FRONT_IDLE;
-                } else setPassThruAngle(RobotConfig.PASS_FRONT_TILT_ANGLE);
+                } else setPassThruAngle(RobotConfig.ANGLE_PASS_FRONT_TILT);
                 break;
             case PIVOT_POS:
-                setPassThruAngle(RobotConfig.PASS_PIVOT_ANGLE);
+                setPassThruAngle(RobotConfig.ANGLE_PASS_PIVOT);
                 break;
             case BACK_IDLE:
                 if (clawIsTilted) currentPassThruPos = passThruPos.BACK;
                 break;
             case BACK:
                 if (!clawIsTilted) {
-                    setPassThruAngle(RobotConfig.PASS_BACK_ANGLE);
+                    setPassThruAngle(RobotConfig.ANGLE_PASS_BACK);
                     currentPassThruPos = passThruPos.BACK_IDLE;
-                } else setPassThruAngle(RobotConfig.PASS_BACK_TILT_ANGLE);
+                } else setPassThruAngle(RobotConfig.ANGLE_PASS_BACK_TILT);
                 break;
             default:
                 currentPassThruPos = passThruPos.FRONT;
@@ -604,9 +601,9 @@ public class PowerplayScorer {
         clawServo.turnToAngle(
                 clawIsOpen?
                     passThruIsMoving? // open
-                            RobotConfig.CLAW_PASS_ANGLE: // moving
-                            RobotConfig.CLAW_OPEN_ANGLE: // not moving
-                    RobotConfig.CLAW_CLOSED_ANGLE // closed
+                            RobotConfig.ANGLE_CLAW_PASS : // moving
+                            RobotConfig.ANGLE_CLAW_OPEN : // not moving
+                    RobotConfig.ANGLE_CLAW_CLOSED // closed
         );
 
         if ((liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) && !clawHasLifted) {
@@ -662,7 +659,7 @@ public class PowerplayScorer {
      * Holds pivot servo position
      */
     public void runPivot () {
-        pivotServo.turnToAngle(pivotIsFront? RobotConfig.PIVOT_FRONT_ANGLE: RobotConfig.PIVOT_BACK_ANGLE);
+        pivotServo.turnToAngle(355.0 - (pivotIsFront? RobotConfig.ANGLE_PIVOT_FRONT : RobotConfig.ANGLE_PIVOT_BACK));
     }
 
     /**
@@ -698,7 +695,7 @@ public class PowerplayScorer {
      * @param down True if arms are to be down; false if arms should be upright
      */
     public void runConeArms (boolean down) {
-        double angle = down? RobotConfig.ARM_DOWN_ANGLE : RobotConfig.ARM_UP_ANGLE;
+        double angle = down? RobotConfig.ANGLE_ARM_DOWN : RobotConfig.ANGLE_ARM_UP;
         coneArmServoL.turnToAngle(280.0 - angle);
         coneArmServoR.turnToAngle(angle);
     }
@@ -708,6 +705,7 @@ public class PowerplayScorer {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry (MultipleTelemetry telemetry) {
+        telemetry.addData("Lift encoder reading (ticks)", lift_motor2.encoder.getPosition());
         telemetry.addData("Lift current position (in)", currentLiftState.getX());
         telemetry.addData("Lift profile position (in)", profileLiftState.getX());
         telemetry.addData("Lift target position (name)", targetLiftPosName);
