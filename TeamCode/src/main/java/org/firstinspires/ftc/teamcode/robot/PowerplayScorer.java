@@ -47,9 +47,13 @@ public class PowerplayScorer {
      */
     private MotionProfile liftProfile;
     /**
-     * Latest lift state grabbed from
+     * Latest target lift state grabbed from motion profile
      */
-    private MotionState liftProfileState;
+    private MotionState profileLiftState;
+    /**
+     * Current lift state
+     */
+    private MotionState currentLiftState;
     /**
      * Name of the named position to run lift to
      */
@@ -82,21 +86,7 @@ public class PowerplayScorer {
      * Timestamp of the last loop
      * Subtracted from the current timestamp to obtain dt for differentiation
      */
-    private double
-            lastTimestamp,
-            currentLiftJerk,
-            currentLiftAccel,
-            currentLiftVelo,
-            currentLiftPos,
-            targetLiftPos;
-    /**
-     * Count of ticks per revolution for lift motors
-     */
-    private static final double LIFT_TICKS = 145.1;
-    /**
-     * Revolutions per minute for lift motors
-     */
-    private static final double LIFT_RPM = 1150;
+    private double lastTimestamp;
     /**
      * Desired claw position
      * True if open
@@ -136,6 +126,18 @@ public class PowerplayScorer {
      * False if back position has been reached
      */
     private boolean passThruInFront;
+    /**
+     * Count of ticks per revolution for lift motors
+     */
+    private static final double LIFT_TICKS = 145.1;
+    /**
+     * Revolutions per minute for lift motors
+     */
+    private static final double LIFT_RPM = 1150;
+    /**
+     * Lift state of 0 position, velocity, acceleration, and jerk
+     */
+    private static final MotionState zeroState = new MotionState(0.0, 0.0, 0.0, 0.0);
 
     /**
      * Initialize internal objects and variables
@@ -194,7 +196,7 @@ public class PowerplayScorer {
         pivotIsFront = true;
         passThruInFront = true;
         passThruIsMoving = false;
-        setClawOpen(true);
+        clawIsOpen = true;
         clawIsTilted = false;
         passThruSwitched = false;
 
@@ -374,11 +376,8 @@ public class PowerplayScorer {
      */
     public void setTargetLiftPos (liftPos height) {
         clawIsTilted = false;
+        double targetLiftPos;
         switch (height){
-            case FLOOR:
-                targetLiftPos = RobotConfig.HEIGHT_FLOOR;
-                targetLiftPosName = liftPos.FLOOR.name();
-                break;
             case TWO:
                 targetLiftPos = RobotConfig.HEIGHT_TWO;
                 targetLiftPosName = liftPos.TWO.name();
@@ -410,8 +409,13 @@ public class PowerplayScorer {
                 targetLiftPos = RobotConfig.HEIGHT_TALL;
                 targetLiftPosName = liftPos.TALL.name();
                 break;
+            case FLOOR:
+            default:
+                targetLiftPos = RobotConfig.HEIGHT_FLOOR;
+                targetLiftPosName = liftPos.FLOOR.name();
+                break;
         }
-        updateLiftProfile();
+        updateLiftProfile(targetLiftPos);
     }
 
     /**
@@ -419,9 +423,8 @@ public class PowerplayScorer {
      * @param height Desired position (in inches) to run to
      */
     public void setTargetLiftPos (double height) {
-        targetLiftPos = height;
         targetLiftPosName = Double.toString(height);
-        updateLiftProfile();
+        updateLiftProfile(height);
     }
 
     /**
@@ -429,20 +432,20 @@ public class PowerplayScorer {
      * Internal acknowledgement method, use if disabling lift PIDF, moving, and then re-enabling lift PIDF.
      */
     public void setLiftStateToCurrent() {
-        liftProfileState = new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk);
-        setTargetLiftPos(currentLiftPos);
+        profileLiftState = currentLiftState;
+        setTargetLiftPos(currentLiftState.getX());
     }
 
     /**
      * Update lift motion profile with a new target position
      */
-    private void updateLiftProfile () {
+    private void updateLiftProfile (double targetLiftPos) {
 //        UNCOMMENT IF NULL POINTER EXCEPTIONS ARE THROWN
-//        if (targetLiftPos == currentLiftPos) targetLiftPos += 0.25;
-        boolean goingDown = targetLiftPos < currentLiftPos;
+//        targetLiftPos += (targetLiftPos == currentLiftState.getX())? 0.25: 0.0;
+        boolean goingDown = targetLiftPos < currentLiftState.getX();
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
+                currentLiftState,
                 new MotionState(targetLiftPos, 0, 0, 0),
                 goingDown? RobotConfig.LIFT_MAX_DOWN_VELO: RobotConfig.LIFT_MAX_UP_VELO,
                 goingDown? RobotConfig.LIFT_MAX_DOWN_ACCEL: RobotConfig.LIFT_MAX_UP_ACCEL,
@@ -474,13 +477,12 @@ public class PowerplayScorer {
 
     /**
      * Reads lift encoder value and converts to position in inches
-     * Calculates time derivative for velocity, acceleration, and jerk
+     * Calculates velocity, acceleration, and jerk
+     * Saves readings to currentLiftState
      */
     public void readLiftPos () {
+        MotionState lastLiftState = currentLiftState;
         double
-                lastLiftPos = currentLiftPos,
-                lastLiftVelo = currentLiftVelo,
-                lastLiftAccel = currentLiftAccel,
                 currentTimeStamp = liftDerivTimer.seconds(),
                 dt = currentTimeStamp - lastTimestamp;
         boolean dtIsZero = dt == 0.0;
@@ -490,10 +492,12 @@ public class PowerplayScorer {
         accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
         jerkFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
 
-        currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
-        currentLiftVelo = dtIsZero? 0.0: (veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt));
-        currentLiftAccel = dtIsZero? 0.0: (accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt));
-        currentLiftJerk = dtIsZero? 0.0: (jerkFilter.getEstimate((currentLiftAccel - lastLiftAccel) / dt));
+        double currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
+        double currentLiftVelo = dtIsZero? 0.0: (veloFilter.getEstimate((currentLiftPos - lastLiftState.getX()) / dt));
+        double currentLiftAccel = dtIsZero? 0.0: (accelFilter.getEstimate((currentLiftVelo - lastLiftState.getV()) / dt));
+        double currentLiftJerk = dtIsZero? 0.0: (jerkFilter.getEstimate((currentLiftAccel - lastLiftState.getA()) / dt));
+
+        currentLiftState = new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk);
     }
 
     /**
@@ -505,11 +509,6 @@ public class PowerplayScorer {
         veloFilter.resetPastValues();
 
         lastTimestamp = 0.0;
-        currentLiftJerk = 0.0;
-        currentLiftAccel = 0.0;
-        currentLiftVelo = 0.0;
-        currentLiftPos = 0.0;
-        targetLiftPos = 0.0;
         targetLiftPosName = liftPos.FLOOR.name();
         clawIsTilted = false;
 
@@ -518,11 +517,12 @@ public class PowerplayScorer {
         liftController.reset();
         lift_motor2.resetEncoder();
 
-        liftProfileState = new MotionState(0.0, 0.0, 0.0, 0.0);
+        currentLiftState = zeroState;
+        profileLiftState = zeroState;
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                liftProfileState,
-                liftProfileState,
+                zeroState,
+                zeroState,
                 RobotConfig.LIFT_MAX_UP_VELO,
                 RobotConfig.LIFT_MAX_UP_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
@@ -533,16 +533,16 @@ public class PowerplayScorer {
      * Runs lift PIDF controller to track along motion profile
      */
     public void runLiftToPos () {
-        liftProfileState = liftProfile.get(liftProfileTimer.seconds());
+        profileLiftState = liftProfile.get(liftProfileTimer.seconds());
 
-        liftController.setTargetPosition(liftProfileState.getX());
-        liftController.setTargetVelocity(liftProfileState.getV());
-        liftController.setTargetAcceleration(liftProfileState.getA());
+        liftController.setTargetPosition(profileLiftState.getX());
+        liftController.setTargetVelocity(profileLiftState.getV());
+        liftController.setTargetAcceleration(profileLiftState.getA());
 
-        if (liftController.atTargetPosition(currentLiftPos)) liftController.reset();
+        if (liftController.atTargetPosition(currentLiftState.getX())) liftController.reset();
 
         updateLiftGains();
-        runLift(liftController.update(currentLiftPos));
+        runLift(liftController.update(currentLiftState.getX()));
     }
 
     /**
@@ -561,7 +561,9 @@ public class PowerplayScorer {
      * @return Velocity command for lift
      */
     private double getLiftGravityFF () {
-        double veloCommand = 0.0;
+        double
+                currentLiftPos = currentLiftState.getX(),
+                veloCommand = 0.0;
 
         if      (currentLiftPos >= RobotConfig.STAGES_FOUR)         veloCommand = RobotConfig.LIFT_kG_FOUR;
         else if (currentLiftPos >= RobotConfig.STAGES_THREE)        veloCommand = RobotConfig.LIFT_kG_THREE;
@@ -620,7 +622,7 @@ public class PowerplayScorer {
      */
     public void raiseClaw () {
         setTargetLiftPos(Math.min(
-                currentLiftPos + ((currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE)? 6: 2),
+                currentLiftState.getX() + ((currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE)? 6: 2),
                 RobotConfig.HEIGHT_TALL
         ));
     }
@@ -706,17 +708,17 @@ public class PowerplayScorer {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry (MultipleTelemetry telemetry) {
-        telemetry.addData("Lift current position (in)", currentLiftPos);
-        telemetry.addData("Lift profile position (in)", liftProfileState.getX());
+        telemetry.addData("Lift current position (in)", currentLiftState.getX());
+        telemetry.addData("Lift profile position (in)", profileLiftState.getX());
         telemetry.addData("Lift target position (name)", targetLiftPosName);
         telemetry.addLine();
         telemetry.addData("Lift position error (in)", liftController.getCurrentFilterEstimate());
         telemetry.addLine();
-        telemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
-        telemetry.addData("Lift profile velocity (in/s)", liftProfileState.getV());
+        telemetry.addData("Lift current velocity (in/s)", currentLiftState.getV());
+        telemetry.addData("Lift profile velocity (in/s)", profileLiftState.getV());
         telemetry.addLine();
-        telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
+        telemetry.addData("Lift current acceleration (in/s^2)", currentLiftState.getA());
         telemetry.addLine();
-        telemetry.addData("Lift current jerk (in/s^3)", currentLiftJerk);
+        telemetry.addData("Lift current jerk (in/s^3)", currentLiftState.getJ());
     }
 }
