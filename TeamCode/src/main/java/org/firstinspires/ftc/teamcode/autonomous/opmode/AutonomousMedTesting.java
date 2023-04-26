@@ -327,14 +327,14 @@ public class AutonomousMedTesting extends LinearOpMode {
             }
 
             scorer.readLiftPos();
+            drivetrain.update();
             scorer.runLiftToPos();
-            scorer.runPassThruStates();
             scorer.runClaw();
             scorer.runPivot();
+            scorer.runPassThruStates();
             scorer.runPassThruServos();
-            drivetrain.update();
 
-            //everything below is telemetry
+            // everything below is telemetry
             scorer.printTelemetry(myTelemetry);
             myTelemetry.update();
 
