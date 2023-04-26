@@ -56,7 +56,7 @@ public class PowerplayScorer {
      */
     private MotionState currentLiftState;
     /**
-     * Name of the named position to run lift to
+     * Named end target position
      */
     private String targetLiftPosName;
     /**
@@ -478,7 +478,6 @@ public class PowerplayScorer {
      * Saves readings to currentLiftState
      */
     public void readLiftPos () {
-        MotionState lastLiftState = currentLiftState;
         double
                 currentTimeStamp = liftDerivTimer.seconds(),
                 dt = currentTimeStamp - lastTimestamp;
@@ -490,9 +489,9 @@ public class PowerplayScorer {
         jerkFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
 
         double currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
-        double currentLiftVelo = dtIsZero? 0.0: (veloFilter.getEstimate((currentLiftPos - lastLiftState.getX()) / dt));
-        double currentLiftAccel = dtIsZero? 0.0: (accelFilter.getEstimate((currentLiftVelo - lastLiftState.getV()) / dt));
-        double currentLiftJerk = dtIsZero? 0.0: (jerkFilter.getEstimate((currentLiftAccel - lastLiftState.getA()) / dt));
+        double currentLiftVelo = dtIsZero? 0.0: (veloFilter.getEstimate((currentLiftPos - currentLiftState.getX()) / dt));
+        double currentLiftAccel = dtIsZero? 0.0: (accelFilter.getEstimate((currentLiftVelo - currentLiftState.getV()) / dt));
+        double currentLiftJerk = dtIsZero? 0.0: (jerkFilter.getEstimate((currentLiftAccel - currentLiftState.getA()) / dt));
 
         currentLiftState = new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk);
     }
@@ -583,7 +582,7 @@ public class PowerplayScorer {
      * Opens and lowers claw if already closed
      */
     public void triggerClaw () {
-        if (clawIsOpen) liftClaw(); else dropClaw();
+        if (clawIsOpen) grabCone(); else dropCone();
     }
 
     /**
@@ -607,7 +606,7 @@ public class PowerplayScorer {
         );
 
         if ((liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) && !clawHasLifted) {
-            raiseClaw();
+            liftClaw();
             clawHasLifted = true;
         }
     }
@@ -617,7 +616,7 @@ public class PowerplayScorer {
      *      6 inches if grabbing off stack
      *      2 inches if grabbing off the floor
      */
-    public void raiseClaw () {
+    public void liftClaw () {
         setTargetLiftPos(Math.min(
                 currentLiftState.getX() + ((currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE)? 6: 2),
                 RobotConfig.HEIGHT_TALL
@@ -629,7 +628,7 @@ public class PowerplayScorer {
      * Waits for claw to close
      * Lifts claw
      */
-    public void liftClaw () {
+    public void grabCone () {
         setClawOpen(false);
         clawHasLifted = false;
         liftClawTimer.reset();
@@ -638,15 +637,15 @@ public class PowerplayScorer {
     /**
      * Opens claw and runs lift to floor position
      */
-    public void dropClaw () {
-        dropClaw(liftPos.FLOOR);
+    public void dropCone () {
+        dropCone(liftPos.FLOOR);
     }
 
     /**
      * Opens claw and runs lift to named position
      * @param height Named position to run lift to
      */
-    public void dropClaw (liftPos height) {
+    public void dropCone (liftPos height) {
         setClawOpen(true);
         setTargetLiftPos(height);
     }
