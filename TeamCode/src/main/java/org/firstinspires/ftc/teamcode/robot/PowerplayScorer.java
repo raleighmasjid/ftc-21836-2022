@@ -417,11 +417,11 @@ public class PowerplayScorer {
 
     /**
      * Set target for lift motion profile
-     * @param height Desired position (in inches) to run to
+     * @param targetLiftPos Desired position (in inches) to run to
      */
-    public void setTargetLiftPos (double height) {
-        targetLiftPosName = Double.toString(height);
-        updateLiftProfile(height);
+    public void setTargetLiftPos (double targetLiftPos) {
+        targetLiftPosName = Double.toString(targetLiftPos);
+        updateLiftProfile(targetLiftPos);
     }
 
     /**
