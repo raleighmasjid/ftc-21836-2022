@@ -65,7 +65,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 control2LeftY,
                 precisionScale;
 
-        boolean useOverrideMode = false;
+        boolean
+                overrideMode = false,
+                stackHeights = false;
 
         drivetrain.setRotation(HeadingHolder.getHeading());
 
@@ -122,11 +124,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control1RightX *= precisionScale;
 
             if (control2RShoulder.wasJustPressed()) {
-                if (useOverrideMode) scorer.setLiftStateToCurrent();
-                useOverrideMode = !useOverrideMode;
+                if (overrideMode) scorer.setLiftStateToCurrent();
+                overrideMode = !overrideMode;
             }
 
-            if (useOverrideMode) {
+            if (overrideMode) {
                 if (control2LShoulder.wasJustPressed()) scorer.resetLift();
 
                 if (control2B.wasJustPressed()) scorer.toggleClaw();
@@ -169,7 +171,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             //everything below is telemetry
             myTelemetry.addData(
-                    "Robot is in", useOverrideMode?
+                    "Robot is in", overrideMode?
                             "manual override mode": // override
                             control2LShoulder.isDown()? // automated
                                     "stack heights mode":
