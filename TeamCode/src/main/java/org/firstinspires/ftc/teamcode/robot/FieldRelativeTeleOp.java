@@ -141,19 +141,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 scorer.runLift(control2LeftY);
             } else {
-                if (control2LShoulder.isDown()) {
-                    // Lift stack height triggers
-                    if (control2Up.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.FIVE);
-                    else if (control2Left.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.FOUR);
-                    else if (control2Right.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.THREE);
-                    else if (control2Down.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.TWO);
-                } else {
-                    // Lift junction height triggers
-                    if (control2Up.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.TALL);
-                    else if (control2Left.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED);
-                    else if (control2Right.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.LOW);
-                    else if (control2Down.wasJustPressed()) scorer.setTargetLiftPos(PowerplayScorer.liftPos.FLOOR);
-                }
+                stackHeights = control2LShoulder.isDown();
+                if (control2Up.wasJustPressed()) scorer.setTargetLiftPos(stackHeights? PowerplayScorer.liftPos.FIVE: PowerplayScorer.liftPos.TALL);
+                else if (control2Left.wasJustPressed()) scorer.setTargetLiftPos(stackHeights? PowerplayScorer.liftPos.FOUR: PowerplayScorer.liftPos.MED);
+                else if (control2Right.wasJustPressed()) scorer.setTargetLiftPos(stackHeights? PowerplayScorer.liftPos.THREE: PowerplayScorer.liftPos.LOW);
+                else if (control2Down.wasJustPressed()) scorer.setTargetLiftPos(stackHeights? PowerplayScorer.liftPos.TWO: PowerplayScorer.liftPos.FLOOR);
 
                 if (control2Y.wasJustPressed()) scorer.triggerPassThru();
 
@@ -173,7 +165,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             myTelemetry.addData(
                     "Robot is in", overrideMode?
                             "manual override mode": // override
-                            control2LShoulder.isDown()? // automated
+                            stackHeights? // automated
                                     "stack heights mode":
                                     "junction heights mode"
             );
