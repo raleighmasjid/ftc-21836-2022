@@ -257,7 +257,7 @@ public class PowerplayScorer {
                 if (!clawIsTilted) {
                     setPassThruAngle(RobotConfig.ANGLE_PASS_FRONT);
                     currentPassThruPos = passThruPos.FRONT_IDLE;
-                } else setPassThruAngle(RobotConfig.ANGLE_PASS_FRONT_TILT);
+                } else setPassThruAngle(RobotConfig.ANGLE_PASS_FRONT + RobotConfig.ANGLE_PASS_TILT);
                 break;
             case PIVOT_POS:
                 setPassThruAngle(RobotConfig.ANGLE_PASS_PIVOT);
@@ -269,7 +269,7 @@ public class PowerplayScorer {
                 if (!clawIsTilted) {
                     setPassThruAngle(RobotConfig.ANGLE_PASS_BACK);
                     currentPassThruPos = passThruPos.BACK_IDLE;
-                } else setPassThruAngle(RobotConfig.ANGLE_PASS_BACK_TILT);
+                } else setPassThruAngle(RobotConfig.ANGLE_PASS_BACK - RobotConfig.ANGLE_PASS_TILT);
                 break;
             default:
                 currentPassThruPos = passThruPos.FRONT;
