@@ -302,6 +302,7 @@ public class PowerplayScorer {
                     }
                     break;
                 case PIVOTING:
+                    if (passThruSwitched) pivotIsFront = false;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_PIVOTING) {
                         passThruTimer.reset();
                         currentPassThruPos = passThruPos.BACK;
@@ -337,6 +338,7 @@ public class PowerplayScorer {
                     }
                     break;
                 case PIVOTING:
+                    if (passThruSwitched) pivotIsFront = true;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_PIVOTING) {
                         passThruTimer.reset();
                         currentPassThruPos = passThruPos.FRONT;
