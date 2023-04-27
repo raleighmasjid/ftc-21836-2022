@@ -79,7 +79,7 @@ public class PowerplayScorer {
      * Timestamp of the last loop
      * Subtracted from the current timestamp to obtain dt for differentiation
      */
-    private double lastTimestamp;
+    private double currentTimestamp;
     /**
      * Desired claw position
      * True if open
@@ -435,8 +435,6 @@ public class PowerplayScorer {
      * Update lift motion profile with a new target position
      */
     private void updateLiftProfile (double targetLiftPos) {
-//        UNCOMMENT IF NULL POINTER EXCEPTIONS ARE THROWN
-//        targetLiftPos += (targetLiftPos == currentLiftState.getX())? 0.25: 0.0;
         boolean goingDown = targetLiftPos < currentLiftState.getX();
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
@@ -477,21 +475,21 @@ public class PowerplayScorer {
      */
     public void readLiftPos () {
         double
-                currentTimeStamp = liftDerivTimer.seconds(),
-                dt = currentTimeStamp - lastTimestamp;
+                newTimestamp = liftDerivTimer.seconds(),
+                dt = newTimestamp - currentTimestamp;
         boolean dtIsZero = dt == 0.0;
-        lastTimestamp = currentTimeStamp;
+        currentTimestamp = newTimestamp;
 
         veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
         accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
         jerkFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
 
-        double currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
-        double currentLiftVelo = dtIsZero? 0.0: (veloFilter.getEstimate((currentLiftPos - currentLiftState.getX()) / dt));
-        double currentLiftAccel = dtIsZero? 0.0: (accelFilter.getEstimate((currentLiftVelo - currentLiftState.getV()) / dt));
-        double currentLiftJerk = dtIsZero? 0.0: (jerkFilter.getEstimate((currentLiftAccel - currentLiftState.getA()) / dt));
+        double newLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
+        double newLiftVelo = dtIsZero? 0.0: (veloFilter.getEstimate((newLiftPos - currentLiftState.getX()) / dt));
+        double newLiftAccel = dtIsZero? 0.0: (accelFilter.getEstimate((newLiftVelo - currentLiftState.getV()) / dt));
+        double newLiftJerk = dtIsZero? 0.0: (jerkFilter.getEstimate((newLiftAccel - currentLiftState.getA()) / dt));
 
-        currentLiftState = new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk);
+        currentLiftState = new MotionState(newLiftPos, newLiftVelo, newLiftAccel, newLiftJerk);
     }
 
     /**
@@ -502,7 +500,7 @@ public class PowerplayScorer {
         accelFilter.resetPastValues();
         veloFilter.resetPastValues();
 
-        lastTimestamp = 0.0;
+        currentTimestamp = 0.0;
         targetLiftPosName = liftPos.FLOOR.name();
         clawIsTilted = false;
 
@@ -603,10 +601,7 @@ public class PowerplayScorer {
                     RobotConfig.ANGLE_CLAW_CLOSED // closed
         );
 
-        if ((liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) && !clawHasLifted) {
-            liftClaw();
-            clawHasLifted = true;
-        }
+        if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
     }
 
     /**
@@ -615,10 +610,8 @@ public class PowerplayScorer {
      *      2 inches if grabbing off the floor
      */
     public void liftClaw () {
-        setTargetLiftPos(Math.min(
-                currentLiftState.getX() + ((currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE)? 6: 2),
-                RobotConfig.HEIGHT_TALL
-        ));
+        setTargetLiftPos(currentLiftState.getX() + ((currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE)? 6: 2));
+        clawHasLifted = true;
     }
 
     /**
@@ -628,8 +621,10 @@ public class PowerplayScorer {
      */
     public void grabCone () {
         setClawOpen(false);
-        clawHasLifted = false;
-        liftClawTimer.reset();
+        if (currentLiftState.getX() <= (RobotConfig.HEIGHT_FIVE + RobotConfig.LIFT_POS_TOLERANCE)) {
+            clawHasLifted = false;
+            liftClawTimer.reset();
+        }
     }
 
     /**
@@ -656,7 +651,7 @@ public class PowerplayScorer {
      * Holds pivot servo position
      */
     public void runPivot () {
-        pivotServo.turnToAngle(355.0 - (pivotIsFront? RobotConfig.ANGLE_PIVOT_FRONT : RobotConfig.ANGLE_PIVOT_BACK));
+        pivotServo.turnToAngle(355.0 - (pivotIsFront? RobotConfig.ANGLE_PIVOT_FRONT: RobotConfig.ANGLE_PIVOT_BACK));
     }
 
     /**

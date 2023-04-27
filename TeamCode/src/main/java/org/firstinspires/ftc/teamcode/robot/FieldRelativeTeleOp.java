@@ -176,6 +176,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                                     "junction heights mode"
             );
             myTelemetry.addLine();
+            myTelemetry.addData("Input velocity", control2LeftY);
+            myTelemetry.addLine();
             scorer.printTelemetry(myTelemetry);
             myTelemetry.update();
         }
