@@ -553,14 +553,12 @@ public class PowerplayScorer {
      * @return Velocity command for lift
      */
     private double getLiftGravityFF () {
-        double
-                currentLiftPos = currentLiftState.getX(),
-                veloCommand = 0.0;
+        double veloCommand = 0.0;
 
-        if      (currentLiftPos >= RobotConfig.STAGES_FOUR)         veloCommand = RobotConfig.LIFT_kG_FOUR;
-        else if (currentLiftPos >= RobotConfig.STAGES_THREE)        veloCommand = RobotConfig.LIFT_kG_THREE;
-        else if (currentLiftPos >= RobotConfig.STAGES_TWO)          veloCommand = RobotConfig.LIFT_kG_TWO;
-        else if (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE)   veloCommand = RobotConfig.LIFT_kG_ONE;
+        if      (currentLiftState.getX() >= RobotConfig.STAGES_FOUR)         veloCommand = RobotConfig.LIFT_kG_FOUR;
+        else if (currentLiftState.getX() >= RobotConfig.STAGES_THREE)        veloCommand = RobotConfig.LIFT_kG_THREE;
+        else if (currentLiftState.getX() >= RobotConfig.STAGES_TWO)          veloCommand = RobotConfig.LIFT_kG_TWO;
+        else if (currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE)   veloCommand = RobotConfig.LIFT_kG_ONE;
 
         return veloCommand;
     }
