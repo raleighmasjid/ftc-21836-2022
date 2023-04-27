@@ -131,10 +131,6 @@ public class PowerplayScorer {
      * Revolutions per minute for lift motors
      */
     private static final double LIFT_RPM = 1150;
-    /**
-     * Lift state of 0 position, velocity, acceleration, and jerk
-     */
-    private static final MotionState zeroState = new MotionState(0.0, 0.0, 0.0, 0.0);
 
     /**
      * Initialize internal objects and variables
@@ -513,12 +509,12 @@ public class PowerplayScorer {
         liftController.reset();
         lift_motor2.resetEncoder();
 
-        currentLiftState = zeroState;
-        profileLiftState = zeroState;
+        currentLiftState = new MotionState(0.0, 0.0, 0.0, 0.0);
+        profileLiftState = new MotionState(0.0, 0.0, 0.0, 0.0);
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                zeroState,
-                zeroState,
+                new MotionState(0.0, 0.0, 0.0, 0.0),
+                new MotionState(0.0, 0.0, 0.0, 0.0),
                 RobotConfig.LIFT_MAX_UP_VELO,
                 RobotConfig.LIFT_MAX_UP_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
