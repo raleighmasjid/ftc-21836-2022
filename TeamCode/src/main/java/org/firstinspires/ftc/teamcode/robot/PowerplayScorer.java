@@ -425,7 +425,7 @@ public class PowerplayScorer {
      * Internal acknowledgement method, use if disabling lift PIDF, moving, and then re-enabling lift PIDF.
      */
     public void setLiftStateToCurrent() {
-        profileLiftState = currentLiftState;
+        profileLiftState = new MotionState(currentLiftState.getX(), currentLiftState.getV(), currentLiftState.getA(), currentLiftState.getJ());
         setTargetLiftPos(currentLiftState.getX());
     }
 
