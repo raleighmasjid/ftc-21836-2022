@@ -603,10 +603,10 @@ public class PowerplayScorer {
     public void runClaw () {
         clawServo.turnToAngle(
                 clawIsOpen?
-                    passThruIsMoving? // open
-                            RobotConfig.ANGLE_CLAW_PASS : // moving
-                            RobotConfig.ANGLE_CLAW_OPEN : // not moving
-                    RobotConfig.ANGLE_CLAW_CLOSED // closed
+                        passThruIsMoving? // open
+                                RobotConfig.ANGLE_CLAW_PASS : // moving
+                                RobotConfig.ANGLE_CLAW_OPEN : // not moving
+                        RobotConfig.ANGLE_CLAW_CLOSED // closed
         );
 
         if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
