@@ -379,9 +379,9 @@ public class PowerplayScorer {
      * @param height Desired named position to run to
      */
     public void setTargetLiftPos (@NonNull liftPos height) {
-        clawIsTilted = false;
+        clawIsTilted = (height == liftPos.LOW) || (height == liftPos.MED) || (height == liftPos.TALL);
         double targetLiftPos;
-        switch (height){
+        switch (height) {
             case TWO:
                 targetLiftPos = RobotConfig.HEIGHT_TWO;
                 targetLiftPosName = liftPos.TWO.name();
@@ -399,17 +399,14 @@ public class PowerplayScorer {
                 targetLiftPosName = liftPos.FIVE.name();
                 break;
             case LOW:
-                clawIsTilted = true;
                 targetLiftPos = RobotConfig.HEIGHT_LOW;
                 targetLiftPosName = liftPos.LOW.name();
                 break;
             case MED:
-                clawIsTilted = true;
                 targetLiftPos = RobotConfig.HEIGHT_MEDIUM;
                 targetLiftPosName = liftPos.MED.name();
                 break;
             case TALL:
-                clawIsTilted = true;
                 targetLiftPos = RobotConfig.HEIGHT_TALL;
                 targetLiftPosName = liftPos.TALL.name();
                 break;
