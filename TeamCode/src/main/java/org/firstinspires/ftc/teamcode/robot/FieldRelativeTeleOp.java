@@ -18,10 +18,6 @@ import java.util.List;
 
 public class FieldRelativeTeleOp extends LinearOpMode {
 
-    PowerplayScorer scorer = new PowerplayScorer();
-    TeleOpMecanumDrive drivetrain = new TeleOpMecanumDrive();
-    List<LynxModule> hubs;
-
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -29,10 +25,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
+        PowerplayScorer scorer = new PowerplayScorer();
+        TeleOpMecanumDrive drivetrain = new TeleOpMecanumDrive();
         scorer.init(hardwareMap);
         drivetrain.init(hardwareMap);
 
-        hubs = hardwareMap.getAll(LynxModule.class);
+        List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
 
 //      initializes both gamepads:
         GamepadEx
@@ -58,16 +56,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 control2Right = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_RIGHT),
                 control2Down = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_DOWN);
 
-        double
-                control1LeftY,
-                control1LeftX,
-                control1RightX,
-                control2LeftY,
-                precisionScale;
-
         boolean
-                overrideMode = false,
-                stackHeights = false;
+                overrideMode = false;
 
         drivetrain.setRotation(HeadingHolder.getHeading());
 
@@ -99,34 +89,29 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2Right.readValue();
             control2Down.readValue();
 
-            control1LeftY = Gamepad1.getLeftY();
-            control1LeftX = Gamepad1.getLeftX();
-            control1RightX = Gamepad1.getRightX();
-
-            control2LeftY = Gamepad2.getLeftY();
-
             scorer.readLiftPos();
 
-            // Field-centric reset
+            // Field-centric resets
             if (control1Up.wasJustPressed()) drivetrain.resetRotation();
             else if (control1Left.wasJustPressed()) drivetrain.setRotation(90.0);
             else if (control1Down.wasJustPressed()) drivetrain.setRotation(180.0);
             else if (control1Right.wasJustPressed()) drivetrain.setRotation(270.0);
 
             // Precision mode driving triggers
-            precisionScale = Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)?
+            double precisionScale = Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)?
                     RobotConfig.PRECISION_MODE_SCALE:
-                    (RobotConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1
-            ;
+                    (RobotConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1,
 
-            control1LeftX *= precisionScale;
-            control1LeftY *= precisionScale;
-            control1RightX *= precisionScale;
+                    control1LeftX = Gamepad1.getLeftX() * precisionScale,
+                    control1LeftY = Gamepad1.getLeftY() * precisionScale,
+                    control1RightX = Gamepad1.getRightX() * precisionScale;
 
             if (control2RShoulder.wasJustPressed()) {
                 if (overrideMode) scorer.setLiftStateToCurrent();
                 overrideMode = !overrideMode;
             }
+
+            boolean stackHeights = control2LShoulder.isDown();
 
             if (overrideMode) {
                 if (control2LShoulder.wasJustPressed()) scorer.resetLift();
@@ -139,9 +124,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if (control2Up.wasJustPressed()) scorer.toggleClawTilt();
 
-                scorer.runLift(control2LeftY);
+                scorer.runLift(Gamepad2.getLeftY());
             } else {
-                stackHeights = control2LShoulder.isDown();
                 if (control2Up.wasJustPressed()) scorer.setTargetLiftPos(stackHeights? PowerplayScorer.liftPos.FIVE: PowerplayScorer.liftPos.TALL);
                 else if (control2Left.wasJustPressed()) scorer.setTargetLiftPos(stackHeights? PowerplayScorer.liftPos.FOUR: PowerplayScorer.liftPos.MED);
                 else if (control2Right.wasJustPressed()) scorer.setTargetLiftPos(stackHeights? PowerplayScorer.liftPos.THREE: PowerplayScorer.liftPos.LOW);

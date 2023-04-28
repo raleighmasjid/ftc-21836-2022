@@ -30,39 +30,32 @@ import java.util.List;
 @Autonomous(name= "Tall Testing", group = "21836 Backup")
 public class AutonomousTallTesting extends LinearOpMode {
 
-    OpenCvCamera camera;
-    AprilTagDetectionPipeline signalSleeveDetectionPipeline;
-    List<LynxModule> hubs;
-
-    // Lens intrinsics
-    // UNITS ARE PIXELS
-    // NOTE: this calibration is for the C920 webcam at 800x448.
-    // You will need to do your own calibration for other configurations!
-    double
-            fx = RobotConfig.camera_fx,
-            fy = RobotConfig.camera_fy,
-            cx = RobotConfig.camera_cx,
-            cy = RobotConfig.camera_cy,
-            tagSize = 0.166;
-    int
-            LEFT = 1,
-            MIDDLE = 2,
-            RIGHT = 3;
-
-    ElapsedTime autonomousTimer = new ElapsedTime();
-
-    boolean hasParked = false;
-
-    AprilTagDetection tagOfInterest = null;
-
-    PowerplayScorer scorer = new PowerplayScorer();
-    AutonMecanumDrive drivetrain;
-
     @Override
     public void runOpMode() throws InterruptedException {
+        // Lens intrinsics
+        // UNITS ARE PIXELS
+        // NOTE: this calibration is for the C920 webcam at 800x448.
+        // You will need to do your own calibration for other configurations!
+        double
+                fx = RobotConfig.camera_fx,
+                fy = RobotConfig.camera_fy,
+                cx = RobotConfig.camera_cx,
+                cy = RobotConfig.camera_cy,
+                tagSize = 0.166;
+        int
+                LEFT = 1,
+                MIDDLE = 2,
+                RIGHT = 3;
+
+        ElapsedTime autonomousTimer = new ElapsedTime();
+
+        boolean hasParked = false;
+
+        AprilTagDetection tagOfInterest = null;
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        signalSleeveDetectionPipeline = new AprilTagDetectionPipeline(tagSize, fx, fy, cx, cy);
+        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        AprilTagDetectionPipeline signalSleeveDetectionPipeline = new AprilTagDetectionPipeline(tagSize, fx, fy, cx, cy);
 
         camera.setPipeline(signalSleeveDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -82,7 +75,8 @@ public class AutonomousTallTesting extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-        drivetrain = new AutonMecanumDrive(hardwareMap);
+        AutonMecanumDrive drivetrain = new AutonMecanumDrive(hardwareMap);
+        PowerplayScorer scorer = new PowerplayScorer();
         scorer.init(hardwareMap);
 
         //  Initialize telemetry and dashboard
@@ -211,7 +205,7 @@ public class AutonomousTallTesting extends LinearOpMode {
 
         drivetrain.followTrajectorySequenceAsync(trajectory1);
 
-        hubs = hardwareMap.getAll(LynxModule.class);
+        List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
 
         for (LynxModule hub : hubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);

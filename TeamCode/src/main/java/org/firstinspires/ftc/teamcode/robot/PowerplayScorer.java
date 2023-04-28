@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
@@ -362,14 +364,21 @@ public class PowerplayScorer {
      * Named lift position
      */
     public enum liftPos {
-        FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
+        FLOOR,
+        TWO,
+        THREE,
+        FOUR,
+        FIVE,
+        LOW,
+        MED,
+        TALL
     }
 
     /**
      * Set target for lift motion profile
      * @param height Desired named position to run to
      */
-    public void setTargetLiftPos (liftPos height) {
+    public void setTargetLiftPos (@NonNull liftPos height) {
         clawIsTilted = false;
         double targetLiftPos;
         switch (height){
@@ -542,10 +551,10 @@ public class PowerplayScorer {
      * @param veloCommand Pass in a velocity between 0 and 1
      */
     public void runLift (double veloCommand) {
-        veloCommand += getLiftGravityFF();
-        lift_motor1.set(veloCommand);
-        lift_motor2.set(veloCommand);
-        lift_motor3.set(veloCommand);
+        double commandWithkG = veloCommand + getLiftGravityFF();
+        lift_motor1.set(commandWithkG);
+        lift_motor2.set(commandWithkG);
+        lift_motor3.set(commandWithkG);
     }
 
     /**
@@ -553,12 +562,13 @@ public class PowerplayScorer {
      * @return Velocity command for lift
      */
     private double getLiftGravityFF () {
-        double veloCommand = 0.0;
+        double veloCommand;
 
         if      (currentLiftState.getX() >= RobotConfig.STAGES_FOUR)         veloCommand = RobotConfig.LIFT_kG_FOUR;
         else if (currentLiftState.getX() >= RobotConfig.STAGES_THREE)        veloCommand = RobotConfig.LIFT_kG_THREE;
         else if (currentLiftState.getX() >= RobotConfig.STAGES_TWO)          veloCommand = RobotConfig.LIFT_kG_TWO;
         else if (currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE)   veloCommand = RobotConfig.LIFT_kG_ONE;
+        else    veloCommand = 0.0;
 
         return veloCommand;
     }
