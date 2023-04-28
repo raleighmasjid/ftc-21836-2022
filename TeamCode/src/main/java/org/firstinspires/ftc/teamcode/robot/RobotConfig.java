@@ -13,9 +13,9 @@ public class RobotConfig {
             HEIGHT_LOW = 15.8365,
             HEIGHT_MEDIUM = 25.365,
             HEIGHT_TALL = 36.50375,
-            STAGES_FOUR = 28.8,
-            STAGES_THREE = 19.2,
-            STAGES_TWO = 9.6,
+            HEIGHT_STAGES_FOUR = 28.8,
+            HEIGHT_STAGES_THREE = 19.2,
+            HEIGHT_STAGES_TWO = 9.6,
             LIFT_kG_FOUR = 0.075,
             LIFT_kG_THREE = 0.055,
             LIFT_kG_TWO = 0.025,
@@ -56,10 +56,10 @@ public class RobotConfig {
             TIME_BACK_PIVOT = 1,
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1,
-            camera_fx = 578.272,
-            camera_fy = 578.272,
-            camera_cx = 402.145,
-            camera_cy = 221.506;
+            CAMERA_FX = 578.272,
+            CAMERA_FY = 578.272,
+            CAMERA_CX = 402.145,
+            CAMERA_CY = 221.506;
 
     public static int
             LIFT_PID_ESTIMATE_COUNT = 5,

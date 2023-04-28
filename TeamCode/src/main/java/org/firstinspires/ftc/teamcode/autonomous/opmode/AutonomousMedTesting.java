@@ -37,10 +37,10 @@ public class AutonomousMedTesting extends LinearOpMode {
         // NOTE: this calibration is for the C920 webcam at 800x448.
         // You will need to do your own calibration for other configurations!
         double
-                fx = RobotConfig.camera_fx,
-                fy = RobotConfig.camera_fy,
-                cx = RobotConfig.camera_cx,
-                cy = RobotConfig.camera_cy,
+                fx = RobotConfig.CAMERA_FX,
+                fy = RobotConfig.CAMERA_FY,
+                cx = RobotConfig.CAMERA_CX,
+                cy = RobotConfig.CAMERA_CY,
                 tagSize = 0.166;
         int
                 LEFT = 1,
