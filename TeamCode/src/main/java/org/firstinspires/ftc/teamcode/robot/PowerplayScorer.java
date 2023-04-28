@@ -671,13 +671,9 @@ public class PowerplayScorer {
      * Toggles position of main passthrough servos
      */
     public void togglePassThru () {
-        if (currentPassThruState != passThruState.FRONT) {
-            currentPassThruPos = passThruPos.FRONT;
-            currentPassThruState = passThruState.FRONT;
-        } else {
-            currentPassThruPos = passThruPos.BACK;
-            currentPassThruState = passThruState.BACK;
-        }
+        currentPassThruPos = passThruInFront? passThruPos.BACK: passThruPos.FRONT;
+        currentPassThruState = passThruInFront? passThruState.BACK: passThruState.FRONT;
+        passThruInFront = !passThruInFront;
     }
 
     /**
