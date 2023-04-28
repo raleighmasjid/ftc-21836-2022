@@ -499,6 +499,7 @@ public class PowerplayScorer {
         double newLiftJerk = dtIsZero? 0.0: (jerkFilter.getEstimate((newLiftAccel - currentLiftState.getA()) / dt));
 
         currentLiftState = new MotionState(newLiftPos, newLiftVelo, newLiftAccel, newLiftJerk);
+        updateLiftGains();
     }
 
     /**
@@ -542,7 +543,6 @@ public class PowerplayScorer {
 
         if (liftController.atTargetPosition(currentLiftState.getX())) liftController.reset();
 
-        updateLiftGains();
         runLift(liftController.update(currentLiftState.getX()));
     }
 
