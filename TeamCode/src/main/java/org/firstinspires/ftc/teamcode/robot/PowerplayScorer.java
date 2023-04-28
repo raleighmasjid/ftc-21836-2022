@@ -551,7 +551,7 @@ public class PowerplayScorer {
      * @param veloCommand Pass in a velocity between 0 and 1
      */
     public void runLift (double veloCommand) {
-        double commandWithkG = veloCommand + getLiftGravityFF();
+        double commandWithkG = veloCommand + kG();
         lift_motor1.set(commandWithkG);
         lift_motor2.set(commandWithkG);
         lift_motor3.set(commandWithkG);
@@ -561,13 +561,13 @@ public class PowerplayScorer {
      * Calculates anti-gravity feedforward for a 4-stage continuous rigged linear slide system
      * @return Velocity command for lift
      */
-    private double getLiftGravityFF () {
+    private double kG () {
         double veloCommand;
 
         if      (currentLiftState.getX() >= RobotConfig.HEIGHT_STAGES_FOUR)         veloCommand = RobotConfig.LIFT_kG_FOUR;
         else if (currentLiftState.getX() >= RobotConfig.HEIGHT_STAGES_THREE)        veloCommand = RobotConfig.LIFT_kG_THREE;
         else if (currentLiftState.getX() >= RobotConfig.HEIGHT_STAGES_TWO)          veloCommand = RobotConfig.LIFT_kG_TWO;
-        else if (currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE)   veloCommand = RobotConfig.LIFT_kG_ONE;
+        else if (currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE)          veloCommand = RobotConfig.LIFT_kG_ONE;
         else    veloCommand = 0.0;
 
         return veloCommand;
