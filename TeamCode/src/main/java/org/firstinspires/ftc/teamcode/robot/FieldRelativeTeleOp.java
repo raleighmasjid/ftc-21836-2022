@@ -56,8 +56,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 control2Right = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_RIGHT),
                 control2Down = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_DOWN);
 
-        boolean
-                overrideMode = false;
+        boolean overrideMode = false;
 
         drivetrain.setRotation(HeadingHolder.getHeading());
 
@@ -106,12 +105,12 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     control1LeftY = Gamepad1.getLeftY() * precisionScale,
                     control1RightX = Gamepad1.getRightX() * precisionScale;
 
+            boolean stackHeights = control2LShoulder.isDown();
+
             if (control2RShoulder.wasJustPressed()) {
                 if (overrideMode) scorer.setLiftStateToCurrent();
                 overrideMode = !overrideMode;
             }
-
-            boolean stackHeights = control2LShoulder.isDown();
 
             if (overrideMode) {
                 if (control2LShoulder.wasJustPressed()) scorer.resetLift();
