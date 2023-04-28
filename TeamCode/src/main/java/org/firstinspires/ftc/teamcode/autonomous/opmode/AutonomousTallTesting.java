@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
@@ -104,6 +105,8 @@ public class AutonomousTallTesting extends LinearOpMode {
         Pose2d parkingZone1 = new Pose2d(side*(isRight? 12.5:57), -12.5, isRight? facingRight: facingLeft);
         Pose2d parkingZone2 = new Pose2d(centerPathX, -12.5, parkingZone1.getHeading());
         Pose2d parkingZone3 = new Pose2d(side*(isRight? 57:12.5), -12.5, parkingZone1.getHeading());
+
+        HeadingHolder.setHeading(isRight? 90.0: 270.0);
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drivetrain.setPoseEstimate(startPose);

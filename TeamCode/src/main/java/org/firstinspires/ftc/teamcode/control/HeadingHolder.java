@@ -7,12 +7,12 @@ public class HeadingHolder {
     private static double lastHeading = 0.0;
 
     //Setter method
-    public static void setHeading(double newHeading){
+    public static void setHeading (double newHeading){
         lastHeading = newHeading;
     }
 
     //Getter method
-    public static double getHeading(){
+    public static double getHeading (){
         return lastHeading;
     }
 }
