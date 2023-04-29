@@ -83,7 +83,7 @@ public class PowerplayScorer {
     private boolean clawIsOpen;
     /**
      * True by default
-     * False only if liftClaw has been called, and the claw has not yet lifted
+     * False only if grabCone has been called, and liftClaw has not been called
      */
     private boolean clawHasLifted;
     /**
@@ -145,6 +145,10 @@ public class PowerplayScorer {
         lift_motor2 = liftMotor(hw, "lift motor 2");
         lift_motor3 = liftMotor(hw, "lift motor 3");
 
+        lift_motor1.setInverted(true);
+        lift_motor2.setInverted(false);
+        lift_motor3.setInverted(true);
+
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor3.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -152,10 +156,6 @@ public class PowerplayScorer {
         lift_motor1.setRunMode(Motor.RunMode.VelocityControl);
         lift_motor2.setRunMode(Motor.RunMode.VelocityControl);
         lift_motor3.setRunMode(Motor.RunMode.VelocityControl);
-
-        lift_motor1.setInverted(true);
-        lift_motor2.setInverted(false);
-        lift_motor3.setInverted(true);
 
         liftController = new PIDFController(
                 new PIDCoefficients(
