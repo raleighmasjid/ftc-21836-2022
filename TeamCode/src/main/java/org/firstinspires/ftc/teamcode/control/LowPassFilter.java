@@ -7,7 +7,7 @@ public class LowPassFilter {
     private int pastValuesCount = 5;
     private final ArrayList<Double> pastValues = new ArrayList<>();
 
-    public LowPassFilter () {
+    public LowPassFilter() {
         resetPastValues();
     }
 
@@ -17,14 +17,14 @@ public class LowPassFilter {
         this.pastValuesCount = pastValuesCount;
     }
 
-    public void resetPastValues () {
+    public void resetPastValues() {
         pastValues.clear();
         for (int x = 0; x < pastValuesCount; x++) pastValues.add(0.0);
     }
 
-    public double getEstimate (double newValue) {
+    public double getEstimate(double newValue) {
         double pastValuesTotal = 0.0;
-        for (Double pastValue : pastValues) pastValuesTotal += pastValue;
+        for (double pastValue : pastValues) pastValuesTotal += pastValue;
         double size = pastValues.size();
         double pastValuesAvg = pastValuesTotal / size;
 
