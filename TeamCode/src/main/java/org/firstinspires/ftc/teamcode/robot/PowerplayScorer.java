@@ -555,18 +555,11 @@ public class PowerplayScorer {
      */
     private double kG() {
         double currentLiftPos = currentLiftState.getX();
-        return currentLiftPos >= RobotConfig.HEIGHT_STAGES_FOUR ?
-                RobotConfig.LIFT_kG_FOUR :
-                (currentLiftPos >= RobotConfig.HEIGHT_STAGES_THREE ?
-                        RobotConfig.LIFT_kG_THREE :
-                        (currentLiftPos >= RobotConfig.HEIGHT_STAGES_TWO ?
-                                RobotConfig.LIFT_kG_TWO :
-                                (currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE ?
-                                        RobotConfig.LIFT_kG_ONE :
-                                        0.0
-                                )
-                        )
-                );
+        return currentLiftPos >= RobotConfig.HEIGHT_STAGES_FOUR ? RobotConfig.LIFT_kG_FOUR :
+                currentLiftPos >= RobotConfig.HEIGHT_STAGES_THREE ? RobotConfig.LIFT_kG_THREE :
+                        currentLiftPos >= RobotConfig.HEIGHT_STAGES_TWO ? RobotConfig.LIFT_kG_TWO :
+                                currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE ? RobotConfig.LIFT_kG_ONE :
+                                        0.0;
     }
 
     public void toggleClawTilt() {
@@ -629,7 +622,8 @@ public class PowerplayScorer {
      * 2 inches if grabbing off the floor
      */
     public void liftClaw() {
-        setTargetLiftPos(currentLiftState.getX() + ((currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE) ? 6 : 2));
+        double currentLiftPos = currentLiftState.getX();
+        setTargetLiftPos(currentLiftPos + ((currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) ? 6 : 2));
         clawHasLifted = true;
     }
 
