@@ -27,12 +27,12 @@ public class PowerplayScorer {
     /**
      * Motor powering the dual lift system
      */
-    private MotorEx lift_motor1, lift_motor2, lift_motor3;
-    private SimpleServo clawServo, pivotServo, passThruServoR, passThruServoL, coneArmServoR, coneArmServoL;
+    private final MotorEx lift_motor1, lift_motor2, lift_motor3;
+    private final SimpleServo clawServo, pivotServo, passThruServoR, passThruServoL, coneArmServoR, coneArmServoL;
     /**
      * PID + feedforward controller for lift
      */
-    private PIDFController liftController;
+    private final PIDFController liftController;
     /**
      * Lift motion profile to track along
      */
@@ -40,7 +40,7 @@ public class PowerplayScorer {
     /**
      * Timer for tracking along lift motion profile
      */
-    private ElapsedTime liftProfileTimer;
+    private final ElapsedTime liftProfileTimer;
     /**
      * Lift state grabbed from motion profile
      */
@@ -56,7 +56,7 @@ public class PowerplayScorer {
     /**
      * Timer for differentiating velocity, acceleration, and jerk
      */
-    private ElapsedTime liftDerivTimer;
+    private final ElapsedTime liftDerivTimer;
     /**
      * Passthrough to track claw closing time before lifting
      */
@@ -65,7 +65,7 @@ public class PowerplayScorer {
      * Finite impulse response low-pass filter
      * Filters out sensor noise amplified through differentiation
      */
-    private LowPassFilter
+    private final LowPassFilter
             jerkFilter,
             accelFilter,
             veloFilter;
