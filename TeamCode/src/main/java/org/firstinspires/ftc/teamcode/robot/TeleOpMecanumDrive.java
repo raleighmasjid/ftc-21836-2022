@@ -45,18 +45,22 @@ public class TeleOpMecanumDrive {
         headingOffset = getIMUHeading() - startAngle;
     }
 
-    public void setRotation(double startAngle) {
-        rotationOffset = getIMURotation() - (startAngle);
+    @NonNull
+    @Contract("_, _ -> new")
+    private MotorEx assignMotor(HardwareMap hw, String name) {
+        return new MotorEx(hw, name, TICKS_PER_REV, MAX_RPM);
     }
 
     public TeleOpMecanumDrive(HardwareMap hw) {
         headingOffset = 0.0;
 
         // Assign motors using their hardware map names, each drive-type can have different names if needed
-        motor_frontLeft = new MotorEx(hw, "left front", TICKS_PER_REV, MAX_RPM);
-        motor_frontRight = new MotorEx(hw, "right front", TICKS_PER_REV, MAX_RPM);
-        motor_backLeft = new MotorEx(hw, "left back", TICKS_PER_REV, MAX_RPM);
-        motor_backRight = new MotorEx(hw, "right back", TICKS_PER_REV, MAX_RPM);
+        MotorEx motor_frontLeft, motor_frontRight, motor_backLeft, motor_backRight;
+
+        motor_frontLeft = assignMotor(hw, "left front");
+        motor_frontRight = assignMotor(hw, "right front");
+        motor_backLeft = assignMotor(hw, "left back");
+        motor_backRight = assignMotor(hw, "right back");
 
         imu = hw.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientation = new RevHubOrientationOnRobot(
