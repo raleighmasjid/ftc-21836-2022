@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_RPM;
+import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.TICKS_PER_REV;
+
+import androidx.annotation.NonNull;
 
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
@@ -10,17 +13,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.autonomous.DriveConstants;
+import org.jetbrains.annotations.Contract;
 
 
 public class TeleOpMecanumDrive {
-    HardwareMap hw;
-    public MotorEx motor_frontLeft, motor_frontRight, motor_backLeft, motor_backRight;
-    public IMU imu;
+    private final IMU imu;
 
-    public MecanumDrive mecanumDrivetrain;
-
-    private static final double TICKS_PER_REV = DriveConstants.TICKS_PER_REV;
+    private final MecanumDrive mecanumDrivetrain;
 
     private double headingOffset, heading;
 
