@@ -47,7 +47,7 @@ public class TeleOpMecanumDrive {
 
     @NonNull
     @Contract("_, _ -> new")
-    private MotorEx assignMotor(HardwareMap hw, String name) {
+    private MotorEx drivetrainMotor(HardwareMap hw, String name) {
         return new MotorEx(hw, name, TICKS_PER_REV, MAX_RPM);
     }
 
@@ -57,10 +57,10 @@ public class TeleOpMecanumDrive {
         // Assign motors using their hardware map names, each drive-type can have different names if needed
         MotorEx motor_frontLeft, motor_frontRight, motor_backLeft, motor_backRight;
 
-        motor_frontLeft = assignMotor(hw, "left front");
-        motor_frontRight = assignMotor(hw, "right front");
-        motor_backLeft = assignMotor(hw, "left back");
-        motor_backRight = assignMotor(hw, "right back");
+        motor_frontLeft = drivetrainMotor(hw, "left front");
+        motor_frontRight = drivetrainMotor(hw, "right front");
+        motor_backLeft = drivetrainMotor(hw, "left back");
+        motor_backRight = drivetrainMotor(hw, "right back");
 
         imu = hw.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientation = new RevHubOrientationOnRobot(

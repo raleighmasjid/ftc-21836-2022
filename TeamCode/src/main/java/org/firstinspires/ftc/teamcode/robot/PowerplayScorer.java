@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.LowPassFilter;
 import org.firstinspires.ftc.teamcode.control.PIDFController;
+import org.jetbrains.annotations.Contract;
 
 /**
  * Contains 3-motor automated lift, 3-state claw, and state-machine-controlled passthrough functions
@@ -140,9 +141,9 @@ public class PowerplayScorer {
         coneArmServoR = new SimpleServo(hw, "arm right", 0, 280);
         coneArmServoL = new SimpleServo(hw, "arm left", 0, 280);
 
-        lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, LIFT_RPM);
-        lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, LIFT_RPM);
-        lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, LIFT_RPM);
+        lift_motor1 = liftMotor(hw, "lift motor 1");
+        lift_motor2 = liftMotor(hw, "lift motor 2");
+        lift_motor3 = liftMotor(hw, "lift motor 3");
 
         lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -198,6 +199,12 @@ public class PowerplayScorer {
         liftDerivTimer.reset();
 
         resetLift();
+    }
+
+    @NonNull
+    @Contract("_, _ -> new")
+    private MotorEx liftMotor(HardwareMap hw, String name) {
+        return new MotorEx(hw, name, LIFT_TICKS, LIFT_RPM);
     }
 
     /**
