@@ -25,24 +25,24 @@ public class TeleOpMecanumDrive {
     public double rotationOffset = 0.0, rotYaw = 0.0;
 
     // ftclib field-centric mecanum drive code:
-    public void driveFieldCentric (double leftX, double leftY, double rightX){
+    public void driveFieldCentric(double leftX, double leftY, double rightX) {
         double heading = getOffsetRotation();
         rotYaw = heading;
         mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, heading);
     }
 
-    public double getIMURotation(){
+    public double getIMURotation() {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
-    public double getOffsetRotation(){
+    public double getOffsetRotation() {
         return getIMURotation() - rotationOffset;
     }
 
-    public void resetRotation(){
+    public void resetRotation() {
         rotationOffset = getIMURotation();
     }
-    
+
     public void setRotation(double startAngle) {
         rotationOffset = getIMURotation() - (startAngle);
     }

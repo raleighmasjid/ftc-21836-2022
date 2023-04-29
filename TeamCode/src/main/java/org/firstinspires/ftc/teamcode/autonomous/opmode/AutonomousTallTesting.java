@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Autonomous(name= "Tall Testing", group = "21836 Backup")
+@Autonomous(name = "Tall Testing", group = "21836 Backup")
 public class AutonomousTallTesting extends LinearOpMode {
 
     @Override
@@ -59,17 +59,14 @@ public class AutonomousTallTesting extends LinearOpMode {
         AprilTagDetectionPipeline signalSleeveDetectionPipeline = new AprilTagDetectionPipeline(tagSize, fx, fy, cx, cy);
 
         camera.setPipeline(signalSleeveDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
-                camera.startStreaming(800,448, OpenCvCameraRotation.SIDEWAYS_RIGHT);
+            public void onOpened() {
+                camera.startStreaming(800, 448, OpenCvCameraRotation.SIDEWAYS_RIGHT);
             }
 
             @Override
-            public void onError(int errorCode)
-            {
+            public void onError(int errorCode) {
 
             }
         });
@@ -82,12 +79,12 @@ public class AutonomousTallTesting extends LinearOpMode {
         //  Initialize telemetry and dashboard
         MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
-        dashboard.startCameraStream(camera,0);
+        dashboard.startCameraStream(camera, 0);
 
         boolean isRight = true;
-        double side = isRight? 1: -1;
+        double side = isRight ? 1 : -1;
 
-        double centerPathX = side*35;
+        double centerPathX = side * 35;
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
@@ -95,17 +92,17 @@ public class AutonomousTallTesting extends LinearOpMode {
         double liftAndDropTime = 0.1;
         double clawToFlipTime = 0.1;
 
-        Vector2d stackPos = new Vector2d(side*59, -12.5);
-        Vector2d sideTurnPos = new Vector2d(side*46, -12.5);
-        Pose2d tallScoringPos = new Pose2d(side*31, -7.5, Math.toRadians(isRight? 135: 180-135));
-        Pose2d centerTallScoringPos = new Pose2d(tallScoringPos.getX()-side*24, tallScoringPos.getY(), tallScoringPos.getHeading());
-        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX()-side*24, sideTurnPos.getY());
+        Vector2d stackPos = new Vector2d(side * 59, -12.5);
+        Vector2d sideTurnPos = new Vector2d(side * 46, -12.5);
+        Pose2d tallScoringPos = new Pose2d(side * 31, -7.5, Math.toRadians(isRight ? 135 : 180 - 135));
+        Pose2d centerTallScoringPos = new Pose2d(tallScoringPos.getX() - side * 24, tallScoringPos.getY(), tallScoringPos.getHeading());
+        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * 24, sideTurnPos.getY());
 
-        Pose2d parkingZone1 = new Pose2d(side*(isRight? 12.5:57), -12.5, isRight? facingRight: facingLeft);
+        Pose2d parkingZone1 = new Pose2d(side * (isRight ? 12.5 : 57), -12.5, isRight ? facingRight : facingLeft);
         Pose2d parkingZone2 = new Pose2d(centerPathX, -12.5, parkingZone1.getHeading());
-        Pose2d parkingZone3 = new Pose2d(side*(isRight? 57:12.5), -12.5, parkingZone1.getHeading());
+        Pose2d parkingZone3 = new Pose2d(side * (isRight ? 57 : 12.5), -12.5, parkingZone1.getHeading());
 
-        HeadingHolder.setHeading(isRight? 90.0: 270.0);
+        HeadingHolder.setHeading(isRight ? 90.0 : 270.0);
 
         Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
         drivetrain.setPoseEstimate(startPose);
@@ -121,13 +118,13 @@ public class AutonomousTallTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
                 .setReversed(true)
                 .setTangent(tallScoringPos.getHeading() + facingLeft)
-                .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
-                .splineTo(stackPos, isRight? facingRight: facingLeft)
+                .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
+                .splineTo(stackPos, isRight ? facingRight : facingLeft)
                 .addTemporalMarker(() -> scorer.grabCone())
                 .waitSeconds(liftAndDropTime)
                 .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
                 .setReversed(false)
-                .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
+                .splineTo(sideTurnPos, isRight ? facingLeft : facingRight)
                 .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.TALL))
                 .addTemporalMarker(() -> scorer.dropCone(PowerplayScorer.liftPos.FOUR))
@@ -135,75 +132,71 @@ public class AutonomousTallTesting extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
                 .setReversed(true)
                 .setTangent(tallScoringPos.getHeading() + facingLeft)
-                .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
-                .splineTo(stackPos, isRight? facingRight: facingLeft)
+                .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
+                .splineTo(stackPos, isRight ? facingRight : facingLeft)
                 .addTemporalMarker(() -> scorer.grabCone())
                 .waitSeconds(liftAndDropTime)
                 .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                .build()
-                ;
+                .build();
 
-        TrajectorySequence parkLeft = isRight?
+        TrajectorySequence parkLeft = isRight ?
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
                         .setReversed(false)
-                        .splineTo(centerTurnPos, isRight? facingLeft: facingRight)
-                        .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading()+facingLeft)
+                        .splineTo(centerTurnPos, isRight ? facingLeft : facingRight)
+                        .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading() + facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.TALL))
                         .addTemporalMarker(() -> scorer.dropCone())
                         .waitSeconds(liftAndDropTime)
                         .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
                         .lineToSplineHeading(parkingZone1)
-                        .build():
+                        .build() :
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
                         .setReversed(false)
-                        .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
+                        .splineTo(sideTurnPos, isRight ? facingLeft : facingRight)
                         .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.TALL))
                         .addTemporalMarker(() -> scorer.dropCone())
                         .waitSeconds(liftAndDropTime)
                         .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
                         .setReversed(true)
-                        .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
+                        .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
                         .splineTo(parkingZone1.vec(), facingLeft)
-                        .build()
-                ;
+                        .build();
 
         TrajectorySequence parkMiddle = drivetrain.trajectorySequenceBuilder(trajectory1.end())
                 .setReversed(false)
-                .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
+                .splineTo(sideTurnPos, isRight ? facingLeft : facingRight)
                 .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.TALL))
                 .addTemporalMarker(() -> scorer.dropCone())
                 .waitSeconds(liftAndDropTime)
                 .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
                 .lineToSplineHeading(parkingZone2)
-                .build()
-                ;
+                .build();
 
-        TrajectorySequence parkRight = isRight?
+        TrajectorySequence parkRight = isRight ?
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
                         .setReversed(false)
-                        .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
+                        .splineTo(sideTurnPos, isRight ? facingLeft : facingRight)
                         .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.TALL))
                         .addTemporalMarker(() -> scorer.dropCone())
                         .waitSeconds(liftAndDropTime)
                         .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
                         .setReversed(true)
-                        .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
+                        .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
                         .splineTo(parkingZone3.vec(), facingRight)
-                        .build():
+                        .build() :
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
                         .setReversed(false)
-                        .splineTo(centerTurnPos, isRight? facingLeft: facingRight)
-                        .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading()+facingLeft)
+                        .splineTo(centerTurnPos, isRight ? facingLeft : facingRight)
+                        .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading() + facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.TALL))
                         .addTemporalMarker(() -> scorer.dropCone())
                         .waitSeconds(liftAndDropTime)
                         .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
                         .lineToSplineHeading(parkingZone3)
-                        .build()
-                ;
+                        .build();
 
         drivetrain.followTrajectorySequenceAsync(trajectory1);
 
@@ -222,50 +215,37 @@ public class AutonomousTallTesting extends LinearOpMode {
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = signalSleeveDetectionPipeline.getLatestDetections();
 
-            if(currentDetections.size() != 0)
-            {
+            if (currentDetections.size() != 0) {
                 boolean tagFound = false;
 
-                for(AprilTagDetection tag : currentDetections)
-                {
-                    if(tag.id == LEFT || tag.id == MIDDLE || tag.id == RIGHT)
-                    {
+                for (AprilTagDetection tag : currentDetections) {
+                    if (tag.id == LEFT || tag.id == MIDDLE || tag.id == RIGHT) {
                         tagOfInterest = tag;
                         tagFound = true;
                         break;
                     }
                 }
 
-                if(tagFound)
-                {
+                if (tagFound) {
                     telemetry.addLine("Tag of interest is in sight!");
                     tagToTelemetry(tagOfInterest);
-                }
-                else
-                {
+                } else {
                     telemetry.addLine("Don't see tag of interest :(");
 
-                    if(tagOfInterest == null) {
+                    if (tagOfInterest == null) {
                         telemetry.addLine("(The tag has never been seen)");
-                    }
-                    else
-                    {
+                    } else {
                         telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                         tagToTelemetry(tagOfInterest);
                     }
                 }
 
-            }
-            else
-            {
+            } else {
                 telemetry.addLine("Don't see tag of interest :(");
 
-                if(tagOfInterest == null)
-                {
+                if (tagOfInterest == null) {
                     telemetry.addLine("(The tag has never been seen)");
-                }
-                else
-                {
+                } else {
                     telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                     tagToTelemetry(tagOfInterest);
 
@@ -286,26 +266,23 @@ public class AutonomousTallTesting extends LinearOpMode {
 
         autonomousTimer.reset();
 
-        if(tagOfInterest != null)
-        {
+        if (tagOfInterest != null) {
             telemetry.addLine("Tag snapshot:\n");
             tagToTelemetry(tagOfInterest);
             telemetry.update();
-        }
-        else
-        {
+        } else {
             telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
             telemetry.update();
         }
 
 
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
 
             for (LynxModule hub : hubs) {
                 hub.clearBulkCache();
             }
 
-            if(!hasParked && !drivetrain.isBusy() && (autonomousTimer.seconds() >= 3)) {
+            if (!hasParked && !drivetrain.isBusy() && (autonomousTimer.seconds() >= 3)) {
 
                 if (tagOfInterest != null) {
                     if (tagOfInterest.id == LEFT) {
@@ -338,8 +315,7 @@ public class AutonomousTallTesting extends LinearOpMode {
     }
 
     @SuppressLint("DefaultLocale")
-    void tagToTelemetry(AprilTagDetection detection)
-    {
+    void tagToTelemetry(AprilTagDetection detection) {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
     }
 }
