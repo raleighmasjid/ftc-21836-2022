@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.robot;
 import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_RPM;
 import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.TICKS_PER_REV;
 
-import androidx.annotation.NonNull;
-
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
@@ -13,7 +11,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.jetbrains.annotations.Contract;
 
 
 public class TeleOpMecanumDrive {
@@ -45,22 +42,15 @@ public class TeleOpMecanumDrive {
         headingOffset = getIMUHeading() - startAngle;
     }
 
-    @NonNull
-    @Contract("_, _ -> new")
-    private MotorEx drivetrainMotor(HardwareMap hw, String name) {
-        return new MotorEx(hw, name, TICKS_PER_REV, MAX_RPM);
-    }
-
     public TeleOpMecanumDrive(HardwareMap hw) {
         headingOffset = 0.0;
 
         // Assign motors using their hardware map names, each drive-type can have different names if needed
-        MotorEx motor_frontLeft, motor_frontRight, motor_backLeft, motor_backRight;
-
-        motor_frontLeft = drivetrainMotor(hw, "left front");
-        motor_frontRight = drivetrainMotor(hw, "right front");
-        motor_backLeft = drivetrainMotor(hw, "left back");
-        motor_backRight = drivetrainMotor(hw, "right back");
+        MotorEx
+                motor_frontLeft = new MotorEx(hw, "left front", TICKS_PER_REV, MAX_RPM),
+                motor_frontRight = new MotorEx(hw, "right front", TICKS_PER_REV, MAX_RPM),
+                motor_backLeft = new MotorEx(hw, "left back", TICKS_PER_REV, MAX_RPM),
+                motor_backRight = new MotorEx(hw, "right back", TICKS_PER_REV, MAX_RPM);
 
         imu = hw.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientation = new RevHubOrientationOnRobot(

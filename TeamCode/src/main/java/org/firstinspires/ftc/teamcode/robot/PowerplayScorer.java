@@ -16,7 +16,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.LowPassFilter;
 import org.firstinspires.ftc.teamcode.control.PIDFController;
-import org.jetbrains.annotations.Contract;
 
 /**
  * Contains 3-motor automated lift, 3-state claw, and state-machine-controlled passthrough functions
@@ -141,9 +140,9 @@ public class PowerplayScorer {
         coneArmServoR = new SimpleServo(hw, "arm right", 0, 280);
         coneArmServoL = new SimpleServo(hw, "arm left", 0, 280);
 
-        lift_motor1 = liftMotor(hw, "lift motor 1");
-        lift_motor2 = liftMotor(hw, "lift motor 2");
-        lift_motor3 = liftMotor(hw, "lift motor 3");
+        lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, LIFT_RPM);
+        lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, LIFT_RPM);
+        lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, LIFT_RPM);
 
         lift_motor1.setInverted(true);
         lift_motor2.setInverted(false);
@@ -201,33 +200,18 @@ public class PowerplayScorer {
         resetLift();
     }
 
-    @NonNull
-    @Contract("_, _ -> new")
-    private MotorEx liftMotor(HardwareMap hw, String name) {
-        return new MotorEx(hw, name, LIFT_TICKS, LIFT_RPM);
-    }
-
     /**
      * State of the passthrough sequence
      */
     private enum passThruState {
-        START,
-        FRONT,
-        FRONT_PIVOT,
-        PIVOTING,
-        BACK_PIVOT,
-        BACK
+        START, FRONT, FRONT_PIVOT, PIVOTING, BACK_PIVOT, BACK
     }
 
     /**
      * Named position of main passthrough servos
      */
     private enum passThruPos {
-        FRONT_IDLE,
-        FRONT,
-        PIVOT_POS,
-        BACK,
-        BACK_IDLE
+        FRONT_IDLE, FRONT, PIVOT_POS, BACK, BACK_IDLE
     }
 
     /**
@@ -364,14 +348,7 @@ public class PowerplayScorer {
      * Named lift position
      */
     public enum liftPos {
-        FLOOR,
-        TWO,
-        THREE,
-        FOUR,
-        FIVE,
-        LOW,
-        MED,
-        TALL
+        FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
     }
 
     /**
