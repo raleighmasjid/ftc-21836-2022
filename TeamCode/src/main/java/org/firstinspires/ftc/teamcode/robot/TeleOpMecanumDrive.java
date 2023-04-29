@@ -22,25 +22,28 @@ public class TeleOpMecanumDrive {
 
     private static final double TICKS_PER_REV = DriveConstants.TICKS_PER_REV;
 
-    public double rotationOffset = 0.0, rotYaw = 0.0;
+    private double headingOffset, heading;
 
     // ftclib field-centric mecanum drive code:
     public void driveFieldCentric(double leftX, double leftY, double rightX) {
-        double heading = getOffsetRotation();
-        rotYaw = heading;
+        heading = getIMUHeading() - headingOffset;
         mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, heading);
     }
 
-    public double getIMURotation() {
+    public double getHeading() {
+        return heading;
+    }
+
+    private double getIMUHeading() {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
-    public double getOffsetRotation() {
-        return getIMURotation() - rotationOffset;
+    public void resetHeading() {
+        headingOffset = getIMUHeading();
     }
 
-    public void resetRotation() {
-        rotationOffset = getIMURotation();
+    public void setHeading(double startAngle) {
+        headingOffset = getIMUHeading() - startAngle;
     }
 
     public void setRotation(double startAngle) {
@@ -48,8 +51,7 @@ public class TeleOpMecanumDrive {
     }
 
     public TeleOpMecanumDrive(HardwareMap hw) {
-        // cache the HardwareMap
-        this.hw = hw;
+        headingOffset = 0.0;
 
         // Assign motors using their hardware map names, each drive-type can have different names if needed
         motor_frontLeft = new MotorEx(hw, "left front", TICKS_PER_REV, MAX_RPM);

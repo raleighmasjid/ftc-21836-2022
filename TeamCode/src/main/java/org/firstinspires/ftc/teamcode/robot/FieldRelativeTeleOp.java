@@ -56,7 +56,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
         boolean overrideMode = false;
 
-        drivetrain.setRotation(HeadingHolder.getHeading());
+        drivetrain.setHeading(HeadingHolder.getHeading());
 
         for (LynxModule hub : hubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
 
@@ -89,10 +89,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.readLiftPos();
 
             // Field-centric resets
-            if (control1Up.wasJustPressed()) drivetrain.resetRotation();
-            else if (control1Left.wasJustPressed()) drivetrain.setRotation(90.0);
-            else if (control1Down.wasJustPressed()) drivetrain.setRotation(180.0);
-            else if (control1Right.wasJustPressed()) drivetrain.setRotation(270.0);
+            if (control1Up.wasJustPressed()) drivetrain.resetHeading();
+            else if (control1Left.wasJustPressed()) drivetrain.setHeading(90.0);
+            else if (control1Down.wasJustPressed()) drivetrain.setHeading(180.0);
+            else if (control1Right.wasJustPressed()) drivetrain.setHeading(270.0);
 
             // Precision mode driving triggers
             double precisionScale = Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER) ?
