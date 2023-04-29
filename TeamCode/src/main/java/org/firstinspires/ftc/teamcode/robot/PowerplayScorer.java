@@ -611,16 +611,6 @@ public class PowerplayScorer {
     }
 
     /**
-     * Lifts claw either:
-     * 6 inches if grabbing off stack
-     * 2 inches if grabbing off the floor
-     */
-    public void liftClaw() {
-        setTargetLiftPos(currentLiftState.getX() + ((currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE) ? 6 : 2));
-        clawHasLifted = true;
-    }
-
-    /**
      * Closes claw
      * Waits for claw to close
      * Lifts claw
@@ -631,6 +621,16 @@ public class PowerplayScorer {
             clawHasLifted = false;
             liftClawTimer.reset();
         }
+    }
+
+    /**
+     * Lifts claw either:
+     * 6 inches if grabbing off stack
+     * 2 inches if grabbing off the floor
+     */
+    public void liftClaw() {
+        setTargetLiftPos(currentLiftState.getX() + ((currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE) ? 6 : 2));
+        clawHasLifted = true;
     }
 
     /**
