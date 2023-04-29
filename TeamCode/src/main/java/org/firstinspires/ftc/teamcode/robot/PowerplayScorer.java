@@ -559,10 +559,10 @@ public class PowerplayScorer {
     private double kG () {
         double veloCommand;
 
-        if      (currentLiftState.getX() >= RobotConfig.HEIGHT_STAGES_FOUR)         veloCommand = RobotConfig.LIFT_kG_FOUR;
-        else if (currentLiftState.getX() >= RobotConfig.HEIGHT_STAGES_THREE)        veloCommand = RobotConfig.LIFT_kG_THREE;
-        else if (currentLiftState.getX() >= RobotConfig.HEIGHT_STAGES_TWO)          veloCommand = RobotConfig.LIFT_kG_TWO;
-        else if (currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE)          veloCommand = RobotConfig.LIFT_kG_ONE;
+        if      (currentLiftState.getX() >= RobotConfig.HEIGHT_STAGES_FOUR)     veloCommand = RobotConfig.LIFT_kG_FOUR;
+        else if (currentLiftState.getX() >= RobotConfig.HEIGHT_STAGES_THREE)    veloCommand = RobotConfig.LIFT_kG_THREE;
+        else if (currentLiftState.getX() >= RobotConfig.HEIGHT_STAGES_TWO)      veloCommand = RobotConfig.LIFT_kG_TWO;
+        else if (currentLiftState.getX() > RobotConfig.LIFT_POS_TOLERANCE)      veloCommand = RobotConfig.LIFT_kG_ONE;
         else    veloCommand = 0.0;
 
         return veloCommand;
