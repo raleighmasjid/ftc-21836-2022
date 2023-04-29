@@ -144,6 +144,18 @@ public class PowerplayScorer {
         lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, LIFT_RPM);
         lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, LIFT_RPM);
 
+        lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        lift_motor3.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+
+        lift_motor1.setRunMode(Motor.RunMode.VelocityControl);
+        lift_motor2.setRunMode(Motor.RunMode.VelocityControl);
+        lift_motor3.setRunMode(Motor.RunMode.VelocityControl);
+
+        lift_motor1.setInverted(true);
+        lift_motor2.setInverted(false);
+        lift_motor3.setInverted(true);
+
         liftController = new PIDFController(
                 new PIDCoefficients(
                         RobotConfig.LIFT_kP,
@@ -167,18 +179,6 @@ public class PowerplayScorer {
         veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
         accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
         jerkFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
-
-        lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        lift_motor3.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-
-        lift_motor1.setRunMode(Motor.RunMode.VelocityControl);
-        lift_motor2.setRunMode(Motor.RunMode.VelocityControl);
-        lift_motor3.setRunMode(Motor.RunMode.VelocityControl);
-
-        lift_motor1.setInverted(true);
-        lift_motor2.setInverted(false);
-        lift_motor3.setInverted(true);
 
         clawHasLifted = true;
         pivotIsFront = true;
