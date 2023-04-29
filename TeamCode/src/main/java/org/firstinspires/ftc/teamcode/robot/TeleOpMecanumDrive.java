@@ -47,7 +47,7 @@ public class TeleOpMecanumDrive {
         rotationOffset = getIMURotation() - (startAngle);
     }
 
-    public void init(HardwareMap hw) {
+    public TeleOpMecanumDrive(HardwareMap hw) {
         // cache the HardwareMap
         this.hw = hw;
 

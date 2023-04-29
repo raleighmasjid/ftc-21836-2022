@@ -25,10 +25,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-        PowerplayScorer scorer = new PowerplayScorer();
-        TeleOpMecanumDrive drivetrain = new TeleOpMecanumDrive();
-        scorer.init(hardwareMap);
-        drivetrain.init(hardwareMap);
+        PowerplayScorer scorer = new PowerplayScorer(hardwareMap);
+        TeleOpMecanumDrive drivetrain = new TeleOpMecanumDrive(hardwareMap);
 
         List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
 

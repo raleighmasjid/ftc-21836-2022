@@ -131,7 +131,7 @@ public class PowerplayScorer {
      *
      * @param hw Passed-in hardware map from the op mode
      */
-    public void init(HardwareMap hw) {
+    public PowerplayScorer(HardwareMap hw) {
 
         clawServo = new SimpleServo(hw, "claw right", 0, 355);
         pivotServo = new SimpleServo(hw, "claw pivot", 0, 355);

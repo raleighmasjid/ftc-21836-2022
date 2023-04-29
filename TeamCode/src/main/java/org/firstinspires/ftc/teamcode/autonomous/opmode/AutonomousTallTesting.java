@@ -77,8 +77,7 @@ public class AutonomousTallTesting extends LinearOpMode {
         telemetry.setMsTransmissionInterval(50);
 
         AutonMecanumDrive drivetrain = new AutonMecanumDrive(hardwareMap);
-        PowerplayScorer scorer = new PowerplayScorer();
-        scorer.init(hardwareMap);
+        PowerplayScorer scorer = new PowerplayScorer(hardwareMap);
 
         //  Initialize telemetry and dashboard
         MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
