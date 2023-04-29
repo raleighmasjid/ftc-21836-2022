@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import java.util.List;
 
 
-@TeleOp(name="Field Relative", group = "21836 Teleop")
+@TeleOp(name = "Field Relative", group = "21836 Teleop")
 
 public class FieldRelativeTeleOp extends LinearOpMode {
 
@@ -97,13 +97,13 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             else if (control1Right.wasJustPressed()) drivetrain.setRotation(270.0);
 
             // Precision mode driving triggers
-            double precisionScale = Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER)?
-                    RobotConfig.PRECISION_MODE_SCALE:
-                    (RobotConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1,
+            double precisionScale = Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER) ?
+                    RobotConfig.PRECISION_MODE_SCALE :
+                    (RobotConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
 
-                    control1LeftX = Gamepad1.getLeftX() * precisionScale,
-                    control1LeftY = Gamepad1.getLeftY() * precisionScale,
-                    control1RightX = Gamepad1.getRightX() * precisionScale;
+            double control1LeftX = Gamepad1.getLeftX() * precisionScale;
+            double control1LeftY = Gamepad1.getLeftY() * precisionScale;
+            double control1RightX = Gamepad1.getRightX() * precisionScale;
 
             boolean stackHeights = control2LShoulder.isDown();
 
@@ -125,10 +125,14 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 scorer.runLift(Gamepad2.getLeftY());
             } else {
-                if (control2Up.wasJustPressed()) scorer.setTargetLiftPos(stackHeights? PowerplayScorer.liftPos.FIVE: PowerplayScorer.liftPos.TALL);
-                else if (control2Left.wasJustPressed()) scorer.setTargetLiftPos(stackHeights? PowerplayScorer.liftPos.FOUR: PowerplayScorer.liftPos.MED);
-                else if (control2Right.wasJustPressed()) scorer.setTargetLiftPos(stackHeights? PowerplayScorer.liftPos.THREE: PowerplayScorer.liftPos.LOW);
-                else if (control2Down.wasJustPressed()) scorer.setTargetLiftPos(stackHeights? PowerplayScorer.liftPos.TWO: PowerplayScorer.liftPos.FLOOR);
+                if (control2Up.wasJustPressed())
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.liftPos.FIVE : PowerplayScorer.liftPos.TALL);
+                else if (control2Left.wasJustPressed())
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.liftPos.FOUR : PowerplayScorer.liftPos.MED);
+                else if (control2Right.wasJustPressed())
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.liftPos.THREE : PowerplayScorer.liftPos.LOW);
+                else if (control2Down.wasJustPressed())
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.liftPos.TWO : PowerplayScorer.liftPos.FLOOR);
 
                 if (control2Y.wasJustPressed()) scorer.triggerPassThru();
 
@@ -146,10 +150,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             //everything below is telemetry
             myTelemetry.addData(
-                    "Robot is in", overrideMode?
-                            "manual override mode": // override
-                            stackHeights? // automated
-                                    "stack heights mode":
+                    "Robot is in", overrideMode ?
+                            "manual override mode" : // override
+                            stackHeights ? // automated
+                                    "stack heights mode" :
                                     "junction heights mode"
             );
             myTelemetry.addLine();
