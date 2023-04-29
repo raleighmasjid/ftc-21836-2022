@@ -20,28 +20,6 @@ public class TeleOpMecanumDrive {
 
     private double headingOffset, heading;
 
-    // ftclib field-centric mecanum drive code:
-    public void driveFieldCentric(double leftX, double leftY, double rightX) {
-        heading = getIMUHeading() - headingOffset;
-        mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, heading);
-    }
-
-    public double getHeading() {
-        return heading;
-    }
-
-    private double getIMUHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-    }
-
-    public void resetHeading() {
-        headingOffset = getIMUHeading();
-    }
-
-    public void setHeading(double startAngle) {
-        headingOffset = getIMUHeading() - startAngle;
-    }
-
     @NonNull
     @Contract("_, _ -> new")
     private MotorEx drivetrainMotor(HardwareMap hw, String name) {
@@ -83,6 +61,28 @@ public class TeleOpMecanumDrive {
                 motor_backLeft,
                 motor_backRight
         );
+    }
+
+    // ftclib field-centric mecanum drive code:
+    public void driveFieldCentric(double leftX, double leftY, double rightX) {
+        heading = getIMUHeading() - headingOffset;
+        mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, heading);
+    }
+
+    public double getHeading() {
+        return heading;
+    }
+
+    private double getIMUHeading() {
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    }
+
+    public void resetHeading() {
+        headingOffset = getIMUHeading();
+    }
+
+    public void setHeading(double startAngle) {
+        headingOffset = getIMUHeading() - startAngle;
     }
 }
 
