@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.LowPassFilter;
 import org.firstinspires.ftc.teamcode.control.PIDFController;
+import org.jetbrains.annotations.Contract;
 
 /**
  * Contains 3-motor automated lift, 3-state claw, and state-machine-controlled passthrough functions
@@ -117,14 +118,24 @@ public class PowerplayScorer {
      * Timer to track sequential passthrough events
      */
     private static ElapsedTime passThruTimer;
-    /**
-     * Count of ticks per revolution for lift motors
-     */
-    private static final double LIFT_TICKS = 145.1;
-    /**
-     * Revolutions per minute for lift motors
-     */
-    private static final double LIFT_RPM = 1150;
+
+    @NonNull
+    @Contract("_, _ -> new")
+    private SimpleServo axonMini(HardwareMap hw, String name) {
+        return new SimpleServo(hw, name, 0, 355);
+    }
+
+    @NonNull
+    @Contract("_, _ -> new")
+    private SimpleServo goBildaServo(HardwareMap hw, String name) {
+        return new SimpleServo(hw, name, 0, 280);
+    }
+
+    @NonNull
+    @Contract("_, _ -> new")
+    private MotorEx liftMotor(HardwareMap hw, String name) {
+        return new MotorEx(hw, name, 145.1, 1150);
+    }
 
     /**
      * Initialize internal objects and variables
@@ -133,16 +144,16 @@ public class PowerplayScorer {
      */
     public PowerplayScorer(HardwareMap hw) {
 
-        clawServo = new SimpleServo(hw, "claw right", 0, 355);
-        pivotServo = new SimpleServo(hw, "claw pivot", 0, 355);
-        passThruServoR = new SimpleServo(hw, "passthrough 1", 0, 355);
-        passThruServoL = new SimpleServo(hw, "passthrough 2", 0, 355);
-        coneArmServoR = new SimpleServo(hw, "arm right", 0, 280);
-        coneArmServoL = new SimpleServo(hw, "arm left", 0, 280);
+        clawServo = axonMini(hw, "claw right");
+        pivotServo = axonMini(hw, "claw pivot");
+        passThruServoR = axonMini(hw, "passthrough 1");
+        passThruServoL = axonMini(hw, "passthrough 2");
+        coneArmServoR = goBildaServo(hw, "arm right");
+        coneArmServoL = goBildaServo(hw, "arm left");
 
-        lift_motor1 = new MotorEx(hw, "lift motor 1", LIFT_TICKS, LIFT_RPM);
-        lift_motor2 = new MotorEx(hw, "lift motor 2", LIFT_TICKS, LIFT_RPM);
-        lift_motor3 = new MotorEx(hw, "lift motor 3", LIFT_TICKS, LIFT_RPM);
+        lift_motor1 = liftMotor(hw, "lift motor 1");
+        lift_motor2 = liftMotor(hw, "lift motor 2");
+        lift_motor3 = liftMotor(hw, "lift motor 3");
 
         lift_motor1.setInverted(true);
         lift_motor2.setInverted(false);
