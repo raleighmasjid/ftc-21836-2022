@@ -11,10 +11,9 @@ public class LowPassFilter {
         resetPastValues();
     }
 
-    public void setGains (double filterGain, int pastValuesCount) {
-        if (pastValuesCount == 0) pastValuesCount = 1;
+    public void setGains(double filterGain, int pastValuesCount) {
         this.filterGain = filterGain;
-        this.pastValuesCount = pastValuesCount;
+        this.pastValuesCount = (pastValuesCount == 0) ? 1 : pastValuesCount;
     }
 
     public void resetPastValues() {
