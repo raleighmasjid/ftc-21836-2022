@@ -155,6 +155,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                                     "junction heights mode"
             );
             myTelemetry.addLine();
+            myTelemetry.addData("Robot heading", drivetrain.getHeading());
+            myTelemetry.addLine();
             scorer.printTelemetry(myTelemetry);
             myTelemetry.update();
         }
