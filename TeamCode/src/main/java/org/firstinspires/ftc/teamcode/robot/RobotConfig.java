@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot;
+
 import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class RobotConfig {
-    // inches
     public static double
             HEIGHT_FLOOR = 0,
             HEIGHT_TWO = 1.25,

@@ -527,6 +527,7 @@ public class PowerplayScorer {
     public void runLiftToPos() {
         double currentLiftPos = currentLiftState.getX();
         profileLiftState = liftProfile.get(liftProfileTimer.seconds());
+
         liftController.setTargetPosition(profileLiftState.getX());
         liftController.setTargetVelocity(profileLiftState.getV());
         liftController.setTargetAcceleration(profileLiftState.getA());
