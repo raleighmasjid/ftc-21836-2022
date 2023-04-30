@@ -118,6 +118,10 @@ public class PowerplayScorer {
      * Timer to track sequential passthrough events
      */
     private static ElapsedTime passThruTimer;
+    /**
+     * Cached state of cone-flipping arms
+     */
+    private boolean coneArmsAreDown;
 
     @NonNull
     @Contract("_, _ -> new")
@@ -198,6 +202,7 @@ public class PowerplayScorer {
         clawIsOpen = true;
         clawIsTilted = false;
         passThruSwitched = false;
+        coneArmsAreDown = false;
 
         passThruTimer = new ElapsedTime();
         passThruTimer.reset();
@@ -681,6 +686,7 @@ public class PowerplayScorer {
      * @param down True if arms are to be down; false if arms should be upright
      */
     public void runConeArms(boolean down) {
+        coneArmsAreDown = down;
         double angle = down ? RobotConfig.ANGLE_ARM_DOWN : RobotConfig.ANGLE_ARM_UP;
         coneArmServoL.turnToAngle(280.0 - angle);
         coneArmServoR.turnToAngle(angle);
@@ -705,5 +711,7 @@ public class PowerplayScorer {
         telemetry.addData("Lift current acceleration (in/s^2)", currentLiftState.getA());
         telemetry.addLine();
         telemetry.addData("Lift current jerk (in/s^3)", currentLiftState.getJ());
+        telemetry.addLine();
+        telemetry.addData("Cone arms are", coneArmsAreDown ? "down" : "up");
     }
 }
