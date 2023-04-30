@@ -682,16 +682,16 @@ public class PowerplayScorer {
     }
 
     /**
-     * Print relevant telemetry of the system (particularly lift data)
+     * Print relevant telemetry of the system
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry(@NonNull MultipleTelemetry telemetry) {
-        telemetry.addData("Lift encoder reading (ticks)", lift_motor2.encoder.getPosition());
+        telemetry.addData("Lift raw encoder reading", lift_motor2.encoder.getPosition());
+        telemetry.addData("Named target lift position", targetLiftPosName);
+        telemetry.addLine();
         telemetry.addData("Lift current position (in)", currentLiftState.getX());
         telemetry.addData("Lift profile position (in)", profileLiftState.getX());
-        telemetry.addData("Lift target position (name)", targetLiftPosName);
-        telemetry.addLine();
         telemetry.addData("Lift position error (in)", liftController.getCurrentFilterEstimate());
         telemetry.addLine();
         telemetry.addData("Lift current velocity (in/s)", currentLiftState.getV());
@@ -701,6 +701,13 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Lift current jerk (in/s^3)", currentLiftState.getJ());
         telemetry.addLine();
+        telemetry.addLine();
         telemetry.addData("Cone arms are", coneArmsAreDown ? "down" : "up");
+        telemetry.addLine();
+        telemetry.addData("Claw is", clawIsOpen ? "open" : "closed");
+        telemetry.addLine();
+        telemetry.addData("Pivot is oriented to", pivotIsFront ? "front" : "back");
+        telemetry.addLine();
+        telemetry.addData("Passthrough status", currentPassThruState);
     }
 }
