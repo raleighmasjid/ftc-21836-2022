@@ -227,17 +227,18 @@ public class PowerplayScorer {
      * Named position of main passthrough servos
      */
     private enum passThruPos {
-        FRONT_IDLE, FRONT, PIVOT_POS, BACK, BACK_IDLE
+        FRONT, PIVOT_POS, BACK
     }
 
     /**
      * Current state of passthrough sequence
      */
     private passThruState currentPassThruState = passThruState.FRONT;
+
     /**
      * Current position of main passthrough servos
      */
-    private passThruPos currentPassThruPos = passThruPos.FRONT_IDLE;
+    private passThruPos currentPassThruPos = passThruPos.FRONT;
 
     /**
      * @param angle Angle to turn main passthrough servos to
@@ -252,26 +253,14 @@ public class PowerplayScorer {
      */
     public void runPassThruServos() {
         switch (currentPassThruPos) {
-            case FRONT_IDLE:
-                if (clawIsTilted) currentPassThruPos = passThruPos.FRONT;
-                break;
             case FRONT:
-                if (!clawIsTilted) {
-                    setPassThruAngle(RobotConfig.ANGLE_PASS_FRONT);
-                    currentPassThruPos = passThruPos.FRONT_IDLE;
-                } else setPassThruAngle(RobotConfig.ANGLE_PASS_FRONT + RobotConfig.ANGLE_PASS_TILT);
+                setPassThruAngle(RobotConfig.ANGLE_PASS_FRONT + (clawIsTilted ? RobotConfig.ANGLE_PASS_TILT : 0.0));
                 break;
             case PIVOT_POS:
                 setPassThruAngle(RobotConfig.ANGLE_PASS_PIVOT);
                 break;
-            case BACK_IDLE:
-                if (clawIsTilted) currentPassThruPos = passThruPos.BACK;
-                break;
             case BACK:
-                if (!clawIsTilted) {
-                    setPassThruAngle(RobotConfig.ANGLE_PASS_BACK);
-                    currentPassThruPos = passThruPos.BACK_IDLE;
-                } else setPassThruAngle(RobotConfig.ANGLE_PASS_BACK - RobotConfig.ANGLE_PASS_TILT);
+                setPassThruAngle(RobotConfig.ANGLE_PASS_BACK - (clawIsTilted ? RobotConfig.ANGLE_PASS_TILT : 0.0));
                 break;
             default:
                 currentPassThruPos = passThruPos.FRONT;
