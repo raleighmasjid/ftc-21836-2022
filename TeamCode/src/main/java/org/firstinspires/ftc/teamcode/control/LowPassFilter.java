@@ -13,8 +13,7 @@ public class LowPassFilter {
 
     public LowPassFilter(double filterGain, int pastValuesCount) {
         resetPastValues();
-        this.filterGain = filterGain;
-        this.pastValuesCount = (pastValuesCount == 0) ? 1 : pastValuesCount;
+        setGains(filterGain, pastValuesCount);
     }
 
     public void setGains(double filterGain, int pastValuesCount) {
