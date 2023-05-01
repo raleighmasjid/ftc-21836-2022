@@ -4,7 +4,6 @@ package org.firstinspires.ftc.teamcode.robot;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
@@ -172,11 +171,9 @@ public class PowerplayScorer {
         lift_motor3.setRunMode(Motor.RunMode.VelocityControl);
 
         liftController = new PIDFController(
-                new PIDCoefficients(
-                        RobotConfig.LIFT_kP,
-                        RobotConfig.LIFT_kI,
-                        RobotConfig.LIFT_kD
-                ),
+                RobotConfig.LIFT_kP,
+                RobotConfig.LIFT_kI,
+                RobotConfig.LIFT_kD,
                 RobotConfig.LIFT_INTEGRATION_MAX_VELO,
                 RobotConfig.LIFT_PID_FILTER_GAIN,
                 RobotConfig.LIFT_PID_ESTIMATE_COUNT,
@@ -441,11 +438,9 @@ public class PowerplayScorer {
      */
     private void updateLiftGains() {
         liftController.setGains(
-                new PIDCoefficients(
-                        RobotConfig.LIFT_kP,
-                        RobotConfig.LIFT_kI,
-                        RobotConfig.LIFT_kD
-                ),
+                RobotConfig.LIFT_kP,
+                RobotConfig.LIFT_kI,
+                RobotConfig.LIFT_kD,
                 RobotConfig.LIFT_INTEGRATION_MAX_VELO,
                 RobotConfig.LIFT_PID_FILTER_GAIN,
                 RobotConfig.LIFT_PID_ESTIMATE_COUNT,

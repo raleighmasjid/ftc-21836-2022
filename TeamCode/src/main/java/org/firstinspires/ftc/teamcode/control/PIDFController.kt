@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.control
 
-import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
@@ -27,7 +26,9 @@ class PIDFController
  * @param clock clock
  */
 @JvmOverloads constructor(
-    private var pid: PIDCoefficients,
+    private var kP: Double,
+    private var kI: Double,
+    private var kD: Double,
     private var maxIntegrationVelocity: Double = 0.5,
     private var filterGain: Double = 0.8,
     private var estimateCount: Int = 5,
@@ -55,7 +56,9 @@ class PIDFController
     private var derivFilter: LowPassFilter = LowPassFilter(filterGain, estimateCount)
 
     fun setGains(
-        pid: PIDCoefficients,
+        kP: Double,
+        kI: Double,
+        kD: Double,
         maxIntegrationVelocity: Double = this.maxIntegrationVelocity,
         filterGain: Double = this.filterGain,
         estimateCount: Int = this.estimateCount,
@@ -63,7 +66,9 @@ class PIDFController
         kA: Double = this.kA,
         kStatic: Double = this.kStatic
     ) {
-        this.pid = pid
+        this.kP = kP
+        this.kI = kI
+        this.kD = kD
         this.maxIntegrationVelocity = maxIntegrationVelocity
         this.filterGain = filterGain
         this.estimateCount = estimateCount
