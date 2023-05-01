@@ -74,28 +74,13 @@ public class PowerplayScorer {
     private boolean pivotIsFront;
     /**
      * False by default
-     * True only if passthrough sequence has not yet completed
-     */
-    private boolean passThruIsMoving;
-    /**
-     * False by default
      * True only if passthrough sequence was triggered while it was still moving
      */
     private boolean passThruSwitched;
     /**
-     * Supposed state of the passthrough
-     * True if front position has been reached
-     * False if back position has been reached
-     */
-    private boolean passThruInFront;
-    /**
      * Timer to track sequential passthrough events
      */
     private static ElapsedTime passThruTimer;
-    /**
-     * Cached state of cone-flipping arms
-     */
-    private boolean coneArmsAreDown;
 
     /**
      * State of the passthrough sequence
@@ -120,6 +105,9 @@ public class PowerplayScorer {
 
     private final LowPassFilter jerkFilter, accelFilter, veloFilter;
     private double currentTimestamp;
+    private boolean passThruIsMoving;
+    private boolean passThruInFront;
+    private boolean coneArmsAreDown;
     private boolean clawIsOpen;
     private boolean clawIsTilted;
     private PassThruState currentPassThruState;
