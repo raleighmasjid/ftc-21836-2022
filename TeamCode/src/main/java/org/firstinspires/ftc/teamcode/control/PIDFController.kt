@@ -196,5 +196,6 @@ class PIDFController
     fun reset() {
         errorSum = 0.0
         lastError = 0.0
+        integrate = true
     }
 }
