@@ -127,13 +127,13 @@ public class PowerplayScorer {
 
     @NonNull
     @Contract("_, _ -> new")
-    private SimpleServo axonMini(HardwareMap hw, String name) {
+    private SimpleServo axonMINI(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 355);
     }
 
     @NonNull
     @Contract("_, _ -> new")
-    private SimpleServo goBildaServo(HardwareMap hw, String name) {
+    private SimpleServo goBILDAServo(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 280);
     }
 
@@ -150,12 +150,12 @@ public class PowerplayScorer {
      */
     public PowerplayScorer(HardwareMap hw) {
 
-        clawServo = axonMini(hw, "claw right");
-        pivotServo = axonMini(hw, "claw pivot");
-        passThruServoR = axonMini(hw, "passthrough 1");
-        passThruServoL = axonMini(hw, "passthrough 2");
-        coneArmServoR = goBildaServo(hw, "arm right");
-        coneArmServoL = goBildaServo(hw, "arm left");
+        clawServo = axonMINI(hw, "claw right");
+        pivotServo = axonMINI(hw, "claw pivot");
+        passThruServoR = axonMINI(hw, "passthrough 1");
+        passThruServoL = axonMINI(hw, "passthrough 2");
+        coneArmServoR = goBILDAServo(hw, "arm right");
+        coneArmServoL = goBILDAServo(hw, "arm left");
 
         lift_motor1 = liftMotor(hw, "lift motor 1");
         lift_motor2 = liftMotor(hw, "lift motor 2");
