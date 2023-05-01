@@ -175,10 +175,17 @@ class PIDFController
 
             // note: we'd like to refactor this with Kinematics.calculateMotorFeedforward() but kF complicates the
             // determination of the sign of kStatic
-            val baseOutput = pid.kP * error + pid.kI * errorSum +
-                pid.kD * (measuredVelocity?.let { targetVelocity - it } ?: errorDeriv) +
-                kV * targetVelocity + kA * targetAcceleration + kF(measuredPosition, measuredVelocity)
-            val output = if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput + sign(baseOutput) * kStatic
+            val baseOutput = kP * error +
+                    kI * errorSum +
+                    kD * (measuredVelocity?.let { targetVelocity - it } ?: errorDeriv) +
+                    kV * targetVelocity +
+                    kA * targetAcceleration +
+                    kF(
+                        measuredPosition,
+                        measuredVelocity
+                    )
+            val output =
+                if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput + sign(baseOutput) * kStatic
 
             integrate = !(abs(output) >= maxIntegrationVelocity && sign(output) == sign(error))
 
