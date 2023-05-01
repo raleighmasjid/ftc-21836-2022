@@ -77,12 +77,20 @@ public class TeleOpMecanumDrive {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
+    /**
+     * Set internal heading of the robot to 0 to align field-centric direction to forward
+     */
     public void resetHeading() {
-        headingOffset = getIMUHeading();
+        setHeading(0);
     }
 
-    public void setHeading(double startAngle) {
-        headingOffset = getIMUHeading() - startAngle;
+    /**
+     * Set internal heading of the robot to correct field-centric direction
+     *
+     * @param angle Angle of the robot in degrees, 0 facing forward and increases counter-clockwise
+     */
+    public void setHeading(double angle) {
+        headingOffset = getIMUHeading() - angle;
     }
 }
 
