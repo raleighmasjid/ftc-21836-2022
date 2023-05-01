@@ -2,6 +2,10 @@ package org.firstinspires.ftc.teamcode.control;
 
 import java.util.ArrayList;
 
+/**
+ * Finite impulse response low-pass filter;
+ * Filters out sensor noise
+ */
 public class LowPassFilter {
     private double filterGain = 0.0;
     private int pastValuesCount = 5;

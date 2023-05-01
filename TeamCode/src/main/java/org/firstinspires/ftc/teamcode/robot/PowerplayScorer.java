@@ -58,7 +58,7 @@ public class PowerplayScorer {
      */
     private final ElapsedTime liftDerivTimer;
     /**
-     * Passthrough to track claw closing time before lifting
+     * Timer to track claw closing time before lifting
      */
     private static ElapsedTime liftClawTimer;
     /**
@@ -85,11 +85,6 @@ public class PowerplayScorer {
      * False only if grabCone has been called, and liftClaw has not been called
      */
     private boolean clawHasLifted;
-    /**
-     * Desired tilt state
-     * True if tilted
-     * False if down in default position
-     */
     private boolean clawIsTilted;
     /**
      * Desired pivot state
@@ -227,14 +222,8 @@ public class PowerplayScorer {
         FRONT, PIVOT_POS, BACK
     }
 
-    /**
-     * Current state of passthrough sequence
-     */
     private passThruState currentPassThruState = passThruState.FRONT;
 
-    /**
-     * Current position of main passthrough servos
-     */
     private passThruPos currentPassThruPos = passThruPos.FRONT;
 
     /**
