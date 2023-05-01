@@ -62,30 +62,10 @@ public class PowerplayScorer {
      */
     private static ElapsedTime liftClawTimer;
     /**
-     * Finite impulse response low-pass filter
-     * Filters out sensor noise amplified through differentiation
-     */
-    private final LowPassFilter
-            jerkFilter,
-            accelFilter,
-            veloFilter;
-    /**
-     * Timestamp of the last loop
-     * Subtracted from the current timestamp to obtain dt for differentiation
-     */
-    private double currentTimestamp;
-    /**
-     * Desired claw position
-     * True if open
-     * False if closed
-     */
-    private boolean clawIsOpen;
-    /**
      * True by default
      * False only if grabCone has been called, and liftClaw has not been called
      */
     private boolean clawHasLifted;
-    private boolean clawIsTilted;
     /**
      * Desired pivot state
      * True if pivot should be oriented for its front position
@@ -116,6 +96,34 @@ public class PowerplayScorer {
      * Cached state of cone-flipping arms
      */
     private boolean coneArmsAreDown;
+
+    /**
+     * State of the passthrough sequence
+     */
+    private enum passThruState {
+        START, FRONT, FRONT_PIVOT, PIVOTING, BACK_PIVOT, BACK
+    }
+
+    /**
+     * Named position of main passthrough servos
+     */
+    private enum passThruPos {
+        FRONT, PIVOT_POS, BACK
+    }
+
+    /**
+     * Named lift position
+     */
+    public enum liftPos {
+        FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
+    }
+
+    private final LowPassFilter jerkFilter, accelFilter, veloFilter;
+    private double currentTimestamp;
+    private boolean clawIsOpen;
+    private boolean clawIsTilted;
+    private passThruState currentPassThruState;
+    private passThruPos currentPassThruPos;
 
     @NonNull
     @Contract("_, _ -> new")
@@ -195,6 +203,8 @@ public class PowerplayScorer {
         clawIsTilted = false;
         passThruSwitched = false;
         coneArmsAreDown = false;
+        currentPassThruPos = passThruPos.FRONT;
+        currentPassThruState = passThruState.FRONT;
 
         passThruTimer = new ElapsedTime();
         passThruTimer.reset();
@@ -207,24 +217,6 @@ public class PowerplayScorer {
 
         resetLift();
     }
-
-    /**
-     * State of the passthrough sequence
-     */
-    private enum passThruState {
-        START, FRONT, FRONT_PIVOT, PIVOTING, BACK_PIVOT, BACK
-    }
-
-    /**
-     * Named position of main passthrough servos
-     */
-    private enum passThruPos {
-        FRONT, PIVOT_POS, BACK
-    }
-
-    private passThruState currentPassThruState = passThruState.FRONT;
-
-    private passThruPos currentPassThruPos = passThruPos.FRONT;
 
     /**
      * @param angle Angle to turn main passthrough servos to
@@ -333,13 +325,6 @@ public class PowerplayScorer {
             }
         }
         passThruSwitched = false;
-    }
-
-    /**
-     * Named lift position
-     */
-    public enum liftPos {
-        FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
     }
 
     /**
