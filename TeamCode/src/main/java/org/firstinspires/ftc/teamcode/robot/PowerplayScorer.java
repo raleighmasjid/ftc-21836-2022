@@ -336,11 +336,6 @@ public class PowerplayScorer {
         clawIsTilted = height == liftPos.LOW || height == liftPos.MED || height == liftPos.TALL;
         double targetLiftPos;
         switch (height) {
-            default:
-            case FLOOR:
-                targetLiftPos = RobotConfig.HEIGHT_FLOOR;
-                targetLiftPosName = liftPos.FLOOR.name();
-                break;
             case TWO:
                 targetLiftPos = RobotConfig.HEIGHT_TWO;
                 targetLiftPosName = liftPos.TWO.name();
@@ -368,6 +363,10 @@ public class PowerplayScorer {
             case TALL:
                 targetLiftPos = RobotConfig.HEIGHT_TALL;
                 targetLiftPosName = liftPos.TALL.name();
+                break;
+            default:
+                targetLiftPos = RobotConfig.HEIGHT_FLOOR;
+                targetLiftPosName = liftPos.FLOOR.name();
                 break;
         }
         updateLiftProfile(targetLiftPos);
