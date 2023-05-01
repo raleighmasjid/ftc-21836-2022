@@ -333,7 +333,7 @@ public class PowerplayScorer {
      * @param height Desired named position to run to
      */
     public void setTargetLiftPos(@NonNull liftPos height) {
-        clawIsTilted = (height == liftPos.LOW) || (height == liftPos.MED) || (height == liftPos.TALL);
+        clawIsTilted = height == liftPos.LOW || height == liftPos.MED || height == liftPos.TALL;
         double targetLiftPos;
         switch (height) {
             default:
