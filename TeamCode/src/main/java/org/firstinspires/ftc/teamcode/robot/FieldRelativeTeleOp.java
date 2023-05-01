@@ -125,13 +125,13 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.runLift(Gamepad2.getLeftY());
             } else {
                 if (control2Up.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.liftPos.FIVE : PowerplayScorer.liftPos.TALL);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.FIVE : PowerplayScorer.LiftPos.TALL);
                 else if (control2Left.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.liftPos.FOUR : PowerplayScorer.liftPos.MED);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.FOUR : PowerplayScorer.LiftPos.MED);
                 else if (control2Right.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.liftPos.THREE : PowerplayScorer.liftPos.LOW);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.THREE : PowerplayScorer.LiftPos.LOW);
                 else if (control2Down.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.liftPos.TWO : PowerplayScorer.liftPos.FLOOR);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.TWO : PowerplayScorer.LiftPos.FLOOR);
 
                 if (control2Y.wasJustPressed()) scorer.triggerPassThru();
 

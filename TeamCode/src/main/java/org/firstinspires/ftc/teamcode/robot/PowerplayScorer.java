@@ -100,21 +100,21 @@ public class PowerplayScorer {
     /**
      * State of the passthrough sequence
      */
-    private enum passThruState {
+    private enum PassThruState {
         START, FRONT, FRONT_PIVOT, PIVOTING, BACK_PIVOT, BACK
     }
 
     /**
      * Named position of main passthrough servos
      */
-    private enum passThruPos {
+    private enum PassThruPos {
         FRONT, PIVOT_POS, BACK
     }
 
     /**
      * Named lift position
      */
-    public enum liftPos {
+    public enum LiftPos {
         FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
     }
 
@@ -122,8 +122,8 @@ public class PowerplayScorer {
     private double currentTimestamp;
     private boolean clawIsOpen;
     private boolean clawIsTilted;
-    private passThruState currentPassThruState;
-    private passThruPos currentPassThruPos;
+    private PassThruState currentPassThruState;
+    private PassThruPos currentPassThruPos;
 
     @NonNull
     @Contract("_, _ -> new")
@@ -203,8 +203,8 @@ public class PowerplayScorer {
         clawIsTilted = false;
         passThruSwitched = false;
         coneArmsAreDown = false;
-        currentPassThruPos = passThruPos.FRONT;
-        currentPassThruState = passThruState.FRONT;
+        currentPassThruPos = PassThruPos.FRONT;
+        currentPassThruState = PassThruState.FRONT;
 
         passThruTimer = new ElapsedTime();
         passThruTimer.reset();
@@ -241,7 +241,7 @@ public class PowerplayScorer {
                 setPassThruAngle(RobotConfig.ANGLE_PASS_BACK - (clawIsTilted ? RobotConfig.ANGLE_PASS_TILT : 0.0));
                 break;
             default:
-                currentPassThruPos = passThruPos.FRONT;
+                currentPassThruPos = PassThruPos.FRONT;
                 break;
         }
     }
@@ -260,30 +260,30 @@ public class PowerplayScorer {
                     passThruTimer.reset();
                     break;
                 case START:
-                    currentPassThruState = passThruState.FRONT_PIVOT;
+                    currentPassThruState = PassThruState.FRONT_PIVOT;
                     break;
                 case FRONT_PIVOT:
-                    if (passThruSwitched) currentPassThruPos = passThruPos.PIVOT_POS;
+                    if (passThruSwitched) currentPassThruPos = PassThruPos.PIVOT_POS;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_FRONT_PIVOT) {
                         pivotIsFront = false;
                         passThruTimer.reset();
-                        currentPassThruState = passThruState.PIVOTING;
+                        currentPassThruState = PassThruState.PIVOTING;
                     }
                     break;
                 case PIVOTING:
                     if (passThruSwitched) pivotIsFront = false;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_PIVOTING) {
                         passThruTimer.reset();
-                        currentPassThruPos = passThruPos.BACK;
-                        currentPassThruState = passThruState.BACK_PIVOT;
+                        currentPassThruPos = PassThruPos.BACK;
+                        currentPassThruState = PassThruState.BACK_PIVOT;
                     }
                     break;
                 case BACK_PIVOT:
-                    if (passThruSwitched) currentPassThruPos = passThruPos.BACK;
+                    if (passThruSwitched) currentPassThruPos = PassThruPos.BACK;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_BACK_PIVOT) {
                         passThruInFront = false;
                         passThruTimer.reset();
-                        currentPassThruState = passThruState.BACK;
+                        currentPassThruState = PassThruState.BACK;
                     }
                     break;
             }
@@ -296,30 +296,30 @@ public class PowerplayScorer {
                     passThruTimer.reset();
                     break;
                 case START:
-                    currentPassThruState = passThruState.BACK_PIVOT;
+                    currentPassThruState = PassThruState.BACK_PIVOT;
                     break;
                 case BACK_PIVOT:
-                    if (passThruSwitched) currentPassThruPos = passThruPos.PIVOT_POS;
+                    if (passThruSwitched) currentPassThruPos = PassThruPos.PIVOT_POS;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_BACK_PIVOT) {
                         pivotIsFront = true;
                         passThruTimer.reset();
-                        currentPassThruState = passThruState.PIVOTING;
+                        currentPassThruState = PassThruState.PIVOTING;
                     }
                     break;
                 case PIVOTING:
                     if (passThruSwitched) pivotIsFront = true;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_PIVOTING) {
                         passThruTimer.reset();
-                        currentPassThruPos = passThruPos.FRONT;
-                        currentPassThruState = passThruState.FRONT_PIVOT;
+                        currentPassThruPos = PassThruPos.FRONT;
+                        currentPassThruState = PassThruState.FRONT_PIVOT;
                     }
                     break;
                 case FRONT_PIVOT:
-                    if (passThruSwitched) currentPassThruPos = passThruPos.FRONT;
+                    if (passThruSwitched) currentPassThruPos = PassThruPos.FRONT;
                     if (passThruTimer.seconds() >= RobotConfig.TIME_FRONT_PIVOT) {
                         passThruInFront = true;
                         passThruTimer.reset();
-                        currentPassThruState = passThruState.FRONT;
+                        currentPassThruState = PassThruState.FRONT;
                     }
                     break;
             }
@@ -332,41 +332,41 @@ public class PowerplayScorer {
      *
      * @param height Desired named position to run to
      */
-    public void setTargetLiftPos(@NonNull liftPos height) {
-        clawIsTilted = height == liftPos.LOW || height == liftPos.MED || height == liftPos.TALL;
+    public void setTargetLiftPos(@NonNull LiftPos height) {
+        clawIsTilted = height == LiftPos.LOW || height == LiftPos.MED || height == LiftPos.TALL;
         double targetLiftPos;
         switch (height) {
             case TWO:
                 targetLiftPos = RobotConfig.HEIGHT_TWO;
-                targetLiftPosName = liftPos.TWO.name();
+                targetLiftPosName = LiftPos.TWO.name();
                 break;
             case THREE:
                 targetLiftPos = RobotConfig.HEIGHT_THREE;
-                targetLiftPosName = liftPos.THREE.name();
+                targetLiftPosName = LiftPos.THREE.name();
                 break;
             case FOUR:
                 targetLiftPos = RobotConfig.HEIGHT_FOUR;
-                targetLiftPosName = liftPos.FOUR.name();
+                targetLiftPosName = LiftPos.FOUR.name();
                 break;
             case FIVE:
                 targetLiftPos = RobotConfig.HEIGHT_FIVE;
-                targetLiftPosName = liftPos.FIVE.name();
+                targetLiftPosName = LiftPos.FIVE.name();
                 break;
             case LOW:
                 targetLiftPos = RobotConfig.HEIGHT_LOW;
-                targetLiftPosName = liftPos.LOW.name();
+                targetLiftPosName = LiftPos.LOW.name();
                 break;
             case MED:
                 targetLiftPos = RobotConfig.HEIGHT_MEDIUM;
-                targetLiftPosName = liftPos.MED.name();
+                targetLiftPosName = LiftPos.MED.name();
                 break;
             case TALL:
                 targetLiftPos = RobotConfig.HEIGHT_TALL;
-                targetLiftPosName = liftPos.TALL.name();
+                targetLiftPosName = LiftPos.TALL.name();
                 break;
             default:
                 targetLiftPos = RobotConfig.HEIGHT_FLOOR;
-                targetLiftPosName = liftPos.FLOOR.name();
+                targetLiftPosName = LiftPos.FLOOR.name();
                 break;
         }
         updateLiftProfile(targetLiftPos);
@@ -458,7 +458,7 @@ public class PowerplayScorer {
         veloFilter.resetPastValues();
 
         currentTimestamp = 0.0;
-        targetLiftPosName = liftPos.FLOOR.name();
+        targetLiftPosName = LiftPos.FLOOR.name();
         clawIsTilted = false;
 
         liftDerivTimer.reset();
@@ -589,7 +589,7 @@ public class PowerplayScorer {
      * Opens claw and runs lift to floor position
      */
     public void dropCone() {
-        dropCone(liftPos.FLOOR);
+        dropCone(LiftPos.FLOOR);
     }
 
     /**
@@ -597,7 +597,7 @@ public class PowerplayScorer {
      *
      * @param height Named position to run lift to
      */
-    public void dropCone(liftPos height) {
+    public void dropCone(LiftPos height) {
         setClawOpen(true);
         setTargetLiftPos(height);
     }
@@ -623,8 +623,8 @@ public class PowerplayScorer {
         } else {
             passThruTimer.reset();
             passThruIsMoving = true;
-            currentPassThruPos = passThruPos.PIVOT_POS;
-            currentPassThruState = passThruState.START;
+            currentPassThruPos = PassThruPos.PIVOT_POS;
+            currentPassThruState = PassThruState.START;
         }
     }
 
@@ -632,8 +632,8 @@ public class PowerplayScorer {
      * Toggles position of main passthrough servos
      */
     public void togglePassThru() {
-        currentPassThruPos = passThruInFront ? passThruPos.BACK : passThruPos.FRONT;
-        currentPassThruState = passThruInFront ? passThruState.BACK : passThruState.FRONT;
+        currentPassThruPos = passThruInFront ? PassThruPos.BACK : PassThruPos.FRONT;
+        currentPassThruState = passThruInFront ? PassThruState.BACK : PassThruState.FRONT;
         passThruInFront = !passThruInFront;
     }
 
