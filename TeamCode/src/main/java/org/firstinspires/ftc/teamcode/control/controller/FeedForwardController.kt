@@ -51,4 +51,14 @@ class FeedForwardController
         val baseOutput = kV * targetVelocity + kA * targetAcceleration
         return if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput + sign(baseOutput) * kStatic
     }
+
+    /**
+     * Run a single iteration of the controller.
+     *
+     * @param additionalOutput output from another joint controller (like a PID) that you want to add to the calculation of the sign of kS
+     */
+    fun update(additionalOutput: Double): Double {
+        val baseOutput = kV * targetVelocity + kA * targetAcceleration
+        return (if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput) + (sign(baseOutput + additionalOutput) * kStatic)
+    }
 }

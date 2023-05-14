@@ -440,7 +440,6 @@ public class PowerplayScorer {
         currentLiftVelo = dtIsZero ? 0.0 : (veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt));
         currentLiftAccel = dtIsZero ? 0.0 : (accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt));
         currentLiftJerk = dtIsZero ? 0.0 : (jerkFilter.getEstimate((currentLiftAccel - lastLiftAccel) / dt));
-
     }
 
     /**
@@ -490,7 +489,9 @@ public class PowerplayScorer {
 
         if (liftPID.atTargetPosition(currentLiftPos)) liftPID.resetIntegral();
 
-        double output = liftPID.update(currentLiftPos) + liftFeedforward.update();
+        double PIDCommand = liftPID.update(currentLiftPos);
+        double FFCommand = liftFeedforward.update(PIDCommand);
+        double output = PIDCommand + FFCommand;
 
         liftPID.setIntegrate(
                 Math.abs(output) < RobotConfig.LIFT_INTEGRATION_MAX_VELO ||
