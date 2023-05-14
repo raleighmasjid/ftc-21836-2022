@@ -107,7 +107,7 @@ public class PowerplayScorer {
     private double currentTimestamp;
     private boolean passThruIsMoving;
     private boolean passThruInFront;
-    private boolean coneArmsAreDown;
+    private double coneArmsAngle;
     private boolean clawIsOpen;
     private boolean clawIsTilted;
     private PassThruState currentPassThruState;
@@ -189,7 +189,7 @@ public class PowerplayScorer {
         clawIsOpen = true;
         clawIsTilted = false;
         passThruSwitched = false;
-        coneArmsAreDown = false;
+        coneArmsAngle = 0.0;
         currentPassThruPos = PassThruPos.FRONT;
         currentPassThruState = PassThruState.FRONT;
 
@@ -391,7 +391,6 @@ public class PowerplayScorer {
         );
 
         liftProfileTimer.reset();
-        coneArmsAreDown = false;
     }
 
     /**
@@ -632,11 +631,10 @@ public class PowerplayScorer {
     /**
      * Holds cone arm servos in position
      */
-    public void runConeArms(boolean down) {
-        coneArmsAreDown = down;
-        double angle = coneArmsAreDown ? RobotConfig.ANGLE_ARM_DOWN : RobotConfig.ANGLE_ARM_UP;
-        coneArmServoL.turnToAngle(280.0 - angle);
-        coneArmServoR.turnToAngle(angle);
+    public void runConeArms(double angle) {
+        coneArmsAngle = angle * RobotConfig.ANGLE_ARM_DOWN;
+        coneArmServoL.turnToAngle(280.0 - coneArmsAngle);
+        coneArmServoR.turnToAngle(coneArmsAngle);
     }
 
     /**
@@ -660,7 +658,7 @@ public class PowerplayScorer {
         telemetry.addData("Lift current jerk (in/s^3)", currentLiftJerk);
         telemetry.addLine();
         telemetry.addLine();
-        telemetry.addData("Cone arms are", coneArmsAreDown ? "down" : "up");
+        telemetry.addData("Cone arms angle", coneArmsAngle);
         telemetry.addLine();
         telemetry.addData("Claw is", clawIsOpen ? "open" : "closed");
         telemetry.addLine();
