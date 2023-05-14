@@ -105,8 +105,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             boolean stackHeights = control2LShoulder.isDown();
 
-            if (control2A.wasJustPressed()) scorer.toggleConeArms();
-
             if (control2RShoulder.wasJustPressed()) {
                 if (overrideMode) scorer.setLiftStateToCurrent();
                 overrideMode = !overrideMode;
@@ -145,7 +143,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassThruServos();
-            scorer.runConeArms();
+            scorer.runConeArms(control2A.isDown());
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             //everything below is telemetry

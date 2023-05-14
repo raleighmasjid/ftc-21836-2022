@@ -630,16 +630,10 @@ public class PowerplayScorer {
     }
 
     /**
-     * Toggle cone arm servos
-     */
-    public void toggleConeArms() {
-        coneArmsAreDown = !coneArmsAreDown;
-    }
-
-    /**
      * Holds cone arm servos in position
      */
-    public void runConeArms() {
+    public void runConeArms(boolean down) {
+        coneArmsAreDown = down;
         double angle = coneArmsAreDown ? RobotConfig.ANGLE_ARM_DOWN : RobotConfig.ANGLE_ARM_UP;
         coneArmServoL.turnToAngle(280.0 - angle);
         coneArmServoR.turnToAngle(angle);
