@@ -24,6 +24,8 @@ public class IIRLowPassFilter {
     }
 
     public double getEstimate(double newValue) {
-        return filterGain * lastValue + (1 - filterGain) * newValue;
+        double estimate = filterGain * lastValue + (1 - filterGain) * newValue;
+        lastValue = estimate;
+        return estimate;
     }
 }
