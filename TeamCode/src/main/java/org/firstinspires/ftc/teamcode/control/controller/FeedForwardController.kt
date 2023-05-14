@@ -7,9 +7,9 @@ import kotlin.math.sign
 /**
  * FeedForward controller
  */
-class FeedForwardController
+class FeedforwardController
 /**
- * Constructor for [FeedForwardController]. [kV], [kA], and [kStatic] are designed for DC motor feedforward
+ * Constructor for [FeedforwardController]. [kV], [kA], and [kStatic] are designed for DC motor feedforward
  * control (the most common kind of feedforward in FTC).
  *
  * @param kV feedforward velocity gain

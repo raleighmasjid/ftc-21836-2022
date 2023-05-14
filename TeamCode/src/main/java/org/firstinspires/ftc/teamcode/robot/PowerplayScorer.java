@@ -13,7 +13,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.controller.FeedForwardController;
+import org.firstinspires.ftc.teamcode.control.controller.FeedforwardController;
 import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 import org.jetbrains.annotations.Contract;
@@ -37,7 +37,7 @@ public class PowerplayScorer {
     /**
      * Feedforward controller for lift
      */
-    private final FeedForwardController liftFeedforward;
+    private final FeedforwardController liftFeedforward;
     /**
      * Lift motion profile to track along
      */
@@ -174,7 +174,7 @@ public class PowerplayScorer {
         );
         liftPID.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
 
-        liftFeedforward = new FeedForwardController(
+        liftFeedforward = new FeedforwardController(
                 RobotConfig.LIFT_kV,
                 RobotConfig.LIFT_kA,
                 RobotConfig.LIFT_kS
