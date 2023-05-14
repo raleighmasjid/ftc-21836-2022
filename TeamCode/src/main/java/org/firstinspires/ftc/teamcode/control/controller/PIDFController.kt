@@ -16,7 +16,9 @@ class PIDFController
  * Constructor for [PIDFController]. [kV], [kA], and [kStatic] are designed for DC motor feedforward
  * control (the most common kind of feedforward in FTC). [kF] provides a custom feedforward term for other plants.
  *
- * @param pid traditional PID coefficients
+ * @param kP proportional gain
+ * @param kI integral gain
+ * @param kD derivative gain
  * @param maxIntegrationVelocity max velocity that integral path will continue integration
  * @param filterGain derivative filter weight, 0 = unsmoothed, 0<x<1 increasingly smoothed, 1 = broken
  * @param kV feedforward velocity gain
@@ -39,10 +41,6 @@ class PIDFController
 ) {
     private var errorSum: Double = 0.0
     private var lastUpdateTimestamp: Double = Double.NaN
-
-    private var inputBounded: Boolean = false
-    private var minInput: Double = 0.0
-    private var maxInput: Double = 0.0
 
     private var outputBounded: Boolean = false
     private var minOutput: Double = 0.0
@@ -98,21 +96,6 @@ class PIDFController
      */
     private var lastError: Double = 0.0
 
-//    /**
-//     * Sets bound on the input of the controller. The min and max values are considered modularly-equivalent (that is,
-//     * the input wraps around).
-//     *
-//     * @param min minimum input
-//     * @param max maximum input
-//     */
-//    fun setInputBounds(min: Double, max: Double) {
-//        if (min < max) {
-//            inputBounded = true
-//            minInput = min
-//            maxInput = max
-//        }
-//    }
-
     /**
      * Sets bounds on the output of the controller.
      *
@@ -129,14 +112,7 @@ class PIDFController
     }
 
     private fun getPositionError(measuredPosition: Double): Double {
-        var error = targetPosition - measuredPosition
-        if (inputBounded) {
-            val inputRange = maxInput - minInput
-            while (abs(error) > inputRange / 2.0) {
-                error -= sign(error) * inputRange
-            }
-        }
-        return error
+        return targetPosition - measuredPosition
     }
 
     fun atTargetPosition(measuredPosition: Double): Boolean {
