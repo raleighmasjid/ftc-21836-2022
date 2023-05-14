@@ -82,7 +82,7 @@ class PIDController
 
             errorSum += if (integrate) (0.5 * (error + lastError) * dt) else 0.0
 
-            if (sign(error) != sign(lastError)) reset()
+            if (sign(error) != sign(lastError)) resetIntegral()
 
             lastError = error
             lastUpdateTimestamp = currentTimestamp
@@ -94,7 +94,7 @@ class PIDController
     /**
      * Reset the controller's integral sum.
      */
-    fun reset() {
+    fun resetIntegral() {
         errorSum = 0.0
         lastError = 0.0
         integrate = true

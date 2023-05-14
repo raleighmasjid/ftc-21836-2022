@@ -457,7 +457,7 @@ public class PowerplayScorer {
 
         liftDerivTimer.reset();
         liftProfileTimer.reset();
-        liftPID.reset();
+        liftPID.resetIntegral();
         lift_motor2.resetEncoder();
 
         currentLiftPos = 0.0;
@@ -488,7 +488,7 @@ public class PowerplayScorer {
 
         updateLiftGains();
 
-        if (liftPID.atTargetPosition(currentLiftPos)) liftPID.reset();
+        if (liftPID.atTargetPosition(currentLiftPos)) liftPID.resetIntegral();
 
         double output = liftPID.update(currentLiftPos) + liftFeedforward.update();
 
