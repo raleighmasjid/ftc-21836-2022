@@ -13,7 +13,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.FIRLowPassFilter;
+import org.firstinspires.ftc.teamcode.control.IIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.control.PIDFController;
 import org.jetbrains.annotations.Contract;
 
@@ -103,7 +103,7 @@ public class PowerplayScorer {
         FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
     }
 
-    private final FIRLowPassFilter jerkFilter, accelFilter, veloFilter;
+    private final IIRLowPassFilter jerkFilter, accelFilter, veloFilter;
     private double currentTimestamp;
     private boolean passThruIsMoving;
     private boolean passThruInFront;
@@ -175,13 +175,13 @@ public class PowerplayScorer {
         liftController.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
         liftController.setOutputBounds(-1.0, 1.0);
 
-        veloFilter = new FIRLowPassFilter();
-        accelFilter = new FIRLowPassFilter();
-        jerkFilter = new FIRLowPassFilter();
+        veloFilter = new IIRLowPassFilter();
+        accelFilter = new IIRLowPassFilter();
+        jerkFilter = new IIRLowPassFilter();
 
-        veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
-        accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
-        jerkFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
+        veloFilter.setGain(RobotConfig.LIFT_VELO_FILTER_GAIN);
+        accelFilter.setGain(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
+        jerkFilter.setGain(RobotConfig.LIFT_JERK_FILTER_GAIN);
 
         clawHasLifted = true;
         pivotIsFront = true;
@@ -426,9 +426,9 @@ public class PowerplayScorer {
         double dt = currentTimestamp - lastTimestamp;
         boolean dtIsZero = dt == 0.0;
 
-        veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
-        accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);
-        jerkFilter.setGains(RobotConfig.LIFT_JERK_FILTER_GAIN, RobotConfig.LIFT_JERK_ESTIMATE_COUNT);
+        veloFilter.setGain(RobotConfig.LIFT_VELO_FILTER_GAIN);
+        accelFilter.setGain(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
+        jerkFilter.setGain(RobotConfig.LIFT_JERK_FILTER_GAIN);
 
         currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
         currentLiftVelo = dtIsZero ? 0.0 : (veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt));
@@ -441,9 +441,9 @@ public class PowerplayScorer {
      * Resets all internal lift variables
      */
     public void resetLift() {
-        jerkFilter.resetPastValues();
-        accelFilter.resetPastValues();
-        veloFilter.resetPastValues();
+        jerkFilter.clearMemory();
+        accelFilter.clearMemory();
+        veloFilter.clearMemory();
 
         currentTimestamp = 0.0;
         targetLiftPosName = LiftPos.FLOOR.name();
