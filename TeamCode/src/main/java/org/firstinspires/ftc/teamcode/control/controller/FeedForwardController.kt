@@ -48,8 +48,7 @@ class FeedforwardController
      * Run a single iteration of the controller.
      */
     fun update(): Double {
-        val baseOutput = kV * targetVelocity + kA * targetAcceleration
-        return if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput + sign(baseOutput) * kStatic
+        return update(0.0)
     }
 
     /**

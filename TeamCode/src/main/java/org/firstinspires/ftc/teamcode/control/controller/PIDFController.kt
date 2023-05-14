@@ -16,10 +16,10 @@ class PIDFController
  * @param kP proportional gain
  * @param kI integral gain
  * @param kD derivative gain
- * @param filterGain derivative filter weight, 0 = unsmoothed, 0 < x < 1 increasingly smoothed, 1 = broken
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
  * @param kStatic additive feedforward constant
+ * @param filterGain derivative filter weight, 0 = unsmoothed, 0 < x < 1 increasingly smoothed, 1 = broken
  * @param maxIntegrationVelocity max velocity that integral path will continue integration
  */
 @JvmOverloads constructor(
