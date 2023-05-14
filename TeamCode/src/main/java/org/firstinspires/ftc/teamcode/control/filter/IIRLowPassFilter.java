@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.control;
+package org.firstinspires.ftc.teamcode.control.filter;
 
 /**
  * Infinite impulse response low-pass filter;
