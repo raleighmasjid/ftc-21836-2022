@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.control.controller
 
 import com.acmerobotics.roadrunner.util.NanoClock
-import com.acmerobotics.roadrunner.util.epsilonEquals
-import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter
-import kotlin.math.abs
+import org.firstinspires.ftc.teamcode.robot.RobotConfig
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sign
@@ -14,66 +12,49 @@ import kotlin.math.sign
 class PIDFController
 /**
  * Constructor for [PIDFController]. [kV], [kA], and [kStatic] are designed for DC motor feedforward
- * control (the most common kind of feedforward in FTC). [kF] provides a custom feedforward term for other plants.
+ * control (the most common kind of feedforward in FTC).
  *
  * @param kP proportional gain
  * @param kI integral gain
  * @param kD derivative gain
- * @param maxIntegrationVelocity max velocity that integral path will continue integration
- * @param filterGain derivative filter weight, 0 = unsmoothed, 0<x<1 increasingly smoothed, 1 = broken
+ * @param filterGain derivative filter weight, 0 = unsmoothed, 0 < x < 1 increasingly smoothed, 1 = broken
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
  * @param kStatic additive feedforward constant
- * @param kF custom feedforward that depends on position and/or velocity (e.g., a gravity term for arms)
+ * @param maxIntegrationVelocity max velocity that integral path will continue integration
  * @param clock clock
  */
 @JvmOverloads constructor(
     private var kP: Double,
     private var kI: Double,
     private var kD: Double,
-    private var maxIntegrationVelocity: Double = 0.5,
     private var filterGain: Double = 0.8,
     private var kV: Double = 0.0,
     private var kA: Double = 0.0,
     private var kStatic: Double = 0.0,
-    private var kF: (Double, Double?) -> Double = { _, _ -> 0.0 },
+    private var maxIntegrationVelocity: Double = 1.0,
     private val clock: NanoClock = NanoClock.system()
 ) {
-    private var errorSum: Double = 0.0
-    private var lastUpdateTimestamp: Double = Double.NaN
-
     private var outputBounded: Boolean = false
     private var minOutput: Double = 0.0
     private var maxOutput: Double = 0.0
 
-    var currentFilterEstimate: Double = 0.0
-    private var integrate: Boolean = true
-    var positionTolerance: Double = 2.0
-
-    private var derivFilter: IIRLowPassFilter =
-        IIRLowPassFilter(
-            filterGain
-        )
+    private val PID: PIDController = PIDController(kP, kI, kD, filterGain)
+    private val FF: FeedForwardController = FeedForwardController(kV, kA, kStatic)
 
     fun setGains(
         kP: Double,
         kI: Double,
         kD: Double,
-        maxIntegrationVelocity: Double = this.maxIntegrationVelocity,
-        filterGain: Double = this.filterGain,
-        kV: Double = this.kV,
-        kA: Double = this.kA,
-        kStatic: Double = this.kStatic
+        filterGain: Double,
+        kV: Double,
+        kA: Double,
+        kStatic: Double,
+        maxIntegrationVelocity: Double = this.maxIntegrationVelocity
     ) {
-        this.kP = kP
-        this.kI = kI
-        this.kD = kD
+        PID.setGains(kP, kI, kD, filterGain)
+        FF.setGains(kV, kA, kStatic)
         this.maxIntegrationVelocity = maxIntegrationVelocity
-        this.filterGain = filterGain
-        this.kV = kV
-        this.kA = kA
-        this.kStatic = kStatic
-        derivFilter.setGain(filterGain)
     }
 
     /**
@@ -116,7 +97,11 @@ class PIDFController
     }
 
     fun atTargetPosition(measuredPosition: Double): Boolean {
-        return abs(getPositionError(measuredPosition)) <= positionTolerance
+        return PID.atTargetPosition(measuredPosition)
+    }
+
+    fun setPositionTolerance(tolerance: Double) {
+        PID.positionTolerance = tolerance
     }
 
     /**
@@ -130,51 +115,22 @@ class PIDFController
         measuredPosition: Double,
         measuredVelocity: Double? = null
     ): Double {
-        val currentTimestamp = clock.seconds()
-        val error = getPositionError(measuredPosition)
-        val dy = error - lastError
-        currentFilterEstimate = derivFilter.getEstimate(dy)
-        return if (lastUpdateTimestamp.isNaN()) {
-            lastError = error
-            lastUpdateTimestamp = currentTimestamp
-            0.0
-        } else {
-            val dt = currentTimestamp - lastUpdateTimestamp
-            val errorDeriv = currentFilterEstimate / dt
+        val PIDCommand: Double = PID.update(measuredPosition)
+        val FFCommand: Double = FF.update(PIDCommand)
+        val output = PIDCommand + FFCommand
 
-            errorSum += if (integrate) (0.5 * (error + lastError) * dt) else 0.0
+        PID.integrate =
+            Math.abs(output) < RobotConfig.LIFT_INTEGRATION_MAX_VELO || sign(output) != sign(PID.lastError)
 
-            if (sign(error) != sign(lastError)) reset()
-
-            lastError = error
-            lastUpdateTimestamp = currentTimestamp
-
-            // note: we'd like to refactor this with Kinematics.calculateMotorFeedforward() but kF complicates the
-            // determination of the sign of kStatic
-            val baseOutput = kP * error +
-                    kI * errorSum +
-                    kD * (measuredVelocity?.let { targetVelocity - it } ?: errorDeriv) +
-                    kV * targetVelocity +
-                    kA * targetAcceleration +
-                    kF(
-                        measuredPosition,
-                        measuredVelocity
-                    )
-            val output =
-                if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput + sign(baseOutput) * kStatic
-
-            integrate = !(abs(output) >= maxIntegrationVelocity && sign(output) == sign(error))
-
-            if (outputBounded) max(minOutput, min(output, maxOutput)) else output
-        }
+        return if (outputBounded) max(minOutput, min(output, maxOutput)) else output
     }
 
     /**
      * Reset the controller's integral sum.
      */
     fun reset() {
-        errorSum = 0.0
-        lastError = 0.0
-        integrate = true
+        PID.errorSum = 0.0
+        PID.lastError = 0.0
+        PID.integrate = true
     }
 }

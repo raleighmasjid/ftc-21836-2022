@@ -23,7 +23,7 @@ class PIDController
     private var filterGain: Double = 0.8,
     private val clock: NanoClock = NanoClock.system()
 ) {
-    private var errorSum: Double = 0.0
+    var errorSum: Double = 0.0
     var lastError: Double = 0.0
     private var lastUpdateTimestamp: Double = Double.NaN
 
