@@ -498,7 +498,7 @@ public class PowerplayScorer {
                         Math.signum(output) != Math.signum(liftPID.getLastError())
         );
 
-        runLift(output);
+        runLift(Math.max(Math.min(output, 1.0), -1.0));
     }
 
     /**
