@@ -12,11 +12,11 @@ public class FIRLowPassFilter {
     private final ArrayList<Double> pastValues = new ArrayList<>();
 
     public FIRLowPassFilter() {
-        resetPastValues();
+        clearMemory();
     }
 
     public FIRLowPassFilter(double filterGain, int pastValuesCount) {
-        resetPastValues();
+        clearMemory();
         setGains(filterGain, pastValuesCount);
     }
 
@@ -25,7 +25,7 @@ public class FIRLowPassFilter {
         this.pastValuesCount = (pastValuesCount == 0) ? 1 : pastValuesCount;
     }
 
-    public void resetPastValues() {
+    public void clearMemory() {
         pastValues.clear();
         for (int x = 0; x < pastValuesCount; x++) pastValues.add(0.0);
     }
