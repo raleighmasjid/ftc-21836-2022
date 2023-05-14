@@ -13,7 +13,8 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
+import org.firstinspires.ftc.teamcode.control.controller.FeedForwardController;
+import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 import org.jetbrains.annotations.Contract;
 
@@ -30,9 +31,13 @@ public class PowerplayScorer {
     private final MotorEx lift_motor1, lift_motor2, lift_motor3;
     private final SimpleServo clawServo, pivotServo, passThruServoR, passThruServoL, coneArmServoR, coneArmServoL;
     /**
-     * PID + feedforward controller for lift
+     * PID controller for lift
      */
-    private final PIDFController liftController;
+    private final PIDController liftPID;
+    /**
+     * Feedforward controller for lift
+     */
+    private final FeedForwardController liftFeedforward;
     /**
      * Lift motion profile to track along
      */
@@ -161,18 +166,19 @@ public class PowerplayScorer {
         lift_motor2.setRunMode(Motor.RunMode.VelocityControl);
         lift_motor3.setRunMode(Motor.RunMode.VelocityControl);
 
-        liftController = new PIDFController(
+        liftPID = new PIDController(
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_INTEGRATION_MAX_VELO,
-                RobotConfig.LIFT_PID_FILTER_GAIN,
+                RobotConfig.LIFT_PID_FILTER_GAIN
+        );
+        liftPID.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
+
+        liftFeedforward = new FeedForwardController(
                 RobotConfig.LIFT_kV,
                 RobotConfig.LIFT_kA,
                 RobotConfig.LIFT_kS
         );
-        liftController.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
-        liftController.setOutputBounds(-1.0, 1.0);
 
         veloFilter = new IIRLowPassFilter();
         accelFilter = new IIRLowPassFilter();
@@ -391,23 +397,25 @@ public class PowerplayScorer {
         );
 
         liftProfileTimer.reset();
+        coneArmsAreDown = false;
     }
 
     /**
      * Update lift PIDF controller gains with constants from RobotConfig.java
      */
     private void updateLiftGains() {
-        liftController.setGains(
+        liftPID.setGains(
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_INTEGRATION_MAX_VELO,
-                RobotConfig.LIFT_PID_FILTER_GAIN,
+                RobotConfig.LIFT_PID_FILTER_GAIN
+        );
+        liftPID.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
+        liftFeedforward.setGains(
                 RobotConfig.LIFT_kV,
                 RobotConfig.LIFT_kA,
                 RobotConfig.LIFT_kS
         );
-        liftController.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
     }
 
     /**
@@ -449,7 +457,7 @@ public class PowerplayScorer {
 
         liftDerivTimer.reset();
         liftProfileTimer.reset();
-        liftController.reset();
+        liftPID.reset();
         lift_motor2.resetEncoder();
 
         currentLiftPos = 0.0;
@@ -474,15 +482,22 @@ public class PowerplayScorer {
     public void runLiftToPos() {
         profileLiftState = liftProfile.get(liftProfileTimer.seconds());
 
-        liftController.setTargetPosition(profileLiftState.getX());
-        liftController.setTargetVelocity(profileLiftState.getV());
-        liftController.setTargetAcceleration(profileLiftState.getA());
+        liftPID.setTargetPosition(profileLiftState.getX());
+        liftFeedforward.setTargetVelocity(profileLiftState.getV());
+        liftFeedforward.setTargetAcceleration(profileLiftState.getA());
 
         updateLiftGains();
 
-        if (liftController.atTargetPosition(currentLiftPos)) liftController.reset();
+        if (liftPID.atTargetPosition(currentLiftPos)) liftPID.reset();
 
-        runLift(liftController.update(currentLiftPos));
+        double output = liftPID.update(currentLiftPos) + liftFeedforward.update();
+
+        liftPID.setIntegrate(
+                Math.abs(output) < RobotConfig.LIFT_INTEGRATION_MAX_VELO ||
+                        Math.signum(output) != Math.signum(liftPID.getLastError())
+        );
+
+        runLift(output);
     }
 
     /**
@@ -653,10 +668,10 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Lift current position (in)", currentLiftPos);
         telemetry.addData("Lift profile position (in)", profileLiftState.getX());
-        telemetry.addData("Lift position error (in)", liftController.getCurrentFilterEstimate());
         telemetry.addLine();
         telemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
         telemetry.addData("Lift profile velocity (in/s)", profileLiftState.getV());
+        telemetry.addData("Lift error derivative (in/s)", liftPID.getErrorDeriv());
         telemetry.addLine();
         telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         telemetry.addLine();
