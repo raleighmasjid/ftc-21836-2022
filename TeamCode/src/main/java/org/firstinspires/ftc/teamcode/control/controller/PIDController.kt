@@ -24,9 +24,10 @@ class PIDController
     private val clock: NanoClock = NanoClock.system()
 ) {
     private var errorSum: Double = 0.0
+    var lastError: Double = 0.0
     private var lastUpdateTimestamp: Double = Double.NaN
 
-    var currentFilterEstimate: Double = 0.0
+    var errorDeriv: Double = 0.0
     var integrate: Boolean = true
     var positionTolerance: Double = 2.0
 
@@ -49,14 +50,9 @@ class PIDController
     }
 
     /**
-     * Target position (that is, the controller setpoint).
+     * Target position (the controller setpoint).
      */
     var targetPosition: Double = 0.0
-
-    /**
-     * Error computed in the last call to [update].
-     */
-    private var lastError: Double = 0.0
 
     private fun getPositionError(measuredPosition: Double): Double {
         return targetPosition - measuredPosition
@@ -75,14 +71,14 @@ class PIDController
         val currentTimestamp = clock.seconds()
         val error = getPositionError(measuredPosition)
         val dy = error - lastError
-        currentFilterEstimate = derivFilter.getEstimate(dy)
+        val currentFilterEstimate = derivFilter.getEstimate(dy)
         return if (lastUpdateTimestamp.isNaN()) {
             lastError = error
             lastUpdateTimestamp = currentTimestamp
             0.0
         } else {
             val dt = currentTimestamp - lastUpdateTimestamp
-            val errorDeriv = currentFilterEstimate / dt
+            errorDeriv = currentFilterEstimate / dt
 
             errorSum += if (integrate) (0.5 * (error + lastError) * dt) else 0.0
 
