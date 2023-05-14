@@ -166,9 +166,9 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
                 RobotConfig.LIFT_PID_FILTER_GAIN,
-                RobotConfig.LIFT_kV,
-                RobotConfig.LIFT_kA,
-                RobotConfig.LIFT_kS,
+                RobotConfig.LIFT_UP_kV,
+                RobotConfig.LIFT_UP_kA,
+                RobotConfig.LIFT_UP_kS,
                 RobotConfig.LIFT_INTEGRATION_MAX_VELO
         );
         liftController.getPID().setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
@@ -380,23 +380,24 @@ public class PowerplayScorer {
      * Update lift motion profile with a new target position
      */
     private void updateLiftProfile(double targetLiftPos) {
-        boolean goingDown = targetLiftPos < currentLiftPos;
-
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
                 new MotionState(targetLiftPos, 0, 0, 0),
-                goingDown ? RobotConfig.LIFT_MAX_DOWN_VELO : RobotConfig.LIFT_MAX_UP_VELO,
-                goingDown ? RobotConfig.LIFT_MAX_DOWN_ACCEL : RobotConfig.LIFT_MAX_UP_ACCEL,
+                RobotConfig.LIFT_MAX_VELO,
+                RobotConfig.LIFT_MAX_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
         );
 
         liftProfileTimer.reset();
+        updateLiftGains(targetLiftPos);
     }
 
     /**
      * Update lift PIDF controller gains with constants from RobotConfig.java
      */
-    private void updateLiftGains() {
+    private void updateLiftGains(double targetLiftPos) {
+        boolean goingDown = targetLiftPos < currentLiftPos;
+
         liftController.getPID().setGains(
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
@@ -404,9 +405,9 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_PID_FILTER_GAIN
         );
         liftController.getFeedforward().setGains(
-                RobotConfig.LIFT_kV,
-                RobotConfig.LIFT_kA,
-                RobotConfig.LIFT_kS
+                goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
+                goingDown ? RobotConfig.LIFT_DOWN_kA : RobotConfig.LIFT_UP_kA,
+                goingDown ? RobotConfig.LIFT_DOWN_kS : RobotConfig.LIFT_UP_kS
         );
         liftController.getPID().setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
         liftController.setMaxIntegrationVelocity(RobotConfig.LIFT_INTEGRATION_MAX_VELO);
@@ -463,8 +464,8 @@ public class PowerplayScorer {
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(0.0, 0.0, 0.0, 0.0),
                 new MotionState(0.0, 0.0, 0.0, 0.0),
-                RobotConfig.LIFT_MAX_UP_VELO,
-                RobotConfig.LIFT_MAX_UP_ACCEL,
+                RobotConfig.LIFT_MAX_VELO,
+                RobotConfig.LIFT_MAX_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
         );
     }
@@ -478,11 +479,6 @@ public class PowerplayScorer {
         liftController.getPID().setTargetPosition(profileLiftState.getX());
         liftController.getFeedforward().setTargetVelocity(profileLiftState.getV());
         liftController.getFeedforward().setTargetAcceleration(profileLiftState.getA());
-
-        updateLiftGains();
-
-        if (liftController.getPID().atTargetPosition(currentLiftPos))
-            liftController.getPID().resetIntegral();
 
         runLift(Math.max(Math.min(liftController.update(currentLiftPos), 1.0), -1.0));
     }
