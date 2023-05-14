@@ -13,7 +13,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.LowPassFilter;
+import org.firstinspires.ftc.teamcode.control.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.control.PIDFController;
 import org.jetbrains.annotations.Contract;
 
@@ -103,7 +103,7 @@ public class PowerplayScorer {
         FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
     }
 
-    private final LowPassFilter jerkFilter, accelFilter, veloFilter;
+    private final FIRLowPassFilter jerkFilter, accelFilter, veloFilter;
     private double currentTimestamp;
     private boolean passThruIsMoving;
     private boolean passThruInFront;
@@ -175,9 +175,9 @@ public class PowerplayScorer {
         liftController.setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
         liftController.setOutputBounds(-1.0, 1.0);
 
-        veloFilter = new LowPassFilter();
-        accelFilter = new LowPassFilter();
-        jerkFilter = new LowPassFilter();
+        veloFilter = new FIRLowPassFilter();
+        accelFilter = new FIRLowPassFilter();
+        jerkFilter = new FIRLowPassFilter();
 
         veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_ESTIMATE_COUNT);
         accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_ESTIMATE_COUNT);

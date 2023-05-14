@@ -53,7 +53,11 @@ class PIDFController
     private var integrate: Boolean = true
     var positionTolerance: Double = 2.0
 
-    private var derivFilter: LowPassFilter = LowPassFilter(filterGain, estimateCount)
+    private var derivFilter: FIRLowPassFilter =
+        FIRLowPassFilter(
+            filterGain,
+            estimateCount
+        )
 
     fun setGains(
         kP: Double,

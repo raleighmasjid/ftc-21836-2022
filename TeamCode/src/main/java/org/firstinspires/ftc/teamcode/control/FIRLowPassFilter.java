@@ -6,16 +6,16 @@ import java.util.ArrayList;
  * Finite impulse response low-pass filter;
  * Filters out sensor noise
  */
-public class LowPassFilter {
+public class FIRLowPassFilter {
     private double filterGain = 0.0;
     private int pastValuesCount = 5;
     private final ArrayList<Double> pastValues = new ArrayList<>();
 
-    public LowPassFilter() {
+    public FIRLowPassFilter() {
         resetPastValues();
     }
 
-    public LowPassFilter(double filterGain, int pastValuesCount) {
+    public FIRLowPassFilter(double filterGain, int pastValuesCount) {
         resetPastValues();
         setGains(filterGain, pastValuesCount);
     }
