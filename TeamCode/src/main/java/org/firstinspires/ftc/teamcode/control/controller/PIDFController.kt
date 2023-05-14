@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.control
+package org.firstinspires.ftc.teamcode.control.controller
 
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
