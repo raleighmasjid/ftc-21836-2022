@@ -43,7 +43,7 @@ public class RobotConfig {
             ANGLE_CLAW_PASS = 30,
             ANGLE_CLAW_OPEN = 67,
             ANGLE_ARM_UP = 0,
-            ANGLE_ARM_DOWN = 110,
+            ANGLE_ARM_DOWN = 100,
             ANGLE_PIVOT_FRONT = 12,
             ANGLE_PIVOT_BACK = 210,
             ANGLE_PASS_FRONT = 5,
