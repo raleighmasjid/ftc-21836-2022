@@ -104,7 +104,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             double control1RightX = Gamepad1.getRightX() * precisionScale;
 
             boolean stackHeights = control2LShoulder.isDown();
-            boolean armsDown = control2A.isDown();
+
+            if (control2A.wasJustPressed()) scorer.toggleConeArms();
 
             if (control2RShoulder.wasJustPressed()) {
                 if (overrideMode) scorer.setLiftStateToCurrent();
@@ -144,7 +145,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runClaw();
             scorer.runPivot();
             scorer.runPassThruServos();
-            scorer.runConeArms(armsDown);
+            scorer.runConeArms();
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             //everything below is telemetry
