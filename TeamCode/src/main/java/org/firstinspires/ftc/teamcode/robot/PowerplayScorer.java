@@ -165,13 +165,14 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
+                RobotConfig.LIFT_PID_FILTER_GAIN,
                 RobotConfig.LIFT_kV,
                 RobotConfig.LIFT_kA,
                 RobotConfig.LIFT_kS,
-                RobotConfig.LIFT_PID_FILTER_GAIN,
                 RobotConfig.LIFT_INTEGRATION_MAX_VELO
         );
         liftController.getPID().setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
+        liftController.setOutputBounds(-1.0, 1.0);
 
         veloFilter = new IIRLowPassFilter();
         accelFilter = new IIRLowPassFilter();
@@ -409,6 +410,7 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kS
         );
         liftController.getPID().setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
+        liftController.setMaxIntegrationVelocity(RobotConfig.LIFT_INTEGRATION_MAX_VELO);
     }
 
     /**

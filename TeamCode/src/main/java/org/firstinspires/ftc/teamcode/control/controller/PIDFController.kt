@@ -23,13 +23,13 @@ class PIDFController
  * @param maxIntegrationVelocity max velocity that integral path will continue integration
  */
 @JvmOverloads constructor(
-    kP: Double,
-    kI: Double,
-    kD: Double,
-    kV: Double,
+    kP: Double = 0.0,
+    kI: Double = 0.0,
+    kD: Double = 0.0,
+    filterGain: Double = 0.8,
+    kV: Double = 0.0,
     kA: Double = 0.0,
     kStatic: Double = 0.0,
-    filterGain: Double = 0.8,
     var maxIntegrationVelocity: Double = 1.0
 ) {
     private var outputBounded: Boolean = false
