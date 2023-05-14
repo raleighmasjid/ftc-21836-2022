@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.control
 
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
+import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -53,10 +54,9 @@ class PIDFController
     private var integrate: Boolean = true
     var positionTolerance: Double = 2.0
 
-    private var derivFilter: FIRLowPassFilter =
-        FIRLowPassFilter(
-            filterGain,
-            estimateCount
+    private var derivFilter: IIRLowPassFilter =
+        IIRLowPassFilter(
+            filterGain
         )
 
     fun setGains(
@@ -79,7 +79,7 @@ class PIDFController
         this.kV = kV
         this.kA = kA
         this.kStatic = kStatic
-        derivFilter.setGains(filterGain, estimateCount)
+        derivFilter.setGain(filterGain)
     }
 
     /**
@@ -193,11 +193,7 @@ class PIDFController
 
             integrate = !(abs(output) >= maxIntegrationVelocity && sign(output) == sign(error))
 
-            if (outputBounded) {
-                max(minOutput, min(output, maxOutput))
-            } else {
-                output
-            }
+            if (outputBounded) max(minOutput, min(output, maxOutput)) else output
         }
     }
 
