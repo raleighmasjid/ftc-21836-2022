@@ -167,7 +167,6 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kD,
                 RobotConfig.LIFT_INTEGRATION_MAX_VELO,
                 RobotConfig.LIFT_PID_FILTER_GAIN,
-                RobotConfig.LIFT_PID_ESTIMATE_COUNT,
                 RobotConfig.LIFT_kV,
                 RobotConfig.LIFT_kA,
                 RobotConfig.LIFT_kS
@@ -404,7 +403,6 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kD,
                 RobotConfig.LIFT_INTEGRATION_MAX_VELO,
                 RobotConfig.LIFT_PID_FILTER_GAIN,
-                RobotConfig.LIFT_PID_ESTIMATE_COUNT,
                 RobotConfig.LIFT_kV,
                 RobotConfig.LIFT_kA,
                 RobotConfig.LIFT_kS

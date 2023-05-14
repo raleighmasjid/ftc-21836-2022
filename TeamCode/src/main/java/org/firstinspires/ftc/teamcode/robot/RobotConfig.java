@@ -60,10 +60,4 @@ public class RobotConfig {
             CAMERA_FY = 578.272,
             CAMERA_CX = 402.145,
             CAMERA_CY = 221.506;
-
-    public static int
-            LIFT_PID_ESTIMATE_COUNT = 5,
-            LIFT_VELO_ESTIMATE_COUNT = 5,
-            LIFT_ACCEL_ESTIMATE_COUNT = 5,
-            LIFT_JERK_ESTIMATE_COUNT = 5;
 }

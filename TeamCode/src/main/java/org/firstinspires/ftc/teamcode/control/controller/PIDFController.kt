@@ -19,7 +19,6 @@ class PIDFController
  * @param pid traditional PID coefficients
  * @param maxIntegrationVelocity max velocity that integral path will continue integration
  * @param filterGain derivative filter weight, 0 = unsmoothed, 0<x<1 increasingly smoothed, 1 = broken
- * @param estimateCount number of past values to average when filtering
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
  * @param kStatic additive feedforward constant
@@ -32,7 +31,6 @@ class PIDFController
     private var kD: Double,
     private var maxIntegrationVelocity: Double = 0.5,
     private var filterGain: Double = 0.8,
-    private var estimateCount: Int = 5,
     private var kV: Double = 0.0,
     private var kA: Double = 0.0,
     private var kStatic: Double = 0.0,
@@ -65,7 +63,6 @@ class PIDFController
         kD: Double,
         maxIntegrationVelocity: Double = this.maxIntegrationVelocity,
         filterGain: Double = this.filterGain,
-        estimateCount: Int = this.estimateCount,
         kV: Double = this.kV,
         kA: Double = this.kA,
         kStatic: Double = this.kStatic
@@ -75,7 +72,6 @@ class PIDFController
         this.kD = kD
         this.maxIntegrationVelocity = maxIntegrationVelocity
         this.filterGain = filterGain
-        this.estimateCount = estimateCount
         this.kV = kV
         this.kA = kA
         this.kStatic = kStatic
