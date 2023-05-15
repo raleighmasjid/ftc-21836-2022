@@ -81,6 +81,7 @@ public class PowerplayScorer {
      * Timer to track sequential passthrough events
      */
     private static ElapsedTime passThruTimer;
+    private double targetLiftPos = 0.0;
 
     /**
      * State of the passthrough sequence
@@ -380,6 +381,7 @@ public class PowerplayScorer {
      * Update lift motion profile with a new target position
      */
     private void updateLiftProfile(double targetLiftPos) {
+        this.targetLiftPos = targetLiftPos;
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
                 new MotionState(targetLiftPos, 0, 0, 0),
@@ -389,13 +391,13 @@ public class PowerplayScorer {
         );
 
         liftProfileTimer.reset();
-        updateLiftGains(targetLiftPos);
+        updateLiftGains();
     }
 
     /**
      * Update lift PIDF controller gains with constants from RobotConfig.java
      */
-    private void updateLiftGains(double targetLiftPos) {
+    private void updateLiftGains() {
         boolean goingDown = targetLiftPos < currentLiftPos;
 
         liftController.getPID().setGains(
@@ -479,6 +481,8 @@ public class PowerplayScorer {
         liftController.getPID().setTargetPosition(profileLiftState.getX());
         liftController.getFeedforward().setTargetVelocity(profileLiftState.getV());
         liftController.getFeedforward().setTargetAcceleration(profileLiftState.getA());
+
+        if (currentLiftPos == targetLiftPos) liftController.getPID().resetIntegral();
 
         runLift(Math.max(Math.min(liftController.update(currentLiftPos), 1.0), -1.0));
     }
