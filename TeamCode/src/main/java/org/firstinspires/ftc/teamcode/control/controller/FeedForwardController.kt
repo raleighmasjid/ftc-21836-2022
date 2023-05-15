@@ -54,7 +54,7 @@ class FeedforwardController
     /**
      * Run a single iteration of the controller.
      *
-     * @param additionalOutput output from another joint controller (like a PID) that you want to add to the calculation of the sign of kS
+     * @param additionalOutput output from a joint controller (like a PID) that is included in the calculation of the sign of kS
      */
     fun update(additionalOutput: Double): Double {
         val baseOutput = kV * targetVelocity + kA * targetAcceleration
