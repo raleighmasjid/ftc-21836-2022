@@ -172,7 +172,6 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_UP_kS,
                 RobotConfig.LIFT_INTEGRATION_MAX_VELO
         );
-        liftController.getPID().setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
         liftController.setOutputBounds(-1.0, 1.0);
 
         veloFilter = new IIRLowPassFilter();
@@ -400,7 +399,7 @@ public class PowerplayScorer {
     private void updateLiftGains() {
         boolean goingDown = targetLiftPos < currentLiftPos;
 
-        liftController.getPID().setGains(
+        liftController.getPid().setGains(
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
@@ -411,7 +410,6 @@ public class PowerplayScorer {
                 goingDown ? RobotConfig.LIFT_DOWN_kA : RobotConfig.LIFT_UP_kA,
                 goingDown ? RobotConfig.LIFT_DOWN_kS : RobotConfig.LIFT_UP_kS
         );
-        liftController.getPID().setPositionTolerance(RobotConfig.LIFT_POS_TOLERANCE);
         liftController.setMaxIntegrationVelocity(RobotConfig.LIFT_INTEGRATION_MAX_VELO);
     }
 
@@ -453,7 +451,7 @@ public class PowerplayScorer {
 
         liftDerivTimer.reset();
         liftProfileTimer.reset();
-        liftController.getPID().resetIntegral();
+        liftController.getPid().resetIntegral();
         lift_motor2.resetEncoder();
 
         currentLiftPos = 0.0;
@@ -478,13 +476,15 @@ public class PowerplayScorer {
     public void runLiftToPos() {
         profileLiftState = liftProfile.get(liftProfileTimer.seconds());
 
-        liftController.getPID().setTargetPosition(profileLiftState.getX());
+        liftController.getPid().setTargetPosition(profileLiftState.getX());
         liftController.getFeedforward().setTargetVelocity(profileLiftState.getV());
         liftController.getFeedforward().setTargetAcceleration(profileLiftState.getA());
 
-        if (currentLiftPos == targetLiftPos) liftController.getPID().resetIntegral();
+        if (Math.abs(targetLiftPos - currentLiftPos) <= RobotConfig.LIFT_POS_TOLERANCE) {
+            liftController.getPid().resetIntegral();
+        }
 
-        runLift(Math.max(Math.min(liftController.update(currentLiftPos), 1.0), -1.0));
+        runLift(liftController.update(currentLiftPos));
     }
 
     /**
@@ -651,7 +651,7 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
         telemetry.addData("Lift profile velocity (in/s)", profileLiftState.getV());
-        telemetry.addData("Lift error derivative (in/s)", liftController.getPID().getErrorDeriv());
+        telemetry.addData("Lift error derivative (in/s)", liftController.getPid().getErrorDeriv());
         telemetry.addLine();
         telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         telemetry.addLine();

@@ -24,7 +24,7 @@ class PIDController
 ) {
     private var lastTimestamp: Double = Double.NaN
     var lastError: Double = 0.0
-    var errorSum: Double = 0.0
+    private var errorSum: Double = 0.0
     var errorDeriv: Double = 0.0
     var integrate: Boolean = true
 

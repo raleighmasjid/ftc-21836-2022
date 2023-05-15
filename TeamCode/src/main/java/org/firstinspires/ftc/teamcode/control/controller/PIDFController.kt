@@ -10,7 +10,7 @@ import kotlin.math.sign
  */
 class PIDFController
 /**
- * Constructor for [PIDFController]. [kV], [kA], and [kStatic] are designed for DC motor feedforward
+ * Constructor for [PIDFController]. kV, kA, and kStatic are designed for DC motor feedforward
  * control (the most common kind of feedforward in FTC).
  *
  * @param kP proportional gain
@@ -36,8 +36,8 @@ class PIDFController
     private var minOutput: Double = 0.0
     private var maxOutput: Double = 0.0
 
-    val PID: PIDController = PIDController(kP, kI, kD, filterGain)
-    val Feedforward: FeedforwardController = FeedforwardController(kV, kA, kStatic)
+    val pid: PIDController = PIDController(kP, kI, kD, filterGain)
+    val feedforward: FeedforwardController = FeedforwardController(kV, kA, kStatic)
 
     /**
      * Sets bounds on the output of the controller.
@@ -60,12 +60,11 @@ class PIDFController
      * @param measuredPosition measured position
      */
     fun update(measuredPosition: Double): Double {
-        val PIDCommand: Double = PID.update(measuredPosition)
-        val FFCommand: Double = Feedforward.update(PIDCommand)
-        val output = PIDCommand + FFCommand
+        val pidCommand: Double = pid.update(measuredPosition)
+        val feedforwardCommand: Double = feedforward.update(pidCommand)
+        val output = pidCommand + feedforwardCommand
 
-        PID.integrate =
-            abs(output) < maxIntegrationVelocity || sign(output) != sign(PID.lastError)
+        pid.integrate = abs(output) < maxIntegrationVelocity || sign(output) != sign(pid.lastError)
 
         return if (outputBounded) max(minOutput, min(output, maxOutput)) else output
     }
