@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.control.controller
 
 import com.acmerobotics.roadrunner.util.NanoClock
 import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter
-import kotlin.math.abs
 import kotlin.math.sign
 
 /**
@@ -23,13 +22,11 @@ class PIDController
     private var filterGain: Double = 0.8,
     private val clock: NanoClock = NanoClock.system()
 ) {
-    var errorSum: Double = 0.0
     private var lastTimestamp: Double = Double.NaN
     var lastError: Double = 0.0
-
+    var errorSum: Double = 0.0
     var errorDeriv: Double = 0.0
     var integrate: Boolean = true
-    var positionTolerance: Double = 2.0
 
     private var derivFilter: IIRLowPassFilter =
         IIRLowPassFilter(
@@ -54,14 +51,6 @@ class PIDController
      */
     var targetPosition: Double = 0.0
 
-    private fun getPositionError(measuredPosition: Double): Double {
-        return targetPosition - measuredPosition
-    }
-
-    fun atTargetPosition(measuredPosition: Double): Boolean {
-        return abs(getPositionError(measuredPosition)) <= positionTolerance
-    }
-
     /**
      * Run a single iteration of the controller.
      *
@@ -69,7 +58,7 @@ class PIDController
      */
     fun update(measuredPosition: Double): Double {
         val currentTimestamp = clock.seconds()
-        val error = getPositionError(measuredPosition)
+        val error = targetPosition - measuredPosition
         val dy = error - lastError
         val currentFilterEstimate = derivFilter.getEstimate(dy)
         return if (lastTimestamp.isNaN()) {
@@ -80,8 +69,7 @@ class PIDController
             val dt = currentTimestamp - lastTimestamp
             errorDeriv = currentFilterEstimate / dt
 
-            errorSum += if (integrate) (0.5 * (error + lastError) * dt) else 0.0
-
+            if (integrate) errorSum += (0.5 * (error + lastError) * dt)
             if (sign(error) != sign(lastError)) resetIntegral()
 
             lastError = error
