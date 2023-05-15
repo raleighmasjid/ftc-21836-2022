@@ -50,7 +50,7 @@ public class PowerplayScorer {
      */
     private double currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk;
     /**
-     * Named end target position
+     * Named end target lift position
      */
     private String targetLiftPosName;
     /**
@@ -81,15 +81,16 @@ public class PowerplayScorer {
      * Timer to track sequential passthrough events
      */
     private static ElapsedTime passThruTimer;
-    private double targetLiftPos = 0.0;
-
+    /**
+     * End target lift position
+     */
+    private double targetLiftPos;
     /**
      * State of the passthrough sequence
      */
     private enum PassThruState {
         START, FRONT, FRONT_PIVOT, PIVOTING, BACK_PIVOT, BACK
     }
-
     /**
      * Named position of main passthrough servos
      */
@@ -321,7 +322,6 @@ public class PowerplayScorer {
      */
     public void setTargetLiftPos(@NonNull LiftPos height) {
         clawIsTilted = height == LiftPos.LOW || height == LiftPos.MED || height == LiftPos.TALL;
-        double targetLiftPos;
         switch (height) {
             case TWO:
                 targetLiftPos = RobotConfig.HEIGHT_TWO;
@@ -356,7 +356,7 @@ public class PowerplayScorer {
                 targetLiftPosName = LiftPos.FLOOR.name();
                 break;
         }
-        updateLiftProfile(targetLiftPos);
+        updateLiftProfile();
     }
 
     /**
@@ -366,7 +366,8 @@ public class PowerplayScorer {
      */
     public void setTargetLiftPos(double targetLiftPos) {
         targetLiftPosName = Double.toString(targetLiftPos);
-        updateLiftProfile(targetLiftPos);
+        updateLiftProfile();
+        this.targetLiftPos = targetLiftPos;
     }
 
     /**
@@ -379,11 +380,10 @@ public class PowerplayScorer {
     /**
      * Update lift motion profile with a new target position
      */
-    private void updateLiftProfile(double targetLiftPos) {
-        this.targetLiftPos = targetLiftPos;
+    private void updateLiftProfile() {
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
-                new MotionState(targetLiftPos, 0, 0, 0),
+                new MotionState(targetLiftPos, 0.0, 0.0, 0.0),
                 RobotConfig.LIFT_MAX_VELO,
                 RobotConfig.LIFT_MAX_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
@@ -459,6 +459,7 @@ public class PowerplayScorer {
         currentLiftAccel = 0.0;
         currentLiftJerk = 0.0;
 
+        targetLiftPos = 0.0;
         profileLiftState = new MotionState(0.0, 0.0, 0.0, 0.0);
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
@@ -490,7 +491,7 @@ public class PowerplayScorer {
     /**
      * Run lift motors
      *
-     * @param veloCommand Pass in a velocity between 0 and 1
+     * @param veloCommand Pass in a velocity command between 0 and 1
      */
     public void runLift(double veloCommand) {
         veloCommand += kG();
