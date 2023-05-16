@@ -185,30 +185,6 @@ public class PowerplayScorer {
     }
 
     /**
-     * @param angle Angle to turn main passthrough servos to
-     */
-    private void setPassThruAngle(double angle) {
-        passThruServoR.turnToAngle(angle);
-        passThruServoL.turnToAngle(355.0 - angle);
-    }
-
-    /**
-     * Hold main passthrough servo positions
-     */
-    public void runPassThru() {
-        double tiltOffset = clawIsTilted ? RobotConfig.ANGLE_PASS_TILT : 0.0;
-
-        setPassThruAngle(passThruInFront ?
-                RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
-                RobotConfig.ANGLE_PASS_BACK - tiltOffset
-        );
-
-        if (passThruIsMoving && passThruTimer.seconds() >= (clawIsTilted ? RobotConfig.TIME_PASS_TILTED : RobotConfig.TIME_PASS)) {
-            passThruIsMoving = false;
-        }
-    }
-
-    /**
      * Set target for lift motion profile
      *
      * @param height Desired named position to run to
@@ -511,6 +487,30 @@ public class PowerplayScorer {
      */
     public void togglePassThru() {
         passThruInFront = !passThruInFront;
+    }
+
+    /**
+     * @param angle Angle to turn main passthrough servos to
+     */
+    private void setPassThruAngle(double angle) {
+        passThruServoR.turnToAngle(angle);
+        passThruServoL.turnToAngle(355.0 - angle);
+    }
+
+    /**
+     * Hold main passthrough servo positions
+     */
+    public void runPassThru() {
+        double tiltOffset = clawIsTilted ? RobotConfig.ANGLE_PASS_TILT : 0.0;
+
+        setPassThruAngle(passThruInFront ?
+                RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
+                RobotConfig.ANGLE_PASS_BACK - tiltOffset
+        );
+
+        if (passThruIsMoving && passThruTimer.seconds() >= (clawIsTilted ? RobotConfig.TIME_PASS_TILTED : RobotConfig.TIME_PASS)) {
+            passThruIsMoving = false;
+        }
     }
 
     /**
