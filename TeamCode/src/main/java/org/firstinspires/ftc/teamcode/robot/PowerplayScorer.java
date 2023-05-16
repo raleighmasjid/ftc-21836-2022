@@ -543,7 +543,7 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Cone arms angle", coneArmsAngle);
         telemetry.addLine();
-        telemetry.addData("Claw is", clawIsOpen ? "open" : "closed");
+        telemetry.addData("Claw is", !clawIsOpen || passThruIsMoving ? "closed" : "open");
         telemetry.addLine();
         telemetry.addData("Pivot is oriented to", pivotIsFront ? "front" : "back");
         telemetry.addLine();
