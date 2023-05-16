@@ -382,10 +382,6 @@ public class PowerplayScorer {
                                         0.0;
     }
 
-    public void toggleClawTilt() {
-        clawIsTilted = !clawIsTilted;
-    }
-
     public void toggleClaw() {
         clawIsOpen = !clawIsOpen;
     }
@@ -470,6 +466,10 @@ public class PowerplayScorer {
      */
     public void runPivot() {
         pivotServo.turnToAngle(355.0 - (pivotIsFront ? RobotConfig.ANGLE_PIVOT_FRONT : RobotConfig.ANGLE_PIVOT_BACK));
+    }
+
+    public void toggleClawTilt() {
+        clawIsTilted = !clawIsTilted;
     }
 
     /**
