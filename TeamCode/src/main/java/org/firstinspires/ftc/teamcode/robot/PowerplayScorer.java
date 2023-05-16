@@ -502,11 +502,12 @@ public class PowerplayScorer {
      */
     public void runPassThru() {
         double tiltOffset = clawIsTilted ? RobotConfig.ANGLE_PASS_TILT : 0.0;
+        double angle =
+                passThruInFront ?
+                        RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
+                        RobotConfig.ANGLE_PASS_BACK - tiltOffset;
 
-        setPassThruAngle(passThruInFront ?
-                RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
-                RobotConfig.ANGLE_PASS_BACK - tiltOffset
-        );
+        setPassThruAngle(angle);
 
         if (passThruIsMoving && passThruTimer.seconds() >= (clawIsTilted ? RobotConfig.TIME_PASS_TILTED : RobotConfig.TIME_PASS)) {
             passThruIsMoving = false;
