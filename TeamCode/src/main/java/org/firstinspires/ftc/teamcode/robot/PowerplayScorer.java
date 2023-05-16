@@ -473,7 +473,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Activates passthrough
+     * Triggers the arm, pivot, and closes the claw momentarily
      */
     public void triggerPassThru() {
         togglePassThru();
