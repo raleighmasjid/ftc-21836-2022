@@ -305,6 +305,7 @@ public class AutonomousTallTesting extends LinearOpMode {
             scorer.runPassThru();
             scorer.runPivot();
             scorer.runClaw();
+            scorer.runConeArms();
 
             // everything below is telemetry
             scorer.printTelemetry(myTelemetry);
