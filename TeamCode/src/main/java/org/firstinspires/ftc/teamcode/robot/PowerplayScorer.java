@@ -188,33 +188,33 @@ public class PowerplayScorer {
     public void setTargetLiftPos(@NonNull LiftPos height) {
         clawIsTilted = height == LiftPos.LOW || height == LiftPos.MED || height == LiftPos.TALL;
         switch (height) {
-            case TWO:
-                targetLiftPos = RobotConfig.HEIGHT_TWO;
-                targetLiftPosName = LiftPos.TWO.name();
-                break;
-            case THREE:
-                targetLiftPos = RobotConfig.HEIGHT_THREE;
-                targetLiftPosName = LiftPos.THREE.name();
-                break;
-            case FOUR:
-                targetLiftPos = RobotConfig.HEIGHT_FOUR;
-                targetLiftPosName = LiftPos.FOUR.name();
-                break;
-            case FIVE:
-                targetLiftPos = RobotConfig.HEIGHT_FIVE;
-                targetLiftPosName = LiftPos.FIVE.name();
-                break;
-            case LOW:
-                targetLiftPos = RobotConfig.HEIGHT_LOW;
-                targetLiftPosName = LiftPos.LOW.name();
+            case TALL:
+                targetLiftPos = RobotConfig.HEIGHT_TALL;
+                targetLiftPosName = LiftPos.TALL.name();
                 break;
             case MED:
                 targetLiftPos = RobotConfig.HEIGHT_MEDIUM;
                 targetLiftPosName = LiftPos.MED.name();
                 break;
-            case TALL:
-                targetLiftPos = RobotConfig.HEIGHT_TALL;
-                targetLiftPosName = LiftPos.TALL.name();
+            case LOW:
+                targetLiftPos = RobotConfig.HEIGHT_LOW;
+                targetLiftPosName = LiftPos.LOW.name();
+                break;
+            case FIVE:
+                targetLiftPos = RobotConfig.HEIGHT_FIVE;
+                targetLiftPosName = LiftPos.FIVE.name();
+                break;
+            case FOUR:
+                targetLiftPos = RobotConfig.HEIGHT_FOUR;
+                targetLiftPosName = LiftPos.FOUR.name();
+                break;
+            case THREE:
+                targetLiftPos = RobotConfig.HEIGHT_THREE;
+                targetLiftPosName = LiftPos.THREE.name();
+                break;
+            case TWO:
+                targetLiftPos = RobotConfig.HEIGHT_TWO;
+                targetLiftPosName = LiftPos.TWO.name();
                 break;
             default:
                 targetLiftPos = RobotConfig.HEIGHT_FLOOR;
