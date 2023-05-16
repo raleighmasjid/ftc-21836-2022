@@ -28,10 +28,7 @@ class PIDController
     var errorDeriv: Double = 0.0
     var integrate: Boolean = true
 
-    private var derivFilter: IIRLowPassFilter =
-        IIRLowPassFilter(
-            filterGain
-        )
+    private var derivFilter: IIRLowPassFilter = IIRLowPassFilter(filterGain)
 
     fun setGains(
         kP: Double,

@@ -156,13 +156,9 @@ public class PowerplayScorer {
         );
         liftController.setOutputBounds(-1.0, 1.0);
 
-        veloFilter = new IIRLowPassFilter();
-        accelFilter = new IIRLowPassFilter();
-        jerkFilter = new IIRLowPassFilter();
-
-        veloFilter.setGain(RobotConfig.LIFT_VELO_FILTER_GAIN);
-        accelFilter.setGain(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
-        jerkFilter.setGain(RobotConfig.LIFT_JERK_FILTER_GAIN);
+        veloFilter = new IIRLowPassFilter(RobotConfig.LIFT_VELO_FILTER_GAIN);
+        accelFilter = new IIRLowPassFilter(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
+        jerkFilter = new IIRLowPassFilter(RobotConfig.LIFT_JERK_FILTER_GAIN);
 
         clawHasLifted = true;
         pivotIsFront = true;
