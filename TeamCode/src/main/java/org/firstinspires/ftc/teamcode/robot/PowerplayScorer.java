@@ -409,19 +409,6 @@ public class PowerplayScorer {
     }
 
     /**
-     * Holds claw servo position
-     */
-    public void runClaw() {
-        clawServo.turnToAngle(
-                !clawIsOpen || passThruIsMoving ?
-                        RobotConfig.ANGLE_CLAW_CLOSED :
-                        RobotConfig.ANGLE_CLAW_OPEN
-        );
-
-        if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
-    }
-
-    /**
      * Closes claw
      * Waits for claw to close
      * Lifts claw
@@ -459,6 +446,19 @@ public class PowerplayScorer {
     public void dropCone(LiftPos height) {
         setClawOpen(true);
         setTargetLiftPos(height);
+    }
+
+    /**
+     * Holds claw servo position
+     */
+    public void runClaw() {
+        clawServo.turnToAngle(
+                !clawIsOpen || passThruIsMoving ?
+                        RobotConfig.ANGLE_CLAW_CLOSED :
+                        RobotConfig.ANGLE_CLAW_OPEN
+        );
+
+        if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
     }
 
     public void togglePivot() {
