@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.control.controller;
 /**
  * PID controller with various feedforward components.
  */
-public class PIDF {
+public class PIDFController {
     private boolean outputBounded = false;
     private double minOutput = 0.0;
     private double maxOutput = 0.0;
@@ -24,7 +24,7 @@ public class PIDF {
      * @param filterGain             derivative filter weight, 0 = unsmoothed, 0 < x < 1 increasingly smoothed, 1 = broken
      * @param maxIntegrationVelocity max velocity that integral path will continue integration
      */
-    public PIDF(
+    public PIDFController(
             double kP,
             double kI,
             double kD,
@@ -43,7 +43,7 @@ public class PIDF {
      * Constructor for [PIDFController]. kV, kA, and kStatic are designed for DC motor feedforward
      * control (the most common kind of feedforward in FTC).
      */
-    public PIDF() {
+    public PIDFController() {
         PID = new PIDController(0.0, 0.0, 0.0, 0.8);
         Feedforward = new FeedforwardController(0.0, 0.0, 0.0);
     }
@@ -76,5 +76,9 @@ public class PIDF {
         PID.setIntegrate(Math.abs(output) < maxIntegrationVelocity || Math.signum(output) != Math.signum(PID.getLastError()));
 
         return (outputBounded) ? Math.max(minOutput, Math.min(output, maxOutput)) : output;
+    }
+
+    public void setMaxIntegrationVelocity(double maxIntegrationVelocity) {
+        this.maxIntegrationVelocity = maxIntegrationVelocity;
     }
 }

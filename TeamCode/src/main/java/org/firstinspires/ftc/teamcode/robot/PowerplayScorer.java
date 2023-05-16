@@ -264,13 +264,13 @@ public class PowerplayScorer {
     private void updateLiftGains() {
         boolean goingDown = targetLiftPos < currentLiftPos;
 
-        liftController.getPid().setGains(
+        liftController.PID.setGains(
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
                 RobotConfig.LIFT_PID_FILTER_GAIN
         );
-        liftController.getFeedforward().setGains(
+        liftController.Feedforward.setGains(
                 goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
                 goingDown ? RobotConfig.LIFT_DOWN_kA : RobotConfig.LIFT_UP_kA,
                 goingDown ? RobotConfig.LIFT_DOWN_kS : RobotConfig.LIFT_UP_kS
@@ -316,7 +316,7 @@ public class PowerplayScorer {
 
         liftDerivTimer.reset();
         liftProfileTimer.reset();
-        liftController.getPid().resetIntegral();
+        liftController.PID.resetIntegral();
         lift_motor2.resetEncoder();
 
         currentLiftPos = 0.0;
@@ -342,12 +342,12 @@ public class PowerplayScorer {
     public void runLiftToPos() {
         profileLiftState = liftProfile.get(liftProfileTimer.seconds());
 
-        liftController.getPid().setTargetPosition(profileLiftState.getX());
-        liftController.getFeedforward().setTargetVelocity(profileLiftState.getV());
-        liftController.getFeedforward().setTargetAcceleration(profileLiftState.getA());
+        liftController.PID.setTargetPosition(profileLiftState.getX());
+        liftController.Feedforward.setTargetVelocity(profileLiftState.getV());
+        liftController.Feedforward.setTargetAcceleration(profileLiftState.getA());
 
         if (Math.abs(targetLiftPos - currentLiftPos) <= RobotConfig.LIFT_POS_TOLERANCE) {
-            liftController.getPid().resetIntegral();
+            liftController.PID.resetIntegral();
         }
 
         runLift(liftController.update(currentLiftPos));
@@ -530,7 +530,7 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
         telemetry.addData("Lift profile velocity (in/s)", profileLiftState.getV());
-        telemetry.addData("Lift error derivative (in/s)", liftController.getPid().getErrorDeriv());
+        telemetry.addData("Lift error derivative (in/s)", liftController.PID.getErrorDeriv());
         telemetry.addLine();
         telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         telemetry.addLine();
