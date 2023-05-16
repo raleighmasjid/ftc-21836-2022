@@ -80,12 +80,6 @@ public class PowerplayScorer {
      * End target lift position
      */
     private double targetLiftPos;
-    /**
-     * Named position of main passthrough servos
-     */
-    private enum PassThruPos {
-        FRONT, PIVOT_POS, BACK
-    }
 
     /**
      * Named lift position
@@ -101,8 +95,6 @@ public class PowerplayScorer {
     private double coneArmsAngle;
     private boolean clawIsOpen;
     private boolean clawIsTilted;
-    private PassThruState currentPassThruState;
-    private PassThruPos currentPassThruPos;
 
     @NonNull
     @Contract("_, _ -> new")
@@ -178,9 +170,7 @@ public class PowerplayScorer {
         passThruIsMoving = false;
         clawIsOpen = true;
         clawIsTilted = false;
-        passThruSwitched = false;
         coneArmsAngle = 0.0;
-        currentPassThruPos = PassThruPos.FRONT;
 
         passThruTimer = new ElapsedTime();
         passThruTimer.reset();
@@ -205,23 +195,16 @@ public class PowerplayScorer {
     /**
      * Hold main passthrough servo positions
      */
-    public void runPassThruServos() {
-        switch (currentPassThruPos) {
-            case FRONT:
-                setPassThruAngle(RobotConfig.ANGLE_PASS_FRONT + (clawIsTilted ? RobotConfig.ANGLE_PASS_TILT : 0.0));
-                break;
-            case PIVOT_POS:
-                setPassThruAngle(RobotConfig.ANGLE_PASS_PIVOT);
-                break;
-            case BACK:
-                setPassThruAngle(RobotConfig.ANGLE_PASS_BACK - (clawIsTilted ? RobotConfig.ANGLE_PASS_TILT : 0.0));
-                break;
-            default:
-                currentPassThruPos = PassThruPos.FRONT;
-                break;
-        }
-    }
+    public void runPassThru() {
+        double tiltOffset = clawIsTilted ? RobotConfig.ANGLE_PASS_TILT : 0.0;
 
+        setPassThruAngle(passThruInFront ?
+                RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
+                RobotConfig.ANGLE_PASS_BACK - tiltOffset
+        );
+
+        if (passThruIsMoving && passThruTimer.seconds() >= (clawIsTilted ? RobotConfig.TIME_PASS_TILTED : RobotConfig.TIME_PASS)) {
+            passThruIsMoving = false;
         }
     }
 
@@ -454,11 +437,9 @@ public class PowerplayScorer {
      */
     public void runClaw() {
         clawServo.turnToAngle(
-                clawIsOpen ?
-                        passThruIsMoving ? // open
-                                RobotConfig.ANGLE_CLAW_PASS : // moving
-                                RobotConfig.ANGLE_CLAW_OPEN : // not moving
-                        RobotConfig.ANGLE_CLAW_CLOSED // closed
+                !clawIsOpen || passThruIsMoving ?
+                        RobotConfig.ANGLE_CLAW_CLOSED :
+                        RobotConfig.ANGLE_CLAW_OPEN
         );
 
         if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
@@ -516,24 +497,19 @@ public class PowerplayScorer {
     }
 
     /**
-     * Activates automated passthrough sequence
+     * Activates passthrough
      */
     public void triggerPassThru() {
-        if (passThruIsMoving) {
-            passThruInFront = !passThruInFront;
-            passThruSwitched = true;
-        } else {
-            passThruTimer.reset();
-            passThruIsMoving = true;
-            currentPassThruPos = PassThruPos.PIVOT_POS;
-        }
+        togglePassThru();
+        togglePivot();
+        passThruIsMoving = true;
+        passThruTimer.reset();
     }
 
     /**
      * Toggles position of main passthrough servos
      */
     public void togglePassThru() {
-        currentPassThruPos = passThruInFront ? PassThruPos.BACK : PassThruPos.FRONT;
         passThruInFront = !passThruInFront;
     }
 
@@ -573,6 +549,6 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Pivot is oriented to", pivotIsFront ? "front" : "back");
         telemetry.addLine();
-        telemetry.addData("Passthrough status", currentPassThruState);
+        telemetry.addData("Passthrough is in the", passThruInFront ? "front" : "back");
     }
 }
