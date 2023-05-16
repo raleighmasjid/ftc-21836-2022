@@ -401,7 +401,6 @@ public class PowerplayScorer {
     }
 
     /**
-     * Closes claw
      * Waits for claw to close
      * Lifts claw
      */
