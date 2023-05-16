@@ -142,7 +142,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runPassThru();
             scorer.runPivot();
             scorer.runClaw();
-            scorer.runConeArms(Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+            scorer.runConeArms(Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * RobotConfig.ANGLE_ARM_DOWN);
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             //everything below is telemetry

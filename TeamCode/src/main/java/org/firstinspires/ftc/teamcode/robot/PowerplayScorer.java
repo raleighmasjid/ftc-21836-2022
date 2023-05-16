@@ -508,9 +508,11 @@ public class PowerplayScorer {
 
     /**
      * Holds cone arm servos in position
+     *
+     * @param angle The angle to turn the arms to
      */
     public void runConeArms(double angle) {
-        coneArmsAngle = angle * RobotConfig.ANGLE_ARM_DOWN;
+        coneArmsAngle = angle;
         coneArmServoL.turnToAngle(280.0 - coneArmsAngle);
         coneArmServoR.turnToAngle(coneArmsAngle);
     }
