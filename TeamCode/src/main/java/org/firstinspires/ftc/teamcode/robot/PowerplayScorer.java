@@ -474,7 +474,7 @@ public class PowerplayScorer {
      */
     public void triggerPassThru() {
         togglePassThru();
-        togglePivot();
+        pivotIsFront = passThruInFront;
         passThruIsMoving = true;
         passThruTimer.reset();
     }
