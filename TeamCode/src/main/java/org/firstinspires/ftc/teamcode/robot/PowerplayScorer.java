@@ -490,14 +490,6 @@ public class PowerplayScorer {
     }
 
     /**
-     * @param angle Angle to turn main passthrough servos to
-     */
-    private void setPassThruAngle(double angle) {
-        passThruServoR.turnToAngle(angle);
-        passThruServoL.turnToAngle(355.0 - angle);
-    }
-
-    /**
      * Hold main passthrough servo positions
      */
     public void runPassThru() {
@@ -507,7 +499,8 @@ public class PowerplayScorer {
                         RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
                         RobotConfig.ANGLE_PASS_BACK - tiltOffset;
 
-        setPassThruAngle(angle);
+        passThruServoR.turnToAngle(angle);
+        passThruServoL.turnToAngle(355.0 - angle);
 
         if (passThruIsMoving && passThruTimer.seconds() >= (clawIsTilted ? RobotConfig.TIME_PASS_TILTED : RobotConfig.TIME_PASS)) {
             passThruIsMoving = false;
