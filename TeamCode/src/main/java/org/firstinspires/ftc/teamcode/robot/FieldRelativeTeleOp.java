@@ -137,12 +137,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 if (control2B.wasJustPressed()) scorer.triggerClaw();
 
                 scorer.runLiftToPos();
-                scorer.runPassThruStates();
             }
 
-            scorer.runClaw();
+            scorer.runPassThru();
             scorer.runPivot();
-            scorer.runPassThruServos();
+            scorer.runClaw();
             scorer.runConeArms(Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
