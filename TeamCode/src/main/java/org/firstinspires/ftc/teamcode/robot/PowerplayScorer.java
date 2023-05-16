@@ -518,7 +518,6 @@ public class PowerplayScorer {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry(@NonNull MultipleTelemetry telemetry) {
-        telemetry.addData("Lift raw encoder reading", lift_motor2.encoder.getPosition());
         telemetry.addData("Named target lift position", targetLiftPosName);
         telemetry.addLine();
         telemetry.addData("Lift current position (in)", currentLiftPos);
