@@ -446,7 +446,7 @@ public class PowerplayScorer {
         clawServo.turnToAngle(
                 !clawIsOpen || passThruIsMoving ?
                         RobotConfig.ANGLE_CLAW_CLOSED :
-                        (passThruInFront != pivotIsFront) ?
+                        passThruInFront != pivotIsFront ?
                                 RobotConfig.ANGLE_CLAW_HALF_OPEN :
                                 RobotConfig.ANGLE_CLAW_OPEN
         );
@@ -492,7 +492,7 @@ public class PowerplayScorer {
     public void runPassThru() {
         double tiltOffset = clawIsTilted ?
                 RobotConfig.ANGLE_PASS_TILT :
-                (passThruInFront != pivotIsFront) ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
+                passThruInFront != pivotIsFront ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
         double angle =
                 passThruInFront ?
                         RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
