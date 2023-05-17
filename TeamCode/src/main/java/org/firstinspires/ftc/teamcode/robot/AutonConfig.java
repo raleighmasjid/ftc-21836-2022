@@ -15,5 +15,10 @@ public class AutonConfig {
             AUTON_TURN_POS_X = 46,
             AUTON_ONE_TILE = 24,
             AUTON_TIME_POST_STACK = 0.1,
-            AUTON_TIME_POST_POLE = 0.1;
+            AUTON_TIME_POST_POLE = 0.1,
+            AUTON_MAIN_Y = -12.5,
+            ZONE_1_X = 12.5,
+            ZONE_2_X = 35,
+            ZONE_3_X = 57,
+            STARTING_Y;
 }

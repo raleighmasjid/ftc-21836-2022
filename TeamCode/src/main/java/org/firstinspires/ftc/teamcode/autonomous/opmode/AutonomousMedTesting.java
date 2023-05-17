@@ -87,7 +87,7 @@ public class AutonomousMedTesting extends LinearOpMode {
         boolean isRight = true;
         double side = isRight ? 1 : -1;
 
-        double centerPathX = side * 35;
+        double centerPathX = side * AutonConfig.ZONE_2_X;
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
@@ -95,19 +95,19 @@ public class AutonomousMedTesting extends LinearOpMode {
         double postPoleTime = AutonConfig.AUTON_TIME_POST_POLE;
         double postStackTime = AutonConfig.AUTON_TIME_POST_STACK;
 
-        Vector2d stackPos = new Vector2d(side * AutonConfig.AUTON_STACK_X, -12.5);
-        Vector2d sideTurnPos = new Vector2d(side * AutonConfig.AUTON_TURN_POS_X, -12.5);
+        Vector2d stackPos = new Vector2d(side * AutonConfig.AUTON_STACK_X, AutonConfig.AUTON_MAIN_Y);
+        Vector2d sideTurnPos = new Vector2d(side * AutonConfig.AUTON_TURN_POS_X, AutonConfig.AUTON_MAIN_Y);
         Pose2d medScoringPos = new Pose2d(side * AutonConfig.AUTON_MED_X, AutonConfig.AUTON_MED_Y, Math.toRadians(isRight ? AutonConfig.AUTON_MED_ANGLE : 180 - AutonConfig.AUTON_MED_ANGLE));
         Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * AutonConfig.AUTON_ONE_TILE, medScoringPos.getY(), medScoringPos.getHeading());
         Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * AutonConfig.AUTON_ONE_TILE, sideTurnPos.getY());
 
-        Pose2d parkingZone1 = new Pose2d(side * (isRight ? 12.5 : 57), -12.5, isRight ? facingRight : facingLeft);
-        Pose2d parkingZone2 = new Pose2d(centerPathX, -12.5, parkingZone1.getHeading());
-        Pose2d parkingZone3 = new Pose2d(side * (isRight ? 57 : 12.5), -12.5, parkingZone1.getHeading());
+        Pose2d parkingZone1 = new Pose2d(side * (isRight ? AutonConfig.ZONE_1_X : AutonConfig.ZONE_3_X), AutonConfig.AUTON_MAIN_Y, isRight ? facingRight : facingLeft);
+        Pose2d parkingZone2 = new Pose2d(centerPathX, AutonConfig.AUTON_MAIN_Y, parkingZone1.getHeading());
+        Pose2d parkingZone3 = new Pose2d(side * (isRight ? AutonConfig.ZONE_3_X : AutonConfig.ZONE_1_X), AutonConfig.AUTON_MAIN_Y, parkingZone1.getHeading());
 
         HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
 
-        Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
+        Pose2d startPose = new Pose2d(centerPathX, AutonConfig.STARTING_Y, facingForward);
         drivetrain.setPoseEstimate(startPose);
 
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
