@@ -20,5 +20,5 @@ public class AutonConfig {
             ZONE_1_X = 12.5,
             ZONE_2_X = 35,
             ZONE_3_X = 57,
-            STARTING_Y;
+            STARTING_Y = -62.5;
 }

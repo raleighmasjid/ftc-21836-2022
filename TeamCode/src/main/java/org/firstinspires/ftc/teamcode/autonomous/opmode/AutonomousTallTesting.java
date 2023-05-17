@@ -107,7 +107,7 @@ public class AutonomousTallTesting extends LinearOpMode {
 
         HeadingHolder.setHeading(isRight ? 90.0 : 270.0);
 
-        Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
+        Pose2d startPose = new Pose2d(centerPathX, AutonConfig.STARTING_Y, facingForward);
         drivetrain.setPoseEstimate(startPose);
 
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
