@@ -397,7 +397,7 @@ public class PowerplayScorer {
      * Lifts claw
      */
     public void grabCone() {
-        setClawOpen(false);
+        clawIsOpen = false;
         if (currentLiftPos <= (RobotConfig.HEIGHT_FIVE + RobotConfig.LIFT_POS_TOLERANCE)) {
             clawHasLifted = false;
             liftClawTimer.reset();
@@ -427,7 +427,7 @@ public class PowerplayScorer {
      * @param height Named position to run lift to
      */
     public void dropCone(LiftPos height) {
-        setClawOpen(true);
+        clawIsOpen = true;
         setTargetLiftPos(height);
     }
 
@@ -436,7 +436,6 @@ public class PowerplayScorer {
      */
     public void runClaw() {
         clawServo.turnToAngle(clawIsOpen ? RobotConfig.ANGLE_CLAW_OPEN : RobotConfig.ANGLE_CLAW_CLOSED);
-
         if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
     }
 
