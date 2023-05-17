@@ -305,7 +305,7 @@ public class AutonomousMedTesting extends LinearOpMode {
             scorer.runPassThru();
             scorer.runPivot();
             scorer.runClaw();
-            scorer.runConeArms();
+            scorer.runConeArms(0.0);
 
             // everything below is telemetry
             scorer.printTelemetry(myTelemetry);

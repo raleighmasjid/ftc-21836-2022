@@ -506,10 +506,6 @@ public class PowerplayScorer {
         }
     }
 
-    public void runConeArms() {
-        runConeArms(0.0);
-    }
-
     /**
      * Holds cone arm servos in position
      *
