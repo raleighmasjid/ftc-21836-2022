@@ -473,9 +473,10 @@ public class PowerplayScorer {
      * Hold main passthrough servo positions
      */
     public void runPassThru() {
-        double tiltOffset = clawIsTilted ?
-                RobotConfig.ANGLE_PASS_TILT :
-                passThruInFront != pivotIsFront ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
+        double tiltOffset =
+                clawIsTilted ?
+                        RobotConfig.ANGLE_PASS_TILT :
+                        passThruInFront != pivotIsFront ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
         double angle =
                 passThruInFront ?
                         RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
