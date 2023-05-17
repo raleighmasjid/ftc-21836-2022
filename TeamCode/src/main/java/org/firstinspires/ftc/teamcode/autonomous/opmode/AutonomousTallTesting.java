@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
+import org.firstinspires.ftc.teamcode.robot.AutonConfig;
 import org.firstinspires.ftc.teamcode.robot.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
@@ -91,14 +92,14 @@ public class AutonomousTallTesting extends LinearOpMode {
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double liftAndDropTime = 0.1;
-        double clawToFlipTime = 0.1;
+        double postPoleTime = AutonConfig.AUTON_TIME_POST_POLE;
+        double postStackTime = AutonConfig.AUTON_TIME_POST_STACK;
 
-        Vector2d stackPos = new Vector2d(side * 59, -12.5);
-        Vector2d sideTurnPos = new Vector2d(side * 46, -12.5);
-        Pose2d tallScoringPos = new Pose2d(side * 31, -7.5, Math.toRadians(isRight ? 135 : 180 - 135));
-        Pose2d centerTallScoringPos = new Pose2d(tallScoringPos.getX() - side * 24, tallScoringPos.getY(), tallScoringPos.getHeading());
-        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * 24, sideTurnPos.getY());
+        Vector2d stackPos = new Vector2d(side * AutonConfig.AUTON_STACK_X, -12.5);
+        Vector2d sideTurnPos = new Vector2d(side * AutonConfig.AUTON_TURN_POS_X, -12.5);
+        Pose2d tallScoringPos = new Pose2d(side * AutonConfig.AUTON_TALL_X, AutonConfig.AUTON_TALL_Y, Math.toRadians(isRight ? AutonConfig.AUTON_TALL_ANGLE : 180 - AutonConfig.AUTON_TALL_ANGLE));
+        Pose2d centerTallScoringPos = new Pose2d(tallScoringPos.getX() - side * AutonConfig.AUTON_ONE_TILE, tallScoringPos.getY(), tallScoringPos.getHeading());
+        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * AutonConfig.AUTON_ONE_TILE, sideTurnPos.getY());
 
         Pose2d parkingZone1 = new Pose2d(side * (isRight ? 12.5 : 57), -12.5, isRight ? facingRight : facingLeft);
         Pose2d parkingZone2 = new Pose2d(centerPathX, -12.5, parkingZone1.getHeading());
@@ -116,29 +117,29 @@ public class AutonomousTallTesting extends LinearOpMode {
                 .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
                 .addTemporalMarker(() -> scorer.dropCone(PowerplayScorer.LiftPos.FIVE))
-                .waitSeconds(liftAndDropTime)
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                .waitSeconds(postPoleTime)
+                .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                 .setReversed(true)
                 .setTangent(tallScoringPos.getHeading() + facingLeft)
                 .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
                 .splineTo(stackPos, isRight ? facingRight : facingLeft)
                 .addTemporalMarker(() -> scorer.grabCone())
-                .waitSeconds(liftAndDropTime)
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                .waitSeconds(postPoleTime)
+                .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                 .setReversed(false)
                 .splineTo(sideTurnPos, isRight ? facingLeft : facingRight)
                 .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
                 .addTemporalMarker(() -> scorer.dropCone(PowerplayScorer.LiftPos.FOUR))
-                .waitSeconds(liftAndDropTime)
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                .waitSeconds(postPoleTime)
+                .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                 .setReversed(true)
                 .setTangent(tallScoringPos.getHeading() + facingLeft)
                 .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
                 .splineTo(stackPos, isRight ? facingRight : facingLeft)
                 .addTemporalMarker(() -> scorer.grabCone())
-                .waitSeconds(liftAndDropTime)
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                .waitSeconds(postPoleTime)
+                .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                 .build();
 
         TrajectorySequence parkLeft = isRight ?
@@ -148,8 +149,8 @@ public class AutonomousTallTesting extends LinearOpMode {
                         .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading() + facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
                         .addTemporalMarker(() -> scorer.dropCone())
-                        .waitSeconds(liftAndDropTime)
-                        .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                        .waitSeconds(postPoleTime)
+                        .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                         .lineToSplineHeading(parkingZone1)
                         .build() :
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
@@ -158,8 +159,8 @@ public class AutonomousTallTesting extends LinearOpMode {
                         .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
                         .addTemporalMarker(() -> scorer.dropCone())
-                        .waitSeconds(liftAndDropTime)
-                        .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                        .waitSeconds(postPoleTime)
+                        .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                         .setReversed(true)
                         .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
                         .splineTo(parkingZone1.vec(), facingLeft)
@@ -171,8 +172,8 @@ public class AutonomousTallTesting extends LinearOpMode {
                 .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
                 .addTemporalMarker(() -> scorer.dropCone())
-                .waitSeconds(liftAndDropTime)
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                .waitSeconds(postPoleTime)
+                .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                 .lineToSplineHeading(parkingZone2)
                 .build();
 
@@ -183,8 +184,8 @@ public class AutonomousTallTesting extends LinearOpMode {
                         .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
                         .addTemporalMarker(() -> scorer.dropCone())
-                        .waitSeconds(liftAndDropTime)
-                        .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                        .waitSeconds(postPoleTime)
+                        .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                         .setReversed(true)
                         .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
                         .splineTo(parkingZone3.vec(), facingRight)
@@ -195,8 +196,8 @@ public class AutonomousTallTesting extends LinearOpMode {
                         .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading() + facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
                         .addTemporalMarker(() -> scorer.dropCone())
-                        .waitSeconds(liftAndDropTime)
-                        .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                        .waitSeconds(postPoleTime)
+                        .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                         .lineToSplineHeading(parkingZone3)
                         .build();
 

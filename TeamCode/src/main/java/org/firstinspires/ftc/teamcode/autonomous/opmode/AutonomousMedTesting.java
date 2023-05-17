@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
+import org.firstinspires.ftc.teamcode.robot.AutonConfig;
 import org.firstinspires.ftc.teamcode.robot.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
@@ -91,14 +92,14 @@ public class AutonomousMedTesting extends LinearOpMode {
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double liftAndDropTime = 0.1;
-        double clawToFlipTime = 0.1;
+        double postPoleTime = AutonConfig.AUTON_TIME_POST_POLE;
+        double postStackTime = AutonConfig.AUTON_TIME_POST_STACK;
 
-        Vector2d stackPos = new Vector2d(side * 59, -12.5);
-        Vector2d sideTurnPos = new Vector2d(side * 46, -12.5);
-        Pose2d medScoringPos = new Pose2d(side * 31, -17.5, Math.toRadians(isRight ? 35 : 180 - 35));
-        Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * 24, medScoringPos.getY(), medScoringPos.getHeading());
-        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * 24, sideTurnPos.getY());
+        Vector2d stackPos = new Vector2d(side * AutonConfig.AUTON_STACK_X, -12.5);
+        Vector2d sideTurnPos = new Vector2d(side * AutonConfig.AUTON_TURN_POS_X, -12.5);
+        Pose2d medScoringPos = new Pose2d(side * AutonConfig.AUTON_MED_X, AutonConfig.AUTON_MED_Y, Math.toRadians(isRight ? AutonConfig.AUTON_MED_ANGLE : 180 - AutonConfig.AUTON_MED_ANGLE));
+        Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * AutonConfig.AUTON_ONE_TILE, medScoringPos.getY(), medScoringPos.getHeading());
+        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * AutonConfig.AUTON_ONE_TILE, sideTurnPos.getY());
 
         Pose2d parkingZone1 = new Pose2d(side * (isRight ? 12.5 : 57), -12.5, isRight ? facingRight : facingLeft);
         Pose2d parkingZone2 = new Pose2d(centerPathX, -12.5, parkingZone1.getHeading());
@@ -112,33 +113,33 @@ public class AutonomousMedTesting extends LinearOpMode {
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
                 .addTemporalMarker(() -> scorer.liftClaw())
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                 .lineTo(parkingZone2.vec())
                 .lineToSplineHeading(medScoringPos)
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.MED))
                 .addTemporalMarker(() -> scorer.dropCone(PowerplayScorer.LiftPos.FIVE))
-                .waitSeconds(liftAndDropTime)
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                .waitSeconds(postPoleTime)
+                .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                 .setReversed(false)
                 .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
                 .splineTo(stackPos, isRight ? facingRight : facingLeft)
                 .addTemporalMarker(() -> scorer.grabCone())
-                .waitSeconds(liftAndDropTime)
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                .waitSeconds(postPoleTime)
+                .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                 // loop below
                 .setReversed(true)
                 .splineTo(sideTurnPos, isRight ? facingLeft : facingRight)
                 .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.MED))
                 .addTemporalMarker(() -> scorer.dropCone(PowerplayScorer.LiftPos.FOUR))
-                .waitSeconds(liftAndDropTime)
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                .waitSeconds(postPoleTime)
+                .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                 .setReversed(false)
                 .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
                 .splineTo(stackPos, isRight ? facingRight : facingLeft)
                 .addTemporalMarker(() -> scorer.grabCone())
-                .waitSeconds(liftAndDropTime)
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                .waitSeconds(postPoleTime)
+                .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                 .build();
 
         TrajectorySequence parkLeft = isRight ?
@@ -148,8 +149,8 @@ public class AutonomousMedTesting extends LinearOpMode {
                         .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading() - facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
                         .addTemporalMarker(() -> scorer.dropCone())
-                        .waitSeconds(liftAndDropTime)
-                        .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                        .waitSeconds(postPoleTime)
+                        .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                         .lineToSplineHeading(parkingZone1)
                         .build() :
                 drivetrain.trajectorySequenceBuilder(trajectory1.end())
@@ -158,8 +159,8 @@ public class AutonomousMedTesting extends LinearOpMode {
                         .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.MED))
                         .addTemporalMarker(() -> scorer.dropCone())
-                        .waitSeconds(liftAndDropTime)
-                        .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                        .waitSeconds(postPoleTime)
+                        .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                         .setReversed(false)
                         .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
                         .splineTo(parkingZone1.vec(), parkingZone1.getHeading())
@@ -171,8 +172,8 @@ public class AutonomousMedTesting extends LinearOpMode {
                 .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.MED))
                 .addTemporalMarker(() -> scorer.dropCone())
-                .waitSeconds(liftAndDropTime)
-                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                .waitSeconds(postPoleTime)
+                .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                 .lineToSplineHeading(parkingZone2)
                 .build();
 
@@ -183,8 +184,8 @@ public class AutonomousMedTesting extends LinearOpMode {
                         .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.MED))
                         .addTemporalMarker(() -> scorer.dropCone())
-                        .waitSeconds(liftAndDropTime)
-                        .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                        .waitSeconds(postPoleTime)
+                        .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                         .setReversed(false)
                         .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
                         .splineTo(parkingZone3.vec(), parkingZone3.getHeading())
@@ -195,8 +196,8 @@ public class AutonomousMedTesting extends LinearOpMode {
                         .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading() - facingLeft)
                         .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
                         .addTemporalMarker(() -> scorer.dropCone())
-                        .waitSeconds(liftAndDropTime)
-                        .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
+                        .waitSeconds(postPoleTime)
+                        .UNSTABLE_addTemporalMarkerOffset(postStackTime, () -> scorer.triggerPassThru())
                         .lineToSplineHeading(parkingZone3)
                         .build();
 
