@@ -40,15 +40,6 @@ public class PIDFController {
     }
 
     /**
-     * Constructor for [PIDFController]. kV, kA, and kStatic are designed for DC motor feedforward
-     * control (the most common kind of feedforward in FTC).
-     */
-    public PIDFController() {
-        PID = new PIDController(0.0, 0.0, 0.0, 0.8);
-        Feedforward = new FeedforwardController(0.0, 0.0, 0.0);
-    }
-
-    /**
      * Sets bounds on the output of the controller.
      *
      * @param min minimum output
