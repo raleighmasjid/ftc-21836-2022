@@ -92,18 +92,18 @@ public class AutonomousTallTesting extends LinearOpMode {
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double postPoleTime = AutonConfig.AUTON_TIME_POST_POLE;
-        double postStackTime = AutonConfig.AUTON_TIME_POST_STACK;
+        double postPoleTime = AutonConfig.TIME_POST_POLE;
+        double postStackTime = AutonConfig.TIME_POST_STACK;
 
-        Vector2d stackPos = new Vector2d(side * AutonConfig.AUTON_STACK_X, AutonConfig.AUTON_MAIN_Y);
-        Vector2d sideTurnPos = new Vector2d(side * AutonConfig.AUTON_TURN_POS_X, AutonConfig.AUTON_MAIN_Y);
-        Pose2d tallScoringPos = new Pose2d(side * AutonConfig.AUTON_TALL_X, AutonConfig.AUTON_TALL_Y, Math.toRadians(isRight ? AutonConfig.AUTON_TALL_ANGLE : 180 - AutonConfig.AUTON_TALL_ANGLE));
-        Pose2d centerTallScoringPos = new Pose2d(tallScoringPos.getX() - side * AutonConfig.AUTON_ONE_TILE, tallScoringPos.getY(), tallScoringPos.getHeading());
-        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * AutonConfig.AUTON_ONE_TILE, sideTurnPos.getY());
+        Vector2d stackPos = new Vector2d(side * AutonConfig.STACK_X, AutonConfig.MAIN_Y);
+        Vector2d sideTurnPos = new Vector2d(side * AutonConfig.TURN_POS_X, AutonConfig.MAIN_Y);
+        Pose2d tallScoringPos = new Pose2d(side * AutonConfig.TALL_X, AutonConfig.TALL_Y, Math.toRadians(isRight ? AutonConfig.TALL_ANGLE : 180 - AutonConfig.TALL_ANGLE));
+        Pose2d centerTallScoringPos = new Pose2d(tallScoringPos.getX() - side * AutonConfig.ONE_TILE, tallScoringPos.getY(), tallScoringPos.getHeading());
+        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * AutonConfig.ONE_TILE, sideTurnPos.getY());
 
-        Pose2d parkingZone1 = new Pose2d(side * (isRight ? 12.5 : 57), AutonConfig.AUTON_MAIN_Y, isRight ? facingRight : facingLeft);
-        Pose2d parkingZone2 = new Pose2d(centerPathX, AutonConfig.AUTON_MAIN_Y, parkingZone1.getHeading());
-        Pose2d parkingZone3 = new Pose2d(side * (isRight ? 57 : 12.5), AutonConfig.AUTON_MAIN_Y, parkingZone1.getHeading());
+        Pose2d parkingZone1 = new Pose2d(side * (isRight ? 12.5 : 57), AutonConfig.MAIN_Y, isRight ? facingRight : facingLeft);
+        Pose2d parkingZone2 = new Pose2d(centerPathX, AutonConfig.MAIN_Y, parkingZone1.getHeading());
+        Pose2d parkingZone3 = new Pose2d(side * (isRight ? 57 : 12.5), AutonConfig.MAIN_Y, parkingZone1.getHeading());
 
         HeadingHolder.setHeading(isRight ? 90.0 : 270.0);
 
