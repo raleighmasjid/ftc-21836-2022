@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.control.controller
 
-import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.sign
 
@@ -15,13 +14,11 @@ class FeedforwardController
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
  * @param kStatic additive feedforward constant
- * @param clock clock
  */
 @JvmOverloads constructor(
     private var kV: Double = 0.0,
     private var kA: Double = 0.0,
     private var kStatic: Double = 0.0,
-    private val clock: NanoClock = NanoClock.system()
 ) {
 
     fun setGains(
