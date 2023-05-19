@@ -247,7 +247,6 @@ public class PowerplayScorer {
         );
 
         liftProfileTimer.reset();
-        updateLiftGains();
     }
 
     /**
@@ -342,6 +341,7 @@ public class PowerplayScorer {
             liftController.PID.resetIntegral();
         }
 
+        updateLiftGains();
         runLift(liftController.update(currentLiftPos));
     }
 
