@@ -48,7 +48,7 @@ public class RobotConfig {
             ANGLE_PASS_FRONT = 8,
             ANGLE_PASS_TILT = 45,
             ANGLE_PASS_BACK = 310,
-            ANGLE_PASS_MINI_TILT = 10,
+            ANGLE_PASS_MINI_TILT = 17,
             TIME_CLAW = 0.0,
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1,
