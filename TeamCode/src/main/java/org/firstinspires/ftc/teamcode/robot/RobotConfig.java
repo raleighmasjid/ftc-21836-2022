@@ -21,7 +21,7 @@ public class RobotConfig {
             LIFT_kG_TWO = 0.06,
             LIFT_kG_ONE = 0.04,
             LIFT_kP = 0.0,
-            LIFT_kI = 0.6,
+            LIFT_kI = 0.0,
             LIFT_kD = 0.0,
             LIFT_UP_kV = 0.019,
             LIFT_UP_kA = 0.004,
