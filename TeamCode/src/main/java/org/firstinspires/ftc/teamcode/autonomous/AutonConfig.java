@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.dashboard.config.Config;
 
@@ -18,6 +18,7 @@ public class AutonConfig {
             TIME_POST_GRAB = 0.1,
             TIME_DROP = 0.1,
             TIME_POST_DROP = 0.1,
+            TIME_FIRST_FLIP = 0.1,
             MAIN_Y = -12.5,
             ZONE_1_X = 12.5,
             ZONE_2_X = 35,

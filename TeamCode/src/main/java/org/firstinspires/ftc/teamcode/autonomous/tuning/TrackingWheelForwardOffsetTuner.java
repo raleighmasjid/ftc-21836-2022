@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
+import org.firstinspires.ftc.teamcode.autonomous.utility.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.robot.AutonMecanumDrive;
-import org.firstinspires.ftc.teamcode.autonomous.StandardTrackingWheelLocalizer;
 
 /**
  * This routine determines the effective forward offset for the lateral tracking wheel.
@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.autonomous.StandardTrackingWheelLocalizer;
  * offset. We can compute this offset by calculating (change in y position) / (change in heading)
  * which returns the radius if the angle (change in heading) is in radians. This is based
  * on the arc length formula of length = theta * radius.
- *
+ * <p>
  * To run this routine, simply adjust the desired angle and specify the number of trials
  * and the desired delay. Then, run the procedure. Once it finishes, it will print the
  * average of all the calculated forward offsets derived from the calculation. This calculated
@@ -35,7 +35,7 @@ import org.firstinspires.ftc.teamcode.autonomous.StandardTrackingWheelLocalizer;
  * satisfactory result is produced.
  */
 @Config
-@Autonomous(group="drive")
+@Autonomous(group = "drive")
 public class TrackingWheelForwardOffsetTuner extends LinearOpMode {
     public static double ANGLE = 180; // deg
     public static int NUM_TRIALS = 5;

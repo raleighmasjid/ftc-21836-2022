@@ -15,10 +15,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.autonomous.AutonConfig;
 import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
-import org.firstinspires.ftc.teamcode.robot.AutonConfig;
 import org.firstinspires.ftc.teamcode.robot.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
@@ -111,7 +111,7 @@ public class AutonomousMedTesting extends LinearOpMode {
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
                 .addTemporalMarker(() -> scorer.liftClaw())
-                .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_GRAB, () -> scorer.triggerPassThru())
+                .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_FIRST_FLIP, () -> scorer.triggerPassThru())
                 .lineTo(parkingZone2.vec())
                 .lineToSplineHeading(medScoringPos)
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.MED))

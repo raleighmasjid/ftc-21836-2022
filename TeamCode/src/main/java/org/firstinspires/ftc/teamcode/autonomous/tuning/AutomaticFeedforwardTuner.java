@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.autonomous.tuning;
 
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.MAX_RPM;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.autonomous.DriveConstants.rpmToVelocity;
+import static org.firstinspires.ftc.teamcode.autonomous.tuning.DriveConstants.MAX_RPM;
+import static org.firstinspires.ftc.teamcode.autonomous.tuning.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.autonomous.tuning.DriveConstants.rpmToVelocity;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
