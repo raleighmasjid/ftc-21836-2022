@@ -30,6 +30,18 @@ public class PowerplayScorer {
     private final MotorEx lift_motor1, lift_motor2, lift_motor3;
     private final SimpleServo clawServo, pivotServo, passThruServoR, passThruServoL, coneArmServoR, coneArmServoL;
     /**
+     * Passthrough motion profile
+     */
+    private MotionProfile passThruProfile;
+    /**
+     * Timer to track passthrough motion profile
+     */
+    private final ElapsedTime passThruTimer;
+    /**
+     * Current passthrough angle
+     */
+    private double currentPassThruAngle;
+    /**
      * PID controller for lift
      */
     private final PIDFController liftController;
@@ -156,10 +168,10 @@ public class PowerplayScorer {
         jerkFilter = new IIRLowPassFilter(RobotConfig.LIFT_JERK_FILTER_GAIN);
 
         clawHasLifted = true;
-        pivotIsFront = true;
+        setPivotToFront(true);
         passThruInFront = true;
         clawIsOpen = true;
-        clawIsTilted = false;
+        setClawTilt(false);
         coneArmsAngle = 0.0;
 
         liftClawTimer = new ElapsedTime();
@@ -168,6 +180,11 @@ public class PowerplayScorer {
         liftProfileTimer.reset();
         liftDerivTimer = new ElapsedTime();
         liftDerivTimer.reset();
+        passThruTimer = new ElapsedTime();
+        passThruTimer.reset();
+
+        currentPassThruAngle = RobotConfig.ANGLE_PASS_FRONT;
+        updatePassThruProfile();
 
         resetLift();
     }
@@ -178,7 +195,7 @@ public class PowerplayScorer {
      * @param height Desired named position to run to
      */
     public void setTargetLiftPos(@NonNull LiftPos height) {
-        clawIsTilted = height == LiftPos.LOW || height == LiftPos.MED || height == LiftPos.TALL;
+        setClawTilt(height == LiftPos.LOW || height == LiftPos.MED || height == LiftPos.TALL);
         switch (height) {
             case TALL:
                 targetLiftPos = RobotConfig.HEIGHT_TALL;
@@ -302,7 +319,7 @@ public class PowerplayScorer {
 
         currentTimestamp = 0.0;
         targetLiftPosName = LiftPos.FLOOR.name();
-        clawIsTilted = false;
+        setClawTilt(false);
 
         liftDerivTimer.reset();
         liftProfileTimer.reset();
@@ -439,7 +456,12 @@ public class PowerplayScorer {
     }
 
     public void togglePivot() {
-        pivotIsFront = !pivotIsFront;
+        setPivotToFront(!pivotIsFront);
+    }
+
+    public void setPivotToFront(boolean isFront) {
+        pivotIsFront = isFront;
+        updatePassThruProfile();
     }
 
     /**
@@ -450,7 +472,12 @@ public class PowerplayScorer {
     }
 
     public void toggleClawTilt() {
-        clawIsTilted = !clawIsTilted;
+        setClawTilt(!clawIsTilted);
+    }
+
+    public void setClawTilt (boolean tilted) {
+        clawIsTilted = tilted;
+        updatePassThruProfile();
     }
 
     /**
@@ -466,23 +493,41 @@ public class PowerplayScorer {
      */
     public void togglePassThru() {
         passThruInFront = !passThruInFront;
+        updatePassThruProfile();
+    }
+
+    /**
+     * Update lift motion profile with a new target position
+     */
+    private void updatePassThruProfile() {
+        double tiltOffset =
+                clawIsTilted ?
+                        RobotConfig.ANGLE_PASS_TILT :
+                        passThruInFront != pivotIsFront ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
+
+        double targetPassThruAngle =
+                passThruInFront ?
+                        RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
+                        RobotConfig.ANGLE_PASS_BACK - tiltOffset;
+
+        passThruProfile = MotionProfileGenerator.generateSimpleMotionProfile(
+                new MotionState(currentPassThruAngle, 0.0, 0.0, 0.0),
+                new MotionState(targetPassThruAngle, 0.0, 0.0, 0.0),
+                RobotConfig.PASS_MAX_VELO,
+                RobotConfig.PASS_MAX_ACCEL,
+                RobotConfig.PASS_MAX_JERK
+        );
+
+        passThruTimer.reset();
     }
 
     /**
      * Hold main passthrough servo positions
      */
     public void runPassThru() {
-        double tiltOffset =
-                clawIsTilted ?
-                        RobotConfig.ANGLE_PASS_TILT :
-                        passThruInFront != pivotIsFront ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
-        double angle =
-                passThruInFront ?
-                        RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
-                        RobotConfig.ANGLE_PASS_BACK - tiltOffset;
-
-        passThruServoR.turnToAngle(angle);
-        passThruServoL.turnToAngle(355.0 - angle);
+        currentPassThruAngle = passThruProfile.get(passThruTimer.seconds()).getX();
+        passThruServoR.turnToAngle(currentPassThruAngle);
+        passThruServoL.turnToAngle(355.0 - currentPassThruAngle);
     }
 
     /**
@@ -523,5 +568,6 @@ public class PowerplayScorer {
         telemetry.addData("Pivot is oriented to", pivotIsFront ? "front" : "back");
         telemetry.addLine();
         telemetry.addData("Passthrough is in the", passThruInFront ? "front" : "back");
+        telemetry.addData("Passthrough angle", currentPassThruAngle);
     }
 }
