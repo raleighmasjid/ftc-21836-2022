@@ -223,8 +223,8 @@ public class PowerplayScorer {
      */
     public void setTargetLiftPos(double targetLiftPos) {
         targetLiftPosName = Double.toString(targetLiftPos);
-        updateLiftProfile();
         this.targetLiftPos = targetLiftPos;
+        updateLiftProfile();
     }
 
     /**
