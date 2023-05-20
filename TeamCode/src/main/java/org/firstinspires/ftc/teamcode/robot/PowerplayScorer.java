@@ -245,7 +245,6 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_MAX_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
         );
-
         liftProfileTimer.reset();
     }
 
@@ -331,6 +330,7 @@ public class PowerplayScorer {
      * Runs lift PIDF controller to track along motion profile
      */
     public void runLiftToPos() {
+        updateLiftGains();
         profileLiftState = liftProfile.get(liftProfileTimer.seconds());
 
         liftController.PID.setTargetPosition(profileLiftState.getX());
@@ -341,7 +341,6 @@ public class PowerplayScorer {
             liftController.PID.resetIntegral();
         }
 
-        updateLiftGains();
         runLift(liftController.update(currentLiftPos));
     }
 
