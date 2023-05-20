@@ -102,6 +102,7 @@ public class PowerplayScorer {
     private double coneArmsAngle;
     private boolean clawIsOpen;
     private boolean clawIsTilted;
+    private boolean passThruTriggered;
 
     @NonNull
     @Contract("_, _ -> new")
@@ -167,13 +168,6 @@ public class PowerplayScorer {
         accelFilter = new IIRLowPassFilter(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
         jerkFilter = new IIRLowPassFilter(RobotConfig.LIFT_JERK_FILTER_GAIN);
 
-        clawHasLifted = true;
-        setPivotToFront(true);
-        passThruInFront = true;
-        clawIsOpen = true;
-        setClawTilt(false);
-        coneArmsAngle = 0.0;
-
         liftClawTimer = new ElapsedTime();
         liftClawTimer.reset();
         liftProfileTimer = new ElapsedTime();
@@ -182,6 +176,14 @@ public class PowerplayScorer {
         liftDerivTimer.reset();
         passThruTimer = new ElapsedTime();
         passThruTimer.reset();
+
+        clawHasLifted = true;
+        setPivotToFront(true);
+        passThruInFront = true;
+        clawIsOpen = true;
+        setClawTilt(false);
+        coneArmsAngle = 0.0;
+        passThruTriggered = false;
 
         currentPassThruAngle = RobotConfig.ANGLE_PASS_FRONT;
         updatePassThruProfile();
@@ -354,9 +356,7 @@ public class PowerplayScorer {
         liftController.Feedforward.setTargetVelocity(profileLiftState.getV());
         liftController.Feedforward.setTargetAcceleration(profileLiftState.getA());
 
-        if (Math.abs(targetLiftPos - currentLiftPos) <= RobotConfig.LIFT_POS_TOLERANCE) {
-            liftController.PID.resetIntegral();
-        }
+        if (targetLiftPos == currentLiftPos) liftController.PID.resetIntegral();
 
         runLift(liftController.update(currentLiftPos));
     }
@@ -484,8 +484,8 @@ public class PowerplayScorer {
      * Triggers the arm, pivot, and closes the claw momentarily
      */
     public void triggerPassThru() {
+        passThruTriggered = true;
         togglePassThru();
-        pivotIsFront = passThruInFront;
     }
 
     /**
@@ -503,7 +503,7 @@ public class PowerplayScorer {
         double tiltOffset =
                 clawIsTilted ?
                         RobotConfig.ANGLE_PASS_TILT :
-                        passThruInFront != pivotIsFront ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
+                        (!passThruTriggered) && (passThruInFront != pivotIsFront) ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
 
         double targetPassThruAngle =
                 passThruInFront ?
@@ -528,6 +528,10 @@ public class PowerplayScorer {
         currentPassThruAngle = passThruProfile.get(passThruTimer.seconds()).getX();
         passThruServoR.turnToAngle(currentPassThruAngle);
         passThruServoL.turnToAngle(355.0 - currentPassThruAngle);
+        if (passThruTriggered && (passThruTimer.seconds() >= (passThruProfile.duration() / 2))) {
+            pivotIsFront = passThruInFront;
+            passThruTriggered = false;
+        }
     }
 
     /**
