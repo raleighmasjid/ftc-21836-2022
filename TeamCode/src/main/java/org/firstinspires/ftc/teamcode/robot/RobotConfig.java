@@ -37,7 +37,7 @@ public class RobotConfig {
             LIFT_MAX_ACCEL = 48,
             LIFT_MAX_JERK = 80,
             LIFT_INTEGRATION_MAX_VELO = 0.3,
-            LIFT_POS_TOLERANCE = 0.15843625,
+            LIFT_POS_TOLERANCE = 0.0,
             LIFT_INCHES_PER_TICK = 0.03168725,
             PRECISION_MODE_SCALE = 0.3,
             ANGLE_CLAW_CLOSED = 5,
