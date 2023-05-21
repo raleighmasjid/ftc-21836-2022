@@ -121,7 +121,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if (control2Up.wasJustPressed()) scorer.toggleClawTilt();
 
-                scorer.updateLiftController();
                 scorer.runLift(Gamepad2.getLeftY());
             } else {
                 if (control2Up.wasJustPressed())
@@ -137,7 +136,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if (control2B.wasJustPressed()) scorer.triggerClaw();
 
-                scorer.updateLiftController();
                 scorer.runLiftToPos();
             }
 
