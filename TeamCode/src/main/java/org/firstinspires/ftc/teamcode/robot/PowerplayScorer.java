@@ -205,14 +205,36 @@ public class PowerplayScorer {
         currentTimestamp = liftDerivTimer.seconds();
         double dt = currentTimestamp == lastTimestamp ? 0.002 : currentTimestamp - lastTimestamp;
 
-        veloFilter.setGain(RobotConfig.LIFT_VELO_FILTER_GAIN);
-        accelFilter.setGain(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
-        jerkFilter.setGain(RobotConfig.LIFT_JERK_FILTER_GAIN);
+        updateLiftGains();
 
         currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
         currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
         currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
         currentLiftJerk = jerkFilter.getEstimate((currentLiftAccel - lastLiftAccel) / dt);
+    }
+
+    /**
+     * Update lift PIDF controller gains with constants from RobotConfig.java
+     */
+    private void updateLiftGains() {
+        boolean goingDown = targetLiftPos < currentLiftPos;
+
+        veloFilter.setGain(RobotConfig.LIFT_VELO_FILTER_GAIN);
+        accelFilter.setGain(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
+        jerkFilter.setGain(RobotConfig.LIFT_JERK_FILTER_GAIN);
+
+        liftController.PID.setGains(
+                RobotConfig.LIFT_kP,
+                RobotConfig.LIFT_kI,
+                RobotConfig.LIFT_kD,
+                RobotConfig.LIFT_PID_FILTER_GAIN
+        );
+        liftController.Feedforward.setGains(
+                goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
+                goingDown ? RobotConfig.LIFT_DOWN_kA : RobotConfig.LIFT_UP_kA,
+                goingDown ? RobotConfig.LIFT_DOWN_kS : RobotConfig.LIFT_UP_kS
+        );
+        liftController.setMaxIntegrationVelocity(RobotConfig.LIFT_INTEGRATION_MAX_VELO);
     }
 
     /**
@@ -332,23 +354,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Update lift PIDF controller gains with constants from RobotConfig.java
      */
-    private void updateLiftGains() {
-        boolean goingDown = targetLiftPos < currentLiftPos;
-
-        liftController.PID.setGains(
-                RobotConfig.LIFT_kP,
-                RobotConfig.LIFT_kI,
-                RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_PID_FILTER_GAIN
-        );
-        liftController.Feedforward.setGains(
-                goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
-                goingDown ? RobotConfig.LIFT_DOWN_kA : RobotConfig.LIFT_UP_kA,
-                goingDown ? RobotConfig.LIFT_DOWN_kS : RobotConfig.LIFT_UP_kS
-        );
-        liftController.setMaxIntegrationVelocity(RobotConfig.LIFT_INTEGRATION_MAX_VELO);
     }
 
     /**
