@@ -6,10 +6,10 @@ import com.acmerobotics.dashboard.config.Config;
 public class RobotConfig {
     public static double
             HEIGHT_FLOOR = 0,
-            HEIGHT_TWO = 1.25,
-            HEIGHT_THREE = 2.5,
-            HEIGHT_FOUR = 3.75,
-            HEIGHT_FIVE = 5,
+            HEIGHT_TWO = 1.35,
+            HEIGHT_THREE = 2.7,
+            HEIGHT_FOUR = 4.05,
+            HEIGHT_FIVE = 5.4,
             HEIGHT_LOW = 6.2,
             HEIGHT_MEDIUM = 16.4,
             HEIGHT_TALL = 26.6,
