@@ -311,14 +311,7 @@ public class PowerplayScorer {
         targetLiftPosName = LiftPos.FLOOR.name();
         setClawTilt(false);
 
-        liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(0.0, 0.0, 0.0, 0.0),
-                new MotionState(0.0, 0.0, 0.0, 0.0),
-                RobotConfig.LIFT_MAX_VELO,
-                RobotConfig.LIFT_MAX_ACCEL,
-                RobotConfig.LIFT_MAX_JERK
-        );
-        liftProfileTimer.reset();
+        updateLiftProfile();
         profileLiftState = new MotionState(0.0, 0.0, 0.0, 0.0);
     }
 
