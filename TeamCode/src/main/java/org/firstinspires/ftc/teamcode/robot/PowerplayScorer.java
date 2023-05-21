@@ -192,6 +192,36 @@ public class PowerplayScorer {
     }
 
     /**
+     * Reads lift encoder value and converts to position in inches
+     * Calculates velocity, acceleration, and jerk
+     * Saves readings to currentLift____
+     */
+    public void readLiftPos() {
+        double lastLiftPos = currentLiftPos,
+                lastLiftVelo = currentLiftVelo,
+                lastLiftAccel = currentLiftAccel,
+                lastTimestamp = currentTimestamp;
+        currentTimestamp = liftDerivTimer.seconds();
+        double dt = currentTimestamp - lastTimestamp;
+
+        veloFilter.setGain(RobotConfig.LIFT_VELO_FILTER_GAIN);
+        accelFilter.setGain(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
+        jerkFilter.setGain(RobotConfig.LIFT_JERK_FILTER_GAIN);
+
+        currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
+        currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
+        currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
+        currentLiftJerk = jerkFilter.getEstimate((currentLiftAccel - lastLiftAccel) / dt);
+    }
+
+    /**
+     * Sets the target lift state to the current lift state
+     */
+    public void setLiftStateToCurrent() {
+        setTargetLiftPos(currentLiftPos);
+    }
+
+    /**
      * Set target for lift motion profile
      *
      * @param height Desired named position to run to
@@ -247,13 +277,6 @@ public class PowerplayScorer {
     }
 
     /**
-     * Sets the target lift state to the current lift state
-     */
-    public void setLiftStateToCurrent() {
-        setTargetLiftPos(currentLiftPos);
-    }
-
-    /**
      * Update lift motion profile with a new target position
      */
     private void updateLiftProfile() {
@@ -268,50 +291,6 @@ public class PowerplayScorer {
     }
 
     /**
-     * Update lift PIDF controller gains with constants from RobotConfig.java
-     */
-    private void updateLiftGains() {
-        boolean goingDown = targetLiftPos < currentLiftPos;
-
-        liftController.PID.setGains(
-                RobotConfig.LIFT_kP,
-                RobotConfig.LIFT_kI,
-                RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_PID_FILTER_GAIN
-        );
-        liftController.Feedforward.setGains(
-                goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
-                goingDown ? RobotConfig.LIFT_DOWN_kA : RobotConfig.LIFT_UP_kA,
-                goingDown ? RobotConfig.LIFT_DOWN_kS : RobotConfig.LIFT_UP_kS
-        );
-        liftController.setMaxIntegrationVelocity(RobotConfig.LIFT_INTEGRATION_MAX_VELO);
-    }
-
-    /**
-     * Reads lift encoder value and converts to position in inches
-     * Calculates velocity, acceleration, and jerk
-     * Saves readings to currentLift____
-     */
-    public void readLiftPos() {
-        double lastLiftPos = currentLiftPos,
-                lastLiftVelo = currentLiftVelo,
-                lastLiftAccel = currentLiftAccel,
-                lastTimestamp = currentTimestamp;
-        currentTimestamp = liftDerivTimer.seconds();
-        double dt = currentTimestamp - lastTimestamp;
-        boolean dtIsZero = dt == 0.0;
-
-        veloFilter.setGain(RobotConfig.LIFT_VELO_FILTER_GAIN);
-        accelFilter.setGain(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
-        jerkFilter.setGain(RobotConfig.LIFT_JERK_FILTER_GAIN);
-
-        currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
-        currentLiftVelo = dtIsZero ? 0.0 : (veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt));
-        currentLiftAccel = dtIsZero ? 0.0 : (accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt));
-        currentLiftJerk = dtIsZero ? 0.0 : (jerkFilter.getEstimate((currentLiftAccel - lastLiftAccel) / dt));
-    }
-
-    /**
      * Resets all internal lift variables
      */
     public void resetLift() {
@@ -319,22 +298,21 @@ public class PowerplayScorer {
         accelFilter.clearMemory();
         veloFilter.clearMemory();
 
-        currentTimestamp = 0.0;
-        targetLiftPosName = LiftPos.FLOOR.name();
-        setClawTilt(false);
-
+        lift_motor2.resetEncoder();
         liftDerivTimer.reset();
         liftProfileTimer.reset();
         liftController.PID.resetIntegral();
-        lift_motor2.resetEncoder();
 
+        currentTimestamp = 0.0;
         currentLiftPos = 0.0;
         currentLiftVelo = 0.0;
         currentLiftAccel = 0.0;
         currentLiftJerk = 0.0;
-
         targetLiftPos = 0.0;
+        targetLiftPosName = LiftPos.FLOOR.name();
+
         profileLiftState = new MotionState(0.0, 0.0, 0.0, 0.0);
+        setClawTilt(false);
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(0.0, 0.0, 0.0, 0.0),
@@ -359,6 +337,26 @@ public class PowerplayScorer {
         if (targetLiftPos == currentLiftPos) liftController.PID.resetIntegral();
 
         runLift(liftController.update(currentLiftPos));
+    }
+
+    /**
+     * Update lift PIDF controller gains with constants from RobotConfig.java
+     */
+    private void updateLiftGains() {
+        boolean goingDown = targetLiftPos < currentLiftPos;
+
+        liftController.PID.setGains(
+                RobotConfig.LIFT_kP,
+                RobotConfig.LIFT_kI,
+                RobotConfig.LIFT_kD,
+                RobotConfig.LIFT_PID_FILTER_GAIN
+        );
+        liftController.Feedforward.setGains(
+                goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
+                goingDown ? RobotConfig.LIFT_DOWN_kA : RobotConfig.LIFT_UP_kA,
+                goingDown ? RobotConfig.LIFT_DOWN_kS : RobotConfig.LIFT_UP_kS
+        );
+        liftController.setMaxIntegrationVelocity(RobotConfig.LIFT_INTEGRATION_MAX_VELO);
     }
 
     /**
@@ -475,7 +473,7 @@ public class PowerplayScorer {
         setClawTilt(!clawIsTilted);
     }
 
-    public void setClawTilt (boolean tilted) {
+    public void setClawTilt(boolean tilted) {
         clawIsTilted = tilted;
         updatePassThruProfile();
     }
