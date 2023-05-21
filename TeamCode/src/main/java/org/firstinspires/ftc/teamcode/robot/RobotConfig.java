@@ -40,11 +40,11 @@ public class RobotConfig {
             LIFT_POS_TOLERANCE = 0.15843625,
             LIFT_INCHES_PER_TICK = 0.03168725,
             PRECISION_MODE_SCALE = 0.3,
-            ANGLE_CLAW_CLOSED = 5,
-            ANGLE_CLAW_OPEN = 67,
+            ANGLE_CLAW_CLOSED = 0,
+            ANGLE_CLAW_OPEN = 62,
             ANGLE_ARM_DOWN = 100,
-            ANGLE_PIVOT_FRONT = 12,
-            ANGLE_PIVOT_BACK = 210,
+            ANGLE_PIVOT_FRONT = 17,
+            ANGLE_PIVOT_BACK = 216,
             ANGLE_PASS_FRONT = 8,
             ANGLE_PASS_TILT = 45,
             ANGLE_PASS_BACK = 310,
@@ -52,8 +52,8 @@ public class RobotConfig {
             TIME_CLAW = 0.0,
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1,
-            PASS_PIVOT_POINT = 0.5,
+            PASS_PIVOT_POINT = 0.4,
             PASS_MAX_VELO = 600,
-            PASS_MAX_ACCEL = 8000,
-            PASS_MAX_JERK = 4000;
+            PASS_MAX_ACCEL = 1000,
+            PASS_MAX_JERK = 3000;
 }
