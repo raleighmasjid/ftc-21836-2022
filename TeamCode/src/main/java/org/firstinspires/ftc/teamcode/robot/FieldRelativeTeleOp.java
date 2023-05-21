@@ -106,7 +106,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             boolean stackHeights = control2LShoulder.isDown();
 
             if (control2RShoulder.wasJustPressed()) {
-                if (overrideMode) scorer.setLiftStateToCurrent();
+                scorer.setLiftStateToCurrent();
                 overrideMode = !overrideMode;
             }
 
