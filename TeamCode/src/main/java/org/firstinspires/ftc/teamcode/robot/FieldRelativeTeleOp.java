@@ -132,6 +132,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 else if (control2Down.wasJustPressed())
                     scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.TWO : PowerplayScorer.LiftPos.FLOOR);
 
+                scorer.updateLiftController();
+
                 if (control2Y.wasJustPressed()) scorer.triggerPassThru();
 
                 if (control2B.wasJustPressed()) scorer.triggerClaw();

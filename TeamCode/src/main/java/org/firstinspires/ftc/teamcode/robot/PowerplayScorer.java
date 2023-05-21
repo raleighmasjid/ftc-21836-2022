@@ -337,11 +337,7 @@ public class PowerplayScorer {
         profileLiftState = new MotionState(0.0, 0.0, 0.0, 0.0);
     }
 
-    /**
-     * Runs lift PIDF controller to track along motion profile
-     */
-    public void runLiftToPos() {
-        updateLiftGains();
+    public void updateLiftController() {
         profileLiftState = liftProfile.get(liftProfileTimer.seconds());
 
         liftController.PID.setTargetPosition(profileLiftState.getX());
@@ -349,12 +345,13 @@ public class PowerplayScorer {
         liftController.Feedforward.setTargetAcceleration(profileLiftState.getA());
 
         if (targetLiftPos == currentLiftPos) liftController.PID.resetIntegral();
-
-        runLift(liftController.update(currentLiftPos));
     }
 
     /**
+     * Runs lift PIDF controller to track along motion profile
      */
+    public void runLiftToPos() {
+        runLift(liftController.update(currentLiftPos));
     }
 
     /**
