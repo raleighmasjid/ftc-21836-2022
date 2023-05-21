@@ -23,5 +23,9 @@ public class AutonConfig {
             ZONE_1_X = 12.5,
             ZONE_2_X = 35,
             ZONE_3_X = 57,
-            STARTING_Y = -62.5;
+            STARTING_Y = -62.5,
+            CAMERA_FX = 578.272,
+            CAMERA_FY = 578.272,
+            CAMERA_CX = 402.145,
+            CAMERA_CY = 221.506;
 }

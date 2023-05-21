@@ -54,9 +54,5 @@ public class RobotConfig {
             TIME_LIFT_TALL = 1,
             PASS_MAX_VELO = 600,
             PASS_MAX_ACCEL = 8000,
-            PASS_MAX_JERK = 4000,
-            CAMERA_FX = 578.272,
-            CAMERA_FY = 578.272,
-            CAMERA_CX = 402.145,
-            CAMERA_CY = 221.506;
+            PASS_MAX_JERK = 4000;
 }
