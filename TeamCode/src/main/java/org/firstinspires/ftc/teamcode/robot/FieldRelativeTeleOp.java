@@ -121,6 +121,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if (control2Up.wasJustPressed()) scorer.toggleClawTilt();
 
+                scorer.updateLiftController();
                 scorer.runLift(Gamepad2.getLeftY());
             } else {
                 if (control2Up.wasJustPressed())
@@ -132,12 +133,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 else if (control2Down.wasJustPressed())
                     scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.TWO : PowerplayScorer.LiftPos.FLOOR);
 
-                scorer.updateLiftController();
-
                 if (control2Y.wasJustPressed()) scorer.triggerPassThru();
 
                 if (control2B.wasJustPressed()) scorer.triggerClaw();
 
+                scorer.updateLiftController();
                 scorer.runLiftToPos();
             }
 
