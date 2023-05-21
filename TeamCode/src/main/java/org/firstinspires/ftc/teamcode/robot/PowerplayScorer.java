@@ -270,19 +270,19 @@ public class PowerplayScorer {
                 targetLiftPosName = LiftPos.LOW.name();
                 break;
             case FIVE:
-                targetLiftPos = RobotConfig.HEIGHT_FIVE;
+                targetLiftPos = RobotConfig.HEIGHT_5;
                 targetLiftPosName = LiftPos.FIVE.name();
                 break;
             case FOUR:
-                targetLiftPos = RobotConfig.HEIGHT_FOUR;
+                targetLiftPos = RobotConfig.HEIGHT_4;
                 targetLiftPosName = LiftPos.FOUR.name();
                 break;
             case THREE:
-                targetLiftPos = RobotConfig.HEIGHT_THREE;
+                targetLiftPos = RobotConfig.HEIGHT_3;
                 targetLiftPosName = LiftPos.THREE.name();
                 break;
             case TWO:
-                targetLiftPos = RobotConfig.HEIGHT_TWO;
+                targetLiftPos = RobotConfig.HEIGHT_2;
                 targetLiftPosName = LiftPos.TWO.name();
                 break;
             default:
@@ -375,10 +375,10 @@ public class PowerplayScorer {
      * @return Velocity command for lift
      */
     private double kG() {
-        return currentLiftPos >= RobotConfig.HEIGHT_STAGES_FOUR ? RobotConfig.LIFT_kG_FOUR :
-                currentLiftPos >= RobotConfig.HEIGHT_STAGES_THREE ? RobotConfig.LIFT_kG_THREE :
-                        currentLiftPos >= RobotConfig.HEIGHT_STAGES_TWO ? RobotConfig.LIFT_kG_TWO :
-                                currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE ? RobotConfig.LIFT_kG_ONE :
+        return currentLiftPos >= RobotConfig.HEIGHT_STAGES_4 ? RobotConfig.LIFT_kG_4 :
+                currentLiftPos >= RobotConfig.HEIGHT_STAGES_3 ? RobotConfig.LIFT_kG_3 :
+                        currentLiftPos >= RobotConfig.HEIGHT_STAGES_2 ? RobotConfig.LIFT_kG_2 :
+                                currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE ? RobotConfig.LIFT_kG_1 :
                                         0.0;
     }
 
@@ -410,7 +410,7 @@ public class PowerplayScorer {
      */
     public void grabCone() {
         clawIsOpen = false;
-        if (currentLiftPos <= (RobotConfig.HEIGHT_FIVE + RobotConfig.LIFT_POS_TOLERANCE)) {
+        if (currentLiftPos <= (RobotConfig.HEIGHT_5 + RobotConfig.LIFT_POS_TOLERANCE)) {
             clawHasLifted = false;
             liftClawTimer.reset();
         }
