@@ -42,6 +42,10 @@ public class PowerplayScorer {
      */
     private double currentPassThruAngle;
     /**
+     * Current passthrough velocity
+     */
+    private double currentPassThruVelo;
+    /**
      * PID controller for lift
      */
     private final PIDFController liftController;
@@ -186,6 +190,7 @@ public class PowerplayScorer {
         passThruTriggered = false;
 
         currentPassThruAngle = RobotConfig.ANGLE_PASS_FRONT;
+        currentPassThruVelo = 0.0;
         updatePassThruProfile();
 
         currentTimestamp = 0.0;
@@ -504,8 +509,8 @@ public class PowerplayScorer {
                         RobotConfig.ANGLE_PASS_BACK - tiltOffset;
 
         passThruProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(currentPassThruAngle, 0.0, 0.0, 0.0),
-                new MotionState(targetPassThruAngle, 0.0, 0.0, 0.0),
+                new MotionState(currentPassThruAngle, currentPassThruVelo),
+                new MotionState(targetPassThruAngle, 0.0),
                 RobotConfig.PASS_MAX_VELO,
                 RobotConfig.PASS_MAX_ACCEL,
                 RobotConfig.PASS_MAX_JERK
@@ -518,7 +523,9 @@ public class PowerplayScorer {
      * Hold main passthrough servo positions
      */
     public void runPassThru() {
-        currentPassThruAngle = passThruProfile.get(passThruTimer.seconds()).getX();
+        MotionState state = passThruProfile.get(passThruTimer.seconds());
+        currentPassThruAngle = state.getX();
+        currentPassThruVelo = state.getV();
         passThruServoR.turnToAngle(currentPassThruAngle);
         passThruServoL.turnToAngle(355.0 - currentPassThruAngle);
         if (passThruTriggered && passThruTimer.seconds() >= passThruProfile.duration() * RobotConfig.PASS_PIVOT_POINT) {
