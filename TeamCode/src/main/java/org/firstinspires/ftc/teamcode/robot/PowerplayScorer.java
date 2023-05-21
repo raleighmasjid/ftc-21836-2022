@@ -188,6 +188,7 @@ public class PowerplayScorer {
         currentPassThruAngle = RobotConfig.ANGLE_PASS_FRONT;
         updatePassThruProfile();
 
+        currentTimestamp = 0.0;
         resetLift();
     }
 
@@ -202,7 +203,7 @@ public class PowerplayScorer {
                 lastLiftAccel = currentLiftAccel,
                 lastTimestamp = currentTimestamp;
         currentTimestamp = liftDerivTimer.seconds();
-        double dt = currentTimestamp - lastTimestamp;
+        double dt = currentTimestamp == lastTimestamp ? 0.002 : currentTimestamp - lastTimestamp;
 
         veloFilter.setGain(RobotConfig.LIFT_VELO_FILTER_GAIN);
         accelFilter.setGain(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
@@ -299,19 +300,15 @@ public class PowerplayScorer {
         veloFilter.clearMemory();
 
         lift_motor2.resetEncoder();
-        liftDerivTimer.reset();
-        liftProfileTimer.reset();
         liftController.PID.resetIntegral();
 
-        currentTimestamp = 0.0;
         currentLiftPos = 0.0;
         currentLiftVelo = 0.0;
         currentLiftAccel = 0.0;
         currentLiftJerk = 0.0;
+
         targetLiftPos = 0.0;
         targetLiftPosName = LiftPos.FLOOR.name();
-
-        profileLiftState = new MotionState(0.0, 0.0, 0.0, 0.0);
         setClawTilt(false);
 
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
@@ -321,6 +318,8 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_MAX_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
         );
+        liftProfileTimer.reset();
+        profileLiftState = new MotionState(0.0, 0.0, 0.0, 0.0);
     }
 
     /**
