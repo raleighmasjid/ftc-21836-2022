@@ -304,8 +304,8 @@ public class PowerplayScorer {
      */
     private void updateLiftProfile() {
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(currentLiftPos, currentLiftVelo, currentLiftAccel, currentLiftJerk),
-                new MotionState(targetLiftPos, 0.0, 0.0, 0.0),
+                new MotionState(currentLiftPos, currentLiftVelo),
+                new MotionState(targetLiftPos, 0.0),
                 RobotConfig.LIFT_MAX_VELO,
                 RobotConfig.LIFT_MAX_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
