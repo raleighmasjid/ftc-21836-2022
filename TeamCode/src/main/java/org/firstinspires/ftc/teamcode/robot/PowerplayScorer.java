@@ -178,7 +178,7 @@ public class PowerplayScorer {
         passThruTimer.reset();
 
         clawHasLifted = true;
-        setPivotToFront(true);
+        setPivotIsFront(true);
         passThruInFront = true;
         clawIsOpen = true;
         setClawTilt(false);
@@ -449,10 +449,10 @@ public class PowerplayScorer {
     }
 
     public void togglePivot() {
-        setPivotToFront(!pivotIsFront);
+        setPivotIsFront(!pivotIsFront);
     }
 
-    public void setPivotToFront(boolean isFront) {
+    public void setPivotIsFront(boolean isFront) {
         pivotIsFront = isFront;
         updatePassThruProfile();
     }
