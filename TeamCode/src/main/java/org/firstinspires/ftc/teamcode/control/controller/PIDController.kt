@@ -72,7 +72,7 @@ class PIDController
             lastError = error
             lastTimestamp = currentTimestamp
 
-            (kP * error + kI * errorSum + kD * errorDeriv)
+            (kP * error) + (kI * errorSum) + (kD * errorDeriv)
         }
     }
 
