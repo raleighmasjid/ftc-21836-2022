@@ -64,7 +64,7 @@ class PIDController
             val dt = currentTimestamp - lastTimestamp
             errorDeriv = derivFilter.getEstimate((error - lastError) / dt)
 
-            if (integrate) errorSum += (0.5 * (error + lastError) * dt)
+            if (integrate) errorSum += 0.5 * (error + lastError) * dt
             if (sign(error) != sign(lastError)) resetIntegral()
 
             lastError = error
