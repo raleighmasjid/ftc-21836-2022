@@ -560,10 +560,7 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Pivot is oriented to", pivotIsFront ? "front" : "back");
         telemetry.addLine();
-        String status = (passThruProfileTimer.seconds() >= passThruProfile.duration() * 0.5) ?
-                passThruInFront ? "front" : "back" :
-                passThruInFront ? "back" : "front";
-        telemetry.addData("Passthrough is", (clawIsTilted ? "tilted " : "") + "at the " + status);
+        telemetry.addData("Passthrough is", (clawIsTilted ? "tilted " : "") + "at the " + (passThruInFront ? "front" : "back"));
         telemetry.addData("Passthrough angle", currentPassThruAngle);
     }
 }
