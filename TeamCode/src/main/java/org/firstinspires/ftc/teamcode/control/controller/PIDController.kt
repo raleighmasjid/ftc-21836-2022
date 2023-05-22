@@ -56,15 +56,13 @@ class PIDController
     fun update(measuredPosition: Double): Double {
         val currentTimestamp = clock.seconds()
         val error = targetPosition - measuredPosition
-        val dy = error - lastError
-        val currentFilterEstimate = derivFilter.getEstimate(dy)
         return if (lastTimestamp.isNaN()) {
             lastError = error
             lastTimestamp = currentTimestamp
             0.0
         } else {
             val dt = currentTimestamp - lastTimestamp
-            errorDeriv = currentFilterEstimate / dt
+            errorDeriv = derivFilter.getEstimate(error - lastError) / dt
 
             if (integrate) errorSum += (0.5 * (error + lastError) * dt)
             if (sign(error) != sign(lastError)) resetIntegral()
