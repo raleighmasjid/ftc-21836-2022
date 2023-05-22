@@ -46,6 +46,10 @@ public class PowerplayScorer {
      */
     private double currentPassThruVelo;
     /**
+     * Name of current passthrough position
+     */
+    private String passThruPosName;
+    /**
      * PID controller for lift
      */
     private final PIDFController liftController;
@@ -191,6 +195,7 @@ public class PowerplayScorer {
 
         currentPassThruAngle = RobotConfig.ANGLE_PASS_FRONT;
         currentPassThruVelo = 0.0;
+        passThruPosName = "in the front";
         updatePassThruProfile();
 
         currentTimestamp = 0.0;
@@ -500,11 +505,16 @@ public class PowerplayScorer {
                 clawIsTilted ?
                         RobotConfig.ANGLE_PASS_TILT :
                         (!passThruTriggered) && (passThruInFront != pivotIsFront) ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
+        String tiltedInThe = (clawIsTilted ? "tilted " : "") + "in the ";
 
         double targetPassThruAngle =
                 passThruInFront ?
                         RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
                         RobotConfig.ANGLE_PASS_BACK - tiltOffset;
+        passThruPosName =
+                passThruInFront ?
+                        tiltedInThe + "front" :
+                        tiltedInThe + "back";
 
         passThruProfile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentPassThruAngle, currentPassThruVelo),
@@ -563,13 +573,12 @@ public class PowerplayScorer {
         telemetry.addData("Lift error (in)", liftController.PID.getLastError());
         telemetry.addData("Lift error derivative (in/s)", liftController.PID.getErrorDeriv());
         telemetry.addLine();
-        telemetry.addData("Cone arms angle", coneArmsAngle);
         telemetry.addLine();
         telemetry.addData("Claw is", clawIsOpen ? "open" : "closed");
         telemetry.addLine();
         telemetry.addData("Pivot is oriented to", pivotIsFront ? "front" : "back");
         telemetry.addLine();
-        telemetry.addData("Passthrough is in the", passThruInFront ? "front" : "back");
+        telemetry.addData("Passthrough is", passThruPosName);
         telemetry.addData("Passthrough angle", currentPassThruAngle);
     }
 }
