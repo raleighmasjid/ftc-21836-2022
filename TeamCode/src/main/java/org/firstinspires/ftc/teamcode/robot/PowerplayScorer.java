@@ -105,7 +105,6 @@ public class PowerplayScorer {
     }
 
     private final IIRLowPassFilter accelFilter, veloFilter;
-    private double currentTimestamp;
     private boolean passThruInFront;
     private double coneArmsAngle;
     private boolean clawIsOpen;
@@ -197,7 +196,6 @@ public class PowerplayScorer {
         passThruPosName = "at the front";
         updatePassThruProfile();
 
-        currentTimestamp = 0.0;
         resetLift();
     }
 
@@ -209,15 +207,15 @@ public class PowerplayScorer {
     public void readLiftPos() {
         double lastLiftPos = currentLiftPos,
                 lastLiftVelo = currentLiftVelo,
-                lastTimestamp = currentTimestamp;
-        currentTimestamp = liftDerivTimer.seconds();
-        double dt = currentTimestamp == lastTimestamp ? 0.002 : currentTimestamp - lastTimestamp;
+                timerSeconds = liftDerivTimer.seconds(),
+                dt = timerSeconds == 0 ? 0.002 : timerSeconds;
 
         updateLiftGains();
 
         currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
         currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
         currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
+        liftDerivTimer.reset();
     }
 
     /**

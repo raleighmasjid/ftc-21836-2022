@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.control.controller
 
-import com.acmerobotics.roadrunner.util.NanoClock
+import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter
 import kotlin.math.sign
 
@@ -20,9 +20,8 @@ class PIDController
     private var kI: Double,
     private var kD: Double,
     private var filterGain: Double = 0.8,
-    private val clock: NanoClock = NanoClock.system()
+    private val clock: ElapsedTime = ElapsedTime()
 ) {
-    private var lastTimestamp: Double = Double.NaN
     var lastError: Double = 0.0
     var errorSum: Double = 0.0
     var errorDeriv: Double = 0.0
@@ -54,21 +53,19 @@ class PIDController
      * @param measuredPosition measured position
      */
     fun update(measuredPosition: Double): Double {
-        val currentTimestamp = clock.seconds()
         val error = targetPosition - measuredPosition
-        return if (lastTimestamp.isNaN()) {
+        val dt = clock.seconds()
+        return if (dt == 0.0) {
             lastError = error
-            lastTimestamp = currentTimestamp
             0.0
         } else {
-            val dt = currentTimestamp - lastTimestamp
             errorDeriv = derivFilter.getEstimate((error - lastError) / dt)
 
             if (integrate) errorSum += 0.5 * (error + lastError) * dt
             if (sign(error) != sign(lastError)) resetIntegral()
 
             lastError = error
-            lastTimestamp = currentTimestamp
+            clock.reset()
 
             (kP * error) + (kI * errorSum) + (kD * errorDeriv)
         }
