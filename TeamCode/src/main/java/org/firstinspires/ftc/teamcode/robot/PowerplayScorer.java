@@ -46,10 +46,6 @@ public class PowerplayScorer {
      */
     private double currentPassThruVelo;
     /**
-     * Name of current passthrough position
-     */
-    private String passThruPosName;
-    /**
      * PID controller for lift
      */
     private final PIDFController liftController;
@@ -193,7 +189,6 @@ public class PowerplayScorer {
 
         currentPassThruAngle = RobotConfig.ANGLE_PASS_FRONT;
         currentPassThruVelo = 0.0;
-        passThruPosName = "at the front";
         updatePassThruProfile();
 
         resetLift();
@@ -497,16 +492,11 @@ public class PowerplayScorer {
                 clawIsTilted ?
                         RobotConfig.ANGLE_PASS_TILT :
                         (!passThruTriggered) && (passThruInFront != pivotIsFront) ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
-        String tiltedAtThe = (clawIsTilted ? "tilted " : "") + "at the ";
 
         double targetPassThruAngle =
                 passThruInFront ?
                         RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
                         RobotConfig.ANGLE_PASS_BACK - tiltOffset;
-        passThruPosName =
-                passThruInFront ?
-                        tiltedAtThe + "front" :
-                        tiltedAtThe + "back";
 
         passThruProfile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentPassThruAngle, currentPassThruVelo),
@@ -570,7 +560,7 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Pivot is oriented to", pivotIsFront ? "front" : "back");
         telemetry.addLine();
-        telemetry.addData("Passthrough is", passThruPosName);
+        telemetry.addData("Passthrough is", (clawIsTilted ? "tilted " : "") + "at the " + (passThruInFront ? "front" : "back"));
         telemetry.addData("Passthrough angle", currentPassThruAngle);
     }
 }
