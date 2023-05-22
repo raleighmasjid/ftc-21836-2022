@@ -32,7 +32,6 @@ public class RobotConfig {
             LIFT_PID_FILTER_GAIN = 0.98,
             LIFT_VELO_FILTER_GAIN = 0.8,
             LIFT_ACCEL_FILTER_GAIN = 0.8,
-            LIFT_JERK_FILTER_GAIN = 0.8,
             LIFT_MAX_VELO = 39,
             LIFT_MAX_ACCEL = 200,
             LIFT_MAX_JERK = 600,
