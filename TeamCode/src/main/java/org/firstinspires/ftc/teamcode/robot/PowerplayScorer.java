@@ -556,12 +556,12 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
         telemetry.addData("Lift profile velocity (in/s)", profileLiftState.getV());
-        telemetry.addData("Lift error derivative (in/s)", liftController.PID.getErrorDeriv());
         telemetry.addLine();
         telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         telemetry.addLine();
-        telemetry.addData("Lift current jerk (in/s^3)", currentLiftJerk);
-        telemetry.addLine();
+        telemetry.addData("Lift error integral (in*s)", liftController.PID.getErrorSum());
+        telemetry.addData("Lift error (in)", liftController.PID.getLastError());
+        telemetry.addData("Lift error derivative (in/s)", liftController.PID.getErrorDeriv());
         telemetry.addLine();
         telemetry.addData("Cone arms angle", coneArmsAngle);
         telemetry.addLine();
