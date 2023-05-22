@@ -29,7 +29,7 @@ public class RobotConfig {
             LIFT_DOWN_kV = 0.0087,
             LIFT_DOWN_kA = 0.0005,
             LIFT_DOWN_kS = 0.0,
-            LIFT_PID_FILTER_GAIN = 0.98,
+            LIFT_kD_FILTER_GAIN = 0.98,
             LIFT_VELO_FILTER_GAIN = 0.8,
             LIFT_ACCEL_FILTER_GAIN = 0.8,
             LIFT_MAX_VELO = 39,

@@ -36,7 +36,7 @@ public class PowerplayScorer {
     /**
      * Timer to track passthrough motion profile
      */
-    private final ElapsedTime passThruTimer;
+    private final ElapsedTime passThruProfileTimer;
     /**
      * Current passthrough angle
      */
@@ -164,7 +164,7 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_PID_FILTER_GAIN,
+                RobotConfig.LIFT_kD_FILTER_GAIN,
                 RobotConfig.LIFT_UP_kV,
                 RobotConfig.LIFT_UP_kA,
                 RobotConfig.LIFT_UP_kS,
@@ -181,8 +181,8 @@ public class PowerplayScorer {
         liftProfileTimer.reset();
         liftDerivTimer = new ElapsedTime();
         liftDerivTimer.reset();
-        passThruTimer = new ElapsedTime();
-        passThruTimer.reset();
+        passThruProfileTimer = new ElapsedTime();
+        passThruProfileTimer.reset();
 
         clawHasLifted = true;
         setPivotIsFront(true);
@@ -194,7 +194,7 @@ public class PowerplayScorer {
 
         currentPassThruAngle = RobotConfig.ANGLE_PASS_FRONT;
         currentPassThruVelo = 0.0;
-        passThruPosName = "in the front";
+        passThruPosName = "at the front";
         updatePassThruProfile();
 
         currentTimestamp = 0.0;
@@ -233,7 +233,7 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_PID_FILTER_GAIN
+                RobotConfig.LIFT_kD_FILTER_GAIN
         );
         liftController.Feedforward.setGains(
                 goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
@@ -499,7 +499,7 @@ public class PowerplayScorer {
                 clawIsTilted ?
                         RobotConfig.ANGLE_PASS_TILT :
                         (!passThruTriggered) && (passThruInFront != pivotIsFront) ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
-        String tiltedInThe = (clawIsTilted ? "tilted " : "") + "in the ";
+        String tiltedAtThe = (clawIsTilted ? "tilted " : "") + "at the ";
 
         double targetPassThruAngle =
                 passThruInFront ?
@@ -507,8 +507,8 @@ public class PowerplayScorer {
                         RobotConfig.ANGLE_PASS_BACK - tiltOffset;
         passThruPosName =
                 passThruInFront ?
-                        tiltedInThe + "front" :
-                        tiltedInThe + "back";
+                        tiltedAtThe + "front" :
+                        tiltedAtThe + "back";
 
         passThruProfile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentPassThruAngle, currentPassThruVelo),
@@ -518,19 +518,19 @@ public class PowerplayScorer {
                 RobotConfig.PASS_MAX_JERK
         );
 
-        passThruTimer.reset();
+        passThruProfileTimer.reset();
     }
 
     /**
      * Hold main passthrough servo positions
      */
     public void runPassThru() {
-        MotionState state = passThruProfile.get(passThruTimer.seconds());
+        MotionState state = passThruProfile.get(passThruProfileTimer.seconds());
         currentPassThruAngle = state.getX();
         currentPassThruVelo = state.getV();
         passThruServoR.turnToAngle(currentPassThruAngle);
         passThruServoL.turnToAngle(355.0 - currentPassThruAngle);
-        if (passThruTriggered && passThruTimer.seconds() >= passThruProfile.duration() * RobotConfig.PASS_PIVOT_POINT) {
+        if (passThruTriggered && passThruProfileTimer.seconds() >= passThruProfile.duration() * RobotConfig.PASS_PIVOT_POINT) {
             pivotIsFront = passThruInFront;
             passThruTriggered = false;
         }
