@@ -17,9 +17,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.autonomous.AutonConfig;
 import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.autonomous.utility.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
-import org.firstinspires.ftc.teamcode.autonomous.utility.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
 import org.openftc.apriltag.AprilTagDetection;
@@ -306,7 +306,7 @@ public class AutonomousMedTesting extends LinearOpMode {
             scorer.runPassThru();
             scorer.runPivot();
             scorer.runClaw();
-            scorer.runConeArms(0.0);
+            scorer.runConeArms(0, 0);
 
             // everything below is telemetry
             scorer.printTelemetry(myTelemetry);

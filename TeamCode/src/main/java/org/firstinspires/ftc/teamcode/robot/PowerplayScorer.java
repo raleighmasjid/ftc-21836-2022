@@ -102,7 +102,6 @@ public class PowerplayScorer {
 
     private final IIRLowPassFilter accelFilter, veloFilter;
     private boolean passThruInFront;
-    private double coneArmsAngle;
     private boolean clawIsOpen;
     private boolean clawIsTilted;
     private boolean passThruTriggered;
@@ -184,7 +183,6 @@ public class PowerplayScorer {
         passThruInFront = true;
         clawIsOpen = true;
         setClawTilt(false);
-        coneArmsAngle = 0.0;
         passThruTriggered = false;
 
         currentPassThruAngle = RobotConfig.ANGLE_PASS_FRONT;
@@ -527,12 +525,12 @@ public class PowerplayScorer {
     /**
      * Holds cone arm servos in position
      *
-     * @param angle The angle to turn the arms to
+     * @param angleR The angle to turn the right arm to
+     * @param angleL The angle to turn the left arm to
      */
-    public void runConeArms(double angle) {
-        coneArmsAngle = angle;
-        coneArmServoL.turnToAngle(280.0 - coneArmsAngle);
-        coneArmServoR.turnToAngle(coneArmsAngle);
+    public void runConeArms(double angleR, double angleL) {
+        coneArmServoL.turnToAngle(280.0 - (angleL * RobotConfig.ANGLE_ARM_DOWN));
+        coneArmServoR.turnToAngle(angleR * RobotConfig.ANGLE_ARM_DOWN);
     }
 
     /**
