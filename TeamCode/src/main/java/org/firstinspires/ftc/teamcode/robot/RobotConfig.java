@@ -7,9 +7,6 @@ public class RobotConfig {
     public static double
             HEIGHT_FLOOR = 0,
             HEIGHT_2 = 1.35,
-            HEIGHT_3 = 2.7,
-            HEIGHT_4 = 4.05,
-            HEIGHT_5 = 5.4,
             HEIGHT_LOW = 6.2,
             HEIGHT_MEDIUM = 16.4,
             HEIGHT_TALL = 26.6,

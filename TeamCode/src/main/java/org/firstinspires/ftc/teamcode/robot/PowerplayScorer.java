@@ -241,6 +241,10 @@ public class PowerplayScorer {
         setTargetLiftPos(currentLiftPos);
     }
 
+    private double getConesHeight(int numOfCones) {
+        return (numOfCones - 1) * RobotConfig.HEIGHT_2 + RobotConfig.HEIGHT_FLOOR;
+    }
+
     /**
      * Set target for lift motion profile
      *
@@ -262,23 +266,24 @@ public class PowerplayScorer {
                 targetLiftPosName = LiftPos.LOW.name();
                 break;
             case FIVE:
-                targetLiftPos = RobotConfig.HEIGHT_5;
+                targetLiftPos = getConesHeight(5);
                 targetLiftPosName = LiftPos.FIVE.name();
                 break;
             case FOUR:
-                targetLiftPos = RobotConfig.HEIGHT_4;
+                targetLiftPos = getConesHeight(4);
                 targetLiftPosName = LiftPos.FOUR.name();
                 break;
             case THREE:
-                targetLiftPos = RobotConfig.HEIGHT_3;
+                targetLiftPos = getConesHeight(3);
                 targetLiftPosName = LiftPos.THREE.name();
                 break;
             case TWO:
-                targetLiftPos = RobotConfig.HEIGHT_2;
+                targetLiftPos = getConesHeight(2);
                 targetLiftPosName = LiftPos.TWO.name();
                 break;
             default:
-                targetLiftPos = RobotConfig.HEIGHT_FLOOR;
+            case FLOOR:
+                targetLiftPos = getConesHeight(1);
                 targetLiftPosName = LiftPos.FLOOR.name();
                 break;
         }
@@ -400,7 +405,7 @@ public class PowerplayScorer {
      */
     public void grabCone() {
         clawIsOpen = false;
-        if (currentLiftPos <= (RobotConfig.HEIGHT_5 + RobotConfig.LIFT_POS_TOLERANCE)) {
+        if (currentLiftPos <= (getConesHeight(5) + RobotConfig.LIFT_POS_TOLERANCE)) {
             clawHasLifted = false;
             liftClawTimer.reset();
         }
