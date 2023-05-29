@@ -78,13 +78,6 @@ public class TeleOpMecanumDrive {
     }
 
     /**
-     * Set internal heading of the robot to 0 to align field-centric direction to forward
-     */
-    public void resetHeading() {
-        setHeading(0);
-    }
-
-    /**
      * Set internal heading of the robot to correct field-centric direction
      *
      * @param angle Angle of the robot in degrees, 0 facing forward and increases counter-clockwise

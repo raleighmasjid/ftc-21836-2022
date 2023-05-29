@@ -89,7 +89,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.readLiftPos();
 
             // Field-centric resets
-            if (control1Up.wasJustPressed()) drivetrain.resetHeading();
+            if (control1Up.wasJustPressed()) drivetrain.setHeading(0.0);
             else if (control1Left.wasJustPressed()) drivetrain.setHeading(90.0);
             else if (control1Down.wasJustPressed()) drivetrain.setHeading(180.0);
             else if (control1Right.wasJustPressed()) drivetrain.setHeading(270.0);
