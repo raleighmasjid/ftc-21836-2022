@@ -202,13 +202,12 @@ public class PowerplayScorer {
                 lastLiftVelo = currentLiftVelo,
                 timerSeconds = liftDerivTimer.seconds(),
                 dt = timerSeconds == 0 ? 0.002 : timerSeconds;
-
+        liftDerivTimer.reset();
         updateLiftGains();
 
         currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
         currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
         currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
-        liftDerivTimer.reset();
     }
 
     /**
