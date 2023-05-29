@@ -87,6 +87,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2Down.readValue();
 
             scorer.readLiftPos();
+            drivetrain.readIMU();
 
             // Field-centric resets
             if (control1Up.wasJustPressed()) drivetrain.setHeading(0.0);

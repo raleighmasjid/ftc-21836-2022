@@ -18,7 +18,7 @@ public class TeleOpMecanumDrive {
 
     private final MecanumDrive mecanumDrivetrain;
 
-    private double headingOffset;
+    private double headingOffset, latestIMUReading;
 
     @NonNull
     @Contract("_, _ -> new")
@@ -73,7 +73,11 @@ public class TeleOpMecanumDrive {
     }
 
     private double getIMUHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        return latestIMUReading;
+    }
+
+    public void readIMU() {
+        latestIMUReading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
     /**
