@@ -18,7 +18,7 @@ public class TeleOpMecanumDrive {
 
     private final MecanumDrive mecanumDrivetrain;
 
-    private double headingOffset, heading;
+    private double headingOffset;
 
     @NonNull
     @Contract("_, _ -> new")
@@ -65,12 +65,11 @@ public class TeleOpMecanumDrive {
 
     // ftclib field-centric mecanum drive code:
     public void driveFieldCentric(double leftX, double leftY, double rightX) {
-        heading = getIMUHeading() - headingOffset;
-        mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, heading);
+        mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, getHeading());
     }
 
     public double getHeading() {
-        return heading;
+        return getIMUHeading() - headingOffset;
     }
 
     private double getIMUHeading() {
