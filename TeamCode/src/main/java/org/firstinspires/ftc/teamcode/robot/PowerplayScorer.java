@@ -28,70 +28,30 @@ public class PowerplayScorer {
      * Motor powering the dual lift system
      */
     private final MotorEx lift_motor1, lift_motor2, lift_motor3;
+
     private final SimpleServo clawServo, pivotServo, passThruServoR, passThruServoL, coneArmServoR, coneArmServoL;
+
+    private final ElapsedTime passThruProfileTimer, liftProfileTimer, liftDerivTimer, liftClawTimer;
+
+    private final IIRLowPassFilter accelFilter, veloFilter;
+
     /**
-     * Passthrough motion profile
-     */
-    private MotionProfile passThruProfile;
-    /**
-     * Timer to track passthrough motion profile
-     */
-    private final ElapsedTime passThruProfileTimer;
-    /**
-     * Current passthrough angle
-     */
-    private double currentPassThruAngle;
-    /**
-     * Current passthrough velocity
-     */
-    private double currentPassThruVelo;
-    /**
-     * PID controller for lift
+     * PIDF controller for lift
      */
     private final PIDFController liftController;
-    /**
-     * Lift motion profile to track along
-     */
-    private MotionProfile liftProfile;
-    /**
-     * Timer for tracking along lift motion profile
-     */
-    private final ElapsedTime liftProfileTimer;
+
+    private MotionProfile passThruProfile, liftProfile;
+
     /**
      * Lift state grabbed from motion profile
      */
     private MotionState profileLiftState;
-    /**
-     * Current lift state
-     */
-    private double currentLiftPos, currentLiftVelo, currentLiftAccel;
-    /**
-     * Named end target lift position
-     */
+
     private String targetLiftPosName;
-    /**
-     * Timer for differentiating velocity, acceleration, and jerk
-     */
-    private final ElapsedTime liftDerivTimer;
-    /**
-     * Timer to track claw closing time before lifting
-     */
-    private static ElapsedTime liftClawTimer;
-    /**
-     * True by default
-     * False only if grabCone has been called, and liftClaw has not been called
-     */
-    private boolean clawHasLifted;
-    /**
-     * Desired pivot state
-     * True if pivot should be oriented for its front position
-     * False if oriented for back position
-     */
-    private boolean pivotIsFront;
-    /**
-     * End target lift position
-     */
-    private double targetLiftPos;
+
+    private double currentPassThruAngle, currentPassThruVelo, currentLiftPos, currentLiftVelo, currentLiftAccel, targetLiftPos;
+
+    private boolean clawHasLifted, pivotIsFront, passThruInFront, passThruTriggered, clawIsOpen, clawIsTilted;
 
     /**
      * Named lift position
@@ -99,12 +59,6 @@ public class PowerplayScorer {
     public enum LiftPos {
         FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
     }
-
-    private final IIRLowPassFilter accelFilter, veloFilter;
-    private boolean passThruInFront;
-    private boolean clawIsOpen;
-    private boolean clawIsTilted;
-    private boolean passThruTriggered;
 
     @NonNull
     @Contract("_, _ -> new")
