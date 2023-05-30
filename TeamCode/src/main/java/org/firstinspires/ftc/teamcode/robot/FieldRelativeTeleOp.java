@@ -104,16 +104,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             double control1LeftY = Gamepad1.getLeftY() * precisionScale;
             double control1RightX = Gamepad1.getRightX() * precisionScale;
 
-            double rightArmAngle = Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-            double leftArmAngle = Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-
-            double heading = drivetrain.getHeading();
-            if (heading > 90.0 || heading < -90.0) {
-                double r = rightArmAngle;
-                rightArmAngle = leftArmAngle;
-                leftArmAngle = r;
-            }
-
             boolean stackHeights = control2LShoulder.isDown();
 
             if (control2RShoulder.wasJustPressed()) {
@@ -153,7 +143,10 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runPassThru();
             scorer.runPivot();
             scorer.runClaw();
-            scorer.runConeArms(rightArmAngle, leftArmAngle);
+            scorer.runConeArms(
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER),
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)
+            );
             drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             //everything below is telemetry
@@ -165,7 +158,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                                     "junction heights mode"
             );
             myTelemetry.addLine();
-            myTelemetry.addData("Robot heading", heading);
+            myTelemetry.addData("Robot heading", drivetrain.getHeading());
             myTelemetry.addLine();
             scorer.printTelemetry(myTelemetry);
             myTelemetry.update();
