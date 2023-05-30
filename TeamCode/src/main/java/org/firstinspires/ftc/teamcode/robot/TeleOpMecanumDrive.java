@@ -70,10 +70,13 @@ public class TeleOpMecanumDrive {
 
     public double getHeading() {
         double angle = (getIMUHeading() - headingOffset) % 360.0;
-        if (angle == -0.0) angle = 0.0;
-        if (angle > 180.0) angle -= 360.0;
-        if (angle <= -180.0) angle += 360.0;
-        return angle;
+        return (angle == -0.0) ?
+                0.0 :
+                (angle > 180.0) ?
+                        angle - 360.0 :
+                        (angle <= -180.0) ?
+                                angle + 360.0 :
+                                angle;
     }
 
     private double getIMUHeading() {
