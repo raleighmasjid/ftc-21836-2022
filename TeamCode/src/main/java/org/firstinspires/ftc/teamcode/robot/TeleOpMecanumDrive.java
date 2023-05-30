@@ -69,7 +69,7 @@ public class TeleOpMecanumDrive {
     }
 
     public double getHeading() {
-        double angle = (getIMUHeading() - headingOffset) % 360.0;
+        double angle = (latestIMUReading - headingOffset) % 360.0;
         return (angle == -0.0) ?
                 0.0 :
                 (angle > 180.0) ?
@@ -77,10 +77,6 @@ public class TeleOpMecanumDrive {
                         (angle <= -180.0) ?
                                 angle + 360.0 :
                                 angle;
-    }
-
-    private double getIMUHeading() {
-        return latestIMUReading;
     }
 
     public void readIMU() {
@@ -93,7 +89,7 @@ public class TeleOpMecanumDrive {
      * @param angle Angle of the robot in degrees, 0 facing forward and increases counter-clockwise
      */
     public void setHeading(double angle) {
-        headingOffset = getIMUHeading() - angle;
+        headingOffset = latestIMUReading - angle;
     }
 }
 
