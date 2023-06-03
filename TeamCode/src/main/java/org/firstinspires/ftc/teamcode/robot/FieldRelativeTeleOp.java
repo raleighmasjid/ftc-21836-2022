@@ -166,6 +166,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             myTelemetry.addLine();
             myTelemetry.addData("Robot heading", drivetrain.getHeading());
             myTelemetry.addLine();
+            scorer.printLiftTelemetry(myTelemetry);
+            myTelemetry.addLine();
+            myTelemetry.addLine();
             scorer.printTelemetry(myTelemetry);
             myTelemetry.update();
         }

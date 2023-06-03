@@ -492,13 +492,11 @@ public class PowerplayScorer {
     }
 
     /**
-     * Print relevant telemetry of the system
+     * Print debugging telemetry for the lift
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
-    public void printTelemetry(@NonNull MultipleTelemetry telemetry) {
-        telemetry.addData("Named target lift position", targetLiftPosName);
-        telemetry.addLine();
+    public void printLiftTelemetry(@NonNull MultipleTelemetry telemetry) {
         telemetry.addData("Lift current position (in)", currentLiftPos);
         telemetry.addData("Lift profile position (in)", profileLiftState.getX());
         telemetry.addLine();
@@ -510,13 +508,20 @@ public class PowerplayScorer {
         telemetry.addData("Lift error integral (in*s)", liftController.PID.getErrorSum());
         telemetry.addData("Lift error (in)", liftController.PID.getLastError());
         telemetry.addData("Lift error derivative (in/s)", liftController.PID.getErrorDeriv());
-        telemetry.addLine();
+    }
+
+    /**
+     * Print relevant telemetry of the system
+     *
+     * @param telemetry MultipleTelemetry object to add data to
+     */
+    public void printTelemetry(@NonNull MultipleTelemetry telemetry) {
+        telemetry.addData("Named target lift position", targetLiftPosName);
         telemetry.addLine();
         telemetry.addData("Claw is", clawIsOpen ? "open" : "closed");
         telemetry.addLine();
         telemetry.addData("Pivot is oriented to", pivotIsFront ? "front" : "back");
         telemetry.addLine();
         telemetry.addData("Passthrough is", (clawIsTilted ? "tilted " : "") + "at the " + (passThruInFront ? "front" : "back"));
-        telemetry.addData("Passthrough angle", currentPassThruAngle);
     }
 }
