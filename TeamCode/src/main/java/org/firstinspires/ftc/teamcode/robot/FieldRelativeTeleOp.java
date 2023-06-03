@@ -29,8 +29,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
 //      Initialize telemetry and dashboard
-        myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         dashboard = FtcDashboard.getInstance();
+        myTelemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         scorer = new PowerplayScorer(hardwareMap);
         drivetrain = new TeleOpMecanumDrive(hardwareMap);

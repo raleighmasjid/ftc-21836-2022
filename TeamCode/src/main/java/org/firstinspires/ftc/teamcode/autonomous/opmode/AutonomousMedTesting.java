@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -35,7 +34,6 @@ import java.util.List;
 public class AutonomousMedTesting extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
-    FtcDashboard dashboard;
     AutonMecanumDrive drivetrain;
     PowerplayScorer scorer;
     List<LynxModule> hubs;
@@ -87,8 +85,6 @@ public class AutonomousMedTesting extends LinearOpMode {
 
         //  Initialize telemetry and dashboard
         myTelemetry = new MultipleTelemetry(telemetry);
-        dashboard = FtcDashboard.getInstance();
-        dashboard.startCameraStream(camera, 0);
 
         boolean isRight = true;
         double side = isRight ? 1 : -1;
@@ -267,7 +263,6 @@ public class AutonomousMedTesting extends LinearOpMode {
 
         //START IS HERE//
 
-        dashboard.stopCameraStream();
         camera.stopStreaming();
         camera.closeCameraDevice();
 
