@@ -474,7 +474,7 @@ public class PowerplayScorer {
         currentPassThruVelo = state.getV();
         passThruServoR.turnToAngle(currentPassThruAngle);
         passThruServoL.turnToAngle(355.0 - currentPassThruAngle);
-        if (passThruTriggered && passThruProfileTimer.seconds() >= passThruProfile.duration() * RobotConfig.PASS_PIVOT_POINT) {
+        if (passThruTriggered && Math.abs(RobotConfig.PASS_PIVOT_POS - currentPassThruAngle) <= RobotConfig.PASS_PIVOT_POS_TOLERANCE) {
             pivotIsFront = passThruInFront;
             passThruTriggered = false;
         }

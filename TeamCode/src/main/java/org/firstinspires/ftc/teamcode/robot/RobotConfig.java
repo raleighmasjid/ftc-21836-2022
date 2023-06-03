@@ -48,7 +48,8 @@ public class RobotConfig {
             TIME_CLAW = 0.0,
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1,
-            PASS_PIVOT_POINT = 0.4,
+            PASS_PIVOT_POS = (ANGLE_PASS_BACK - ANGLE_PASS_FRONT) * 0.5,
+            PASS_PIVOT_POS_TOLERANCE = 5,
             PASS_MAX_VELO = 600,
             PASS_MAX_ACCEL = 1000,
             PASS_MAX_JERK = 3000;
