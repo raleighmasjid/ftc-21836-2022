@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 import org.jetbrains.annotations.Contract;
 
 /**
- * Contains 3-motor automated lift, 3-state claw, and state-machine-controlled passthrough functions
+ * Contains a 3-motor motion profiled lift, multi-function claw, and motion profiled passthrough
  *
  * @author Arshad Anas
  * @since 2022/12/24
