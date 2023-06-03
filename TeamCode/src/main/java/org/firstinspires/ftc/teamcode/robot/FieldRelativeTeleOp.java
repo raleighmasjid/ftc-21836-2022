@@ -19,7 +19,6 @@ import java.util.List;
 public class FieldRelativeTeleOp extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
-    FtcDashboard dashboard;
     PowerplayScorer scorer;
     TeleOpMecanumDrive drivetrain;
     List<LynxModule> hubs;
@@ -28,9 +27,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-//      Initialize telemetry and dashboard
-        dashboard = FtcDashboard.getInstance();
-        myTelemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+//      Initialize telemetry
+        myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         scorer = new PowerplayScorer(hardwareMap);
         drivetrain = new TeleOpMecanumDrive(hardwareMap);
