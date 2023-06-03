@@ -18,22 +18,28 @@ import java.util.List;
 
 public class FieldRelativeTeleOp extends LinearOpMode {
 
+    MultipleTelemetry myTelemetry;
+    FtcDashboard dashboard;
+    PowerplayScorer scorer;
+    TeleOpMecanumDrive drivetrain;
+    List<LynxModule> hubs;
+    GamepadEx Gamepad1, Gamepad2;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
 //      Initialize telemetry and dashboard
-        MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        FtcDashboard dashboard = FtcDashboard.getInstance();
+        myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        dashboard = FtcDashboard.getInstance();
 
-        PowerplayScorer scorer = new PowerplayScorer(hardwareMap);
-        TeleOpMecanumDrive drivetrain = new TeleOpMecanumDrive(hardwareMap);
+        scorer = new PowerplayScorer(hardwareMap);
+        drivetrain = new TeleOpMecanumDrive(hardwareMap);
 
-        List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
+        hubs = hardwareMap.getAll(LynxModule.class);
 
 //      initializes both gamepads:
-        GamepadEx
-                Gamepad1 = new GamepadEx(gamepad1),
-                Gamepad2 = new GamepadEx(gamepad2);
+        Gamepad1 = new GamepadEx(gamepad1);
+        Gamepad2 = new GamepadEx(gamepad2);
 
         ButtonReader
                 control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A), // cone-flipping arms

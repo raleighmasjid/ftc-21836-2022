@@ -34,6 +34,12 @@ import java.util.List;
 @Autonomous(name = "Tall Testing", group = "21836 Backup")
 public class AutonomousTallTesting extends LinearOpMode {
 
+    MultipleTelemetry myTelemetry;
+    FtcDashboard dashboard;
+    AutonMecanumDrive drivetrain;
+    PowerplayScorer scorer;
+    List<LynxModule> hubs;
+
     @Override
     public void runOpMode() throws InterruptedException {
         // Lens intrinsics
@@ -76,12 +82,12 @@ public class AutonomousTallTesting extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-        AutonMecanumDrive drivetrain = new AutonMecanumDrive(hardwareMap);
-        PowerplayScorer scorer = new PowerplayScorer(hardwareMap);
+        drivetrain = new AutonMecanumDrive(hardwareMap);
+        scorer = new PowerplayScorer(hardwareMap);
 
         //  Initialize telemetry and dashboard
-        MultipleTelemetry myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        FtcDashboard dashboard = FtcDashboard.getInstance();
+        myTelemetry = new MultipleTelemetry(telemetry);
+        dashboard = FtcDashboard.getInstance();
         dashboard.startCameraStream(camera, 0);
 
         boolean isRight = true;
@@ -201,7 +207,7 @@ public class AutonomousTallTesting extends LinearOpMode {
 
         drivetrain.followTrajectorySequenceAsync(trajectory1);
 
-        List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
+        hubs = hardwareMap.getAll(LynxModule.class);
 
         for (LynxModule hub : hubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
@@ -228,33 +234,33 @@ public class AutonomousTallTesting extends LinearOpMode {
                 }
 
                 if (tagFound) {
-                    telemetry.addLine("Tag of interest is in sight!");
+                    myTelemetry.addLine("Tag of interest is in sight!");
                     tagToTelemetry(tagOfInterest);
                 } else {
-                    telemetry.addLine("Don't see tag of interest :(");
+                    myTelemetry.addLine("Don't see tag of interest :(");
 
                     if (tagOfInterest == null) {
-                        telemetry.addLine("(The tag has never been seen)");
+                        myTelemetry.addLine("(The tag has never been seen)");
                     } else {
-                        telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                        myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                         tagToTelemetry(tagOfInterest);
                     }
                 }
 
             } else {
-                telemetry.addLine("Don't see tag of interest :(");
+                myTelemetry.addLine("Don't see tag of interest :(");
 
                 if (tagOfInterest == null) {
-                    telemetry.addLine("(The tag has never been seen)");
+                    myTelemetry.addLine("(The tag has never been seen)");
                 } else {
-                    telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                    myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                     tagToTelemetry(tagOfInterest);
 
                 }
 
             }
 
-            telemetry.update();
+            myTelemetry.update();
 //            sleep(20);
             scorer.runClaw();
         }
@@ -268,12 +274,12 @@ public class AutonomousTallTesting extends LinearOpMode {
         autonomousTimer.reset();
 
         if (tagOfInterest != null) {
-            telemetry.addLine("Tag snapshot:\n");
+            myTelemetry.addLine("Tag snapshot:\n");
             tagToTelemetry(tagOfInterest);
-            telemetry.update();
+            myTelemetry.update();
         } else {
-            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-            telemetry.update();
+            myTelemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
+            myTelemetry.update();
         }
 
 
@@ -317,6 +323,6 @@ public class AutonomousTallTesting extends LinearOpMode {
 
     @SuppressLint("DefaultLocale")
     void tagToTelemetry(@NonNull AprilTagDetection detection) {
-        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+        myTelemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
     }
 }
