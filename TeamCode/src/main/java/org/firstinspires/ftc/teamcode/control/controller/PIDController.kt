@@ -13,7 +13,6 @@ class PIDController
  * @param kI integral gain
  * @param kD derivative gain
  * @param filterGain derivative filter smoothness, increases over the interval 0 <= x < 1
- * @param clock clock
  */
 @JvmOverloads constructor(
     private var kP: Double,
@@ -21,7 +20,7 @@ class PIDController
     private var kD: Double,
     private var filterGain: Double = 0.8,
 ) {
-    private val clock = ElapsedTime()
+    private val dtTimer = ElapsedTime()
     var lastError = 0.0
     var errorSum = 0.0
     var errorDeriv = 0.0
@@ -54,12 +53,12 @@ class PIDController
      */
     fun update(measuredPosition: Double): Double {
         val error = targetPosition - measuredPosition
-        val dt = clock.seconds()
+        val dt = dtTimer.seconds()
         return if (dt == 0.0) {
             lastError = error
             0.0
         } else {
-            clock.reset()
+            dtTimer.reset()
             errorDeriv = derivFilter.getEstimate((error - lastError) / dt)
 
             if (integrate) errorSum += 0.5 * (error + lastError) * dt
