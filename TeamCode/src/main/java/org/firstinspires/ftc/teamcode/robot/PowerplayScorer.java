@@ -47,7 +47,7 @@ public class PowerplayScorer {
      */
     private MotionState profileLiftState;
 
-    private String targetLiftPosName;
+    private LiftPos targetLiftPosName;
 
     private double currentPassThruAngle, currentPassThruVelo, currentLiftPos, currentLiftVelo, currentLiftAccel, targetLiftPos;
 
@@ -57,7 +57,7 @@ public class PowerplayScorer {
      * Named lift position
      */
     public enum LiftPos {
-        FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
+        FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL, CUSTOM
     }
 
     @NonNull
@@ -205,39 +205,32 @@ public class PowerplayScorer {
      */
     public void setTargetLiftPos(@NonNull LiftPos height) {
         setClawTilt(height == LiftPos.LOW || height == LiftPos.MED || height == LiftPos.TALL);
+        targetLiftPosName = height;
         switch (height) {
             case TALL:
                 targetLiftPos = RobotConfig.HEIGHT_TALL;
-                targetLiftPosName = LiftPos.TALL.name();
                 break;
             case MED:
                 targetLiftPos = RobotConfig.HEIGHT_MEDIUM;
-                targetLiftPosName = LiftPos.MED.name();
                 break;
             case LOW:
                 targetLiftPos = RobotConfig.HEIGHT_LOW;
-                targetLiftPosName = LiftPos.LOW.name();
                 break;
             case FIVE:
                 targetLiftPos = getConesHeight(5);
-                targetLiftPosName = LiftPos.FIVE.name();
                 break;
             case FOUR:
                 targetLiftPos = getConesHeight(4);
-                targetLiftPosName = LiftPos.FOUR.name();
                 break;
             case THREE:
                 targetLiftPos = getConesHeight(3);
-                targetLiftPosName = LiftPos.THREE.name();
                 break;
             case TWO:
                 targetLiftPos = getConesHeight(2);
-                targetLiftPosName = LiftPos.TWO.name();
                 break;
-            default:
             case FLOOR:
+            default:
                 targetLiftPos = getConesHeight(1);
-                targetLiftPosName = LiftPos.FLOOR.name();
                 break;
         }
         updateLiftProfile();
@@ -249,7 +242,7 @@ public class PowerplayScorer {
      * @param targetLiftPos Desired position (in inches) to run to
      */
     public void setTargetLiftPos(double targetLiftPos) {
-        targetLiftPosName = Double.toString(targetLiftPos);
+        targetLiftPosName = LiftPos.CUSTOM;
         this.targetLiftPos = targetLiftPos;
         updateLiftProfile();
     }
@@ -283,7 +276,7 @@ public class PowerplayScorer {
         currentLiftAccel = 0.0;
 
         targetLiftPos = 0.0;
-        targetLiftPosName = LiftPos.FLOOR.name();
+        targetLiftPosName = LiftPos.FLOOR;
         setClawTilt(false);
 
         updateLiftProfile();
@@ -516,7 +509,7 @@ public class PowerplayScorer {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry(@NonNull MultipleTelemetry telemetry) {
-        telemetry.addData("Named target lift position", targetLiftPosName);
+        telemetry.addData("Named target lift position", targetLiftPosName.toString());
         telemetry.addLine();
         telemetry.addData("Claw is", clawIsOpen ? "open" : "closed");
         telemetry.addLine();
