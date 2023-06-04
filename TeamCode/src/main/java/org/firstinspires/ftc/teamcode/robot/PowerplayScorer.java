@@ -195,7 +195,7 @@ public class PowerplayScorer {
     }
 
     private double getConesHeight(int numOfCones) {
-        return (numOfCones - 1) * RobotConfig.HEIGHT_2 + RobotConfig.HEIGHT_FLOOR;
+        return (numOfCones - 1) * (RobotConfig.HEIGHT_2 - RobotConfig.HEIGHT_FLOOR) + RobotConfig.HEIGHT_FLOOR;
     }
 
     /**
