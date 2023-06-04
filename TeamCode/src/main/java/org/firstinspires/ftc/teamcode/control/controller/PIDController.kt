@@ -12,7 +12,7 @@ class PIDController
  * @param kP proportional gain
  * @param kI integral gain
  * @param kD derivative gain
- * @param filterGain derivative filter weight, 0 = unsmoothed, 0 < x < 1 increasingly smoothed, 1 = broken
+ * @param filterGain derivative filter smoothness, increases over the interval 0 <= x < 1
  * @param clock clock
  */
 @JvmOverloads constructor(
