@@ -20,12 +20,12 @@ class PIDController
     private var kI: Double,
     private var kD: Double,
     private var filterGain: Double = 0.8,
-    private val clock: ElapsedTime = ElapsedTime()
 ) {
-    var lastError: Double = 0.0
-    var errorSum: Double = 0.0
-    var errorDeriv: Double = 0.0
-    var integrate: Boolean = true
+    private val clock = ElapsedTime()
+    var lastError = 0.0
+    var errorSum = 0.0
+    var errorDeriv = 0.0
+    var integrate = true
 
     private var derivFilter: IIRLowPassFilter = IIRLowPassFilter(filterGain)
 

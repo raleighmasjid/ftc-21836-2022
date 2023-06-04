@@ -34,12 +34,12 @@ class FeedforwardController
     /**
      * Target velocity.
      */
-    var targetVelocity: Double = 0.0
+    var targetVelocity = 0.0
 
     /**
      * Target acceleration.
      */
-    var targetAcceleration: Double = 0.0
+    var targetAcceleration = 0.0
 
     /**
      * Run a single iteration of the controller.
