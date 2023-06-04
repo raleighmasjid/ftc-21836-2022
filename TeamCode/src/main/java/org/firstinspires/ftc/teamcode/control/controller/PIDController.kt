@@ -18,7 +18,7 @@ class PIDController
     private var kP: Double,
     private var kI: Double,
     private var kD: Double,
-    private var filterGain: Double = 0.8,
+    private var filterGain: Double = 0.8
 ) {
     private val dtTimer = ElapsedTime()
     var lastError = 0.0
