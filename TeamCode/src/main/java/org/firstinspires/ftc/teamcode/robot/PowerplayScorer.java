@@ -148,8 +148,8 @@ public class PowerplayScorer {
 
     /**
      * Reads lift encoder value and converts to position in inches
-     * Calculates velocity, acceleration, and jerk
-     * Saves readings to currentLift____
+     * Calculates velocity, acceleration
+     * Saves readings to {@link #currentLiftPos}, {@link #currentLiftVelo}, and {@link #currentLiftAccel}
      */
     public void readLiftPos() {
         double lastLiftPos = currentLiftPos,
