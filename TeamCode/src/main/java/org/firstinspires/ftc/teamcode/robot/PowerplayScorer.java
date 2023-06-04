@@ -480,8 +480,8 @@ public class PowerplayScorer {
      * @param angleL The angle to turn the left arm to
      */
     public void runConeArms(double angleR, double angleL) {
-        coneArmServoL.turnToAngle(280.0 - angleL);
-        coneArmServoR.turnToAngle(angleR);
+        coneArmServoL.turnToAngle(280.0 - Math.min(angleL, 110.0));
+        coneArmServoR.turnToAngle(Math.min(angleR, 110.0));
     }
 
     /**
