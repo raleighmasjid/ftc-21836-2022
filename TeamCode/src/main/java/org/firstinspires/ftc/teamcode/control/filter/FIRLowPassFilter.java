@@ -12,7 +12,7 @@ public class FIRLowPassFilter {
     private final ArrayList<Double> pastValues = new ArrayList<>();
 
     public FIRLowPassFilter() {
-        clearMemory();
+        this(0.8, 5);
     }
 
     public FIRLowPassFilter(double filterGain, int pastValuesCount) {

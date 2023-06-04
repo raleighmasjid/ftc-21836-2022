@@ -9,7 +9,7 @@ public class IIRLowPassFilter {
     private double lastValue = 0.0;
 
     public IIRLowPassFilter() {
-        setGain(0.8);
+        this(0.8);
     }
 
     public IIRLowPassFilter(double filterGain) {
