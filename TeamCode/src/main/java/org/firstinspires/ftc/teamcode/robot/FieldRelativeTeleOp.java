@@ -144,8 +144,9 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runPivot();
             scorer.runClaw();
             scorer.runConeArms(
-                    Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER),
-                    Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * RobotConfig.ANGLE_ARM_DOWN,
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * RobotConfig.ANGLE_ARM_DOWN
+            );
             drivetrain.driveFieldCentric(
                     Gamepad1.getLeftX() * precisionScale,
                     Gamepad1.getLeftY() * precisionScale,

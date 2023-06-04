@@ -480,8 +480,8 @@ public class PowerplayScorer {
      * @param angleL The angle to turn the left arm to
      */
     public void runConeArms(double angleR, double angleL) {
-        coneArmServoL.turnToAngle(280.0 - (angleL * RobotConfig.ANGLE_ARM_DOWN));
-        coneArmServoR.turnToAngle(angleR * RobotConfig.ANGLE_ARM_DOWN);
+        coneArmServoL.turnToAngle(280.0 - angleL);
+        coneArmServoR.turnToAngle(angleR);
     }
 
     /**
