@@ -104,10 +104,6 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                     RobotConfig.PRECISION_MODE_SCALE :
                     (RobotConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
 
-            double control1LeftX = Gamepad1.getLeftX() * precisionScale;
-            double control1LeftY = Gamepad1.getLeftY() * precisionScale;
-            double control1RightX = Gamepad1.getRightX() * precisionScale;
-
             boolean stackHeights = control2LShoulder.isDown();
 
             if (control2RShoulder.wasJustPressed()) {
@@ -150,8 +146,11 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runConeArms(
                     Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER),
                     Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)
+            drivetrain.driveFieldCentric(
+                    Gamepad1.getLeftX() * precisionScale,
+                    Gamepad1.getLeftY() * precisionScale,
+                    Gamepad1.getRightX() * precisionScale
             );
-            drivetrain.driveFieldCentric(control1LeftX, control1LeftY, control1RightX);
 
             //everything below is telemetry
             myTelemetry.addData(
