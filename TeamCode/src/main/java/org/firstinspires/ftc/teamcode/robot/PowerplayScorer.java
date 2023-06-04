@@ -152,11 +152,11 @@ public class PowerplayScorer {
      * Saves readings to {@link #currentLiftPos}, {@link #currentLiftVelo}, and {@link #currentLiftAccel}
      */
     public void readLiftPos() {
-        double lastLiftPos = currentLiftPos,
-                lastLiftVelo = currentLiftVelo,
-                timerSeconds = liftDerivTimer.seconds(),
-                dt = timerSeconds == 0 ? 0.002 : timerSeconds;
+        double lastLiftPos = currentLiftPos;
+        double lastLiftVelo = currentLiftVelo;
+        double timerSeconds = liftDerivTimer.seconds();
         liftDerivTimer.reset();
+        double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
         updateLiftGains();
 
         currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
