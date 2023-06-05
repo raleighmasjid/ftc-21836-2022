@@ -28,8 +28,8 @@ import java.util.List;
 public abstract class BaseAuton extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
-    AutonMecanumDrive drivetrain = new AutonMecanumDrive(hardwareMap);
-    PowerplayScorer scorer = new PowerplayScorer(hardwareMap);
+    AutonMecanumDrive drivetrain;
+    PowerplayScorer scorer;
     List<LynxModule> hubs;
 
     public enum Side {
@@ -41,6 +41,8 @@ public abstract class BaseAuton extends LinearOpMode {
     }
 
     public void runOpMode(ScoringPole pole, Side sideEnum) throws InterruptedException {
+        drivetrain = new AutonMecanumDrive(hardwareMap);
+        scorer = new PowerplayScorer(hardwareMap);
 
         boolean isRight = sideEnum == Side.RIGHT;
         double side = isRight ? 1 : -1;
