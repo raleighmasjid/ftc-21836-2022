@@ -40,7 +40,7 @@ public class PowerplayScorer {
     private MotionProfile passThruProfile, liftProfile;
 
     /**
-     * Lift state grabbed from motion profile
+     * Immediate target lift state grabbed from {@link #liftProfile}
      */
     private MotionState profileLiftState;
 
@@ -70,7 +70,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Initialize internal objects and variables
+     * Initialize fields
      *
      * @param hw Passed-in hardware map from the op mode
      */
@@ -138,9 +138,8 @@ public class PowerplayScorer {
     }
 
     /**
-     * Reads lift encoder value and converts to position in inches
-     * Calculates velocity and acceleration via time-based differentiation
-     * Saves readings to {@link #currentLiftPos}, {@link #currentLiftVelo}, and {@link #currentLiftAccel}
+     * Reads lift encoder value and converts to {@link #currentLiftPos} in inches
+     * Calculates {@link #currentLiftVelo} and {@link #currentLiftAccel} via time-based differentiation
      */
     public void readLiftPos() {
         double lastLiftPos = currentLiftPos;
@@ -156,7 +155,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Update lift PIDF controller gains with constants from RobotConfig.java
+     * Update {@link #liftController} gains with constants from {@link RobotConfig}
      */
     private void updateLiftGains() {
         boolean goingDown = targetLiftPos < currentLiftPos;
@@ -179,7 +178,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Sets the target lift state to the current lift state
+     * Sets the {@link #targetLiftPos} to {@link #currentLiftPos}
      */
     public void setLiftStateToCurrent() {
         setTargetLiftPos(currentLiftPos);
@@ -190,7 +189,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Set target for lift motion profile
+     * Set {@link #targetLiftPos} for {@link #liftProfile}
      *
      * @param height Desired named position to run to
      */
@@ -239,7 +238,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Update lift motion profile with a new target position
+     * Update {@link #liftProfile} with a {@link #targetLiftPos} set with {@link #setTargetLiftPos}
      */
     private void updateLiftProfile() {
         liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
@@ -275,7 +274,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Runs lift PIDF controller to track along motion profile
+     * Runs {@link #liftController} to track along {@link #liftProfile}
      */
     public void runLiftToPos() {
         profileLiftState = liftProfile.get(liftProfileTimer.seconds());
@@ -290,7 +289,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Run lift motors
+     * Run {@link #lift_motor1}, {@link #lift_motor2}, and {@link #lift_motor3} at the entered percentage of max velocity
      *
      * @param veloCommand Pass in a velocity command between 0 and 1
      */
@@ -314,13 +313,16 @@ public class PowerplayScorer {
                                         0.0;
     }
 
+    /**
+     * Toggles the value of {@link #clawIsOpen}
+     */
     public void toggleClaw() {
         clawIsOpen = !clawIsOpen;
     }
 
     /**
-     * Closes and lift claw if open
-     * Opens and lowers claw if already closed
+     * Runs {@link #grabCone} if open
+     * Runs {@link #dropCone} if already closed
      */
     public void triggerClaw() {
         if (clawIsOpen) grabCone();
@@ -337,8 +339,9 @@ public class PowerplayScorer {
     }
 
     /**
+     * Closes claw
      * Waits for claw to close
-     * Lifts claw
+     * Runs {@link #liftClaw}
      */
     public void grabCone() {
         clawIsOpen = false;
@@ -350,7 +353,7 @@ public class PowerplayScorer {
 
     /**
      * Lifts claw either:
-     * 6 inches if grabbing off stack
+     * 6 inches if grabbing off a stack
      * 2 inches if grabbing off the floor
      */
     public void liftClaw() {
@@ -376,17 +379,23 @@ public class PowerplayScorer {
     }
 
     /**
-     * Holds claw servo position
+     * Holds {@link #clawServo} position
      */
     public void runClaw() {
         clawServo.turnToAngle(clawIsOpen ? RobotConfig.ANGLE_CLAW_OPEN : RobotConfig.ANGLE_CLAW_CLOSED);
         if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
     }
 
+    /**
+     * Toggles the value of {@link #pivotIsFront}
+     */
     public void togglePivot() {
         setPivotIsFront(!pivotIsFront);
     }
 
+    /**
+     * Sets the value of {@link #pivotIsFront}
+     */
     public void setPivotIsFront(boolean isFront) {
         pivotIsFront = isFront;
         updatePassThruProfile();
@@ -399,17 +408,23 @@ public class PowerplayScorer {
         pivotServo.turnToAngle(355.0 - (pivotIsFront ? RobotConfig.ANGLE_PIVOT_FRONT : RobotConfig.ANGLE_PIVOT_BACK));
     }
 
+    /**
+     * Toggles the value of {@link #clawIsTilted}
+     */
     public void toggleClawTilt() {
         setClawTilt(!clawIsTilted);
     }
 
+    /**
+     * Sets the value of {@link #clawIsTilted} and runs {@link #updatePassThruProfile}
+     */
     public void setClawTilt(boolean tilted) {
         clawIsTilted = tilted;
         updatePassThruProfile();
     }
 
     /**
-     * Triggers the arm, pivot, and closes the claw momentarily
+     * Runs {@link #togglePassThru} and toggles pivot when at the halfway position
      */
     public void triggerPassThru() {
         passThruTriggered = true;
@@ -417,7 +432,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Toggles position of main passthrough servos
+     * Toggles position of {@link #passThruServoR} and {@link #passThruServoL}
      */
     public void togglePassThru() {
         passThruInFront = !passThruInFront;
@@ -425,7 +440,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Update lift motion profile with a new target position
+     * Updates {@link #passThruProfile} with a new target position, including diagonal drop and floor grab tilt presets
      */
     private void updatePassThruProfile() {
         double tiltOffset =
@@ -450,7 +465,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Hold main passthrough servo positions
+     * Hold {@link #passThruServoR} and {@link #passThruServoL} positions
      */
     public void runPassThru() {
         MotionState state = passThruProfile.get(passThruProfileTimer.seconds());
@@ -465,10 +480,10 @@ public class PowerplayScorer {
     }
 
     /**
-     * Holds cone arm servos in position
+     * Holds {@link #coneArmServoR} and {@link #coneArmServoL} positions
      *
-     * @param angleR The angle to turn the right arm to
-     * @param angleL The angle to turn the left arm to
+     * @param angleR The angle to turn {@link #coneArmServoR} to
+     * @param angleL The angle to turn {@link #coneArmServoL} to
      */
     public void runConeArms(double angleR, double angleL) {
         coneArmServoL.turnToAngle(280.0 - Math.min(angleL, 110.0));
@@ -476,7 +491,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Print debugging telemetry for the lift
+     * Print tuning telemetry from {@link #readLiftPos}, {@link #liftProfile}, and {@link #liftController}
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
@@ -495,7 +510,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Print relevant telemetry of the system
+     * Print lift, claw, pivot, and passthrough statuses
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
