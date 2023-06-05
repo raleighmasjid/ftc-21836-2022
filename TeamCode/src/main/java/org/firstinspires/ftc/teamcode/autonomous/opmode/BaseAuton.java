@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.autonomous.AutonConfig;
 import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.autonomous.utility.AutonMecanumDrive;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -108,7 +107,6 @@ public abstract class BaseAuton extends LinearOpMode {
         //  Initialize telemetry and dashboard
         myTelemetry = new MultipleTelemetry(telemetry);
 
-        HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
         drivetrain.followTrajectorySequenceAsync(trajectory1);
 
         hubs = hardwareMap.getAll(LynxModule.class);
