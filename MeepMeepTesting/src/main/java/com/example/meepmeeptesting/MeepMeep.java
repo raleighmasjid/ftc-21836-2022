@@ -11,76 +11,72 @@ public class MeepMeep {
         com.noahbres.meepmeep.MeepMeep meepMeep = new com.noahbres.meepmeep.MeepMeep(700);
 
         boolean isRight = true;
-        double side = isRight? 1: -1;
+        double side = isRight ? 1 : -1;
 
-        double centerPathX = side*35;
+        double centerPathX = side * AutonConfig.ZONE_2_X;
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
         double facingLeft = Math.toRadians(180);
-        double liftAndDropTime = 0.1;
-        double clawToFlipTime = 0.1;
 
-        Vector2d stackPos = new Vector2d(side*59, -12.5);
-        Vector2d sideTurnPos = new Vector2d(side*46, -12.5);
-        Pose2d medScoringPos = new Pose2d(side*31, -17.5, Math.toRadians(isRight? 35: 180-35));
-        Pose2d tallScoringPos = new Pose2d(side*31, -7.5, Math.toRadians(isRight? 135: 180-135));
-        Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX()-side*24, medScoringPos.getY(), medScoringPos.getHeading());
-        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX()-side*24, sideTurnPos.getY());
+        Vector2d stackPos = new Vector2d(side * AutonConfig.STACK_X, AutonConfig.MAIN_Y);
+        Vector2d sideTurnPos = new Vector2d(side * AutonConfig.TURN_POS_X, AutonConfig.MAIN_Y);
+        Pose2d tallScoringPos = new Pose2d(side * AutonConfig.TALL_X, AutonConfig.TALL_Y, Math.toRadians(isRight ? AutonConfig.TALL_ANGLE : 180 - AutonConfig.TALL_ANGLE));
+        Pose2d medScoringPos = new Pose2d(side * AutonConfig.MED_X, AutonConfig.MED_Y, Math.toRadians(isRight ? AutonConfig.MED_ANGLE : 180 - AutonConfig.MED_ANGLE));
+        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * AutonConfig.ONE_TILE, sideTurnPos.getY());
+        Pose2d centerTallScoringPos = new Pose2d(tallScoringPos.getX() - side * AutonConfig.ONE_TILE, tallScoringPos.getY(), tallScoringPos.getHeading());
 
-        Pose2d parkingZone1 = new Pose2d(side*(isRight? 12.5:57), -12.5, isRight? facingRight: facingLeft);
-        Pose2d parkingZone2 = new Pose2d(centerPathX, -12.5, parkingZone1.getHeading());
-        Pose2d parkingZone3 = new Pose2d(side*(isRight? 57:12.5), -12.5, parkingZone1.getHeading());
+        Pose2d parkingZone1 = new Pose2d(side * (isRight ? AutonConfig.ZONE_1_X : AutonConfig.ZONE_3_X), AutonConfig.MAIN_Y, isRight ? facingRight : facingLeft);
+        Pose2d parkingZone2 = new Pose2d(centerPathX, AutonConfig.MAIN_Y, parkingZone1.getHeading());
+        Pose2d parkingZone3 = new Pose2d(side * (isRight ? AutonConfig.ZONE_3_X : AutonConfig.ZONE_1_X), AutonConfig.MAIN_Y, parkingZone1.getHeading());
 
-        Pose2d startPose = new Pose2d(centerPathX, -62.5, facingForward);
+        Pose2d startPose = new Pose2d(centerPathX, AutonConfig.STARTING_Y, facingForward);
 
         RoadRunnerBotEntity bot1 = new DefaultBotBuilder(meepMeep)
                 .setDimensions(17, 16)
                 .setStartPose(startPose)
                 .setConstraints(58, 55, Math.toRadians(140), Math.toRadians(190), 14.25)
-                .followTrajectorySequence(drivetrain->
-                        drivetrain.trajectorySequenceBuilder(startPose)
-                                .setReversed(true)
-//                                .addTemporalMarker(() -> scorer.raiseClaw())
-//                                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                                .lineTo(parkingZone2.vec())
-                                .lineToSplineHeading(medScoringPos)
-//                                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
-//                                .addTemporalMarker(() -> scorer.dropClaw(PowerplayScorer.liftPos.FIVE))
-                                .waitSeconds(liftAndDropTime)
-//                                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                                .setReversed(false)
-                                .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
-                                .splineTo(stackPos, isRight? facingRight: facingLeft)
+                .followTrajectorySequence(drivetrain ->
+                                drivetrain.trajectorySequenceBuilder(startPose)
+                                        .setReversed(false)
 //                                .addTemporalMarker(() -> scorer.liftClaw())
-                                .waitSeconds(liftAndDropTime)
-//                                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                                // loop below
-                                .setReversed(true)
-                                .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
-                                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
-//                                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
-//                                .addTemporalMarker(() -> scorer.dropClaw(PowerplayScorer.liftPos.FOUR))
-                                .waitSeconds(liftAndDropTime)
-//                                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                                .setReversed(false)
-                                .splineTo(sideTurnPos, isRight? facingRight: facingLeft)
-                                .splineTo(stackPos, isRight? facingRight: facingLeft)
-//                                .addTemporalMarker(() -> scorer.liftClaw())
-                                .waitSeconds(liftAndDropTime)
-//                                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-
-                                .setReversed(true)
-                                .splineTo(sideTurnPos, isRight? facingLeft: facingRight)
-                                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading()-Math.toRadians(180))
-//                                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(PowerplayScorer.liftPos.MED))
-//                                .addTemporalMarker(() -> scorer.dropClaw())
-                                .waitSeconds(liftAndDropTime)
-//                                .UNSTABLE_addTemporalMarkerOffset(clawToFlipTime, () -> scorer.triggerPassThru())
-                                .lineToSplineHeading(parkingZone2)
-                                .build()
-                )
-        ;
+                                        .splineTo(new Vector2d(parkingZone2.getX(), -25), facingForward)
+                                        .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
+//                                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
+//                                .addTemporalMarker(() -> scorer.dropCone(PowerplayScorer.LiftPos.FIVE))
+                                        .waitSeconds(AutonConfig.TIME_DROP)
+//                                .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_DROP, () -> scorer.triggerPassThru())
+                                        .setReversed(true)
+                                        .setTangent(tallScoringPos.getHeading() + facingLeft)
+                                        .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
+                                        .splineTo(stackPos, isRight ? facingRight : facingLeft)
+//                                .addTemporalMarker(() -> scorer.grabCone())
+                                        .waitSeconds(AutonConfig.TIME_GRAB)
+//                                .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_GRAB, () -> scorer.triggerPassThru())
+                                        .setReversed(false)
+                                        .splineTo(sideTurnPos, isRight ? facingLeft : facingRight)
+                                        .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
+//                                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
+//                                .addTemporalMarker(() -> scorer.dropCone(PowerplayScorer.LiftPos.FOUR))
+                                        .waitSeconds(AutonConfig.TIME_DROP)
+//                                .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_DROP, () -> scorer.triggerPassThru())
+                                        .setReversed(true)
+                                        .setTangent(tallScoringPos.getHeading() + facingLeft)
+                                        .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
+                                        .splineTo(stackPos, isRight ? facingRight : facingLeft)
+//                                .addTemporalMarker(() -> scorer.grabCone())
+                                        .waitSeconds(AutonConfig.TIME_GRAB)
+//                                .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_GRAB, () -> scorer.triggerPassThru())
+                                        .setReversed(false)
+                                        .splineTo(centerTurnPos, isRight ? facingLeft : facingRight)
+                                        .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading() + facingLeft)
+//                                .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
+//                                .addTemporalMarker(() -> scorer.dropCone())
+                                        .waitSeconds(AutonConfig.TIME_DROP)
+//                                .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_DROP, () -> scorer.triggerPassThru())
+                                        .lineToSplineHeading(parkingZone1)
+                                        .build()
+                );
 
         meepMeep.setBackground(com.noahbres.meepmeep.MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
                 .setDarkMode(false)

@@ -117,7 +117,7 @@ public class Autonomous6Med extends Autonomous6Base {
 
         HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
 
-        super.runOpMode(trajectory1, parkLeft, parkMiddle, parkRight);
+        runOpMode(trajectory1, parkLeft, parkMiddle, parkRight);
     }
 
     @SuppressLint("DefaultLocale")
