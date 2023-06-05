@@ -36,11 +36,7 @@ public abstract class BaseAuton extends LinearOpMode {
         LEFT, RIGHT
     }
 
-    public enum ScoringPole {
-        TALL, MED
-    }
-
-    public void runOpMode(ScoringPole pole, Side sideEnum) throws InterruptedException {
+    public void runOpMode(PowerplayScorer.LiftPos pole, Side sideEnum) throws InterruptedException {
         drivetrain = new AutonMecanumDrive(hardwareMap);
         scorer = new PowerplayScorer(hardwareMap);
 
