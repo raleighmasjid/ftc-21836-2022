@@ -67,6 +67,14 @@ public class MeepMeep {
 //                                .addTemporalMarker(() -> scorer.grabCone())
                                         .waitSeconds(AutonConfig.TIME_GRAB)
 //                                .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_GRAB, () -> scorer.triggerPassThru())
+                                        .setReversed(false)
+                                        .splineTo(centerTurnPos, isRight ? facingLeft : facingRight)
+                                        .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading() + facingLeft)
+//                                        .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
+//                                        .addTemporalMarker(() -> scorer.dropCone())
+                                        .waitSeconds(AutonConfig.TIME_DROP)
+//                                        .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_DROP, () -> scorer.triggerPassThru())
+                                        .lineToSplineHeading(parkingZone1)
                                         .build()
                 );
 

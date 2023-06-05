@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -23,8 +22,6 @@ public class Autonomous6Tall extends Autonomous6Base {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Pose2d centerTallScoringPos = new Pose2d(tallScoringPos.getX() - side * AutonConfig.ONE_TILE, tallScoringPos.getY(), tallScoringPos.getHeading());
-
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
                 .setReversed(false)
                 .addTemporalMarker(() -> scorer.liftClaw())
@@ -41,6 +38,7 @@ public class Autonomous6Tall extends Autonomous6Base {
                 .addTemporalMarker(() -> scorer.grabCone())
                 .waitSeconds(AutonConfig.TIME_GRAB)
                 .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_GRAB, () -> scorer.triggerPassThru())
+                // loop below
                 .setReversed(false)
                 .splineTo(sideTurnPos, isRight ? facingLeft : facingRight)
                 .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
