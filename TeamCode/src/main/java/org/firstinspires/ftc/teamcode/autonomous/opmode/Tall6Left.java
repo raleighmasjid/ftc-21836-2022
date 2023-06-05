@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
 @Autonomous(name = "1+5 Tall Left", group = "21836 Autonomous")
-public class Autonomous6TallLeft extends Autonomous6Tall {
+public class Tall6Left extends Tall6Right {
 
     @Override
     public void runOpMode() throws InterruptedException {

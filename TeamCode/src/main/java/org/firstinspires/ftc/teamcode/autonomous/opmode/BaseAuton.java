@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public abstract class AutonomousBase extends LinearOpMode {
+public abstract class BaseAuton extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
     AutonMecanumDrive drivetrain = new AutonMecanumDrive(hardwareMap);
