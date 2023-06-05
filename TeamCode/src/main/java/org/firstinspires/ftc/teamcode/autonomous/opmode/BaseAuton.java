@@ -274,16 +274,9 @@ public abstract class BaseAuton extends LinearOpMode {
         // UNITS ARE PIXELS
         // NOTE: this calibration is for the C920 webcam at 800x448.
         // You will need to do your own calibration for other configurations!
-        double
-                fx = AutonConfig.CAMERA_FX,
-                fy = AutonConfig.CAMERA_FY,
-                cx = AutonConfig.CAMERA_CX,
-                cy = AutonConfig.CAMERA_CY,
-                tagSize = 0.166;
-        int
-                LEFT = 1,
-                MIDDLE = 2,
-                RIGHT = 3;
+        int LEFT = 1;
+        int MIDDLE = 2;
+        int RIGHT = 3;
 
         ElapsedTime autonomousTimer = new ElapsedTime();
 
@@ -293,7 +286,13 @@ public abstract class BaseAuton extends LinearOpMode {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        AprilTagDetectionPipeline signalSleeveDetectionPipeline = new AprilTagDetectionPipeline(tagSize, fx, fy, cx, cy);
+        AprilTagDetectionPipeline signalSleeveDetectionPipeline = new AprilTagDetectionPipeline(
+                AutonConfig.TAG_SIZE,
+                AutonConfig.CAMERA_FX,
+                AutonConfig.CAMERA_FY,
+                AutonConfig.CAMERA_CX,
+                AutonConfig.CAMERA_CY
+        );
 
         camera.setPipeline(signalSleeveDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {

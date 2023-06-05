@@ -26,6 +26,7 @@ public class AutonConfig {
             ZONE_2_X = 35,
             ZONE_3_X = 57,
             STARTING_Y = -62.5,
+            TAG_SIZE = 0.166,
             CAMERA_FX = 578.272,
             CAMERA_FY = 578.272,
             CAMERA_CX = 402.145,
