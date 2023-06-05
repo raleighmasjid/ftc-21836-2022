@@ -28,7 +28,7 @@ public class Autonomous6Tall extends Autonomous6Base {
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
                 .setReversed(false)
                 .addTemporalMarker(() -> scorer.liftClaw())
-                .splineTo(new Vector2d(parkingZone2.getX(), -25), facingForward)
+                .splineTo(new Vector2d(centerPathX, -25), facingForward)
                 .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
                 .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
                 .addTemporalMarker(() -> scorer.dropCone(PowerplayScorer.LiftPos.FIVE))
