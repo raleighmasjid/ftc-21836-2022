@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -21,6 +22,8 @@ public class Autonomous6Tall extends Autonomous6Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        parkingZone1 = new Pose2d(side * (isRight ? AutonConfig.ZONE_1_X : AutonConfig.ZONE_3_X), AutonConfig.MAIN_Y, !isRight ? facingRight : facingLeft);
 
         drivetrain.setPoseEstimate(startPose);
 
