@@ -18,7 +18,7 @@ import org.openftc.apriltag.AprilTagDetection;
 
 
 @Autonomous(name = "1+5 Tall", group = "21836 Autonomous")
-public class Autonomous6Tall extends Autonomous6Base {
+public class Autonomous6Tall extends AutonomousBase {
 
     @Override
     public void runOpMode() throws InterruptedException {
