@@ -116,6 +116,6 @@ public class Tall6Right extends BaseAuton {
 
         HeadingHolder.setHeading(isRight ? 90.0 : 270.0);
 
-        runOpMode(trajectory1, parkLeft, parkMiddle, parkRight);
+        super.runOpMode(trajectory1, parkLeft, parkMiddle, parkRight);
     }
 }
