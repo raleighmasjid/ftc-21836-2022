@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
 
 
-@Autonomous(name = "1+5 Tall", group = "21836 Autonomous")
+@Autonomous(name = "1+5 Tall Right", group = "21836 Autonomous")
 public class Tall6Right extends BaseAuton {
 
     @Override
