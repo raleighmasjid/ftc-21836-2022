@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous.opmode;
 
 
-import android.annotation.SuppressLint;
-
-import androidx.annotation.NonNull;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.autonomous.AutonConfig;
@@ -12,10 +8,9 @@ import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySe
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
-import org.openftc.apriltag.AprilTagDetection;
 
 
-@Autonomous(name = "1+5 Medium", group = "21836 Autonomous")
+@Autonomous(name = "1+5 Medium Right", group = "21836 Autonomous")
 public class Autonomous6Med extends AutonomousBase {
 
     @Override
@@ -117,10 +112,5 @@ public class Autonomous6Med extends AutonomousBase {
         HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
 
         runOpMode(trajectory1, parkLeft, parkMiddle, parkRight);
-    }
-
-    @SuppressLint("DefaultLocale")
-    void tagToTelemetry(@NonNull AprilTagDetection detection) {
-        myTelemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
     }
 }

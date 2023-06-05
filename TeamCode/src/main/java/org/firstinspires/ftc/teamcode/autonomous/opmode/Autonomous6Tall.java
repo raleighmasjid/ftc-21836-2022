@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous.opmode;
 
 
-import android.annotation.SuppressLint;
-
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -14,7 +10,6 @@ import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySe
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
-import org.openftc.apriltag.AprilTagDetection;
 
 
 @Autonomous(name = "1+5 Tall", group = "21836 Autonomous")
@@ -122,10 +117,5 @@ public class Autonomous6Tall extends AutonomousBase {
         HeadingHolder.setHeading(isRight ? 90.0 : 270.0);
 
         runOpMode(trajectory1, parkLeft, parkMiddle, parkRight);
-    }
-
-    @SuppressLint("DefaultLocale")
-    void tagToTelemetry(@NonNull AprilTagDetection detection) {
-        myTelemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
     }
 }
