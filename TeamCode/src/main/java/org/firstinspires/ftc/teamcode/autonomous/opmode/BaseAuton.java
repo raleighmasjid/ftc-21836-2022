@@ -113,9 +113,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
         hubs = hardwareMap.getAll(LynxModule.class);
 
-        for (LynxModule hub : hubs) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
-        }
+        for (LynxModule hub : hubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
 
         /*
          * The INIT-loop:
@@ -143,9 +141,8 @@ public abstract class BaseAuton extends LinearOpMode {
                 } else {
                     myTelemetry.addLine("Don't see tag of interest :(");
 
-                    if (tagOfInterest == null) {
-                        myTelemetry.addLine("(The tag has never been seen)");
-                    } else {
+                    if (tagOfInterest == null) myTelemetry.addLine("(The tag has never been seen)");
+                    else {
                         myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                         tagToTelemetry(tagOfInterest);
                     }
@@ -154,9 +151,8 @@ public abstract class BaseAuton extends LinearOpMode {
             } else {
                 myTelemetry.addLine("Don't see tag of interest :(");
 
-                if (tagOfInterest == null) {
-                    myTelemetry.addLine("(The tag has never been seen)");
-                } else {
+                if (tagOfInterest == null) myTelemetry.addLine("(The tag has never been seen)");
+                else {
                     myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                     tagToTelemetry(tagOfInterest);
 
@@ -188,9 +184,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            for (LynxModule hub : hubs) {
-                hub.clearBulkCache();
-            }
+            for (LynxModule hub : hubs) hub.clearBulkCache();
 
             if (!hasParked && !drivetrain.isBusy() && (autonomousTimer.seconds() >= 3)) {
 
