@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
@@ -15,7 +13,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
-import org.jetbrains.annotations.Contract;
 
 /**
  * Contains a 3-motor motion profiled lift, multi-function claw, and motion profiled passthrough
@@ -60,20 +57,14 @@ public class PowerplayScorer {
         FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL, CUSTOM
     }
 
-    @NonNull
-    @Contract("_, _ -> new")
     private SimpleServo axonMINI(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 355);
     }
 
-    @NonNull
-    @Contract("_, _ -> new")
     private SimpleServo goBILDAServo(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 280);
     }
 
-    @NonNull
-    @Contract("_, _ -> new")
     private MotorEx liftMotor(HardwareMap hw, String name) {
         return new MotorEx(hw, name, 145.1, 1150);
     }
@@ -203,7 +194,7 @@ public class PowerplayScorer {
      *
      * @param height Desired named position to run to
      */
-    public void setTargetLiftPos(@NonNull LiftPos height) {
+    public void setTargetLiftPos(LiftPos height) {
         setClawTilt(height == LiftPos.LOW || height == LiftPos.MED || height == LiftPos.TALL);
         targetLiftPosName = height;
         switch (height) {
@@ -489,7 +480,7 @@ public class PowerplayScorer {
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
-    public void printLiftTelemetry(@NonNull MultipleTelemetry telemetry) {
+    public void printLiftTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Lift current position (in)", currentLiftPos);
         telemetry.addData("Lift profile position (in)", profileLiftState.getX());
         telemetry.addLine();
@@ -508,7 +499,7 @@ public class PowerplayScorer {
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
-    public void printTelemetry(@NonNull MultipleTelemetry telemetry) {
+    public void printTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Named target lift position", targetLiftPosName.toString());
         telemetry.addLine();
         telemetry.addData("Claw is", clawIsOpen ? "open" : "closed");

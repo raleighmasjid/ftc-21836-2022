@@ -10,7 +10,7 @@ public class MeepMeep {
     public static void main(String[] args) {
         com.noahbres.meepmeep.MeepMeep meepMeep = new com.noahbres.meepmeep.MeepMeep(700);
 
-        boolean isRight = false;
+        boolean isRight = true;
         double side = isRight ? 1 : -1;
 
         double centerPathX = side * AutonConfig.ZONE_2_X;
@@ -71,15 +71,13 @@ public class MeepMeep {
 //                                .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_GRAB, () -> scorer.triggerPassThru())
 
                                         .setReversed(false)
-                                        .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
-                                        .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
+                                        .splineTo(centerTurnPos, facingLeft)
+                                        .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading() + facingLeft)
 //                                        .UNSTABLE_addTemporalMarkerOffset(-RobotConfig.TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayScorer.LiftPos.TALL))
 //                                        .addTemporalMarker(() -> scorer.dropCone())
                                         .waitSeconds(AutonConfig.TIME_DROP)
 //                                        .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_DROP, () -> scorer.triggerPassThru())
-                                        .setReversed(true)
-                                        .splineTo(sideTurnPos, isRight ? facingRight : facingLeft)
-                                        .splineTo(parkingZone1.vec(), facingLeft)
+                                        .lineToSplineHeading(parkingZone1)
                                         .build()
                 );
 

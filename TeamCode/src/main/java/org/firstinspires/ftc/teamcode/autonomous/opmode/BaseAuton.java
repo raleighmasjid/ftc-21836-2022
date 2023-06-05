@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous.opmode;
 
 
-import android.annotation.SuppressLint;
-
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -44,7 +40,7 @@ public abstract class BaseAuton extends LinearOpMode {
         TALL, MED
     }
 
-    public void runOpMode(@NonNull ScoringPole pole, Side sideEnum) throws InterruptedException {
+    public void runOpMode(ScoringPole pole, Side sideEnum) throws InterruptedException {
 
         boolean isRight = sideEnum == Side.RIGHT;
         double side = isRight ? 1 : -1;
@@ -418,8 +414,7 @@ public abstract class BaseAuton extends LinearOpMode {
         }
     }
 
-    @SuppressLint("DefaultLocale")
-    void tagToTelemetry(@NonNull AprilTagDetection detection) {
+    void tagToTelemetry(AprilTagDetection detection) {
         myTelemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
     }
 }
