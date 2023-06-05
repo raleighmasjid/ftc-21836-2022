@@ -34,57 +34,12 @@ import java.util.List;
 public class Autonomous6Med extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
-    AutonMecanumDrive drivetrain;
-    PowerplayScorer scorer;
+    AutonMecanumDrive drivetrain = new AutonMecanumDrive(hardwareMap);
+    PowerplayScorer scorer = new PowerplayScorer(hardwareMap);
     List<LynxModule> hubs;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        // Lens intrinsics
-        // UNITS ARE PIXELS
-        // NOTE: this calibration is for the C920 webcam at 800x448.
-        // You will need to do your own calibration for other configurations!
-        double
-                fx = AutonConfig.CAMERA_FX,
-                fy = AutonConfig.CAMERA_FY,
-                cx = AutonConfig.CAMERA_CX,
-                cy = AutonConfig.CAMERA_CY,
-                tagSize = 0.166;
-        int
-                LEFT = 1,
-                MIDDLE = 2,
-                RIGHT = 3;
-
-        ElapsedTime autonomousTimer = new ElapsedTime();
-
-        boolean hasParked = false;
-
-        AprilTagDetection tagOfInterest = null;
-
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        AprilTagDetectionPipeline signalSleeveDetectionPipeline = new AprilTagDetectionPipeline(tagSize, fx, fy, cx, cy);
-
-        camera.setPipeline(signalSleeveDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                camera.startStreaming(800, 448, OpenCvCameraRotation.SIDEWAYS_RIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-
-            }
-        });
-
-        telemetry.setMsTransmissionInterval(50);
-
-        drivetrain = new AutonMecanumDrive(hardwareMap);
-        scorer = new PowerplayScorer(hardwareMap);
-
-        //  Initialize telemetry and dashboard
-        myTelemetry = new MultipleTelemetry(telemetry);
 
         boolean isRight = true;
         double side = isRight ? 1 : -1;
@@ -99,7 +54,6 @@ public class Autonomous6Med extends LinearOpMode {
         Vector2d sideTurnPos = new Vector2d(side * AutonConfig.TURN_POS_X, AutonConfig.MAIN_Y);
         Pose2d tallScoringPos = new Pose2d(side * AutonConfig.TALL_X, AutonConfig.TALL_Y, Math.toRadians(isRight ? AutonConfig.TALL_ANGLE : 180 - AutonConfig.TALL_ANGLE));
         Pose2d medScoringPos = new Pose2d(side * AutonConfig.MED_X, AutonConfig.MED_Y, Math.toRadians(isRight ? AutonConfig.MED_ANGLE : 180 - AutonConfig.MED_ANGLE));
-        Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * AutonConfig.ONE_TILE, medScoringPos.getY(), medScoringPos.getHeading());
         Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * AutonConfig.ONE_TILE, sideTurnPos.getY());
 
         Pose2d parkingZone1 = new Pose2d(side * (isRight ? AutonConfig.ZONE_1_X : AutonConfig.ZONE_3_X), AutonConfig.MAIN_Y, isRight ? facingRight : facingLeft);
@@ -107,9 +61,8 @@ public class Autonomous6Med extends LinearOpMode {
         Pose2d parkingZone3 = new Pose2d(side * (isRight ? AutonConfig.ZONE_3_X : AutonConfig.ZONE_1_X), AutonConfig.MAIN_Y, parkingZone1.getHeading());
 
         Pose2d startPose = new Pose2d(centerPathX, AutonConfig.STARTING_Y, facingForward);
-        drivetrain.setPoseEstimate(startPose);
 
-        HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
+        Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * AutonConfig.ONE_TILE, medScoringPos.getY(), medScoringPos.getHeading());
 
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
@@ -202,6 +155,51 @@ public class Autonomous6Med extends LinearOpMode {
                         .lineToSplineHeading(parkingZone3)
                         .build();
 
+        // Lens intrinsics
+        // UNITS ARE PIXELS
+        // NOTE: this calibration is for the C920 webcam at 800x448.
+        // You will need to do your own calibration for other configurations!
+        double
+                fx = AutonConfig.CAMERA_FX,
+                fy = AutonConfig.CAMERA_FY,
+                cx = AutonConfig.CAMERA_CX,
+                cy = AutonConfig.CAMERA_CY,
+                tagSize = 0.166;
+        int
+                LEFT = 1,
+                MIDDLE = 2,
+                RIGHT = 3;
+
+        ElapsedTime autonomousTimer = new ElapsedTime();
+
+        boolean hasParked = false;
+
+        AprilTagDetection tagOfInterest = null;
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        AprilTagDetectionPipeline signalSleeveDetectionPipeline = new AprilTagDetectionPipeline(tagSize, fx, fy, cx, cy);
+
+        camera.setPipeline(signalSleeveDetectionPipeline);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(800, 448, OpenCvCameraRotation.SIDEWAYS_RIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
+
+        telemetry.setMsTransmissionInterval(50);
+
+        //  Initialize telemetry and dashboard
+        myTelemetry = new MultipleTelemetry(telemetry);
+
+        HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
+        drivetrain.setPoseEstimate(startPose);
         drivetrain.followTrajectorySequenceAsync(trajectory1);
 
         hubs = hardwareMap.getAll(LynxModule.class);
