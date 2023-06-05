@@ -9,6 +9,8 @@ public class AutonConfig {
             TALL_X = 31,
             TALL_Y = -7.5,
             STACK_X = 59,
+            STACK_Y = -12,
+            STACK_ANGLE_OFFSET = 5,
             TURN_POS_X = 46,
             ONE_TILE = 24,
             TIME_GRAB = 0.1,

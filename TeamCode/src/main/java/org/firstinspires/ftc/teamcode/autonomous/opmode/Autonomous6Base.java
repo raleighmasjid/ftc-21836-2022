@@ -43,8 +43,9 @@ public abstract class Autonomous6Base extends LinearOpMode {
     double facingRight = Math.toRadians(0);
     double facingForward = Math.toRadians(90);
     double facingLeft = Math.toRadians(180);
+    double stack = side * Math.toRadians(AutonConfig.STACK_ANGLE_OFFSET);
 
-    Vector2d stackPos = new Vector2d(side * AutonConfig.STACK_X, AutonConfig.MAIN_Y);
+    Vector2d stackPos = new Vector2d(side * AutonConfig.STACK_X, AutonConfig.STACK_Y);
     Vector2d sideTurnPos = new Vector2d(side * AutonConfig.TURN_POS_X, AutonConfig.MAIN_Y);
     Pose2d tallScoringPos = new Pose2d(side * AutonConfig.TALL_X, AutonConfig.TALL_Y, Math.toRadians(isRight ? AutonConfig.TALL_ANGLE : 180 - AutonConfig.TALL_ANGLE));
     Pose2d medScoringPos = new Pose2d(side * AutonConfig.MED_X, AutonConfig.MED_Y, Math.toRadians(isRight ? AutonConfig.MED_ANGLE : 180 - AutonConfig.MED_ANGLE));
