@@ -63,7 +63,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(centerPathX, AutonConfig.STARTING_Y, facingForward);
 
-        TrajectorySequence trajectory1, parkLeft, parkMiddle, parkRight;
+        TrajectorySequence scoringTrajectory, parkInZone1, parkInZone2, parkInZone3;
 
         drivetrain.setPoseEstimate(startPose);
 
@@ -73,7 +73,7 @@ public abstract class BaseAuton extends LinearOpMode {
                 parkingZone2 = new Pose2d(centerPathX, AutonConfig.MAIN_Y, parkingZone1.getHeading());
                 parkingZone3 = new Pose2d(side * (isRight ? AutonConfig.ZONE_3_X : AutonConfig.ZONE_1_X), AutonConfig.MAIN_Y, parkingZone1.getHeading());
 
-                trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
+                scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
                         .setReversed(false)
                         .addTemporalMarker(() -> scorer.liftClaw())
                         .splineTo(new Vector2d(centerPathX, -25), facingForward)
@@ -106,8 +106,9 @@ public abstract class BaseAuton extends LinearOpMode {
                         .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_GRAB, () -> scorer.triggerPassThru())
                         .build();
 
-                parkLeft = isRight ?
-                        drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                parkInZone1 = isRight ?
+                        // right side of field
+                        drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                                 .setReversed(false)
                                 .splineTo(centerTurnPos, facingLeft)
                                 .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading() + facingLeft)
@@ -117,7 +118,8 @@ public abstract class BaseAuton extends LinearOpMode {
                                 .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_DROP, () -> scorer.triggerPassThru())
                                 .lineToSplineHeading(parkingZone1)
                                 .build() :
-                        drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                        // left side of field
+                        drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                                 .setReversed(false)
                                 .splineTo(sideTurnPos, stack + facingRight)
                                 .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
@@ -130,7 +132,7 @@ public abstract class BaseAuton extends LinearOpMode {
                                 .splineTo(parkingZone1.vec(), facingLeft)
                                 .build();
 
-                parkMiddle = drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                parkInZone2 = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                         .setReversed(false)
                         .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
                         .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
@@ -141,8 +143,9 @@ public abstract class BaseAuton extends LinearOpMode {
                         .lineToSplineHeading(parkingZone2)
                         .build();
 
-                parkRight = isRight ?
-                        drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                parkInZone3 = isRight ?
+                        // right side of field
+                        drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                                 .setReversed(false)
                                 .splineTo(sideTurnPos, stack + facingLeft)
                                 .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
@@ -154,7 +157,8 @@ public abstract class BaseAuton extends LinearOpMode {
                                 .splineTo(sideTurnPos, facingRight)
                                 .splineTo(parkingZone3.vec(), facingRight)
                                 .build() :
-                        drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                        // left side of field
+                        drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                                 .setReversed(false)
                                 .splineTo(centerTurnPos, facingRight)
                                 .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading() + facingLeft)
@@ -173,7 +177,7 @@ public abstract class BaseAuton extends LinearOpMode {
                 parkingZone2 = new Pose2d(centerPathX, AutonConfig.MAIN_Y, parkingZone1.getHeading());
                 parkingZone3 = new Pose2d(side * (isRight ? AutonConfig.ZONE_3_X : AutonConfig.ZONE_1_X), AutonConfig.MAIN_Y, parkingZone1.getHeading());
 
-                trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
+                scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
                         .setReversed(true)
                         .addTemporalMarker(() -> scorer.liftClaw())
                         .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_FIRST_FLIP, () -> scorer.triggerPassThru())
@@ -205,8 +209,8 @@ public abstract class BaseAuton extends LinearOpMode {
                         .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_GRAB, () -> scorer.triggerPassThru())
                         .build();
 
-                parkLeft = isRight ?
-                        drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                parkInZone1 = isRight ?
+                        drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                                 .setReversed(true)
                                 .splineTo(centerTurnPos, facingLeft)
                                 .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading() - facingLeft)
@@ -216,7 +220,7 @@ public abstract class BaseAuton extends LinearOpMode {
                                 .UNSTABLE_addTemporalMarkerOffset(AutonConfig.TIME_POST_DROP, () -> scorer.triggerPassThru())
                                 .lineToSplineHeading(parkingZone1)
                                 .build() :
-                        drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                        drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                                 .setReversed(true)
                                 .splineTo(sideTurnPos, stack + facingRight)
                                 .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
@@ -229,7 +233,7 @@ public abstract class BaseAuton extends LinearOpMode {
                                 .splineTo(parkingZone1.vec(), parkingZone1.getHeading())
                                 .build();
 
-                parkMiddle = drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                parkInZone2 = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                         .setReversed(true)
                         .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
                         .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
@@ -240,8 +244,8 @@ public abstract class BaseAuton extends LinearOpMode {
                         .lineToSplineHeading(parkingZone2)
                         .build();
 
-                parkRight = isRight ?
-                        drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                parkInZone3 = isRight ?
+                        drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                                 .setReversed(true)
                                 .splineTo(sideTurnPos, stack + facingLeft)
                                 .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
@@ -253,7 +257,7 @@ public abstract class BaseAuton extends LinearOpMode {
                                 .splineTo(sideTurnPos, facingRight)
                                 .splineTo(parkingZone3.vec(), parkingZone3.getHeading())
                                 .build() :
-                        drivetrain.trajectorySequenceBuilder(trajectory1.end())
+                        drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                                 .setReversed(true)
                                 .splineTo(centerTurnPos, facingRight)
                                 .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading() - facingLeft)
@@ -310,7 +314,7 @@ public abstract class BaseAuton extends LinearOpMode {
         //  Initialize telemetry and dashboard
         myTelemetry = new MultipleTelemetry(telemetry);
 
-        drivetrain.followTrajectorySequenceAsync(trajectory1);
+        drivetrain.followTrajectorySequenceAsync(scoringTrajectory);
 
         hubs = hardwareMap.getAll(LynxModule.class);
 
@@ -390,10 +394,10 @@ public abstract class BaseAuton extends LinearOpMode {
             if (!hasParked && !drivetrain.isBusy() && (autonomousTimer.seconds() >= 3)) {
 
                 drivetrain.followTrajectorySequenceAsync(
-                        tagOfInterest == null ? parkMiddle :
-                                tagOfInterest.id == LEFT ? parkLeft :
-                                        tagOfInterest.id == RIGHT ? parkRight :
-                                                parkMiddle
+                        tagOfInterest == null ? parkInZone2 :
+                                tagOfInterest.id == LEFT ? parkInZone1 :
+                                        tagOfInterest.id == RIGHT ? parkInZone3 :
+                                                parkInZone2
                 );
 
                 hasParked = true;
