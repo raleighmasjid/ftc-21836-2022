@@ -188,17 +188,12 @@ public abstract class BaseAuton extends LinearOpMode {
 
             if (!hasParked && !drivetrain.isBusy() && (autonomousTimer.seconds() >= 3)) {
 
-                if (tagOfInterest != null) {
-                    if (tagOfInterest.id == LEFT) {
-                        drivetrain.followTrajectorySequenceAsync(parkLeft);
-                    } else if (tagOfInterest.id == RIGHT) {
-                        drivetrain.followTrajectorySequenceAsync(parkRight);
-                    } else {
-                        drivetrain.followTrajectorySequenceAsync(parkMiddle);
-                    }
-                } else {
-                    drivetrain.followTrajectorySequenceAsync(parkMiddle);
-                }
+                drivetrain.followTrajectorySequenceAsync(
+                        tagOfInterest == null ? parkMiddle :
+                                tagOfInterest.id == LEFT ? parkLeft :
+                                        tagOfInterest.id == RIGHT ? parkRight :
+                                                parkMiddle
+                );
 
                 hasParked = true;
             }
