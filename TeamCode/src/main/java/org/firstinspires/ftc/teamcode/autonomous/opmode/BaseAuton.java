@@ -63,9 +63,7 @@ public abstract class BaseAuton extends LinearOpMode {
         Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * AutonConfig.ONE_TILE, sideTurnPos.getY());
         Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * AutonConfig.ONE_TILE, medScoringPos.getY(), medScoringPos.getHeading());
 
-        Pose2d parkingZone1 = new Pose2d(side * (isRight ? AutonConfig.ZONE_1_X : AutonConfig.ZONE_3_X), AutonConfig.MAIN_Y, isRight ? facingRight : facingLeft);
-        Pose2d parkingZone2 = new Pose2d(centerPathX, AutonConfig.MAIN_Y, parkingZone1.getHeading());
-        Pose2d parkingZone3 = new Pose2d(side * (isRight ? AutonConfig.ZONE_3_X : AutonConfig.ZONE_1_X), AutonConfig.MAIN_Y, parkingZone1.getHeading());
+        Pose2d parkingZone1, parkingZone2, parkingZone3;
 
         Pose2d startPose = new Pose2d(centerPathX, AutonConfig.STARTING_Y, facingForward);
 
@@ -175,6 +173,10 @@ public abstract class BaseAuton extends LinearOpMode {
                 break;
             default:
             case MED:
+                parkingZone1 = new Pose2d(side * (isRight ? AutonConfig.ZONE_1_X : AutonConfig.ZONE_3_X), AutonConfig.MAIN_Y, isRight ? facingRight : facingLeft);
+                parkingZone2 = new Pose2d(centerPathX, AutonConfig.MAIN_Y, parkingZone1.getHeading());
+                parkingZone3 = new Pose2d(side * (isRight ? AutonConfig.ZONE_3_X : AutonConfig.ZONE_1_X), AutonConfig.MAIN_Y, parkingZone1.getHeading());
+
                 trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
                         .setReversed(true)
                         .addTemporalMarker(() -> scorer.liftClaw())
