@@ -106,10 +106,10 @@ public class Autonomous6Tall extends LinearOpMode {
         Pose2d parkingZone2 = new Pose2d(centerPathX, AutonConfig.MAIN_Y, parkingZone1.getHeading());
         Pose2d parkingZone3 = new Pose2d(side * (isRight ? AutonConfig.ZONE_3_X : AutonConfig.ZONE_1_X), AutonConfig.MAIN_Y, parkingZone1.getHeading());
 
-        HeadingHolder.setHeading(isRight ? 90.0 : 270.0);
-
         Pose2d startPose = new Pose2d(centerPathX, AutonConfig.STARTING_Y, facingForward);
         drivetrain.setPoseEstimate(startPose);
+
+        HeadingHolder.setHeading(isRight ? 90.0 : 270.0);
 
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
                 .setReversed(false)
