@@ -108,7 +108,6 @@ public abstract class Autonomous6Base extends LinearOpMode {
         myTelemetry = new MultipleTelemetry(telemetry);
 
         HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
-        drivetrain.setPoseEstimate(startPose);
         drivetrain.followTrajectorySequenceAsync(trajectory1);
 
         hubs = hardwareMap.getAll(LynxModule.class);

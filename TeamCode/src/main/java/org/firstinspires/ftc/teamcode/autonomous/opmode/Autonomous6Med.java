@@ -21,6 +21,8 @@ public class Autonomous6Med extends Autonomous6Base {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        drivetrain.setPoseEstimate(startPose);
+
         TrajectorySequence trajectory1 = drivetrain.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
                 .addTemporalMarker(() -> scorer.liftClaw())
