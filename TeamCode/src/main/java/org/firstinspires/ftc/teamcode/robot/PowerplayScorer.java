@@ -9,6 +9,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
@@ -32,6 +33,8 @@ public class PowerplayScorer {
 
     private final IIRLowPassFilter accelFilter, veloFilter;
 
+    private final VoltageSensor batteryVoltageSensor;
+
     /**
      * PIDF controller for lift
      */
@@ -46,7 +49,7 @@ public class PowerplayScorer {
 
     private LiftPos targetLiftPosName;
 
-    private double currentPassThruAngle, currentPassThruVelo, currentLiftPos, currentLiftVelo, currentLiftAccel, targetLiftPos;
+    private double currentBatteryVoltage, currentPassThruAngle, currentPassThruVelo, currentLiftPos, currentLiftVelo, currentLiftAccel, targetLiftPos;
 
     private boolean clawHasLifted, pivotIsFront, passThruInFront, passThruTriggered, clawIsOpen, clawIsTilted;
 
@@ -113,6 +116,8 @@ public class PowerplayScorer {
 
         veloFilter = new IIRLowPassFilter(RobotConfig.LIFT_VELO_FILTER_GAIN);
         accelFilter = new IIRLowPassFilter(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
+        batteryVoltageSensor = hw.voltageSensor.iterator().next();
+        currentBatteryVoltage = 12.0;
 
         liftClawTimer = new ElapsedTime();
         liftClawTimer.reset();
@@ -149,6 +154,7 @@ public class PowerplayScorer {
         double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
         updateLiftGains();
 
+        currentBatteryVoltage = batteryVoltageSensor.getVoltage();
         currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
         currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
         currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
@@ -285,7 +291,7 @@ public class PowerplayScorer {
 
         if (targetLiftPos == currentLiftPos) liftController.PID.resetIntegral();
 
-        runLift(liftController.update(currentLiftPos));
+        runLift(liftController.update(currentLiftPos, currentBatteryVoltage));
     }
 
     /**
@@ -507,6 +513,8 @@ public class PowerplayScorer {
         telemetry.addData("Lift error integral (in*s)", liftController.PID.getErrorSum());
         telemetry.addData("Lift error (in)", liftController.PID.getLastError());
         telemetry.addData("Lift error derivative (in/s)", liftController.PID.getErrorDeriv());
+        telemetry.addLine();
+        telemetry.addData("Current battery voltage", currentBatteryVoltage);
     }
 
     /**

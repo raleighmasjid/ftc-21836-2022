@@ -54,14 +54,19 @@ public class PIDFController {
         }
     }
 
+    public double update(double measuredPosition) {
+        return update(measuredPosition, 12.0);
+    }
+
     /**
      * Run a single iteration of the controller.
      *
      * @param measuredPosition measured position
+     * @param voltage          measured battery voltage (for feedforward voltage correction)
      */
-    public double update(double measuredPosition) {
+    public double update(double measuredPosition, double voltage) {
         double pidCommand = PID.update(measuredPosition);
-        double feedforwardCommand = Feedforward.update(pidCommand);
+        double feedforwardCommand = Feedforward.update(pidCommand) * (12.0 / voltage);
         double output = pidCommand + feedforwardCommand;
 
         PID.setIntegrate(Math.abs(output) < maxIntegrationVelocity || Math.signum(output) != Math.signum(PID.getLastError()));
