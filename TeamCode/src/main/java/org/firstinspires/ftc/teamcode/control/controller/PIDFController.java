@@ -66,7 +66,7 @@ public class PIDFController {
      */
     public double update(double measuredPosition, double voltage) {
         double pidCommand = PID.update(measuredPosition);
-        double feedforwardCommand = Feedforward.update(pidCommand) * (12.0 / voltage);
+        double feedforwardCommand = Feedforward.update(voltage, pidCommand);
         double output = pidCommand + feedforwardCommand;
 
         PID.setIntegrate(Math.abs(output) < maxIntegrationVelocity || Math.signum(output) != Math.signum(PID.getLastError()));
