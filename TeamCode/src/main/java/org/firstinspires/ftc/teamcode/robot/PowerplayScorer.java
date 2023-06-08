@@ -291,23 +291,14 @@ public class PowerplayScorer {
 
         if (targetLiftPos == currentLiftPos) liftController.PID.resetIntegral();
 
-        runLift(liftController.update(currentLiftPos, currentBatteryVoltage));
-    }
-
-    /**
-     * Run {@link #lift_motor1}, {@link #lift_motor2}, and {@link #lift_motor3} at the entered percentage of max velocity
-     *
-     * @param veloCommand Pass in a velocity command between 0 and 1
-     */
-    public void runLift(double veloCommand) {
-        runLift(veloCommand, false);
+        runLift(liftController.update(currentLiftPos, currentBatteryVoltage), false);
     }
 
     /**
      * Run {@link #lift_motor1}, {@link #lift_motor2}, and {@link #lift_motor3} at the entered percentage of max velocity
      *
      * @param veloCommand       Pass in a velocity command between 0 and 1
-     * @param voltageCompensate Whether to voltage compensate the motor input
+     * @param voltageCompensate Whether to voltage compensate veloCommand (true by default or if left blank)
      */
     public void runLift(double veloCommand, boolean voltageCompensate) {
         if (voltageCompensate) veloCommand *= (12.0 / currentBatteryVoltage);
