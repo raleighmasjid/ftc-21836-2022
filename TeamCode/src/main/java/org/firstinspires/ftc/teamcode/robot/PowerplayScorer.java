@@ -312,11 +312,12 @@ public class PowerplayScorer {
      * @return Velocity command for lift
      */
     private double kG() {
-        return currentLiftPos >= RobotConfig.HEIGHT_STAGES_4 ? RobotConfig.LIFT_kG_4 :
-                currentLiftPos >= RobotConfig.HEIGHT_STAGES_3 ? RobotConfig.LIFT_kG_3 :
-                        currentLiftPos >= RobotConfig.HEIGHT_STAGES_2 ? RobotConfig.LIFT_kG_2 :
-                                currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE ? RobotConfig.LIFT_kG_1 :
-                                        0.0;
+        return (12.0 / currentBatteryVoltage) *
+                (currentLiftPos >= RobotConfig.HEIGHT_STAGES_4 ? RobotConfig.LIFT_kG_4 :
+                        currentLiftPos >= RobotConfig.HEIGHT_STAGES_3 ? RobotConfig.LIFT_kG_3 :
+                                currentLiftPos >= RobotConfig.HEIGHT_STAGES_2 ? RobotConfig.LIFT_kG_2 :
+                                        currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE ? RobotConfig.LIFT_kG_1 :
+                                                0.0);
     }
 
     /**
