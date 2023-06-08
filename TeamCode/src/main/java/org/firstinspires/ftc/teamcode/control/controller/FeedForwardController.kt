@@ -50,6 +50,8 @@ class FeedforwardController
 
     /**
      * Run a single iteration of the controller.
+     *
+     * @param voltage current battery voltage
      */
     fun update(voltage: Double): Double {
         return update(voltage, 0.0)
@@ -58,6 +60,7 @@ class FeedforwardController
     /**
      * Run a single iteration of the controller.
      *
+     * @param voltage current battery voltage
      * @param additionalOutput output from a joint controller (like a PID) that is included in the calculation of the sign of kS
      */
     fun update(voltage: Double, additionalOutput: Double): Double {
