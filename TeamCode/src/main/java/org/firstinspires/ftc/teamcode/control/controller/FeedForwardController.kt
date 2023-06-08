@@ -60,7 +60,7 @@ class FeedforwardController
      *
      * @param additionalOutput output from a joint controller (like a PID) that is included in the calculation of the sign of kS
      */
-    fun update(voltage: Double additionalOutput: Double): Double {
+    fun update(voltage: Double, additionalOutput: Double): Double {
         val baseOutput = kV * targetVelocity + kA * targetAcceleration
         return ((if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput) + (sign(baseOutput + additionalOutput) * kStatic)) * (12.0 / voltage)
     }
