@@ -298,7 +298,7 @@ public class PowerplayScorer {
      * Run {@link #lift_motor1}, {@link #lift_motor2}, and {@link #lift_motor3} at the entered percentage of max velocity
      *
      * @param veloCommand       Pass in a velocity command between 0 and 1
-     * @param voltageCompensate Whether to voltage compensate veloCommand (true by default or if left blank)
+     * @param voltageCompensate Whether to voltage compensate veloCommand
      */
     public void runLift(double veloCommand, boolean voltageCompensate) {
         if (voltageCompensate) veloCommand *= (12.0 / currentBatteryVoltage);
