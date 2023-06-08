@@ -122,7 +122,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
                 if (control2Up.wasJustPressed()) scorer.toggleClawTilt();
 
-                scorer.runLift(Gamepad2.getLeftY());
+                scorer.runLift(Gamepad2.getLeftY(), true);
             } else {
                 if (control2Up.wasJustPressed())
                     scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.FIVE : PowerplayScorer.LiftPos.TALL);

@@ -300,6 +300,17 @@ public class PowerplayScorer {
      * @param veloCommand Pass in a velocity command between 0 and 1
      */
     public void runLift(double veloCommand) {
+        runLift(veloCommand, false);
+    }
+
+    /**
+     * Run {@link #lift_motor1}, {@link #lift_motor2}, and {@link #lift_motor3} at the entered percentage of max velocity
+     *
+     * @param veloCommand       Pass in a velocity command between 0 and 1
+     * @param voltageCompensate Whether to voltage compensate the motor input
+     */
+    public void runLift(double veloCommand, boolean voltageCompensate) {
+        if (voltageCompensate) veloCommand *= (12.0 / currentBatteryVoltage);
         veloCommand += kG();
         lift_motor1.set(veloCommand);
         lift_motor2.set(veloCommand);
