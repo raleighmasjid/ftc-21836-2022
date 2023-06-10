@@ -12,7 +12,7 @@ class PIDController
  * @param kP proportional gain
  * @param kI integral gain
  * @param kD derivative gain
- * @param filterGain derivative filter smoothness, increases over the interval 0 <= x < 1
+ * @param filterGain derivative filter smoothness, increases over the interval 0 ≤ x < 1
  */
 @JvmOverloads constructor(
     private var kP: Double,

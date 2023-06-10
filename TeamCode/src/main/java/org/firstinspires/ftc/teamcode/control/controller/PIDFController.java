@@ -18,10 +18,10 @@ public class PIDFController {
      * @param kP                     proportional gain
      * @param kI                     integral gain
      * @param kD                     derivative gain
+     * @param filterGain             derivative filter smoothness, increases over the interval 0 ≤ x < 1
      * @param kV                     feedforward velocity gain
      * @param kA                     feedforward acceleration gain
      * @param kStatic                additive feedforward constant
-     * @param filterGain             derivative filter smoothness, increases over the interval 0 <= x < 1
      * @param maxIntegrationVelocity max velocity that integral path will continue integration
      */
     public PIDFController(
