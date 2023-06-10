@@ -53,4 +53,5 @@ public class RobotConfig {
             PASS_MAX_VELO = 600,
             PASS_MAX_ACCEL = 1000,
             PASS_MAX_JERK = 3000;
+    public static int LIFT_kD_FILTER_COUNT = 5;
 }

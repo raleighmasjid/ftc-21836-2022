@@ -19,6 +19,7 @@ public class PIDFController {
      * @param kI                     integral gain
      * @param kD                     derivative gain
      * @param filterGain             derivative filter smoothness, increases over the interval 0 ≤ x < 1
+     * @param filterCount            derivative filter past value count, less phase lag as the value approaches 0
      * @param kV                     feedforward velocity gain
      * @param kA                     feedforward acceleration gain
      * @param kStatic                additive feedforward constant
@@ -29,12 +30,13 @@ public class PIDFController {
             double kI,
             double kD,
             double filterGain,
+            int filterCount,
             double kV,
             double kA,
             double kStatic,
             double maxIntegrationVelocity
     ) {
-        PID = new PIDController(kP, kI, kD, filterGain);
+        PID = new PIDController(kP, kI, kD, filterGain, filterCount);
         Feedforward = new FeedforwardController(kV, kA, kStatic);
         this.maxIntegrationVelocity = maxIntegrationVelocity;
     }

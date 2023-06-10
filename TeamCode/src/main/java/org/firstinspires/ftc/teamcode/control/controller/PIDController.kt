@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.control.controller
 
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter
+import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter
 import kotlin.math.sign
 
 /**
@@ -18,7 +18,8 @@ class PIDController
     private var kP: Double,
     private var kI: Double,
     private var kD: Double,
-    private var filterGain: Double = 0.8
+    private val filterGain: Double = 0.8,
+    private val filterCount: Int = 5
 ) {
     private val dtTimer = ElapsedTime()
     var lastError = 0.0
@@ -26,19 +27,19 @@ class PIDController
     var errorDeriv = 0.0
     var integrate = true
 
-    private var derivFilter: IIRLowPassFilter = IIRLowPassFilter(filterGain)
+    private val derivFilter: FIRLowPassFilter = FIRLowPassFilter(filterGain, filterCount)
 
     fun setGains(
         kP: Double,
         kI: Double,
         kD: Double,
-        filterGain: Double = this.filterGain
+        filterGain: Double = this.filterGain,
+        filterCount: Int = this.filterCount
     ) {
         this.kP = kP
         this.kI = kI
         this.kD = kD
-        this.filterGain = filterGain
-        derivFilter.setGain(filterGain)
+        derivFilter.setGains(filterGain, filterCount)
     }
 
     /**

@@ -107,6 +107,7 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
                 RobotConfig.LIFT_kD_FILTER_GAIN,
+                RobotConfig.LIFT_kD_FILTER_COUNT,
                 RobotConfig.LIFT_UP_kV,
                 RobotConfig.LIFT_UP_kA,
                 RobotConfig.LIFT_UP_kS,
@@ -173,7 +174,8 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_kD_FILTER_GAIN
+                RobotConfig.LIFT_kD_FILTER_GAIN,
+                RobotConfig.LIFT_kD_FILTER_COUNT
         );
         liftController.Feedforward.setGains(
                 goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,

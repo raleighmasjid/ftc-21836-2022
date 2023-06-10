@@ -16,8 +16,8 @@ public class FIRLowPassFilter {
     }
 
     public FIRLowPassFilter(double filterGain, int pastValuesCount) {
-        clearMemory();
         setGains(filterGain, pastValuesCount);
+        clearMemory();
     }
 
     public void setGains(double filterGain, int pastValuesCount) {
