@@ -12,9 +12,6 @@ public class PIDFController {
     public FeedforwardController Feedforward;
 
     /**
-     * Constructor for PIDFController. kV, kA, and kStatic are designed for DC motor feedforward
-     * control (the most common kind of feedforward in FTC).
-     *
      * @param PID                    PID feedback controller
      * @param Feedforward            kV-kA-kS feedforward controller
      * @param maxIntegrationVelocity maximum percentage of motor power at which the integral path will continue integration
