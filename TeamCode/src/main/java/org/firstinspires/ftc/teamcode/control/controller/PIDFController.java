@@ -12,32 +12,16 @@ public class PIDFController {
     public FeedforwardController Feedforward;
 
     /**
-     * Constructor for [PIDFController]. kV, kA, and kStatic are designed for DC motor feedforward
+     * Constructor for PIDFController. kV, kA, and kStatic are designed for DC motor feedforward
      * control (the most common kind of feedforward in FTC).
      *
-     * @param kP                     proportional gain
-     * @param kI                     integral gain
-     * @param kD                     derivative gain
-     * @param filterGain             derivative filter smoothness, increases over the interval 0 ≤ x < 1
-     * @param filterCount            derivative filter past value count, less phase lag as the value approaches 0
-     * @param kV                     feedforward velocity gain
-     * @param kA                     feedforward acceleration gain
-     * @param kStatic                additive feedforward constant
-     * @param maxIntegrationVelocity max velocity that integral path will continue integration
+     * @param PID                    PID feedback controller
+     * @param Feedforward            kV-kA-kS feedforward controller
+     * @param maxIntegrationVelocity maximum percentage of motor power at which the integral path will continue integration
      */
-    public PIDFController(
-            double kP,
-            double kI,
-            double kD,
-            double filterGain,
-            int filterCount,
-            double kV,
-            double kA,
-            double kStatic,
-            double maxIntegrationVelocity
-    ) {
-        PID = new PIDController(kP, kI, kD, filterGain, filterCount);
-        Feedforward = new FeedforwardController(kV, kA, kStatic);
+    public PIDFController(PIDController PID, FeedforwardController Feedforward, double maxIntegrationVelocity) {
+        this.PID = PID;
+        this.Feedforward = Feedforward;
         this.maxIntegrationVelocity = maxIntegrationVelocity;
     }
 

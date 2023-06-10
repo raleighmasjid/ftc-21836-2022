@@ -13,7 +13,7 @@ class FeedforwardController
  *
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
- * @param kStatic additive feedforward constant
+ * @param kStatic feedforward constant (sign = the sign of the output of the PID and kV-kA)
  */
 @JvmOverloads constructor(
     private var kV: Double = 0.0,

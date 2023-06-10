@@ -12,6 +12,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.control.controller.FeedforwardController;
+import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 
@@ -103,14 +105,16 @@ public class PowerplayScorer {
 //        lift_motor3.setRunMode(Motor.RunMode.VelocityControl);
 
         liftController = new PIDFController(
-                RobotConfig.LIFT_kP,
-                RobotConfig.LIFT_kI,
-                RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_kD_FILTER_GAIN,
-                RobotConfig.LIFT_kD_FILTER_COUNT,
-                RobotConfig.LIFT_UP_kV,
-                RobotConfig.LIFT_UP_kA,
-                RobotConfig.LIFT_UP_kS,
+                new PIDController(
+                        RobotConfig.LIFT_kP,
+                        RobotConfig.LIFT_kI,
+                        RobotConfig.LIFT_kD,
+                        RobotConfig.LIFT_kD_FILTER_GAIN,
+                        RobotConfig.LIFT_kD_FILTER_COUNT),
+                new FeedforwardController(
+                        RobotConfig.LIFT_UP_kV,
+                        RobotConfig.LIFT_UP_kA,
+                        RobotConfig.LIFT_UP_kS),
                 RobotConfig.LIFT_INTEGRATION_MAX_VELO
         );
         liftController.setOutputBounds(-1.0, 1.0);
