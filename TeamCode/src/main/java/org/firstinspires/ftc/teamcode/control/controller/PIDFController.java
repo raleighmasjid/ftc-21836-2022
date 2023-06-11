@@ -52,7 +52,7 @@ public class PIDFController {
         double feedforwardCommand = feedforward.update(voltage, pidCommand);
         double output = pidCommand + feedforwardCommand;
 
-        pid.setIntegrate(Math.abs(output) < maxIntegrationVelocity || Math.signum(output) != Math.signum(pid.getLastError()));
+        pid.setIntegrate(Math.abs(output) < maxIntegrationVelocity || Math.signum(output) != Math.signum(pid.getError()));
 
         return (outputBounded) ? Math.max(minOutput, Math.min(output, maxOutput)) : output;
     }

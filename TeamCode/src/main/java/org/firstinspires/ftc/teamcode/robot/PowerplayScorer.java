@@ -109,8 +109,7 @@ public class PowerplayScorer {
                         RobotConfig.LIFT_kP,
                         RobotConfig.LIFT_kI,
                         RobotConfig.LIFT_kD,
-                        RobotConfig.LIFT_kD_FILTER_GAIN,
-                        RobotConfig.LIFT_kD_FILTER_COUNT),
+                        RobotConfig.LIFT_kD_FILTER_GAIN),
                 new FeedforwardController(
                         RobotConfig.LIFT_UP_kV,
                         RobotConfig.LIFT_UP_kA,
@@ -178,8 +177,7 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_kD_FILTER_GAIN,
-                RobotConfig.LIFT_kD_FILTER_COUNT
+                RobotConfig.LIFT_kD_FILTER_GAIN
         );
         liftController.feedforward.setGains(
                 goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
@@ -291,7 +289,7 @@ public class PowerplayScorer {
     public void runLiftToPos() {
         profileLiftState = liftProfile.get(liftProfileTimer.seconds());
 
-        liftController.pid.setTargetPosition(profileLiftState.getX());
+        liftController.pid.setTarget(profileLiftState.getX());
         liftController.feedforward.setTargetVelocity(profileLiftState.getV());
         liftController.feedforward.setTargetAcceleration(profileLiftState.getA());
 
@@ -525,7 +523,7 @@ public class PowerplayScorer {
         telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         telemetry.addLine();
         telemetry.addData("Lift error integral (in*s)", liftController.pid.getErrorSum());
-        telemetry.addData("Lift error (in)", liftController.pid.getLastError());
+        telemetry.addData("Lift error (in)", liftController.pid.getError());
         telemetry.addData("Lift error derivative (in/s)", liftController.pid.getErrorDeriv());
     }
 
