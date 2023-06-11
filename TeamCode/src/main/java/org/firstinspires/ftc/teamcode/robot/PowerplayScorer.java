@@ -510,7 +510,12 @@ public class PowerplayScorer {
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
-    public void printLiftTelemetry(MultipleTelemetry telemetry) {
+    public void printNumericalTelemetry(MultipleTelemetry telemetry) {
+        telemetry.addData("Passthrough angle", currentPassThruAngle);
+        telemetry.addData("Passthrough angle", currentPassThruVelo);
+        telemetry.addLine();
+        telemetry.addData("Current battery voltage", currentBatteryVoltage);
+        telemetry.addLine();
         telemetry.addData("Lift current position (in)", currentLiftPos);
         telemetry.addData("Lift profile position (in)", profileLiftState.getX());
         telemetry.addLine();
@@ -522,8 +527,6 @@ public class PowerplayScorer {
         telemetry.addData("Lift error integral (in*s)", liftController.pid.getErrorSum());
         telemetry.addData("Lift error (in)", liftController.pid.getLastError());
         telemetry.addData("Lift error derivative (in/s)", liftController.pid.getErrorDeriv());
-        telemetry.addLine();
-        telemetry.addData("Current battery voltage", currentBatteryVoltage);
     }
 
     /**
