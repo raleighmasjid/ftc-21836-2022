@@ -58,6 +58,6 @@ public class PIDFController {
     }
 
     public void setMaxIntegrationVelocity(double maxIntegrationVelocity) {
-        this.maxIntegrationVelocity = maxIntegrationVelocity;
+        this.maxIntegrationVelocity = outputBounded ? Math.min(maxIntegrationVelocity, maxOutput) : maxIntegrationVelocity;
     }
 }
