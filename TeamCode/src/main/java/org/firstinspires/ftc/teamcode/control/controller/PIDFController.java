@@ -8,17 +8,17 @@ public class PIDFController {
     private double minOutput = 0.0;
     private double maxOutput = 0.0;
     private double maxIntegrationVelocity;
-    public PIDController PID;
-    public FeedforwardController Feedforward;
+    public PIDController pid;
+    public FeedforwardController feedforward;
 
     /**
-     * @param PID                    PID feedback controller
-     * @param Feedforward            kV-kA-kS feedforward controller
+     * @param pid                    PID feedback controller
+     * @param feedforward            kV-kA-kS feedforward controller
      * @param maxIntegrationVelocity maximum percentage of motor power at which the integral path will continue integration
      */
-    public PIDFController(PIDController PID, FeedforwardController Feedforward, double maxIntegrationVelocity) {
-        this.PID = PID;
-        this.Feedforward = Feedforward;
+    public PIDFController(PIDController pid, FeedforwardController feedforward, double maxIntegrationVelocity) {
+        this.pid = pid;
+        this.feedforward = feedforward;
         this.maxIntegrationVelocity = maxIntegrationVelocity;
     }
 
@@ -48,11 +48,11 @@ public class PIDFController {
      * @param voltage          measured battery voltage (for feedforward voltage correction)
      */
     public double update(double measuredPosition, double voltage) {
-        double pidCommand = PID.update(measuredPosition);
-        double feedforwardCommand = Feedforward.update(voltage, pidCommand);
+        double pidCommand = pid.update(measuredPosition);
+        double feedforwardCommand = feedforward.update(voltage, pidCommand);
         double output = pidCommand + feedforwardCommand;
 
-        PID.setIntegrate(Math.abs(output) < maxIntegrationVelocity || Math.signum(output) != Math.signum(PID.getLastError()));
+        pid.setIntegrate(Math.abs(output) < maxIntegrationVelocity || Math.signum(output) != Math.signum(pid.getLastError()));
 
         return (outputBounded) ? Math.max(minOutput, Math.min(output, maxOutput)) : output;
     }

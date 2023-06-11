@@ -174,14 +174,14 @@ public class PowerplayScorer {
         veloFilter.setGain(RobotConfig.LIFT_VELO_FILTER_GAIN);
         accelFilter.setGain(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
 
-        liftController.PID.setGains(
+        liftController.pid.setGains(
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
                 RobotConfig.LIFT_kD_FILTER_GAIN,
                 RobotConfig.LIFT_kD_FILTER_COUNT
         );
-        liftController.Feedforward.setGains(
+        liftController.feedforward.setGains(
                 goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
                 goingDown ? RobotConfig.LIFT_DOWN_kA : RobotConfig.LIFT_UP_kA,
                 goingDown ? RobotConfig.LIFT_DOWN_kS : RobotConfig.LIFT_UP_kS
@@ -271,7 +271,7 @@ public class PowerplayScorer {
         veloFilter.clearMemory();
 
         lift_motor2.resetEncoder();
-        liftController.PID.resetIntegral();
+        liftController.pid.resetIntegral();
 
         currentLiftPos = 0.0;
         currentLiftVelo = 0.0;
@@ -291,11 +291,11 @@ public class PowerplayScorer {
     public void runLiftToPos() {
         profileLiftState = liftProfile.get(liftProfileTimer.seconds());
 
-        liftController.PID.setTargetPosition(profileLiftState.getX());
-        liftController.Feedforward.setTargetVelocity(profileLiftState.getV());
-        liftController.Feedforward.setTargetAcceleration(profileLiftState.getA());
+        liftController.pid.setTargetPosition(profileLiftState.getX());
+        liftController.feedforward.setTargetVelocity(profileLiftState.getV());
+        liftController.feedforward.setTargetAcceleration(profileLiftState.getA());
 
-        if (targetLiftPos == currentLiftPos) liftController.PID.resetIntegral();
+        if (targetLiftPos == currentLiftPos) liftController.pid.resetIntegral();
 
         runLift(liftController.update(currentLiftPos, currentBatteryVoltage), false);
     }
@@ -519,9 +519,9 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         telemetry.addLine();
-        telemetry.addData("Lift error integral (in*s)", liftController.PID.getErrorSum());
-        telemetry.addData("Lift error (in)", liftController.PID.getLastError());
-        telemetry.addData("Lift error derivative (in/s)", liftController.PID.getErrorDeriv());
+        telemetry.addData("Lift error integral (in*s)", liftController.pid.getErrorSum());
+        telemetry.addData("Lift error (in)", liftController.pid.getLastError());
+        telemetry.addData("Lift error derivative (in/s)", liftController.pid.getErrorDeriv());
         telemetry.addLine();
         telemetry.addData("Current battery voltage", currentBatteryVoltage);
     }
