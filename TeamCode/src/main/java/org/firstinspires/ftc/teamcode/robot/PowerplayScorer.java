@@ -512,7 +512,7 @@ public class PowerplayScorer {
      */
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Passthrough angle", currentPassThruAngle);
-        telemetry.addData("Passthrough angle", currentPassThruVelo);
+        telemetry.addData("Passthrough velocity (ticks/s)", currentPassThruVelo);
         telemetry.addLine();
         telemetry.addData("Current battery voltage", currentBatteryVoltage);
         telemetry.addLine();
