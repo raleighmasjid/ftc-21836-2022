@@ -48,9 +48,7 @@ public class PIDFController {
      * @param voltage          measured battery voltage (for feedforward voltage correction)
      */
     public double update(double measuredPosition, double voltage) {
-        double pidCommand = pid.update(measuredPosition);
-        double feedforwardCommand = feedforward.update(voltage, pidCommand);
-        double output = pidCommand + feedforwardCommand;
+        double output = pid.update(measuredPosition) + feedforward.update(voltage);
 
         pid.setIntegrate(Math.abs(output) < maxIntegrationVelocity || Math.signum(output) != Math.signum(pid.getError()));
 
