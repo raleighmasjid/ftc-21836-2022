@@ -161,9 +161,8 @@ public class PowerplayScorer {
         currentBatteryVoltage = batteryVoltageSensor.getVoltage();
         currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
         currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
-        double currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
         maxLiftVelo = Math.max(currentLiftVelo, maxLiftVelo);
-        maxLiftAccel = Math.max(currentLiftAccel, maxLiftAccel);
+        maxLiftAccel = Math.max(accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt), maxLiftAccel);
     }
 
     /**
