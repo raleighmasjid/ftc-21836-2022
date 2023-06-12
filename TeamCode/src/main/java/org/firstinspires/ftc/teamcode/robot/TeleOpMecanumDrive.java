@@ -18,7 +18,8 @@ public class TeleOpMecanumDrive {
 
     private MecanumDrive mecanumDrivetrain;
 
-    private double headingOffset, latestIMUReading;
+    private double headingOffset = 0.0;
+    private double latestIMUReading = 0.0;
 
     @NonNull
     @Contract("_, _ -> new")
@@ -27,7 +28,6 @@ public class TeleOpMecanumDrive {
     }
 
     public TeleOpMecanumDrive(HardwareMap hw) {
-        headingOffset = 0.0;
 
         // Assign motors using their hardware map names, each drive-type can have different names if needed
         MotorEx

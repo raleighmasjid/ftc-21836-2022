@@ -31,29 +31,57 @@ public class PowerplayScorer {
 
     private SimpleServo clawServo, pivotServo, passThruServoR, passThruServoL, coneArmServoR, coneArmServoL;
 
-    private ElapsedTime passThruProfileTimer, liftProfileTimer, liftDerivTimer, liftClawTimer;
+    private ElapsedTime passThruProfileTimer = new ElapsedTime();
+    private ElapsedTime liftProfileTimer = new ElapsedTime();
+    private ElapsedTime liftDerivTimer = new ElapsedTime();
+    private ElapsedTime liftClawTimer = new ElapsedTime();
 
-    private FIRLowPassFilter accelFilter, veloFilter;
+    private FIRLowPassFilter accelFilter = new FIRLowPassFilter(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_FILTER_COUNT);
+    private FIRLowPassFilter veloFilter = new FIRLowPassFilter(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_FILTER_COUNT);
 
     private VoltageSensor batteryVoltageSensor;
 
     /**
      * PIDF controller for lift
      */
-    private PIDFController liftController;
+    private PIDFController liftController = new PIDFController(
+            new PIDController(
+                    RobotConfig.LIFT_kP,
+                    RobotConfig.LIFT_kI,
+                    RobotConfig.LIFT_kD,
+                    RobotConfig.LIFT_kD_FILTER_GAIN,
+                    RobotConfig.LIFT_INTEGRATION_MAX_VELO),
+            new FeedforwardController(
+                    RobotConfig.LIFT_UP_kV,
+                    RobotConfig.LIFT_UP_kA,
+                    RobotConfig.LIFT_kS)
+    );
 
     private MotionProfile passThruProfile, liftProfile;
 
     /**
      * Immediate target lift state grabbed from {@link #liftProfile}
      */
-    private MotionState profileLiftState;
+    private MotionState profileLiftState = new MotionState(0.0, 0.0, 0.0, 0.0);
 
-    private LiftPos targetLiftPosName;
+    private LiftPos targetLiftPosName = LiftPos.FLOOR;
 
-    private double currentBatteryVoltage, currentPassThruAngle, currentPassThruVelo, currentLiftPos, currentLiftVelo, currentLiftAccel, targetLiftPos, maxLiftVelo, maxLiftAccel;
+    private double currentBatteryVoltage = 12.0;
+    private double currentPassThruAngle = RobotConfig.ANGLE_PASS_FRONT;
+    private double currentPassThruVelo = 0.0;
+    private double currentLiftPos = 0.0;
+    private double currentLiftVelo = 0.0;
+    private double currentLiftAccel = 0.0;
+    private double targetLiftPos = 0.0;
+    private double maxLiftVelo = 0.0;
+    private double maxLiftAccel = 0.0;
 
-    private boolean clawHasLifted, pivotIsFront, passThruInFront, passThruTriggered, clawIsOpen, clawIsTilted;
+    private boolean clawHasLifted = true;
+    private boolean pivotIsFront = true;
+    private boolean passThruInFront = true;
+    private boolean passThruTriggered = false;
+    private boolean clawIsOpen = true;
+    private boolean clawIsTilted = false;
 
     /**
      * Named lift position
@@ -100,52 +128,17 @@ public class PowerplayScorer {
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor3.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
-        liftController = new PIDFController(
-                new PIDController(
-                        RobotConfig.LIFT_kP,
-                        RobotConfig.LIFT_kI,
-                        RobotConfig.LIFT_kD,
-                        RobotConfig.LIFT_kD_FILTER_GAIN,
-                        RobotConfig.LIFT_INTEGRATION_MAX_VELO),
-                new FeedforwardController(
-                        RobotConfig.LIFT_UP_kV,
-                        RobotConfig.LIFT_UP_kA,
-                        RobotConfig.LIFT_kS)
-        );
         liftController.setOutputBounds(-1.0, 1.0);
 
-        veloFilter = new FIRLowPassFilter(
-                RobotConfig.LIFT_VELO_FILTER_GAIN,
-                RobotConfig.LIFT_VELO_FILTER_COUNT
-        );
-        accelFilter = new FIRLowPassFilter(
-                RobotConfig.LIFT_ACCEL_FILTER_GAIN,
-                RobotConfig.LIFT_ACCEL_FILTER_COUNT
-        );
         batteryVoltageSensor = hw.voltageSensor.iterator().next();
-        currentBatteryVoltage = 12.0;
 
-        liftClawTimer = new ElapsedTime();
         liftClawTimer.reset();
-        liftProfileTimer = new ElapsedTime();
         liftProfileTimer.reset();
-        liftDerivTimer = new ElapsedTime();
         liftDerivTimer.reset();
-        passThruProfileTimer = new ElapsedTime();
         passThruProfileTimer.reset();
 
-        clawHasLifted = true;
-        setPivotIsFront(true);
-        passThruInFront = true;
-        clawIsOpen = true;
-        setClawTilt(false);
-        passThruTriggered = false;
-
-        currentPassThruAngle = RobotConfig.ANGLE_PASS_FRONT;
-        currentPassThruVelo = 0.0;
         updatePassThruProfile();
-
-        resetLift();
+        updateLiftProfile();
     }
 
     /**
