@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 
 public class PIDController {
 
-    private double kP, kI, kD, error, errorIntegral, errorVelocity, target;
+    private double kP, kI, kD, lastError, error, errorIntegral, errorVelocity, target;
 
     private boolean integrate = true;
 
@@ -16,6 +16,11 @@ public class PIDController {
 
     public PIDController(double kP, double kI, double kD, double filterGain) {
         setGains(kP, kI, kD, filterGain);
+        target = 0.0;
+        lastError = 0.0;
+        error = 0.0;
+        errorVelocity = 0.0;
+        resetIntegral();
         dtTimer = new ElapsedTime();
         derivFilter = new IIRLowPassFilter(filterGain);
     }
@@ -28,7 +33,7 @@ public class PIDController {
     }
 
     public double update(double measurement) {
-        double lastError = error;
+        lastError = error;
         error = target - measurement;
 
         double timerSeconds = dtTimer.seconds();
@@ -48,6 +53,10 @@ public class PIDController {
 
     public void setIntegrate(boolean integrate) {
         this.integrate = integrate;
+    }
+
+    public double getLastError() {
+        return lastError;
     }
 
     public double getError() {
