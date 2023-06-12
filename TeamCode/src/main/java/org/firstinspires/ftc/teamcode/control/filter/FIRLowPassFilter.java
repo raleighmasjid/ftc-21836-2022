@@ -9,10 +9,6 @@ import java.util.ArrayList;
 public class FIRLowPassFilter {
     private double filterGain = 0.8;
     private int pastValuesCount = 5;
-
-    public FIRLowPassFilter() {
-        this(0.8, 5);
-    }
     private ArrayList<Double> pastValues = new ArrayList<>();
 
     public FIRLowPassFilter(double filterGain, int pastValuesCount) {
