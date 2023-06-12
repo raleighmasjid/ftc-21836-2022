@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.control.controller.FeedforwardController;
 import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
-import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
+import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
 
 /**
  * Contains a 3-motor motion profiled lift, multi-function claw, and motion profiled passthrough
@@ -33,7 +33,7 @@ public class PowerplayScorer {
 
     private ElapsedTime passThruProfileTimer, liftProfileTimer, liftDerivTimer, liftClawTimer;
 
-    private IIRLowPassFilter accelFilter, veloFilter;
+    private FIRLowPassFilter accelFilter, veloFilter;
 
     private VoltageSensor batteryVoltageSensor;
 
@@ -51,7 +51,7 @@ public class PowerplayScorer {
 
     private LiftPos targetLiftPosName;
 
-    private double currentBatteryVoltage, currentPassThruAngle, currentPassThruVelo, currentLiftPos, currentLiftVelo, targetLiftPos, maxLiftVelo, maxLiftAccel;
+    private double currentBatteryVoltage, currentPassThruAngle, currentPassThruVelo, currentLiftPos, currentLiftVelo, currentLiftAccel, targetLiftPos, maxLiftVelo, maxLiftAccel;
 
     private boolean clawHasLifted, pivotIsFront, passThruInFront, passThruTriggered, clawIsOpen, clawIsTilted;
 
@@ -118,8 +118,14 @@ public class PowerplayScorer {
         );
         liftController.setOutputBounds(-1.0, 1.0);
 
-        veloFilter = new IIRLowPassFilter(RobotConfig.LIFT_VELO_FILTER_GAIN);
-        accelFilter = new IIRLowPassFilter(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
+        veloFilter = new FIRLowPassFilter(
+                RobotConfig.LIFT_VELO_FILTER_GAIN,
+                RobotConfig.LIFT_VELO_FILTER_COUNT
+        );
+        accelFilter = new FIRLowPassFilter(
+                RobotConfig.LIFT_ACCEL_FILTER_GAIN,
+                RobotConfig.LIFT_ACCEL_FILTER_COUNT
+        );
         batteryVoltageSensor = hw.voltageSensor.iterator().next();
         currentBatteryVoltage = 12.0;
 
@@ -148,7 +154,7 @@ public class PowerplayScorer {
 
     /**
      * Reads lift encoder value and converts to {@link #currentLiftPos} in inches
-     * Calculates {@link #currentLiftVelo} via time-based differentiation
+     * Calculates {@link #currentLiftVelo} and {@link #currentLiftAccel} via time-based differentiation
      */
     public void readLiftPos() {
         double lastLiftPos = currentLiftPos;
@@ -161,8 +167,9 @@ public class PowerplayScorer {
         currentBatteryVoltage = batteryVoltageSensor.getVoltage();
         currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
         currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
+        currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
         maxLiftVelo = Math.max(currentLiftVelo, maxLiftVelo);
-        maxLiftAccel = Math.max(accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt), maxLiftAccel);
+        maxLiftAccel = Math.max(currentLiftAccel, maxLiftAccel);
     }
 
     /**
@@ -171,8 +178,8 @@ public class PowerplayScorer {
     private void updateLiftGains() {
         boolean goingDown = targetLiftPos < currentLiftPos;
 
-        veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN);
-        accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
+        veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_FILTER_COUNT);
+        accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_FILTER_COUNT);
 
         liftController.pid.setGains(
                 RobotConfig.LIFT_kP,
@@ -274,6 +281,7 @@ public class PowerplayScorer {
 
         currentLiftPos = 0.0;
         currentLiftVelo = 0.0;
+        currentLiftAccel = 0.0;
         maxLiftVelo = 0.0;
         maxLiftAccel = 0.0;
 
@@ -525,6 +533,7 @@ public class PowerplayScorer {
         telemetry.addData("Lift profile velocity (in/s)", profileLiftState.getV());
         telemetry.addData("Lift max velocity (in/s)", maxLiftVelo);
         telemetry.addLine();
+        telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         telemetry.addData("Lift max acceleration (in/s^2)", maxLiftAccel);
         telemetry.addLine();
         telemetry.addData("Lift error integral (in*s)", liftController.pid.getErrorIntegral());
