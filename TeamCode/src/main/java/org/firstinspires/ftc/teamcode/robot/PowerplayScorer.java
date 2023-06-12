@@ -51,7 +51,7 @@ public class PowerplayScorer {
 
     private LiftPos targetLiftPosName;
 
-    private double currentBatteryVoltage, currentPassThruAngle, currentPassThruVelo, currentLiftPos, currentLiftVelo, currentLiftAccel, targetLiftPos;
+    private double currentBatteryVoltage, currentPassThruAngle, currentPassThruVelo, currentLiftPos, currentLiftVelo, targetLiftPos, maxLiftVelo, maxLiftAccel;
 
     private boolean clawHasLifted, pivotIsFront, passThruInFront, passThruTriggered, clawIsOpen, clawIsTilted;
 
@@ -148,7 +148,7 @@ public class PowerplayScorer {
 
     /**
      * Reads lift encoder value and converts to {@link #currentLiftPos} in inches
-     * Calculates {@link #currentLiftVelo} and {@link #currentLiftAccel} via time-based differentiation
+     * Calculates {@link #currentLiftVelo} via time-based differentiation
      */
     public void readLiftPos() {
         double lastLiftPos = currentLiftPos;
@@ -161,7 +161,9 @@ public class PowerplayScorer {
         currentBatteryVoltage = batteryVoltageSensor.getVoltage();
         currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
         currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
-        currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
+        double currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
+        maxLiftVelo = Math.max(currentLiftVelo, maxLiftVelo);
+        maxLiftAccel = Math.max(currentLiftAccel, maxLiftAccel);
     }
 
     /**
@@ -273,7 +275,8 @@ public class PowerplayScorer {
 
         currentLiftPos = 0.0;
         currentLiftVelo = 0.0;
-        currentLiftAccel = 0.0;
+        maxLiftVelo = 0.0;
+        maxLiftAccel = 0.0;
 
         targetLiftPos = 0.0;
         targetLiftPosName = LiftPos.FLOOR;
@@ -521,8 +524,9 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
         telemetry.addData("Lift profile velocity (in/s)", profileLiftState.getV());
+        telemetry.addData("Lift max velocity (in/s)", maxLiftVelo);
         telemetry.addLine();
-        telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
+        telemetry.addData("Lift max acceleration (in/s^2)", maxLiftAccel);
         telemetry.addLine();
         telemetry.addData("Lift error integral (in*s)", liftController.pid.getErrorIntegral());
         telemetry.addData("Lift error (in)", liftController.pid.getError());
