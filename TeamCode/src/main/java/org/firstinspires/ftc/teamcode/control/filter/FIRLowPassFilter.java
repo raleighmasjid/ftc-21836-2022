@@ -31,11 +31,10 @@ public class FIRLowPassFilter {
     public double getEstimate(double newValue) {
         double pastValuesTotal = 0.0;
         for (double pastValue : pastValues) pastValuesTotal += pastValue;
-        double size = pastValues.size();
-        double pastValuesAvg = pastValuesTotal / size;
+        double pastValuesAvg = pastValuesTotal / (double) pastValues.size();
 
         pastValues.add(newValue);
-        if (size > pastValuesCount) pastValues.remove(0);
+        if (pastValues.size() > pastValuesCount) pastValues.remove(0);
 
         return filterGain * pastValuesAvg + (1 - filterGain) * newValue;
     }
