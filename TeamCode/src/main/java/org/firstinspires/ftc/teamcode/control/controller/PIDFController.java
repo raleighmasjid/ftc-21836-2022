@@ -7,19 +7,16 @@ public class PIDFController {
     private boolean outputBounded = false;
     private double minOutput = 0.0;
     private double maxOutput = 0.0;
-    private double maxIntegrationVelocity;
     public PIDController pid;
     public FeedforwardController feedforward;
 
     /**
-     * @param pid                    PID feedback controller
-     * @param feedforward            kV-kA-kS feedforward controller
-     * @param maxIntegrationVelocity maximum percentage of motor power at which the integral path will continue integration
+     * @param pid         PID feedback controller
+     * @param feedforward kV-kA-kS feedforward controller
      */
-    public PIDFController(PIDController pid, FeedforwardController feedforward, double maxIntegrationVelocity) {
+    public PIDFController(PIDController pid, FeedforwardController feedforward) {
         this.pid = pid;
         this.feedforward = feedforward;
-        this.maxIntegrationVelocity = maxIntegrationVelocity;
     }
 
     /**
@@ -33,7 +30,6 @@ public class PIDFController {
             outputBounded = true;
             minOutput = Math.min(min, max);
             maxOutput = Math.max(min, max);
-            maxIntegrationVelocity = Math.min(maxOutput, maxIntegrationVelocity);
         }
     }
 
@@ -50,12 +46,6 @@ public class PIDFController {
     public double update(double measuredPosition, double voltage) {
         double output = pid.update(measuredPosition) + feedforward.update(voltage);
 
-        pid.setIntegrate(Math.abs(output) < maxIntegrationVelocity || Math.signum(output) != Math.signum(pid.getError()));
-
         return (outputBounded) ? Math.max(minOutput, Math.min(output, maxOutput)) : output;
-    }
-
-    public void setMaxIntegrationVelocity(double maxIntegrationVelocity) {
-        this.maxIntegrationVelocity = outputBounded ? Math.min(maxIntegrationVelocity, maxOutput) : maxIntegrationVelocity;
     }
 }

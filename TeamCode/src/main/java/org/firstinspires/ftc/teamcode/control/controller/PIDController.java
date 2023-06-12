@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 
 public class PIDController {
 
-    private double kP, kI, kD, lastError, error, errorIntegral, errorVelocity, target;
+    private double kP, kI, kD, lastError, error, errorIntegral, errorVelocity, target, maxIntegrationVelocity;
 
     private boolean integrate = true;
 
@@ -14,8 +14,8 @@ public class PIDController {
 
     private IIRLowPassFilter derivFilter;
 
-    public PIDController(double kP, double kI, double kD, double filterGain) {
-        setGains(kP, kI, kD, filterGain);
+    public PIDController(double kP, double kI, double kD, double filterGain, double maxIntegrationVelocity) {
+        setGains(kP, kI, kD, filterGain, maxIntegrationVelocity);
         target = 0.0;
         lastError = 0.0;
         error = 0.0;
@@ -25,10 +25,11 @@ public class PIDController {
         derivFilter = new IIRLowPassFilter(filterGain);
     }
 
-    public void setGains(double kP, double kI, double kD, double filterGain) {
+    public void setGains(double kP, double kI, double kD, double filterGain, double maxIntegrationVelocity) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
+        this.maxIntegrationVelocity = maxIntegrationVelocity;
         derivFilter.setGain(filterGain);
     }
 
@@ -41,18 +42,17 @@ public class PIDController {
         double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
 
         errorVelocity = derivFilter.getEstimate((error - lastError) / dt);
-
         if (integrate) errorIntegral += 0.5 * (error + lastError) * dt;
 
-        return (kP * error) + (kI * errorIntegral) + (kD * errorVelocity);
+        double output = (kP * error) + (kI * errorIntegral) + (kD * errorVelocity);
+
+        integrate = Math.abs(output) < maxIntegrationVelocity || Math.signum(output) != Math.signum(error);
+
+        return output;
     }
 
     public void setTarget(double target) {
         this.target = target;
-    }
-
-    public void setIntegrate(boolean integrate) {
-        this.integrate = integrate;
     }
 
     public double getLastError() {
