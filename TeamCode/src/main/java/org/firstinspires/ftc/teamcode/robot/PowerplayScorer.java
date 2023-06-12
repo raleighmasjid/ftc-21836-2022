@@ -114,7 +114,7 @@ public class PowerplayScorer {
                 new FeedforwardController(
                         RobotConfig.LIFT_UP_kV,
                         RobotConfig.LIFT_UP_kA,
-                        RobotConfig.LIFT_UP_kS)
+                        RobotConfig.LIFT_kS)
         );
         liftController.setOutputBounds(-1.0, 1.0);
 
@@ -185,7 +185,7 @@ public class PowerplayScorer {
         liftController.feedforward.setGains(
                 goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
                 goingDown ? RobotConfig.LIFT_DOWN_kA : RobotConfig.LIFT_UP_kA,
-                goingDown ? RobotConfig.LIFT_DOWN_kS : RobotConfig.LIFT_UP_kS
+                RobotConfig.LIFT_kS
         );
     }
 
