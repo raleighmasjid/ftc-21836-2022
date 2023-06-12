@@ -13,10 +13,10 @@ public class IIRLowPassFilter {
     }
 
     public IIRLowPassFilter(double filterGain) {
-        setGain(filterGain);
+        setGains(filterGain);
     }
 
-    public void setGain(double filterGain) {
+    public void setGains(double filterGain) {
         this.filterGain = filterGain;
     }
 

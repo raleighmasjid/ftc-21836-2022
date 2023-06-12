@@ -30,7 +30,7 @@ public class PIDController {
         this.kI = kI;
         this.kD = kD;
         this.maxIntegrationVelocity = maxIntegrationVelocity;
-        derivFilter.setGain(filterGain);
+        derivFilter.setGains(filterGain);
     }
 
     public double update(double measurement) {

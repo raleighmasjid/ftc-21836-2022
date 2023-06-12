@@ -170,8 +170,8 @@ public class PowerplayScorer {
     private void updateLiftGains() {
         boolean goingDown = targetLiftPos < currentLiftPos;
 
-        veloFilter.setGain(RobotConfig.LIFT_VELO_FILTER_GAIN);
-        accelFilter.setGain(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
+        veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN);
+        accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN);
 
         liftController.pid.setGains(
                 RobotConfig.LIFT_kP,
