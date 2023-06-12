@@ -27,20 +27,20 @@ public class PowerplayScorer {
     /**
      * Motor powering the dual lift system
      */
-    private final MotorEx lift_motor1, lift_motor2, lift_motor3;
+    private MotorEx lift_motor1, lift_motor2, lift_motor3;
 
-    private final SimpleServo clawServo, pivotServo, passThruServoR, passThruServoL, coneArmServoR, coneArmServoL;
+    private SimpleServo clawServo, pivotServo, passThruServoR, passThruServoL, coneArmServoR, coneArmServoL;
 
-    private final ElapsedTime passThruProfileTimer, liftProfileTimer, liftDerivTimer, liftClawTimer;
+    private ElapsedTime passThruProfileTimer, liftProfileTimer, liftDerivTimer, liftClawTimer;
 
-    private final IIRLowPassFilter accelFilter, veloFilter;
+    private IIRLowPassFilter accelFilter, veloFilter;
 
-    private final VoltageSensor batteryVoltageSensor;
+    private VoltageSensor batteryVoltageSensor;
 
     /**
      * PIDF controller for lift
      */
-    private final PIDFController liftController;
+    private PIDFController liftController;
 
     private MotionProfile passThruProfile, liftProfile;
 

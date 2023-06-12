@@ -14,9 +14,9 @@ import org.jetbrains.annotations.Contract;
 
 
 public class TeleOpMecanumDrive {
-    private final IMU imu;
+    private IMU imu;
 
-    private final MecanumDrive mecanumDrivetrain;
+    private MecanumDrive mecanumDrivetrain;
 
     private double headingOffset, latestIMUReading;
 

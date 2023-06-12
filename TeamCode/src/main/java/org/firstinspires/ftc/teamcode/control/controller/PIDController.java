@@ -10,9 +10,9 @@ public class PIDController {
 
     private boolean integrate = true;
 
-    private final ElapsedTime dtTimer;
+    private ElapsedTime dtTimer;
 
-    private final IIRLowPassFilter derivFilter;
+    private IIRLowPassFilter derivFilter;
 
     public PIDController(double kP, double kI, double kD, double filterGain) {
         setGains(kP, kI, kD, filterGain);

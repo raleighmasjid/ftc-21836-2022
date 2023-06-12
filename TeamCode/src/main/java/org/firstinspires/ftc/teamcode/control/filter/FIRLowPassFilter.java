@@ -7,13 +7,13 @@ import java.util.ArrayList;
  * Filters out sensor noise
  */
 public class FIRLowPassFilter {
-    private double filterGain = 0.0;
+    private double filterGain = 0.8;
     private int pastValuesCount = 5;
-    private final ArrayList<Double> pastValues = new ArrayList<>();
 
     public FIRLowPassFilter() {
         this(0.8, 5);
     }
+    private ArrayList<Double> pastValues = new ArrayList<>();
 
     public FIRLowPassFilter(double filterGain, int pastValuesCount) {
         setGains(filterGain, pastValuesCount);
