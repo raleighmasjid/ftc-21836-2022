@@ -100,10 +100,6 @@ public class PowerplayScorer {
         lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         lift_motor3.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
-//        lift_motor1.setRunMode(Motor.RunMode.VelocityControl);
-//        lift_motor2.setRunMode(Motor.RunMode.VelocityControl);
-//        lift_motor3.setRunMode(Motor.RunMode.VelocityControl);
-
         liftController = new PIDFController(
                 new PIDController(
                         RobotConfig.LIFT_kP,
