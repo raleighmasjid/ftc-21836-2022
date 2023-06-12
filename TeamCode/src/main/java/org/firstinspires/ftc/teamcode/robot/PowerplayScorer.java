@@ -522,9 +522,9 @@ public class PowerplayScorer {
         telemetry.addLine();
         telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
         telemetry.addLine();
-        telemetry.addData("Lift error integral (in*s)", liftController.pid.getErrorSum());
+        telemetry.addData("Lift error integral (in*s)", liftController.pid.getErrorIntegral());
         telemetry.addData("Lift error (in)", liftController.pid.getError());
-        telemetry.addData("Lift error derivative (in/s)", liftController.pid.getErrorDeriv());
+        telemetry.addData("Lift error derivative (in/s)", liftController.pid.getErrorVelocity());
     }
 
     /**

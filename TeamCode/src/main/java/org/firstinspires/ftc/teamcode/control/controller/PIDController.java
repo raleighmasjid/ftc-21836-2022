@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 
 public class PIDController {
 
-    private double kP, kI, kD, error, errorSum, errorDeriv, target;
+    private double kP, kI, kD, error, errorIntegral, errorVelocity, target;
 
     private boolean integrate = true;
 
@@ -35,12 +35,12 @@ public class PIDController {
         dtTimer.reset();
         double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
 
-        errorDeriv = derivFilter.getEstimate((error - lastError) / dt);
+        errorVelocity = derivFilter.getEstimate((error - lastError) / dt);
 
-        if (integrate) errorSum += 0.5 * (error + lastError) * dt;
+        if (integrate) errorIntegral += 0.5 * (error + lastError) * dt;
         if (Math.signum(error) != Math.signum(lastError)) resetIntegral();
 
-        return (kP * error) + (kI * errorSum) + (kD * errorDeriv);
+        return (kP * error) + (kI * errorIntegral) + (kD * errorVelocity);
     }
 
     public void setTarget(double target) {
@@ -55,15 +55,15 @@ public class PIDController {
         return error;
     }
 
-    public double getErrorDeriv() {
-        return errorDeriv;
+    public double getErrorVelocity() {
+        return errorVelocity;
     }
 
-    public double getErrorSum() {
-        return errorSum;
+    public double getErrorIntegral() {
+        return errorIntegral;
     }
 
     public void resetIntegral() {
-        errorSum = 0.0;
+        errorIntegral = 0.0;
     }
 }
