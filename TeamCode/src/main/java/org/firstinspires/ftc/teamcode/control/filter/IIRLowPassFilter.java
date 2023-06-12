@@ -6,7 +6,7 @@ package org.firstinspires.ftc.teamcode.control.filter;
  */
 public class IIRLowPassFilter {
     private double filterGain = 0.0;
-    private double lastValue = 0.0;
+    private double estimate = 0.0;
 
     public IIRLowPassFilter() {
         this(0.8);
@@ -21,12 +21,11 @@ public class IIRLowPassFilter {
     }
 
     public void clearMemory() {
-        lastValue = 0.0;
+        estimate = 0.0;
     }
 
     public double getEstimate(double newValue) {
-        double estimate = filterGain * lastValue + (1 - filterGain) * newValue;
-        lastValue = estimate;
+        estimate = filterGain * estimate + (1 - filterGain) * newValue;
         return estimate;
     }
 }
