@@ -20,7 +20,7 @@ public class PIDController {
         lastError = 0.0;
         error = 0.0;
         errorVelocity = 0.0;
-        resetIntegral();
+        errorIntegral = 0.0;
         dtTimer = new ElapsedTime();
         derivFilter = new IIRLowPassFilter(filterGain);
     }
