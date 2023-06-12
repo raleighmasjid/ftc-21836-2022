@@ -293,7 +293,9 @@ public class PowerplayScorer {
         liftController.feedforward.setTargetVelocity(profileLiftState.getV());
         liftController.feedforward.setTargetAcceleration(profileLiftState.getA());
 
-        if (targetLiftPos == currentLiftPos) liftController.pid.resetIntegral();
+        if (targetLiftPos == currentLiftPos || Math.signum(liftController.pid.getError()) != Math.signum(liftController.pid.getLastError())) {
+            liftController.pid.resetIntegral();
+        }
 
         runLift(liftController.update(currentLiftPos, currentBatteryVoltage), false);
     }

@@ -38,7 +38,6 @@ public class PIDController {
         errorVelocity = derivFilter.getEstimate((error - lastError) / dt);
 
         if (integrate) errorIntegral += 0.5 * (error + lastError) * dt;
-        if (Math.signum(error) != Math.signum(lastError)) resetIntegral();
 
         return (kP * error) + (kI * errorIntegral) + (kD * errorVelocity);
     }
