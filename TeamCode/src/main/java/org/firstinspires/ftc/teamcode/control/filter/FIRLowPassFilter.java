@@ -23,7 +23,9 @@ public class FIRLowPassFilter {
 
     public void clearMemory() {
         pastValues.clear();
-        for (int x = 0; x < pastValuesCount; x++) pastValues.add(0.0);
+        for (int x = 0; x < pastValuesCount; x++) {
+            pastValues.add(0.0);
+        }
     }
 
     public double getEstimate(double newValue) {
