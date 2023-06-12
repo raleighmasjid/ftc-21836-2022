@@ -7,35 +7,33 @@ import java.util.ArrayList;
  * Filters out sensor noise
  */
 public class FIRLowPassFilter {
-    private double filterGain = 0.8;
-    private int pastValuesCount = 5;
+    private double filterGain;
+    private int filterCount;
     private ArrayList<Double> pastValues = new ArrayList<>();
 
-    public FIRLowPassFilter(double filterGain, int pastValuesCount) {
-        setGains(filterGain, pastValuesCount);
-        clearMemory();
+    public FIRLowPassFilter(double filterGain, int filterCount) {
+        setGains(filterGain, filterCount);
     }
 
-    public void setGains(double filterGain, int pastValuesCount) {
+    public void setGains(double filterGain, int filterCount) {
         this.filterGain = filterGain;
-        this.pastValuesCount = (pastValuesCount == 0) ? 1 : pastValuesCount;
+        this.filterCount = Math.max(filterCount, 2);
     }
 
     public void clearMemory() {
         pastValues.clear();
-        for (int x = 0; x < pastValuesCount; x++) {
-            pastValues.add(0.0);
-        }
     }
 
     public double getEstimate(double newValue) {
-        double pastValuesTotal = 0.0;
-        for (double pastValue : pastValues) pastValuesTotal += pastValue;
-        double pastValuesAvg = pastValuesTotal / (double) pastValues.size();
-
         pastValues.add(newValue);
-        if (pastValues.size() > pastValuesCount) pastValues.remove(0);
+        if (pastValues.size() > filterCount) pastValues.remove(0);
+        else if (pastValues.size() < 2) return newValue;
 
-        return filterGain * pastValuesAvg + (1 - filterGain) * newValue;
+        double estimate = pastValues.get(0);
+        for (int ind = 1; ind < pastValues.size(); ind++) {
+            estimate = filterGain * estimate + (1 - filterGain) * pastValues.get(ind);
+        }
+
+        return estimate;
     }
 }
