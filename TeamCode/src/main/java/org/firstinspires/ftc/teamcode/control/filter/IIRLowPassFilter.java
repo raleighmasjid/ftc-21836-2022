@@ -8,10 +8,6 @@ public class IIRLowPassFilter {
     private double filterGain = 0.0;
     private double estimate = 0.0;
 
-    public IIRLowPassFilter() {
-        this(0.8);
-    }
-
     public IIRLowPassFilter(double filterGain) {
         setGains(filterGain);
     }
