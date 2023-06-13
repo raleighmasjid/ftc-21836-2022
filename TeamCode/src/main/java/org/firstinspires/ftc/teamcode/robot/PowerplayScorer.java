@@ -50,7 +50,7 @@ public class PowerplayScorer {
                     RobotConfig.LIFT_kP,
                     RobotConfig.LIFT_kI,
                     RobotConfig.LIFT_kD,
-                    RobotConfig.LIFT_MAX_INTEGRATION_VELO,
+                    RobotConfig.LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL,
                     new IIRLowPassFilter(RobotConfig.LIFT_FILTER_GAIN_kD)),
             new FeedforwardController(
                     RobotConfig.LIFT_kV_UP,
@@ -175,7 +175,7 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_MAX_INTEGRATION_VELO
+                RobotConfig.LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL
         );
         liftController.pid.derivFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_kD);
         liftController.feedforward.setGains(

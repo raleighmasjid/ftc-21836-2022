@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 
 public class PIDController {
 
-    private double kP, kI, kD, maxIntegrationVelocity;
+    private double kP, kI, kD, maxOutputWithIntegral;
     private double lastError = 0.0;
     private double error = 0.0;
     private double errorIntegral = 0.0;
@@ -19,17 +19,17 @@ public class PIDController {
 
     public IIRLowPassFilter derivFilter;
 
-    public PIDController(double kP, double kI, double kD, double maxIntegrationVelocity, IIRLowPassFilter derivFilter) {
-        setGains(kP, kI, kD, maxIntegrationVelocity);
+    public PIDController(double kP, double kI, double kD, double maxOutputWithIntegral, IIRLowPassFilter derivFilter) {
+        setGains(kP, kI, kD, maxOutputWithIntegral);
         dtTimer.reset();
         this.derivFilter = derivFilter;
     }
 
-    public void setGains(double kP, double kI, double kD, double maxIntegrationVelocity) {
+    public void setGains(double kP, double kI, double kD, double maxOutputWithIntegral) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
-        this.maxIntegrationVelocity = maxIntegrationVelocity;
+        this.maxOutputWithIntegral = maxOutputWithIntegral;
     }
 
     public double update(double measurement) {
@@ -45,13 +45,13 @@ public class PIDController {
 
         double output = (kP * error) + (kI * errorIntegral) + (kD * errorVelocity);
 
-        integrate = !(Math.abs(output) > maxIntegrationVelocity && Math.signum(output) == Math.signum(error));
+        integrate = !(Math.abs(output) > maxOutputWithIntegral && Math.signum(output) == Math.signum(error));
 
         return output;
     }
 
-    public PIDController(double kP, double kI, double kD, double maxIntegrationVelocity) {
-        this(kP, kI, kD, maxIntegrationVelocity, new IIRLowPassFilter(0));
+    public PIDController(double kP, double kI, double kD, double maxOutputWithIntegral) {
+        this(kP, kI, kD, maxOutputWithIntegral, new IIRLowPassFilter(0));
     }
 
     public PIDController(double kP, double kI, double kD, IIRLowPassFilter derivFilter) {
@@ -63,7 +63,7 @@ public class PIDController {
     }
 
     public void setGains(double kP, double kI, double kD) {
-        setGains(kP, kI, kD, maxIntegrationVelocity);
+        setGains(kP, kI, kD, maxOutputWithIntegral);
     }
 
     public void setIntegrate(boolean integrate) {
