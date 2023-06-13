@@ -26,10 +26,11 @@ public class FIRLowPassFilter {
 
     public double getEstimate(double newValue) {
         values.add(newValue);
-        if (values.size() > filterCount) {
-            values.remove(0);
-        } else if (values.size() < 2) {
+        if (values.size() < 2) {
             return newValue;
+        }
+        while (values.size() > filterCount) {
+            values.remove(0);
         }
 
         double estimate = values.get(0);
