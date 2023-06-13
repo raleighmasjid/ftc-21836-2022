@@ -28,7 +28,7 @@ public class PowerplayScorer {
     /**
      * Motor powering the dual lift system
      */
-    private MotorEx lift_motor1, lift_motor2, lift_motor3;
+    private MotorEx liftMotor1, liftMotor2, liftMotor3;
 
     private SimpleServo clawServo, pivotServo, passThruServoR, passThruServoL, coneArmServoR, coneArmServoL;
 
@@ -117,17 +117,17 @@ public class PowerplayScorer {
         coneArmServoR = goBILDAServo(hw, "arm right");
         coneArmServoL = goBILDAServo(hw, "arm left");
 
-        lift_motor1 = liftMotor(hw, "lift motor 1");
-        lift_motor2 = liftMotor(hw, "lift motor 2");
-        lift_motor3 = liftMotor(hw, "lift motor 3");
+        liftMotor1 = liftMotor(hw, "lift motor 1");
+        liftMotor2 = liftMotor(hw, "lift motor 2");
+        liftMotor3 = liftMotor(hw, "lift motor 3");
 
-        lift_motor1.setInverted(true);
-        lift_motor2.setInverted(false);
-        lift_motor3.setInverted(true);
+        liftMotor1.setInverted(true);
+        liftMotor2.setInverted(false);
+        liftMotor3.setInverted(true);
 
-        lift_motor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        lift_motor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        lift_motor3.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        liftMotor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        liftMotor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        liftMotor3.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
         liftController.setOutputBounds(-1.0, 1.0);
 
@@ -155,7 +155,7 @@ public class PowerplayScorer {
         updateLiftGains();
 
         currentBatteryVoltage = batteryVoltageSensor.getVoltage();
-        currentLiftPos = lift_motor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
+        currentLiftPos = liftMotor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
         currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
         currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
         maxLiftVelo = Math.max(currentLiftVelo, maxLiftVelo);
@@ -266,7 +266,7 @@ public class PowerplayScorer {
         accelFilter.clearMemory();
         veloFilter.clearMemory();
 
-        lift_motor2.resetEncoder();
+        liftMotor2.resetEncoder();
         liftController.pid.resetIntegral();
 
         currentLiftPos = 0.0;
@@ -301,7 +301,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Run {@link #lift_motor1}, {@link #lift_motor2}, and {@link #lift_motor3} at the entered percentage of max velocity
+     * Run {@link #liftMotor1}, {@link #liftMotor2}, and {@link #liftMotor3} at the entered percentage of max velocity
      *
      * @param veloCommand       Pass in a velocity command between -1 ≤ x ≤ 1
      * @param voltageCompensate Whether to voltage compensate veloCommand
@@ -309,9 +309,9 @@ public class PowerplayScorer {
     public void runLift(double veloCommand, boolean voltageCompensate) {
         if (voltageCompensate) veloCommand *= (12.0 / currentBatteryVoltage);
         veloCommand += kG();
-        lift_motor1.set(veloCommand);
-        lift_motor2.set(veloCommand);
-        lift_motor3.set(veloCommand);
+        liftMotor1.set(veloCommand);
+        liftMotor2.set(veloCommand);
+        liftMotor3.set(veloCommand);
     }
 
     /**
