@@ -50,6 +50,22 @@ public class PIDController {
         return output;
     }
 
+    public PIDController(double kP, double kI, double kD, double maxIntegrationVelocity) {
+        this(kP, kI, kD, maxIntegrationVelocity, new IIRLowPassFilter(0));
+    }
+
+    public PIDController(double kP, double kI, double kD, IIRLowPassFilter derivFilter) {
+        this(kP, kI, kD, Double.POSITIVE_INFINITY, derivFilter);
+    }
+
+    public PIDController(double kP, double kI, double kD) {
+        this(kP, kI, kD, Double.POSITIVE_INFINITY, new IIRLowPassFilter(0));
+    }
+
+    public void setGains(double kP, double kI, double kD) {
+        setGains(kP, kI, kD, maxIntegrationVelocity);
+    }
+
     public void setTarget(double target) {
         this.target = target;
     }
