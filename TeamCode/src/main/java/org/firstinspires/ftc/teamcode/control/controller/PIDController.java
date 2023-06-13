@@ -17,20 +17,19 @@ public class PIDController {
 
     private ElapsedTime dtTimer = new ElapsedTime();
 
-    private IIRLowPassFilter derivFilter;
+    public IIRLowPassFilter derivFilter;
 
-    public PIDController(double kP, double kI, double kD, double filterGain, double maxIntegrationVelocity) {
-        setGains(kP, kI, kD, filterGain, maxIntegrationVelocity);
+    public PIDController(double kP, double kI, double kD, double maxIntegrationVelocity, IIRLowPassFilter derivFilter) {
+        setGains(kP, kI, kD, maxIntegrationVelocity);
         dtTimer.reset();
-        derivFilter = new IIRLowPassFilter(filterGain);
+        this.derivFilter = derivFilter;
     }
 
-    public void setGains(double kP, double kI, double kD, double filterGain, double maxIntegrationVelocity) {
+    public void setGains(double kP, double kI, double kD, double maxIntegrationVelocity) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
         this.maxIntegrationVelocity = maxIntegrationVelocity;
-        derivFilter.setGains(filterGain);
     }
 
     public double update(double measurement) {

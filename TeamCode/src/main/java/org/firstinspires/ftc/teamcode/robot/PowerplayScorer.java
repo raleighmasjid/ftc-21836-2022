@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.control.controller.FeedforwardController;
 import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
+import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 
 /**
  * Contains a 3-motor motion profiled lift, multi-function claw, and motion profiled passthrough
@@ -49,8 +50,8 @@ public class PowerplayScorer {
                     RobotConfig.LIFT_kP,
                     RobotConfig.LIFT_kI,
                     RobotConfig.LIFT_kD,
-                    RobotConfig.LIFT_kD_FILTER_GAIN,
-                    RobotConfig.LIFT_INTEGRATION_MAX_VELO),
+                    RobotConfig.LIFT_INTEGRATION_MAX_VELO,
+                    new IIRLowPassFilter(RobotConfig.LIFT_kD_FILTER_GAIN)),
             new FeedforwardController(
                     RobotConfig.LIFT_UP_kV,
                     RobotConfig.LIFT_UP_kA,
@@ -174,9 +175,9 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_kD_FILTER_GAIN,
                 RobotConfig.LIFT_INTEGRATION_MAX_VELO
         );
+        liftController.pid.derivFilter.setGains(RobotConfig.LIFT_kD_FILTER_GAIN);
         liftController.feedforward.setGains(
                 goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
                 goingDown ? RobotConfig.LIFT_DOWN_kA : RobotConfig.LIFT_UP_kA,
