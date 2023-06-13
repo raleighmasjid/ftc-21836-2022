@@ -37,8 +37,8 @@ public class PowerplayScorer {
     private ElapsedTime liftDerivTimer = new ElapsedTime();
     private ElapsedTime liftClawTimer = new ElapsedTime();
 
-    private FIRLowPassFilter accelFilter = new FIRLowPassFilter(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_FILTER_COUNT);
-    private FIRLowPassFilter veloFilter = new FIRLowPassFilter(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_FILTER_COUNT);
+    private FIRLowPassFilter accelFilter = new FIRLowPassFilter(RobotConfig.LIFT_FILTER_GAIN_ACCEL, RobotConfig.LIFT_FILTER_COUNT_ACCEL);
+    private FIRLowPassFilter veloFilter = new FIRLowPassFilter(RobotConfig.LIFT_FILTER_GAIN_VELO, RobotConfig.LIFT_FILTER_COUNT_VELO);
 
     private VoltageSensor batteryVoltageSensor;
 
@@ -50,11 +50,11 @@ public class PowerplayScorer {
                     RobotConfig.LIFT_kP,
                     RobotConfig.LIFT_kI,
                     RobotConfig.LIFT_kD,
-                    RobotConfig.LIFT_INTEGRATION_MAX_VELO,
-                    new IIRLowPassFilter(RobotConfig.LIFT_kD_FILTER_GAIN)),
+                    RobotConfig.LIFT_MAX_INTEGRATION_VELO,
+                    new IIRLowPassFilter(RobotConfig.LIFT_FILTER_GAIN_kD)),
             new FeedforwardController(
-                    RobotConfig.LIFT_UP_kV,
-                    RobotConfig.LIFT_UP_kA,
+                    RobotConfig.LIFT_kV_UP,
+                    RobotConfig.LIFT_kA_UP,
                     RobotConfig.LIFT_kS)
     );
 
@@ -168,19 +168,19 @@ public class PowerplayScorer {
     private void updateLiftGains() {
         boolean goingDown = targetLiftPos < currentLiftPos;
 
-        veloFilter.setGains(RobotConfig.LIFT_VELO_FILTER_GAIN, RobotConfig.LIFT_VELO_FILTER_COUNT);
-        accelFilter.setGains(RobotConfig.LIFT_ACCEL_FILTER_GAIN, RobotConfig.LIFT_ACCEL_FILTER_COUNT);
+        veloFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_VELO, RobotConfig.LIFT_FILTER_COUNT_VELO);
+        accelFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_ACCEL, RobotConfig.LIFT_FILTER_COUNT_ACCEL);
 
         liftController.pid.setGains(
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_INTEGRATION_MAX_VELO
+                RobotConfig.LIFT_MAX_INTEGRATION_VELO
         );
-        liftController.pid.derivFilter.setGains(RobotConfig.LIFT_kD_FILTER_GAIN);
+        liftController.pid.derivFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_kD);
         liftController.feedforward.setGains(
-                goingDown ? RobotConfig.LIFT_DOWN_kV : RobotConfig.LIFT_UP_kV,
-                goingDown ? RobotConfig.LIFT_DOWN_kA : RobotConfig.LIFT_UP_kA,
+                goingDown ? RobotConfig.LIFT_kV_DOWN : RobotConfig.LIFT_kV_UP,
+                goingDown ? RobotConfig.LIFT_kA_DOWN : RobotConfig.LIFT_kA_UP,
                 RobotConfig.LIFT_kS
         );
     }
@@ -324,7 +324,7 @@ public class PowerplayScorer {
                 (currentLiftPos >= RobotConfig.HEIGHT_STAGES_4 ? RobotConfig.LIFT_kG_4 :
                         currentLiftPos >= RobotConfig.HEIGHT_STAGES_3 ? RobotConfig.LIFT_kG_3 :
                                 currentLiftPos >= RobotConfig.HEIGHT_STAGES_2 ? RobotConfig.LIFT_kG_2 :
-                                        currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE ? RobotConfig.LIFT_kG_1 :
+                                        currentLiftPos > RobotConfig.LIFT_TOLERANCE_POS ? RobotConfig.LIFT_kG_1 :
                                                 0.0);
     }
 
@@ -360,7 +360,7 @@ public class PowerplayScorer {
      */
     public void grabCone() {
         clawIsOpen = false;
-        if (currentLiftPos <= (getConesHeight(5) + RobotConfig.LIFT_POS_TOLERANCE)) {
+        if (currentLiftPos <= (getConesHeight(5) + RobotConfig.LIFT_TOLERANCE_POS)) {
             clawHasLifted = false;
             liftClawTimer.reset();
         }
@@ -372,7 +372,7 @@ public class PowerplayScorer {
      * 2 inches if grabbing off the floor
      */
     public void liftClaw() {
-        setTargetLiftPos(currentLiftPos + ((currentLiftPos > RobotConfig.LIFT_POS_TOLERANCE) ? 6 : 2));
+        setTargetLiftPos(currentLiftPos + ((currentLiftPos > RobotConfig.LIFT_TOLERANCE_POS) ? 6 : 2));
         clawHasLifted = true;
     }
 
@@ -460,8 +460,8 @@ public class PowerplayScorer {
     private void updatePassThruProfile() {
         double tiltOffset =
                 clawIsTilted ?
-                        RobotConfig.ANGLE_PASS_TILT :
-                        (!passThruTriggered) && (passThruInFront != pivotIsFront) ? RobotConfig.ANGLE_PASS_MINI_TILT : 0.0;
+                        RobotConfig.ANGLE_PASS_TILT_OFFSET :
+                        (!passThruTriggered) && (passThruInFront != pivotIsFront) ? RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
 
         double targetPassThruAngle =
                 passThruInFront ?
@@ -488,7 +488,7 @@ public class PowerplayScorer {
         currentPassThruVelo = state.getV();
         passThruServoR.turnToAngle(currentPassThruAngle);
         passThruServoL.turnToAngle(355.0 - currentPassThruAngle);
-        if (passThruTriggered && Math.abs(RobotConfig.PASS_PIVOT_POS - currentPassThruAngle) <= RobotConfig.PASS_PIVOT_POS_TOLERANCE) {
+        if (passThruTriggered && Math.abs(RobotConfig.ANGLE_PIVOT_POS - currentPassThruAngle) <= RobotConfig.PASS_PIVOT_POS_TOLERANCE) {
             pivotIsFront = passThruInFront;
             passThruTriggered = false;
         }

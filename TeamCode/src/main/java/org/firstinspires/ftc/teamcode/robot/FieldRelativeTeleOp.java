@@ -101,8 +101,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             // Precision mode driving triggers
             double precisionScale = Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER) ?
-                    RobotConfig.PRECISION_MODE_SCALE :
-                    (RobotConfig.PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
+                    RobotConfig.SCALE_PRECISION_MODE :
+                    (RobotConfig.SCALE_PRECISION_MODE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
 
             boolean stackHeights = control2LShoulder.isDown();
 
@@ -144,8 +144,8 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             scorer.runPivot();
             scorer.runClaw();
             scorer.runConeArms(
-                    Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * RobotConfig.ANGLE_ARM_DOWN,
-                    Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * RobotConfig.ANGLE_ARM_DOWN
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN,
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN
             );
             drivetrain.driveFieldCentric(
                     Gamepad1.getLeftX() * precisionScale,
