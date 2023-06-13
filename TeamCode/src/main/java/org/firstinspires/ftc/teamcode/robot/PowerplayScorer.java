@@ -268,6 +268,7 @@ public class PowerplayScorer {
 
         liftMotor2.resetEncoder();
         liftController.pid.resetIntegral();
+        liftController.pid.derivFilter.clearMemory();
 
         currentLiftPos = 0.0;
         currentLiftVelo = 0.0;

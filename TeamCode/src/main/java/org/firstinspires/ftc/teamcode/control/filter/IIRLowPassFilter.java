@@ -6,7 +6,7 @@ package org.firstinspires.ftc.teamcode.control.filter;
  */
 public class IIRLowPassFilter {
     private double filterGain = 0.0;
-    private double estimate = 0.0;
+    private double estimate = Double.NaN;
 
     public IIRLowPassFilter(double filterGain) {
         setGains(filterGain);
@@ -17,11 +17,11 @@ public class IIRLowPassFilter {
     }
 
     public void clearMemory() {
-        estimate = 0.0;
+        estimate = Double.NaN;
     }
 
     public double getEstimate(double newValue) {
-        estimate = filterGain * estimate + (1 - filterGain) * newValue;
+        estimate = Double.isNaN(estimate) ? newValue : filterGain * estimate + (1 - filterGain) * newValue;
         return estimate;
     }
 }
