@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class FIRLowPassFilter {
     private double filterGain;
     private int filterCount;
-    private ArrayList<Double> pastValues = new ArrayList<>();
+    private ArrayList<Double> values = new ArrayList<>();
 
     public FIRLowPassFilter(double filterGain, int filterCount) {
         setGains(filterGain, filterCount);
@@ -21,20 +21,20 @@ public class FIRLowPassFilter {
     }
 
     public void clearMemory() {
-        pastValues.clear();
+        values.clear();
     }
 
     public double getEstimate(double newValue) {
-        pastValues.add(newValue);
-        if (pastValues.size() > filterCount) {
-            pastValues.remove(0);
-        } else if (pastValues.size() < 2) {
+        values.add(newValue);
+        if (values.size() > filterCount) {
+            values.remove(0);
+        } else if (values.size() < 2) {
             return newValue;
         }
 
-        double estimate = pastValues.get(0);
-        for (int ind = 1; ind < pastValues.size(); ind++) {
-            estimate = filterGain * estimate + (1 - filterGain) * pastValues.get(ind);
+        double estimate = values.get(0);
+        for (int ind = 1; ind < values.size(); ind++) {
+            estimate = filterGain * estimate + (1 - filterGain) * values.get(ind);
         }
 
         return estimate;
