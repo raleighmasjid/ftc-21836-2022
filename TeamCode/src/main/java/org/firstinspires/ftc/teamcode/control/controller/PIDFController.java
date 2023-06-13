@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.control.controller;
 
 /**
- * PID controller with various feedforward components.
+ * Wrapper class combining a PID controller and a kV-kA-kS feedforward controller.
  */
 public class PIDFController {
     private boolean outputBounded = false;
