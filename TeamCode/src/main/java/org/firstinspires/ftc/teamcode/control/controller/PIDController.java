@@ -66,6 +66,10 @@ public class PIDController {
         setGains(kP, kI, kD, maxIntegrationVelocity);
     }
 
+    public void setIntegrate(boolean integrate) {
+        this.integrate = integrate;
+    }
+
     public void setTarget(double target) {
         this.target = target;
     }
