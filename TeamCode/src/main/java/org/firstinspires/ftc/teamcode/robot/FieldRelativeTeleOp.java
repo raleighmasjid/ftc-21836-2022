@@ -90,6 +90,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2Right.readValue();
             control2Down.readValue();
 
+            scorer.updateLiftGains();
             scorer.lift.readPosition();
             drivetrain.readIMU();
 
@@ -125,26 +126,25 @@ public class FieldRelativeTeleOp extends LinearOpMode {
                 scorer.lift.run(Gamepad2.getLeftY(), true);
             } else {
                 if (control2Up.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.FIVE : PowerplayLift.Position.TALL);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.FIVE : PowerplayScorer.LiftPos.TALL);
                 else if (control2Left.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.FOUR : PowerplayLift.Position.MED);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.FOUR : PowerplayScorer.LiftPos.MED);
                 else if (control2Right.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.THREE : PowerplayLift.Position.LOW);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.THREE : PowerplayScorer.LiftPos.LOW);
                 else if (control2Down.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.TWO : PowerplayLift.Position.FLOOR);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.TWO : PowerplayScorer.LiftPos.FLOOR);
 
                 if (control2Y.wasJustPressed()) scorer.passthrough.trigger();
 
                 if (control2B.wasJustPressed()) scorer.triggerClaw();
 
-                scorer.lift.runToPos();
+                scorer.lift.runToPosition();
             }
 
             scorer.passthrough.run();
             scorer.passthrough.runPivot();
             scorer.passthrough.runClaw();
-            scorer.runLiftClaw();
-            scorer.runConeArms(
+            scorer.run(
                     Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN,
                     Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN
             );

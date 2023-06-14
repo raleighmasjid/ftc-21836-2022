@@ -3,11 +3,13 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * Contains a {@link PowerplayPassthrough} and {@link PowerplayLift} linked by automated methods
+ * Contains a {@link PowerplayPassthrough} and {@link ProfiledLift} linked by automated methods
  *
  * @author Arshad Anas
  * @since 2022/12/24
@@ -18,14 +20,25 @@ public class PowerplayScorer {
 
     private ElapsedTime liftClawTimer = new ElapsedTime();
 
-    public PowerplayLift lift;
+    public ProfiledLift lift;
 
     public PowerplayPassthrough passthrough;
 
     private boolean clawHasLifted = true;
 
+    /**
+     * Named lift position
+     */
+    public enum LiftPos {
+        FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
+    }
+
     private SimpleServo goBILDAServo(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 280);
+    }
+
+    private MotorEx liftMotor(HardwareMap hw, String name) {
+        return new MotorEx(hw, name, 145.1, 1150);
     }
 
     /**
@@ -34,16 +47,103 @@ public class PowerplayScorer {
      * @param hw Passed-in hardware map from the op mode
      */
     public PowerplayScorer(HardwareMap hw) {
+        MotorEx liftMotor1 = liftMotor(hw, "lift motor 1");
+        MotorEx liftMotor2 = liftMotor(hw, "lift motor 2");
+        MotorEx liftMotor3 = liftMotor(hw, "lift motor 3");
+
+        liftMotor2.setInverted(false);
+        liftMotor1.setInverted(true);
+        liftMotor3.setInverted(true);
+
         coneArmServoR = goBILDAServo(hw, "arm right");
         coneArmServoL = goBILDAServo(hw, "arm left");
-        lift = new PowerplayLift(hw);
+
+        lift = new ProfiledLift(
+                new MotorGroup(liftMotor2, liftMotor1, liftMotor3),
+                hw.voltageSensor.iterator().next(),
+                0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0,
+                0, 0
+        );
+        updateLiftGains();
+
         passthrough = new PowerplayPassthrough(hw);
         liftClawTimer.reset();
     }
 
-    public void setTargetLiftPos(PowerplayLift.Position height) {
-        passthrough.setTilt(height == PowerplayLift.Position.LOW || height == PowerplayLift.Position.MED || height == PowerplayLift.Position.TALL);
-        lift.setTargetPosition(height);
+    public double getConesHeight(int numOfCones) {
+        return (numOfCones - 1) * (RobotConfig.HEIGHT_2 - RobotConfig.HEIGHT_FLOOR) + RobotConfig.HEIGHT_FLOOR;
+    }
+
+    public void setTargetLiftPos(LiftPos height) {
+        passthrough.setTilt(height == LiftPos.LOW || height == LiftPos.MED || height == LiftPos.TALL);
+        switch (height) {
+            case TALL:
+                lift.setTargetPosition(RobotConfig.HEIGHT_TALL, "Tall junction");
+                break;
+            case MED:
+                lift.setTargetPosition(RobotConfig.HEIGHT_MEDIUM, "Medium junction");
+                break;
+            case LOW:
+                lift.setTargetPosition(RobotConfig.HEIGHT_LOW, "Low junction");
+                break;
+            case FIVE:
+                lift.setTargetPosition(getConesHeight(5), "5 cones");
+                break;
+            case FOUR:
+                lift.setTargetPosition(getConesHeight(4), "4 cones");
+                break;
+            case THREE:
+                lift.setTargetPosition(getConesHeight(3), "3 cones");
+                break;
+            case TWO:
+                lift.setTargetPosition(getConesHeight(2), "2 cones / ground junction");
+                break;
+            case FLOOR:
+            default:
+                lift.setTargetPosition(getConesHeight(1), "Floor / 1 cone");
+                break;
+        }
+    }
+
+    public void updateLiftGains() {
+        lift.updateGains(
+                RobotConfig.LIFT_INCHES_PER_TICK,
+                RobotConfig.LIFT_FILTER_GAIN_VELO,
+                RobotConfig.LIFT_FILTER_COUNT_VELO,
+                RobotConfig.LIFT_FILTER_GAIN_ACCEL,
+                RobotConfig.LIFT_FILTER_COUNT_ACCEL,
+                RobotConfig.LIFT_kP,
+                RobotConfig.LIFT_kI,
+                RobotConfig.LIFT_kD,
+                RobotConfig.LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL,
+                RobotConfig.LIFT_FILTER_GAIN_kD,
+                RobotConfig.LIFT_kV_UP,
+                RobotConfig.LIFT_kA_UP,
+                RobotConfig.LIFT_kV_DOWN,
+                RobotConfig.LIFT_kA_DOWN,
+                RobotConfig.LIFT_kS,
+                kG(),
+                -1.0,
+                1.0,
+                RobotConfig.LIFT_MAX_VELO,
+                RobotConfig.LIFT_MAX_ACCEL,
+                RobotConfig.LIFT_MAX_JERK
+        );
+    }
+
+    /**
+     * Calculates anti-gravity feedforward for a 4-stage continuous rigged linear slide system
+     *
+     * @return Velocity command for lift
+     */
+    private double kG() {
+        return lift.getCurrentPosition() >= RobotConfig.HEIGHT_STAGES_4 ? RobotConfig.LIFT_kG_4 :
+                lift.getCurrentPosition() >= RobotConfig.HEIGHT_STAGES_3 ? RobotConfig.LIFT_kG_3 :
+                        lift.getCurrentPosition() >= RobotConfig.HEIGHT_STAGES_2 ? RobotConfig.LIFT_kG_2 :
+                                lift.getCurrentPosition() > RobotConfig.LIFT_TOLERANCE_POS ? RobotConfig.LIFT_kG_1 :
+                                        0.0;
     }
 
     /**
@@ -70,7 +170,7 @@ public class PowerplayScorer {
      */
     public void grabCone() {
         passthrough.setClawOpen(false);
-        if (lift.getCurrentPosition() <= (lift.getConesHeight(5) + RobotConfig.LIFT_TOLERANCE_POS)) {
+        if (lift.getCurrentPosition() <= (getConesHeight(5) + RobotConfig.LIFT_TOLERANCE_POS)) {
             clawHasLifted = false;
             liftClawTimer.reset();
         }
@@ -90,7 +190,7 @@ public class PowerplayScorer {
      * Opens claw and runs lift to floor position
      */
     public void dropCone() {
-        dropCone(PowerplayLift.Position.FLOOR);
+        dropCone(LiftPos.FLOOR);
     }
 
     /**
@@ -98,16 +198,9 @@ public class PowerplayScorer {
      *
      * @param height Named position to run lift to
      */
-    public void dropCone(PowerplayLift.Position height) {
+    public void dropCone(LiftPos height) {
         passthrough.setClawOpen(true);
         setTargetLiftPos(height);
-    }
-
-    /**
-     * Lifts claw, if previously triggered
-     */
-    public void runLiftClaw() {
-        if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
     }
 
     /**
@@ -116,9 +209,10 @@ public class PowerplayScorer {
      * @param angleR The angle to turn {@link #coneArmServoR} to
      * @param angleL The angle to turn {@link #coneArmServoL} to
      */
-    public void runConeArms(double angleR, double angleL) {
-        coneArmServoL.turnToAngle(280.0 - Math.min(angleL, 110.0));
-        coneArmServoR.turnToAngle(Math.min(angleR, 110.0));
+    public void run(double angleR, double angleL) {
+        if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
+        coneArmServoL.turnToAngle(280.0 - angleL);
+        coneArmServoR.turnToAngle(angleR);
     }
 
     /**
