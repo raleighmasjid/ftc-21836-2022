@@ -2,105 +2,30 @@ package org.firstinspires.ftc.teamcode.robot;
 
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.profile.MotionProfile;
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
-import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.controller.FeedforwardController;
-import org.firstinspires.ftc.teamcode.control.controller.PIDController;
-import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
-import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
-import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
-
 /**
- * Contains a 3-motor motion profiled lift, multi-function claw, and motion profiled passthrough
+ * Contains a {@link PowerplayPassthrough} and {@link PowerplayLift} linked by automated methods
  *
  * @author Arshad Anas
  * @since 2022/12/24
  */
 public class PowerplayScorer {
-    /**
-     * Motor powering the dual lift system
-     */
-    private MotorEx liftMotor1, liftMotor2, liftMotor3;
 
-    private SimpleServo clawServo, pivotServo, passThruServoR, passThruServoL, coneArmServoR, coneArmServoL;
+    private SimpleServo coneArmServoR, coneArmServoL;
 
-    private ElapsedTime passThruProfileTimer = new ElapsedTime();
-    private ElapsedTime liftProfileTimer = new ElapsedTime();
-    private ElapsedTime liftDerivTimer = new ElapsedTime();
     private ElapsedTime liftClawTimer = new ElapsedTime();
 
-    private FIRLowPassFilter accelFilter = new FIRLowPassFilter(RobotConfig.LIFT_FILTER_GAIN_ACCEL, RobotConfig.LIFT_FILTER_COUNT_ACCEL);
-    private FIRLowPassFilter veloFilter = new FIRLowPassFilter(RobotConfig.LIFT_FILTER_GAIN_VELO, RobotConfig.LIFT_FILTER_COUNT_VELO);
+    public PowerplayLift lift;
 
-    private VoltageSensor batteryVoltageSensor;
-
-    /**
-     * PIDF controller for lift
-     */
-    private PIDFController liftController = new PIDFController(
-            new PIDController(
-                    RobotConfig.LIFT_kP,
-                    RobotConfig.LIFT_kI,
-                    RobotConfig.LIFT_kD,
-                    RobotConfig.LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL,
-                    new IIRLowPassFilter(RobotConfig.LIFT_FILTER_GAIN_kD)),
-            new FeedforwardController(
-                    RobotConfig.LIFT_kV_UP,
-                    RobotConfig.LIFT_kA_UP,
-                    RobotConfig.LIFT_kS)
-    );
-
-    private MotionProfile passThruProfile, liftProfile;
-
-    /**
-     * Immediate target lift state grabbed from {@link #liftProfile}
-     */
-    private MotionState profileLiftState = new MotionState(0.0, 0.0, 0.0, 0.0);
-
-    private LiftPos targetLiftPosName = LiftPos.FLOOR;
-
-    private double currentBatteryVoltage = 12.0;
-    private double currentPassThruAngle = RobotConfig.ANGLE_PASS_FRONT;
-    private double currentPassThruVelo = 0.0;
-    private double currentLiftPos = 0.0;
-    private double currentLiftVelo = 0.0;
-    private double currentLiftAccel = 0.0;
-    private double targetLiftPos = 0.0;
-    private double maxLiftVelo = 0.0;
-    private double maxLiftAccel = 0.0;
+    public PowerplayPassthrough passthrough;
 
     private boolean clawHasLifted = true;
-    private boolean pivotIsFront = true;
-    private boolean passThruInFront = true;
-    private boolean passThruTriggered = false;
-    private boolean clawIsOpen = true;
-    private boolean clawIsTilted = false;
-
-    /**
-     * Named lift position
-     */
-    public enum LiftPos {
-        FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL, CUSTOM
-    }
-
-    private SimpleServo axonMINI(HardwareMap hw, String name) {
-        return new SimpleServo(hw, name, 0, 355);
-    }
 
     private SimpleServo goBILDAServo(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 280);
-    }
-
-    private MotorEx liftMotor(HardwareMap hw, String name) {
-        return new MotorEx(hw, name, 145.1, 1150);
     }
 
     /**
@@ -109,231 +34,24 @@ public class PowerplayScorer {
      * @param hw Passed-in hardware map from the op mode
      */
     public PowerplayScorer(HardwareMap hw) {
-
-        clawServo = axonMINI(hw, "claw right");
-        pivotServo = axonMINI(hw, "claw pivot");
-        passThruServoR = axonMINI(hw, "passthrough 1");
-        passThruServoL = axonMINI(hw, "passthrough 2");
         coneArmServoR = goBILDAServo(hw, "arm right");
         coneArmServoL = goBILDAServo(hw, "arm left");
-
-        liftMotor1 = liftMotor(hw, "lift motor 1");
-        liftMotor2 = liftMotor(hw, "lift motor 2");
-        liftMotor3 = liftMotor(hw, "lift motor 3");
-
-        liftMotor1.setInverted(true);
-        liftMotor2.setInverted(false);
-        liftMotor3.setInverted(true);
-
-        liftMotor1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        liftMotor2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        liftMotor3.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-
-        liftController.setOutputBounds(-1.0, 1.0);
-
-        batteryVoltageSensor = hw.voltageSensor.iterator().next();
-
+        lift = new PowerplayLift(hw);
+        passthrough = new PowerplayPassthrough(hw);
         liftClawTimer.reset();
-        liftProfileTimer.reset();
-        liftDerivTimer.reset();
-        passThruProfileTimer.reset();
-
-        updatePassThruProfile();
-        updateLiftProfile();
     }
 
-    /**
-     * Reads lift encoder value and converts to {@link #currentLiftPos} in inches
-     * Calculates {@link #currentLiftVelo} and {@link #currentLiftAccel} via time-based differentiation
-     */
-    public void readLiftPos() {
-        double lastLiftPos = currentLiftPos;
-        double lastLiftVelo = currentLiftVelo;
-        double timerSeconds = liftDerivTimer.seconds();
-        liftDerivTimer.reset();
-        double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
-        updateLiftGains();
-
-        currentBatteryVoltage = batteryVoltageSensor.getVoltage();
-        currentLiftPos = liftMotor2.encoder.getPosition() * RobotConfig.LIFT_INCHES_PER_TICK;
-        currentLiftVelo = veloFilter.getEstimate((currentLiftPos - lastLiftPos) / dt);
-        currentLiftAccel = accelFilter.getEstimate((currentLiftVelo - lastLiftVelo) / dt);
-        maxLiftVelo = Math.max(currentLiftVelo, maxLiftVelo);
-        maxLiftAccel = Math.max(currentLiftAccel, maxLiftAccel);
-    }
-
-    /**
-     * Update {@link #liftController} gains with constants from {@link RobotConfig}
-     */
-    private void updateLiftGains() {
-        boolean goingDown = targetLiftPos < currentLiftPos;
-
-        veloFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_VELO, RobotConfig.LIFT_FILTER_COUNT_VELO);
-        accelFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_ACCEL, RobotConfig.LIFT_FILTER_COUNT_ACCEL);
-
-        liftController.pid.setGains(
-                RobotConfig.LIFT_kP,
-                RobotConfig.LIFT_kI,
-                RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL
-        );
-        liftController.pid.derivFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_kD);
-        liftController.feedforward.setGains(
-                goingDown ? RobotConfig.LIFT_kV_DOWN : RobotConfig.LIFT_kV_UP,
-                goingDown ? RobotConfig.LIFT_kA_DOWN : RobotConfig.LIFT_kA_UP,
-                RobotConfig.LIFT_kS
-        );
-    }
-
-    /**
-     * Sets the {@link #targetLiftPos} to {@link #currentLiftPos}
-     */
-    public void setLiftStateToCurrent() {
-        setTargetLiftPos(currentLiftPos);
-    }
-
-    private double getConesHeight(int numOfCones) {
-        return (numOfCones - 1) * (RobotConfig.HEIGHT_2 - RobotConfig.HEIGHT_FLOOR) + RobotConfig.HEIGHT_FLOOR;
-    }
-
-    /**
-     * Set {@link #targetLiftPos} for {@link #liftProfile}
-     *
-     * @param height Desired named position to run to
-     */
-    public void setTargetLiftPos(LiftPos height) {
-        setClawTilt(height == LiftPos.LOW || height == LiftPos.MED || height == LiftPos.TALL);
-        targetLiftPosName = height;
-        switch (height) {
-            case TALL:
-                targetLiftPos = RobotConfig.HEIGHT_TALL;
-                break;
-            case MED:
-                targetLiftPos = RobotConfig.HEIGHT_MEDIUM;
-                break;
-            case LOW:
-                targetLiftPos = RobotConfig.HEIGHT_LOW;
-                break;
-            case FIVE:
-                targetLiftPos = getConesHeight(5);
-                break;
-            case FOUR:
-                targetLiftPos = getConesHeight(4);
-                break;
-            case THREE:
-                targetLiftPos = getConesHeight(3);
-                break;
-            case TWO:
-                targetLiftPos = getConesHeight(2);
-                break;
-            case FLOOR:
-            default:
-                targetLiftPos = getConesHeight(1);
-                break;
-        }
-        updateLiftProfile();
-    }
-
-    /**
-     * Set target for lift motion profile
-     *
-     * @param targetLiftPos Desired position (in inches) to run to
-     */
-    public void setTargetLiftPos(double targetLiftPos) {
-        targetLiftPosName = LiftPos.CUSTOM;
-        this.targetLiftPos = targetLiftPos;
-        updateLiftProfile();
-    }
-
-    /**
-     * Update {@link #liftProfile} with a {@link #targetLiftPos} set with {@link #setTargetLiftPos}
-     */
-    private void updateLiftProfile() {
-        liftProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(currentLiftPos, currentLiftVelo),
-                new MotionState(targetLiftPos, 0.0),
-                RobotConfig.LIFT_MAX_VELO,
-                RobotConfig.LIFT_MAX_ACCEL,
-                RobotConfig.LIFT_MAX_JERK
-        );
-        liftProfileTimer.reset();
+    public void setTargetLiftPos(PowerplayLift.Position height) {
+        passthrough.setTilt(height == PowerplayLift.Position.LOW || height == PowerplayLift.Position.MED || height == PowerplayLift.Position.TALL);
+        lift.setTargetPosition(height);
     }
 
     /**
      * Resets all internal lift variables
      */
     public void resetLift() {
-        accelFilter.clearMemory();
-        veloFilter.clearMemory();
-
-        liftMotor2.resetEncoder();
-        liftController.pid.resetIntegral();
-        liftController.pid.derivFilter.clearMemory();
-
-        currentLiftPos = 0.0;
-        currentLiftVelo = 0.0;
-        currentLiftAccel = 0.0;
-        maxLiftVelo = 0.0;
-        maxLiftAccel = 0.0;
-
-        targetLiftPos = 0.0;
-        targetLiftPosName = LiftPos.FLOOR;
-        setClawTilt(false);
-
-        updateLiftProfile();
-        profileLiftState = new MotionState(0.0, 0.0, 0.0, 0.0);
-    }
-
-    /**
-     * Runs {@link #liftController} to track along {@link #liftProfile}
-     */
-    public void runLiftToPos() {
-        profileLiftState = liftProfile.get(liftProfileTimer.seconds());
-
-        liftController.pid.setTarget(profileLiftState.getX());
-        liftController.feedforward.setTargetVelocity(profileLiftState.getV());
-        liftController.feedforward.setTargetAcceleration(profileLiftState.getA());
-
-        if (targetLiftPos == currentLiftPos || Math.signum(liftController.pid.getError()) != Math.signum(liftController.pid.getLastError())) {
-            liftController.pid.resetIntegral();
-        }
-
-        runLift(liftController.update(currentLiftPos, currentBatteryVoltage), false);
-    }
-
-    /**
-     * Run {@link #liftMotor1}, {@link #liftMotor2}, and {@link #liftMotor3} at the entered percentage of max velocity
-     *
-     * @param veloCommand       Pass in a velocity command between -1 ≤ x ≤ 1
-     * @param voltageCompensate Whether to voltage compensate veloCommand
-     */
-    public void runLift(double veloCommand, boolean voltageCompensate) {
-        if (voltageCompensate) veloCommand *= (12.0 / currentBatteryVoltage);
-        veloCommand += kG();
-        liftMotor1.set(veloCommand);
-        liftMotor2.set(veloCommand);
-        liftMotor3.set(veloCommand);
-    }
-
-    /**
-     * Calculates anti-gravity feedforward for a 4-stage continuous rigged linear slide system
-     *
-     * @return Velocity command for lift
-     */
-    private double kG() {
-        return (12.0 / currentBatteryVoltage) *
-                (currentLiftPos >= RobotConfig.HEIGHT_STAGES_4 ? RobotConfig.LIFT_kG_4 :
-                        currentLiftPos >= RobotConfig.HEIGHT_STAGES_3 ? RobotConfig.LIFT_kG_3 :
-                                currentLiftPos >= RobotConfig.HEIGHT_STAGES_2 ? RobotConfig.LIFT_kG_2 :
-                                        currentLiftPos > RobotConfig.LIFT_TOLERANCE_POS ? RobotConfig.LIFT_kG_1 :
-                                                0.0);
-    }
-
-    /**
-     * Toggles the value of {@link #clawIsOpen}
-     */
-    public void toggleClaw() {
-        clawIsOpen = !clawIsOpen;
+        lift.resetLift();
+        passthrough.setTilt(false);
     }
 
     /**
@@ -341,17 +59,8 @@ public class PowerplayScorer {
      * Runs {@link #dropCone} if already closed
      */
     public void triggerClaw() {
-        if (clawIsOpen) grabCone();
+        if (passthrough.getClawIsOpen()) grabCone();
         else dropCone();
-    }
-
-    /**
-     * Set state of the claw
-     *
-     * @param open True if open; false if closed
-     */
-    public void setClawOpen(boolean open) {
-        clawIsOpen = open;
     }
 
     /**
@@ -360,8 +69,8 @@ public class PowerplayScorer {
      * Runs {@link #liftClaw}
      */
     public void grabCone() {
-        clawIsOpen = false;
-        if (currentLiftPos <= (getConesHeight(5) + RobotConfig.LIFT_TOLERANCE_POS)) {
+        passthrough.setClawOpen(false);
+        if (lift.getCurrentPosition() <= (lift.getConesHeight(5) + RobotConfig.LIFT_TOLERANCE_POS)) {
             clawHasLifted = false;
             liftClawTimer.reset();
         }
@@ -373,7 +82,7 @@ public class PowerplayScorer {
      * 2 inches if grabbing off the floor
      */
     public void liftClaw() {
-        setTargetLiftPos(currentLiftPos + ((currentLiftPos > RobotConfig.LIFT_TOLERANCE_POS) ? 6 : 2));
+        lift.setTargetPosition(lift.getCurrentPosition() + ((lift.getCurrentPosition() > RobotConfig.LIFT_TOLERANCE_POS) ? 6 : 2));
         clawHasLifted = true;
     }
 
@@ -381,7 +90,7 @@ public class PowerplayScorer {
      * Opens claw and runs lift to floor position
      */
     public void dropCone() {
-        dropCone(LiftPos.FLOOR);
+        dropCone(PowerplayLift.Position.FLOOR);
     }
 
     /**
@@ -389,110 +98,16 @@ public class PowerplayScorer {
      *
      * @param height Named position to run lift to
      */
-    public void dropCone(LiftPos height) {
-        clawIsOpen = true;
+    public void dropCone(PowerplayLift.Position height) {
+        passthrough.setClawOpen(true);
         setTargetLiftPos(height);
     }
 
     /**
-     * Holds {@link #clawServo} position
+     * Lifts claw, if previously triggered
      */
-    public void runClaw() {
-        clawServo.turnToAngle(clawIsOpen ? RobotConfig.ANGLE_CLAW_OPEN : RobotConfig.ANGLE_CLAW_CLOSED);
+    public void runLiftClaw() {
         if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
-    }
-
-    /**
-     * Toggles the value of {@link #pivotIsFront}
-     */
-    public void togglePivot() {
-        setPivotIsFront(!pivotIsFront);
-    }
-
-    /**
-     * Sets the value of {@link #pivotIsFront}
-     */
-    public void setPivotIsFront(boolean isFront) {
-        pivotIsFront = isFront;
-        updatePassThruProfile();
-    }
-
-    /**
-     * Holds pivot servo position
-     */
-    public void runPivot() {
-        pivotServo.turnToAngle(355.0 - (pivotIsFront ? RobotConfig.ANGLE_PIVOT_FRONT : RobotConfig.ANGLE_PIVOT_BACK));
-    }
-
-    /**
-     * Toggles the value of {@link #clawIsTilted}
-     */
-    public void toggleClawTilt() {
-        setClawTilt(!clawIsTilted);
-    }
-
-    /**
-     * Sets the value of {@link #clawIsTilted} and runs {@link #updatePassThruProfile}
-     */
-    public void setClawTilt(boolean tilted) {
-        clawIsTilted = tilted;
-        updatePassThruProfile();
-    }
-
-    /**
-     * Runs {@link #togglePassThru} and toggles pivot when at the halfway position
-     */
-    public void triggerPassThru() {
-        passThruTriggered = true;
-        togglePassThru();
-    }
-
-    /**
-     * Toggles position of {@link #passThruServoR} and {@link #passThruServoL}
-     */
-    public void togglePassThru() {
-        passThruInFront = !passThruInFront;
-        updatePassThruProfile();
-    }
-
-    /**
-     * Updates {@link #passThruProfile} with a new target position, including diagonal drop and floor grab tilt presets
-     */
-    private void updatePassThruProfile() {
-        double tiltOffset =
-                clawIsTilted ?
-                        RobotConfig.ANGLE_PASS_TILT_OFFSET :
-                        (!passThruTriggered) && (passThruInFront != pivotIsFront) ? RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
-
-        double targetPassThruAngle =
-                passThruInFront ?
-                        RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
-                        RobotConfig.ANGLE_PASS_BACK - tiltOffset;
-
-        passThruProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(currentPassThruAngle, currentPassThruVelo),
-                new MotionState(targetPassThruAngle, 0.0),
-                RobotConfig.PASS_MAX_VELO,
-                RobotConfig.PASS_MAX_ACCEL,
-                RobotConfig.PASS_MAX_JERK
-        );
-
-        passThruProfileTimer.reset();
-    }
-
-    /**
-     * Hold {@link #passThruServoR} and {@link #passThruServoL} positions
-     */
-    public void runPassThru() {
-        MotionState state = passThruProfile.get(passThruProfileTimer.seconds());
-        currentPassThruAngle = state.getX();
-        currentPassThruVelo = state.getV();
-        passThruServoR.turnToAngle(currentPassThruAngle);
-        passThruServoL.turnToAngle(355.0 - currentPassThruAngle);
-        if (passThruTriggered && Math.abs(RobotConfig.ANGLE_PIVOT_POS - currentPassThruAngle) <= RobotConfig.PASS_PIVOT_POS_TOLERANCE) {
-            pivotIsFront = passThruInFront;
-            passThruTriggered = false;
-        }
     }
 
     /**
@@ -507,29 +122,14 @@ public class PowerplayScorer {
     }
 
     /**
-     * Print tuning telemetry from {@link #readLiftPos}, {@link #liftProfile}, and {@link #liftController}
+     * Print tuning telemetry from {@link #lift} and {@link #passthrough}
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Passthrough angle", currentPassThruAngle);
-        telemetry.addData("Passthrough velocity (ticks/s)", currentPassThruVelo);
+        passthrough.printNumericalTelemetry(telemetry);
         telemetry.addLine();
-        telemetry.addData("Current battery voltage", currentBatteryVoltage);
-        telemetry.addLine();
-        telemetry.addData("Lift current position (in)", currentLiftPos);
-        telemetry.addData("Lift profile position (in)", profileLiftState.getX());
-        telemetry.addLine();
-        telemetry.addData("Lift current velocity (in/s)", currentLiftVelo);
-        telemetry.addData("Lift profile velocity (in/s)", profileLiftState.getV());
-        telemetry.addData("Lift max velocity (in/s)", maxLiftVelo);
-        telemetry.addLine();
-        telemetry.addData("Lift current acceleration (in/s^2)", currentLiftAccel);
-        telemetry.addData("Lift max acceleration (in/s^2)", maxLiftAccel);
-        telemetry.addLine();
-        telemetry.addData("Lift error integral (in*s)", liftController.pid.getErrorIntegral());
-        telemetry.addData("Lift error (in)", liftController.pid.getError());
-        telemetry.addData("Lift error derivative (in/s)", liftController.pid.getErrorVelocity());
+        lift.printNumericalTelemetry(telemetry);
     }
 
     /**
@@ -538,12 +138,8 @@ public class PowerplayScorer {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Named target lift position", targetLiftPosName.toString());
+        lift.printTelemetry(telemetry);
         telemetry.addLine();
-        telemetry.addData("Claw is", clawIsOpen ? "open" : "closed");
-        telemetry.addLine();
-        telemetry.addData("Pivot is oriented to", pivotIsFront ? "front" : "back");
-        telemetry.addLine();
-        telemetry.addData("Passthrough is", (clawIsTilted ? "tilted " : "") + "at the " + (passThruInFront ? "front" : "back"));
+        passthrough.printTelemetry(telemetry);
     }
 }

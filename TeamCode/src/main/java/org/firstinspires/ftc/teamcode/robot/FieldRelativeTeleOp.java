@@ -90,7 +90,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2Right.readValue();
             control2Down.readValue();
 
-            scorer.readLiftPos();
+            scorer.lift.readPosition();
             drivetrain.readIMU();
 
             // Field-centric resets
@@ -107,42 +107,43 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             boolean stackHeights = control2LShoulder.isDown();
 
             if (control2RShoulder.wasJustPressed()) {
-                scorer.setLiftStateToCurrent();
+                scorer.lift.setTargetPosition(scorer.lift.getCurrentPosition());
                 overrideMode = !overrideMode;
             }
 
             if (overrideMode) {
                 if (control2LShoulder.wasJustPressed()) scorer.resetLift();
 
-                if (control2B.wasJustPressed()) scorer.toggleClaw();
+                if (control2B.wasJustPressed()) scorer.passthrough.toggleClaw();
 
-                if (control2X.wasJustPressed()) scorer.togglePivot();
+                if (control2X.wasJustPressed()) scorer.passthrough.togglePivot();
 
-                if (control2Y.wasJustPressed()) scorer.togglePassThru();
+                if (control2Y.wasJustPressed()) scorer.passthrough.toggle();
 
-                if (control2Up.wasJustPressed()) scorer.toggleClawTilt();
+                if (control2Up.wasJustPressed()) scorer.passthrough.toggleTilt();
 
-                scorer.runLift(Gamepad2.getLeftY(), true);
+                scorer.lift.run(Gamepad2.getLeftY(), true);
             } else {
                 if (control2Up.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.FIVE : PowerplayScorer.LiftPos.TALL);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.FIVE : PowerplayLift.Position.TALL);
                 else if (control2Left.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.FOUR : PowerplayScorer.LiftPos.MED);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.FOUR : PowerplayLift.Position.MED);
                 else if (control2Right.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.THREE : PowerplayScorer.LiftPos.LOW);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.THREE : PowerplayLift.Position.LOW);
                 else if (control2Down.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.TWO : PowerplayScorer.LiftPos.FLOOR);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.TWO : PowerplayLift.Position.FLOOR);
 
-                if (control2Y.wasJustPressed()) scorer.triggerPassThru();
+                if (control2Y.wasJustPressed()) scorer.passthrough.trigger();
 
                 if (control2B.wasJustPressed()) scorer.triggerClaw();
 
-                scorer.runLiftToPos();
+                scorer.lift.runToPos();
             }
 
-            scorer.runPassThru();
-            scorer.runPivot();
-            scorer.runClaw();
+            scorer.passthrough.run();
+            scorer.passthrough.runPivot();
+            scorer.passthrough.runClaw();
+            scorer.runLiftClaw();
             scorer.runConeArms(
                     Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN,
                     Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN
