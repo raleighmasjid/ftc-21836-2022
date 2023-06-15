@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-public class TeleOpMecanumDrive {
+public class MecanumDrivetrain {
     private IMU imu;
 
     private MecanumDrive mecanumDrivetrain;
@@ -22,7 +22,7 @@ public class TeleOpMecanumDrive {
         return new MotorEx(hw, name, 537.7, 312);
     }
 
-    public TeleOpMecanumDrive(HardwareMap hw) {
+    public MecanumDrivetrain(HardwareMap hw) {
 
         // Assign motors using their hardware map names, each drive-type can have different names if needed
         MotorEx

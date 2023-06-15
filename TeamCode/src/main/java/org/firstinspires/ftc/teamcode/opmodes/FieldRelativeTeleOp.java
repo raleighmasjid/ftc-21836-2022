@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
-import org.firstinspires.ftc.teamcode.systems.TeleOpMecanumDrive;
+import org.firstinspires.ftc.teamcode.systems.MecanumDrivetrain;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
     PowerplayScorer scorer;
-    TeleOpMecanumDrive drivetrain;
+    MecanumDrivetrain drivetrain;
     List<LynxModule> hubs;
     GamepadEx Gamepad1, Gamepad2;
 
@@ -34,7 +34,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
         myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         scorer = new PowerplayScorer(hardwareMap);
-        drivetrain = new TeleOpMecanumDrive(hardwareMap);
+        drivetrain = new MecanumDrivetrain(hardwareMap);
 
         hubs = hardwareMap.getAll(LynxModule.class);
 
