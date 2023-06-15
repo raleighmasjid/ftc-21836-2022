@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.systems.MecanumDrivetrain;
 import java.util.List;
 
 
-@TeleOp(name = "Main Tele-Op", group = "21836 Teleop")
+@TeleOp(name = "Main TeleOp", group = "21836 Teleop")
 
 public class MainTeleOp extends LinearOpMode {
 
