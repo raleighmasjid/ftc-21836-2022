@@ -177,7 +177,9 @@ public class ProfiledClawArm {
         currentAngle = state.getX();
         currentVelocity = state.getV();
         servoR.turnToAngle(currentAngle);
-        servoL.turnToAngle(servoL.getAngleRange() - currentAngle);
+        if (servoL != null) {
+            servoL.turnToAngle(currentAngle);
+        }
         if (triggered && Math.abs(pivotPos - currentAngle) <= pivotPosTolerance) {
             pivotIsFront = inFront;
             triggered = false;

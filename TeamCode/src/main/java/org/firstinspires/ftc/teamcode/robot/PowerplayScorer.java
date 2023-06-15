@@ -80,18 +80,22 @@ public class PowerplayScorer {
                 new FIRLowPassFilter(0, 0)
         );
 
+        SimpleServo passThruServoL = axonMINI(hw, "passthrough 2");
+        passThruServoL.setInverted(true);
+
         passthrough = new ProfiledClawArm(
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 new SimpleClaw(axonMINI(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
                 axonMINI(hw, "claw pivot"),
                 axonMINI(hw, "passthrough 1"),
-                axonMINI(hw, "passthrough 2")
+                passThruServoL
         );
 
         updateValues();
 
         coneArmServoR = goBILDAServo(hw, "arm right");
         coneArmServoL = goBILDAServo(hw, "arm left");
+        coneArmServoL.setInverted(true);
 
         liftClawTimer.reset();
     }
@@ -254,7 +258,7 @@ public class PowerplayScorer {
      */
     public void run(double angleR, double angleL) {
         if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
-        coneArmServoL.turnToAngle(280.0 - angleL);
+        coneArmServoL.turnToAngle(angleL);
         coneArmServoR.turnToAngle(angleR);
     }
 
