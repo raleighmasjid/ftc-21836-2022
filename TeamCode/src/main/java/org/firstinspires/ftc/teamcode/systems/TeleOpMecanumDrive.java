@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot;
-
-import androidx.annotation.NonNull;
+package org.firstinspires.ftc.teamcode.systems;
 
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
@@ -10,7 +8,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.jetbrains.annotations.Contract;
 
 
 public class TeleOpMecanumDrive {
@@ -21,8 +18,6 @@ public class TeleOpMecanumDrive {
     private double headingOffset = 0.0;
     private double latestIMUReading = 0.0;
 
-    @NonNull
-    @Contract("_, _ -> new")
     private MotorEx drivetrainMotor(HardwareMap hw, String name) {
         return new MotorEx(hw, name, 537.7, 312);
     }

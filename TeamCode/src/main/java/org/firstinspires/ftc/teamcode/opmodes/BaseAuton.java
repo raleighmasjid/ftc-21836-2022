@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomous.opmode;
+package org.firstinspires.ftc.teamcode.opmodes;
 
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;

@@ -9,6 +9,8 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.systems.Claw;
+
 /**
  * Contains a claw mounted to a motion-profiled passthrough
  *
