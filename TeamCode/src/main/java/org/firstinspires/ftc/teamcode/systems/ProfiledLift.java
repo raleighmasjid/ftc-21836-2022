@@ -23,20 +23,20 @@ public class ProfiledLift {
     /**
      * Motor powering the dual lift system
      */
-    private MotorGroup motors;
+    private final MotorGroup motors;
 
-    private ElapsedTime profileTimer = new ElapsedTime();
-    private ElapsedTime derivTimer = new ElapsedTime();
+    private final ElapsedTime profileTimer = new ElapsedTime();
+    private final ElapsedTime derivTimer = new ElapsedTime();
 
-    public FIRLowPassFilter accelFilter;
-    public FIRLowPassFilter veloFilter;
+    public final FIRLowPassFilter accelFilter;
+    public final FIRLowPassFilter veloFilter;
 
-    private VoltageSensor batteryVoltageSensor;
+    private final VoltageSensor batteryVoltageSensor;
 
     /**
      * PIDF controller for lift
      */
-    public PIDFController controller;
+    public final PIDFController controller;
 
     private MotionProfile profile;
 

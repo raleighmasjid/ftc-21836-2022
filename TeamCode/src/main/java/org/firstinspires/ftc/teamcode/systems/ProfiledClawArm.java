@@ -16,11 +16,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class ProfiledClawArm {
 
-    public SimpleClaw claw;
+    public final SimpleClaw claw;
 
-    private SimpleServo pivotServo, servoR, servoL;
+    private final SimpleServo pivotServo;
+    private final SimpleServo servoR;
+    private final SimpleServo servoL;
 
-    private ElapsedTime profileTimer = new ElapsedTime();
+    private final ElapsedTime profileTimer = new ElapsedTime();
 
     private MotionProfile profile;
 

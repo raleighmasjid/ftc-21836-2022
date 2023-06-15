@@ -12,7 +12,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
  */
 public class SimpleClaw {
 
-    private SimpleServo servo;
+    private final SimpleServo servo;
 
     private double openAngle, closedAngle;
 

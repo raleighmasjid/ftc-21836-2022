@@ -15,7 +15,7 @@ public class PIDController {
 
     private boolean integrate = true;
 
-    private ElapsedTime dtTimer = new ElapsedTime();
+    private final ElapsedTime dtTimer = new ElapsedTime();
 
     public IIRLowPassFilter derivFilter;
 

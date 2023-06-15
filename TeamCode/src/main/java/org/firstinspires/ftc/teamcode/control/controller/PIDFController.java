@@ -7,8 +7,8 @@ public class PIDFController {
     private boolean outputBounded = false;
     private double minOutput = 0.0;
     private double maxOutput = 0.0;
-    public PIDController pid;
-    public FeedforwardController feedforward;
+    public final PIDController pid;
+    public final FeedforwardController feedforward;
 
     /**
      * @param pid         PID feedback controller

@@ -25,13 +25,14 @@ import org.firstinspires.ftc.teamcode.systems.SimpleClaw;
  */
 public class PowerplayScorer {
 
-    private SimpleServo coneArmServoR, coneArmServoL;
+    private final SimpleServo coneArmServoR;
+    private final SimpleServo coneArmServoL;
 
-    private ElapsedTime liftClawTimer = new ElapsedTime();
+    private final ElapsedTime liftClawTimer = new ElapsedTime();
 
-    public ProfiledLift lift;
+    public final ProfiledLift lift;
 
-    public ProfiledClawArm passthrough;
+    public final ProfiledClawArm passthrough;
 
     private boolean clawHasLifted = true;
 

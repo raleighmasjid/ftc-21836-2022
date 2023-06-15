@@ -11,9 +11,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 public class MecanumDrivetrain {
-    private IMU imu;
+    private final IMU imu;
 
-    private MecanumDrive mecanumDrivetrain;
+    private final MecanumDrive mecanumDrivetrain;
 
     private double headingOffset = 0.0;
     private double latestIMUReading = 0.0;
