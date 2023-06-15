@@ -142,14 +142,14 @@ public class PowerplayPassthrough {
                         RobotConfig.ANGLE_PASS_TILT_OFFSET :
                         (!triggered) && (inFront != pivotIsFront) ? RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
 
-        double targetPassThruAngle =
+        double targetAngle =
                 inFront ?
                         RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
                         RobotConfig.ANGLE_PASS_BACK - tiltOffset;
 
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentAngle, currentVelocity),
-                new MotionState(targetPassThruAngle, 0.0),
+                new MotionState(targetAngle, 0.0),
                 RobotConfig.PASS_MAX_VELO,
                 RobotConfig.PASS_MAX_ACCEL,
                 RobotConfig.PASS_MAX_JERK
