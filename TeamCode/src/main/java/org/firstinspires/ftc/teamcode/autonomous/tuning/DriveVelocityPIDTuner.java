@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.autonomous.utility.AutonMecanumDrive;
+import org.firstinspires.ftc.teamcode.autonomous.utility.AutonMecanumDrivetrain;
 
 import java.util.List;
 
@@ -73,7 +73,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        AutonMecanumDrive drive = new AutonMecanumDrive(hardwareMap);
+        AutonMecanumDrivetrain drive = new AutonMecanumDrivetrain(hardwareMap);
 
         Mode mode = Mode.TUNING_MODE;
 

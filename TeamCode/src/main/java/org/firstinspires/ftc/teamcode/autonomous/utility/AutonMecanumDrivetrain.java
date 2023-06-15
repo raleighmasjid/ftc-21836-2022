@@ -57,7 +57,7 @@ import java.util.List;
  * Simple mecanum drive hardware implementation for REV hardware.
  */
 @Config
-public class AutonMecanumDrive extends MecanumDrive {
+public class AutonMecanumDrivetrain extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(2, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(2, 0, 0);
 
@@ -83,7 +83,7 @@ public class AutonMecanumDrive extends MecanumDrive {
     private final IMU imu;
     private final VoltageSensor batteryVoltageSensor;
 
-    public AutonMecanumDrive(HardwareMap hardwareMap) {
+    public AutonMecanumDrivetrain(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
