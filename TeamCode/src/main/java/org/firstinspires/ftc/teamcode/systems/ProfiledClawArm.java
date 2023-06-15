@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * @author Arshad Anas
  * @since 2023/06/14
  */
-public class ProfiledFlipArm {
+public class ProfiledClawArm {
 
     public SimpleClaw claw;
 
@@ -37,7 +37,7 @@ public class ProfiledFlipArm {
     /**
      * Initialize fields, given servo range min = 0
      */
-    public ProfiledFlipArm(
+    public ProfiledClawArm(
             double frontAngle,
             double backAngle,
             double frontPivotAngle,
