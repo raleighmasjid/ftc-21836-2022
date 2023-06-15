@@ -323,7 +323,7 @@ public abstract class BaseAuton extends LinearOpMode {
          * This REPLACES waitForStart!
          */
 
-        scorer.passthrough.claw.setState(false);
+        scorer.passthrough.claw.setClosed(true);
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = signalSleeveDetectionPipeline.getLatestDetections();
 

@@ -16,7 +16,7 @@ public class SimpleClaw {
 
     private double openAngle, closedAngle;
 
-    private boolean isOpen = true;
+    private boolean closed = false;
 
     /**
      * Initialize claw
@@ -40,34 +40,34 @@ public class SimpleClaw {
     }
 
     /**
-     * Toggles the value of {@link #isOpen}
+     * Toggles the state of the claw
      */
     public void toggle() {
-        setState(!isOpen);
+        setClosed(!closed);
     }
 
     /**
      * Set state of the claw
      *
-     * @param open True if open; false if closed
+     * @param closed True if closed; false if open
      */
-    public void setState(boolean open) {
-        isOpen = open;
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 
     /**
      * Get state of the claw;
-     * true if open, false if closed
+     * true if closed; false if open
      */
-    public boolean getState() {
-        return isOpen;
+    public boolean getClosed() {
+        return closed;
     }
 
     /**
      * Holds {@link #servo} position
      */
     public void run() {
-        servo.turnToAngle(isOpen ? openAngle : closedAngle);
+        servo.turnToAngle(closed ? closedAngle : openAngle);
     }
 
     /**
@@ -76,6 +76,6 @@ public class SimpleClaw {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Claw is", isOpen ? "open" : "closed");
+        telemetry.addData("Claw is", closed ? "closed" : "open");
     }
 }
