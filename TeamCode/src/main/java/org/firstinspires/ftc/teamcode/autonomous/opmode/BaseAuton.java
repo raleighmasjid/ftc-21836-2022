@@ -323,7 +323,7 @@ public abstract class BaseAuton extends LinearOpMode {
          * This REPLACES waitForStart!
          */
 
-        scorer.passthrough.setClawOpen(false);
+        scorer.passthrough.claw.setState(false);
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = signalSleeveDetectionPipeline.getLatestDetections();
 
@@ -365,7 +365,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
             myTelemetry.update();
 //            sleep(20);
-            scorer.passthrough.runClaw();
+            scorer.passthrough.claw.run();
         }
 
         //START IS HERE//
@@ -407,7 +407,7 @@ public abstract class BaseAuton extends LinearOpMode {
             scorer.lift.runToPosition();
             scorer.passthrough.run();
             scorer.passthrough.runPivot();
-            scorer.passthrough.runClaw();
+            scorer.passthrough.claw.run();
             scorer.run(0, 0);
 
             // everything below is telemetry

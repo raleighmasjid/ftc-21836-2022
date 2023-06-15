@@ -170,7 +170,7 @@ public class PowerplayScorer {
      * Runs {@link #dropCone} if already closed
      */
     public void triggerClaw() {
-        if (passthrough.getClawIsOpen()) grabCone();
+        if (passthrough.claw.getState()) grabCone();
         else dropCone();
     }
 
@@ -180,7 +180,7 @@ public class PowerplayScorer {
      * Runs {@link #liftClaw}
      */
     public void grabCone() {
-        passthrough.setClawOpen(false);
+        passthrough.claw.setState(false);
         if (lift.getCurrentPosition() <= (getConesHeight(5) + RobotConfig.LIFT_TOLERANCE_POS)) {
             clawHasLifted = false;
             liftClawTimer.reset();
@@ -210,7 +210,7 @@ public class PowerplayScorer {
      * @param height Named position to run lift to
      */
     public void dropCone(LiftPos height) {
-        passthrough.setClawOpen(true);
+        passthrough.claw.setState(true);
         setTargetLiftPos(height);
     }
 

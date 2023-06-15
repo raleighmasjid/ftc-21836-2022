@@ -115,7 +115,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             if (overrideMode) {
                 if (control2LShoulder.wasJustPressed()) scorer.resetLift();
 
-                if (control2B.wasJustPressed()) scorer.passthrough.toggleClaw();
+                if (control2B.wasJustPressed()) scorer.passthrough.claw.toggle();
 
                 if (control2X.wasJustPressed()) scorer.passthrough.togglePivot();
 
@@ -143,7 +143,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
 
             scorer.passthrough.run();
             scorer.passthrough.runPivot();
-            scorer.passthrough.runClaw();
+            scorer.passthrough.claw.run();
             scorer.run(
                     Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN,
                     Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN
