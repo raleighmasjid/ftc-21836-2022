@@ -17,9 +17,9 @@ import org.firstinspires.ftc.teamcode.systems.MecanumDrivetrain;
 import java.util.List;
 
 
-@TeleOp(name = "Field Relative", group = "21836 Teleop")
+@TeleOp(name = "Main Tele-Op", group = "21836 Teleop")
 
-public class FieldRelativeTeleOp extends LinearOpMode {
+public class MainTeleOp extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
     PowerplayScorer scorer;
