@@ -21,17 +21,9 @@ public class SimpleClaw {
     /**
      * Initialize claw
      */
-    public SimpleClaw(SimpleServo servo, double openAngle, double closedAngle, boolean reversed) {
-        this.servo = servo;
-        this.servo.setInverted(reversed);
-        updateAngles(openAngle, closedAngle);
-    }
-
-    /**
-     * Initialize claw
-     */
     public SimpleClaw(SimpleServo servo, double openAngle, double closedAngle) {
-        this(servo, openAngle, closedAngle, false);
+        this.servo = servo;
+        updateAngles(openAngle, closedAngle);
     }
 
     public void updateAngles(double openAngle, double closedAngle) {
