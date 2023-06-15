@@ -93,7 +93,7 @@ public class FieldRelativeTeleOp extends LinearOpMode {
             control2Right.readValue();
             control2Down.readValue();
 
-            scorer.updateLiftGains();
+            scorer.updateValues();
             scorer.lift.readPosition();
             drivetrain.readIMU();
 

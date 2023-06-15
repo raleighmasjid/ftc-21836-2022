@@ -23,10 +23,10 @@ public class Claw {
      */
     public Claw(SimpleServo servo, double openAngle, double closedAngle) {
         this.servo = servo;
-        setAngles(openAngle, closedAngle);
+        updateAngles(openAngle, closedAngle);
     }
 
-    public void setAngles(double openAngle, double closedAngle) {
+    public void updateAngles(double openAngle, double closedAngle) {
         this.openAngle = openAngle;
         this.closedAngle = closedAngle;
     }

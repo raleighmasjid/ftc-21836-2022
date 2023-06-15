@@ -13,10 +13,12 @@ import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
+import org.firstinspires.ftc.teamcode.systems.Claw;
+import org.firstinspires.ftc.teamcode.systems.ProfiledFlipArm;
 import org.firstinspires.ftc.teamcode.systems.ProfiledLift;
 
 /**
- * Contains a {@link PowerplayPassthrough} and {@link ProfiledLift} linked by automated methods
+ * Contains a {@link ProfiledFlipArm} and {@link ProfiledLift} linked by automated methods
  *
  * @author Arshad Anas
  * @since 2022/12/24
@@ -29,7 +31,7 @@ public class PowerplayScorer {
 
     public ProfiledLift lift;
 
-    public PowerplayPassthrough passthrough;
+    public ProfiledFlipArm passthrough;
 
     private boolean clawHasLifted = true;
 
@@ -46,6 +48,10 @@ public class PowerplayScorer {
 
     private MotorEx liftMotor(HardwareMap hw, String name) {
         return new MotorEx(hw, name, 145.1, 1150);
+    }
+
+    private SimpleServo axonMINI(HardwareMap hw, String name) {
+        return new SimpleServo(hw, name, 0, 355);
     }
 
     /**
@@ -75,9 +81,17 @@ public class PowerplayScorer {
                 new FIRLowPassFilter(0, 0),
                 new FIRLowPassFilter(0, 0)
         );
-        updateLiftGains();
 
-        passthrough = new PowerplayPassthrough(hw);
+        passthrough = new ProfiledFlipArm(
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                new Claw(axonMINI(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
+                axonMINI(hw, "claw pivot"),
+                axonMINI(hw, "passthrough 1"),
+                axonMINI(hw, "passthrough 2")
+        );
+
+        updateValues();
+
         liftClawTimer.reset();
     }
 
@@ -116,7 +130,7 @@ public class PowerplayScorer {
         }
     }
 
-    public void updateLiftGains() {
+    public void updateValues() {
         boolean goingDown = lift.getTargetPosition() < lift.getCurrentPosition();
 
         lift.veloFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_VELO, RobotConfig.LIFT_FILTER_COUNT_VELO);
@@ -143,6 +157,22 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_MAX_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
         );
+
+        passthrough.updateValues(
+                RobotConfig.ANGLE_PASS_FRONT,
+                RobotConfig.ANGLE_PASS_BACK,
+                RobotConfig.ANGLE_PIVOT_FRONT,
+                RobotConfig.ANGLE_PIVOT_BACK,
+                RobotConfig.ANGLE_PIVOT_POS,
+                RobotConfig.PASS_PIVOT_POS_TOLERANCE,
+                RobotConfig.ANGLE_PASS_TILT_OFFSET,
+                RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET,
+                RobotConfig.PASS_MAX_VELO,
+                RobotConfig.PASS_MAX_ACCEL,
+                RobotConfig.PASS_MAX_JERK
+        );
+
+        passthrough.claw.updateAngles(RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED);
     }
 
     /**

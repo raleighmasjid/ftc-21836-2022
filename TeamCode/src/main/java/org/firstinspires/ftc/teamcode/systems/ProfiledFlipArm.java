@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.systems;
 
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -6,10 +6,7 @@ import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.systems.Claw;
 
 /**
  * Contains a claw mounted to a motion-profiled passthrough
@@ -17,17 +14,20 @@ import org.firstinspires.ftc.teamcode.systems.Claw;
  * @author Arshad Anas
  * @since 2023/06/14
  */
-public class PowerplayPassthrough {
+public class ProfiledFlipArm {
 
     public Claw claw;
 
-    private SimpleServo pivotServo, servoR, servoL;
+    private SimpleServo pivotServo;
+    private SimpleServo[] servos;
 
     private ElapsedTime profileTimer = new ElapsedTime();
 
     private MotionProfile profile;
 
-    private double currentAngle = RobotConfig.ANGLE_PASS_FRONT;
+    private double
+            currentAngle, backPivotAngle, frontPivotAngle, tiltOffset, miniTiltOffset, frontAngle,
+            backAngle, maxVelo, maxAccel, maxJerk, pivotPos, pivotPosTolerance;
     private double currentVelocity = 0.0;
 
     private boolean pivotIsFront = true;
@@ -35,25 +35,61 @@ public class PowerplayPassthrough {
     private boolean triggered = false;
     private boolean tilted = false;
 
-    private SimpleServo axonMINI(HardwareMap hw, String name) {
-        return new SimpleServo(hw, name, 0, 355);
-    }
-
     /**
      * Initialize fields
-     *
-     * @param hw Passed-in hardware map from the op mode
      */
-    public PowerplayPassthrough(HardwareMap hw) {
+    public ProfiledFlipArm(
+            double frontAngle,
+            double backAngle,
+            double frontPivotAngle,
+            double backPivotAngle,
+            double pivotPos,
+            double pivotPosTolerance,
+            double tiltOffset,
+            double miniTiltOffset,
+            double maxVelo,
+            double maxAccel,
+            double maxJerk,
+            Claw claw,
+            SimpleServo pivotServo,
+            SimpleServo... servos
+    ) {
+        updateValues(frontAngle, backAngle, frontPivotAngle, backPivotAngle, pivotPos, pivotPosTolerance, tiltOffset, miniTiltOffset, maxVelo, maxAccel, maxJerk);
 
-        claw = new Claw(axonMINI(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED);
-        pivotServo = axonMINI(hw, "claw pivot");
-        servoR = axonMINI(hw, "passthrough 1");
-        servoL = axonMINI(hw, "passthrough 2");
+        this.claw = claw;
+        this.pivotServo = pivotServo;
+        this.servos = servos;
 
         profileTimer.reset();
 
         updateProfile();
+    }
+
+    public void updateValues(
+            double frontAngle,
+            double backAngle,
+            double frontPivotAngle,
+            double backPivotAngle,
+            double pivotPos,
+            double pivotPosTolerance,
+            double tiltOffset,
+            double miniTiltOffset,
+            double maxVelo,
+            double maxAccel,
+            double maxJerk
+    ) {
+        this.currentAngle = frontPivotAngle;
+        this.frontPivotAngle = frontPivotAngle;
+        this.backPivotAngle = backPivotAngle;
+        this.tiltOffset = tiltOffset;
+        this.miniTiltOffset = miniTiltOffset;
+        this.frontAngle = frontAngle;
+        this.backAngle = backAngle;
+        this.pivotPos = pivotPos;
+        this.pivotPosTolerance = pivotPosTolerance;
+        this.maxVelo = maxVelo;
+        this.maxAccel = maxAccel;
+        this.maxJerk = maxJerk;
     }
 
     /**
@@ -75,7 +111,7 @@ public class PowerplayPassthrough {
      * Holds pivot servo position
      */
     public void runPivot() {
-        pivotServo.turnToAngle(355.0 - (pivotIsFront ? RobotConfig.ANGLE_PIVOT_FRONT : RobotConfig.ANGLE_PIVOT_BACK));
+        pivotServo.turnToAngle(355.0 - (pivotIsFront ? frontPivotAngle : backPivotAngle));
     }
 
     /**
@@ -102,7 +138,7 @@ public class PowerplayPassthrough {
     }
 
     /**
-     * Toggles position of {@link #servoR} and {@link #servoL}
+     * Toggles position of {@link #servos}
      */
     public void toggle() {
         inFront = !inFront;
@@ -115,35 +151,33 @@ public class PowerplayPassthrough {
     private void updateProfile() {
         double tiltOffset =
                 tilted ?
-                        RobotConfig.ANGLE_PASS_TILT_OFFSET :
-                        (!triggered) && (inFront != pivotIsFront) ? RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
+                        this.tiltOffset :
+                        (!triggered) && (inFront != pivotIsFront) ? miniTiltOffset : 0.0;
 
         double targetAngle =
                 inFront ?
-                        RobotConfig.ANGLE_PASS_FRONT + tiltOffset :
-                        RobotConfig.ANGLE_PASS_BACK - tiltOffset;
+                        frontAngle + tiltOffset :
+                        backAngle - tiltOffset;
 
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentAngle, currentVelocity),
                 new MotionState(targetAngle, 0.0),
-                RobotConfig.PASS_MAX_VELO,
-                RobotConfig.PASS_MAX_ACCEL,
-                RobotConfig.PASS_MAX_JERK
+                maxVelo, maxAccel, maxJerk
         );
 
         profileTimer.reset();
     }
 
     /**
-     * Hold {@link #servoR} and {@link #servoL} positions
+     * Hold {@link #servos} positions
      */
     public void run() {
         MotionState state = profile.get(profileTimer.seconds());
         currentAngle = state.getX();
         currentVelocity = state.getV();
-        servoR.turnToAngle(currentAngle);
-        servoL.turnToAngle(355.0 - currentAngle);
-        if (triggered && Math.abs(RobotConfig.ANGLE_PIVOT_POS - currentAngle) <= RobotConfig.PASS_PIVOT_POS_TOLERANCE) {
+        servos[0].turnToAngle(currentAngle);
+        servos[1].turnToAngle(servos[1].getAngleRange() - currentAngle);
+        if (triggered && Math.abs(pivotPos - currentAngle) <= pivotPosTolerance) {
             pivotIsFront = inFront;
             triggered = false;
         }
