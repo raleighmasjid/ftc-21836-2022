@@ -10,11 +10,8 @@ import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.controller.FeedforwardController;
-import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
-import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 
 /**
  * Contains a 3-motor motion-profiled lift
@@ -31,21 +28,15 @@ public class ProfiledLift {
     private ElapsedTime profileTimer = new ElapsedTime();
     private ElapsedTime derivTimer = new ElapsedTime();
 
-    private FIRLowPassFilter accelFilter = new FIRLowPassFilter(0, 0);
-    private FIRLowPassFilter veloFilter = new FIRLowPassFilter(0, 0);
+    public FIRLowPassFilter accelFilter = new FIRLowPassFilter(0, 0);
+    public FIRLowPassFilter veloFilter = new FIRLowPassFilter(0, 0);
 
     private VoltageSensor batteryVoltageSensor;
 
     /**
      * PIDF controller for lift
      */
-    private PIDFController controller = new PIDFController(
-            new PIDController(
-                    0, 0, 0,
-                    0,
-                    new IIRLowPassFilter(0)),
-            new FeedforwardController(0, 0, 0)
-    );
+    public PIDFController controller;
 
     private MotionProfile profile;
 
@@ -71,33 +62,19 @@ public class ProfiledLift {
         return currentPosition;
     }
 
+    public double getTargetPosition() {
+        return targetPosition;
+    }
+
     /**
      * Initialize fields
      */
     public ProfiledLift(
             MotorGroup motors,
             VoltageSensor batteryVoltageSensor,
-            double inchesPerTick,
-            double veloFilterGain,
-            int veloFilterCount,
-            double accelFilterGain,
-            int accelFilterCount,
-            double kP,
-            double kI,
-            double kD,
-            double maxPidOutputWithIntegral,
-            double kDFilterGain,
-            double kV_UP,
-            double kA_UP,
-            double kV_DOWN,
-            double kA_DOWN,
-            double kS,
-            double kG,
-            double minControllerOutput,
-            double maxControllerOutput,
-            double maxProfileVelo,
-            double maxProfileAccel,
-            double maxProfileJerk
+            PIDFController controller,
+            FIRLowPassFilter veloFilter,
+            FIRLowPassFilter accelFilter
     ) {
         this.motors = motors;
         this.motors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -106,29 +83,9 @@ public class ProfiledLift {
         profileTimer.reset();
         derivTimer.reset();
 
-        updateGains(
-                inchesPerTick,
-                veloFilterGain,
-                veloFilterCount,
-                accelFilterGain,
-                accelFilterCount,
-                kP,
-                kI,
-                kD,
-                maxPidOutputWithIntegral,
-                kDFilterGain,
-                kV_UP,
-                kA_UP,
-                kV_DOWN,
-                kA_DOWN,
-                kS,
-                kG,
-                minControllerOutput,
-                maxControllerOutput,
-                maxProfileVelo,
-                maxProfileAccel,
-                maxProfileJerk
-        );
+        this.veloFilter = veloFilter;
+        this.accelFilter = accelFilter;
+        this.controller = controller;
 
         updateProfile();
     }
@@ -137,42 +94,12 @@ public class ProfiledLift {
      * Update {@link #controller}, {@link #veloFilter}, and {@link #accelFilter} gains
      */
     public void updateGains(
-            double inchesPerTick,
-            double veloFilterGain,
-            int veloFilterCount,
-            double accelFilterGain,
-            int accelFilterCount,
-            double kP,
-            double kI,
-            double kD,
-            double maxPidOutputWithIntegral,
-            double kDFilterGain,
-            double kV_UP,
-            double kA_UP,
-            double kV_DOWN,
-            double kA_DOWN,
-            double kS,
             double kG,
-            double minControllerOutput,
-            double maxControllerOutput,
+            double inchesPerTick,
             double maxProfileVelo,
             double maxProfileAccel,
             double maxProfileJerk
     ) {
-        boolean goingDown = targetPosition < currentPosition;
-
-        veloFilter.setGains(veloFilterGain, veloFilterCount);
-        accelFilter.setGains(accelFilterGain, accelFilterCount);
-
-        controller.pid.setGains(kP, kI, kD, maxPidOutputWithIntegral);
-        controller.pid.derivFilter.setGains(kDFilterGain);
-        controller.feedforward.setGains(
-                goingDown ? kV_DOWN : kV_UP,
-                goingDown ? kA_DOWN : kA_UP,
-                kS
-        );
-        controller.setOutputBounds(minControllerOutput, maxControllerOutput);
-
         this.kG = kG;
         this.inchesPerTick = inchesPerTick;
         this.maxProfileVelo = maxProfileVelo;

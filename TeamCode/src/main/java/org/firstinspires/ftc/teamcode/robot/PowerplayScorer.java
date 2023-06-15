@@ -8,6 +8,12 @@ import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.control.controller.FeedforwardController;
+import org.firstinspires.ftc.teamcode.control.controller.PIDController;
+import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
+import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
+import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
+
 /**
  * Contains a {@link PowerplayPassthrough} and {@link ProfiledLift} linked by automated methods
  *
@@ -61,10 +67,12 @@ public class PowerplayScorer {
         lift = new ProfiledLift(
                 new MotorGroup(liftMotor2, liftMotor1, liftMotor3),
                 hw.voltageSensor.iterator().next(),
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0
+                new PIDFController(
+                        new PIDController(0, 0, 0, 0, new IIRLowPassFilter(0)),
+                        new FeedforwardController(0, 0, 0)
+                ),
+                new FIRLowPassFilter(0, 0),
+                new FIRLowPassFilter(0, 0)
         );
         updateLiftGains();
 
@@ -108,25 +116,28 @@ public class PowerplayScorer {
     }
 
     public void updateLiftGains() {
-        lift.updateGains(
-                RobotConfig.LIFT_INCHES_PER_TICK,
-                RobotConfig.LIFT_FILTER_GAIN_VELO,
-                RobotConfig.LIFT_FILTER_COUNT_VELO,
-                RobotConfig.LIFT_FILTER_GAIN_ACCEL,
-                RobotConfig.LIFT_FILTER_COUNT_ACCEL,
+        boolean goingDown = lift.getTargetPosition() < lift.getCurrentPosition();
+
+        lift.veloFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_VELO, RobotConfig.LIFT_FILTER_COUNT_VELO);
+        lift.accelFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_ACCEL, RobotConfig.LIFT_FILTER_COUNT_ACCEL);
+
+        lift.controller.pid.setGains(
                 RobotConfig.LIFT_kP,
                 RobotConfig.LIFT_kI,
                 RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL,
-                RobotConfig.LIFT_FILTER_GAIN_kD,
-                RobotConfig.LIFT_kV_UP,
-                RobotConfig.LIFT_kA_UP,
-                RobotConfig.LIFT_kV_DOWN,
-                RobotConfig.LIFT_kA_DOWN,
-                RobotConfig.LIFT_kS,
+                RobotConfig.LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL
+        );
+        lift.controller.pid.derivFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_kD);
+        lift.controller.feedforward.setGains(
+                goingDown ? RobotConfig.LIFT_kV_DOWN : RobotConfig.LIFT_kV_UP,
+                goingDown ? RobotConfig.LIFT_kA_DOWN : RobotConfig.LIFT_kA_UP,
+                RobotConfig.LIFT_kS
+        );
+        lift.controller.setOutputBounds(-1.0, 1.0);
+
+        lift.updateGains(
                 kG(),
-                -1.0,
-                1.0,
+                RobotConfig.LIFT_INCHES_PER_TICK,
                 RobotConfig.LIFT_MAX_VELO,
                 RobotConfig.LIFT_MAX_ACCEL,
                 RobotConfig.LIFT_MAX_JERK
