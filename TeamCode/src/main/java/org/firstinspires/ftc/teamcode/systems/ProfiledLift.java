@@ -87,7 +87,7 @@ public class ProfiledLift {
         this.accelFilter = accelFilter;
         this.controller = controller;
 
-        updateProfile();
+        reset();
     }
 
     /**
@@ -163,7 +163,7 @@ public class ProfiledLift {
     /**
      * Resets all internal lift variables
      */
-    public void resetLift() {
+    public void reset() {
         accelFilter.clearMemory();
         veloFilter.clearMemory();
 

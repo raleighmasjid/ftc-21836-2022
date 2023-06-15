@@ -197,7 +197,7 @@ public class PowerplayScorer {
      * Resets all internal lift variables
      */
     public void resetLift() {
-        lift.resetLift();
+        lift.reset();
         passthrough.setTilt(false);
     }
 
