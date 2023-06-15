@@ -9,7 +9,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * Contains a claw mounted to a motion-profiled passthrough
+ * Contains a claw mounted to a wrist on a motion-profiled flip-arm
  *
  * @author Arshad Anas
  * @since 2023/06/14
@@ -18,17 +18,19 @@ public class ProfiledClawArm {
 
     public final SimpleClaw claw;
 
-    private final SimpleServo pivotServo;
-    private final SimpleServo servoR;
-    private final SimpleServo servoL;
+    private final SimpleServo pivotServo, servoR, servoL;
 
     private final ElapsedTime profileTimer = new ElapsedTime();
 
     private MotionProfile profile;
 
     private double
-            currentAngle, backPivotAngle, frontPivotAngle, tiltOffset, miniTiltOffset, frontAngle,
-            backAngle, maxProfileVelo, maxProfileAccel, maxProfileJerk, pivotPos, pivotPosTolerance;
+            currentAngle, frontAngle, backAngle,
+            frontPivotAngle, backPivotAngle,
+            pivotPos, pivotPosTolerance,
+            tiltOffset, miniTiltOffset,
+            maxProfileVelo, maxProfileAccel, maxProfileJerk;
+
     private double currentVelocity = 0.0;
 
     private boolean pivotIsFront = true;
@@ -40,23 +42,23 @@ public class ProfiledClawArm {
      * Initialize fields, given servo range min = 0
      */
     public ProfiledClawArm(
-            double frontAngle,
-            double backAngle,
-            double frontPivotAngle,
-            double backPivotAngle,
-            double pivotPos,
-            double pivotPosTolerance,
-            double tiltOffset,
-            double miniTiltOffset,
-            double maxProfileVelo,
-            double maxProfileAccel,
-            double maxProfileJerk,
+            double frontAngle, double backAngle,
+            double frontPivotAngle, double backPivotAngle,
+            double pivotPos, double pivotPosTolerance,
+            double tiltOffset, double miniTiltOffset,
+            double maxProfileVelo, double maxProfileAccel, double maxProfileJerk,
             SimpleClaw claw,
             SimpleServo pivotServo,
             SimpleServo servoR,
             SimpleServo servoL
     ) {
-        updateValues(frontAngle, backAngle, frontPivotAngle, backPivotAngle, pivotPos, pivotPosTolerance, tiltOffset, miniTiltOffset, maxProfileVelo, maxProfileAccel, maxProfileJerk);
+        updateValues(
+                frontAngle, backAngle,
+                frontPivotAngle, backPivotAngle,
+                pivotPos, pivotPosTolerance,
+                tiltOffset, miniTiltOffset,
+                maxProfileVelo, maxProfileAccel, maxProfileJerk
+        );
 
         this.claw = claw;
         this.pivotServo = pivotServo;
@@ -69,25 +71,19 @@ public class ProfiledClawArm {
     }
 
     public void updateValues(
-            double frontAngle,
-            double backAngle,
-            double frontPivotAngle,
-            double backPivotAngle,
-            double pivotPos,
-            double pivotPosTolerance,
-            double tiltOffset,
-            double miniTiltOffset,
-            double maxVelo,
-            double maxAccel,
-            double maxJerk
+            double frontAngle, double backAngle,
+            double frontPivotAngle, double backPivotAngle,
+            double pivotPos, double pivotPosTolerance,
+            double tiltOffset, double miniTiltOffset,
+            double maxVelo, double maxAccel, double maxJerk
     ) {
-        this.currentAngle = frontPivotAngle;
+        this.currentAngle = frontAngle;
+        this.frontAngle = frontAngle;
+        this.backAngle = backAngle;
         this.frontPivotAngle = frontPivotAngle;
         this.backPivotAngle = backPivotAngle;
         this.tiltOffset = tiltOffset;
         this.miniTiltOffset = miniTiltOffset;
-        this.frontAngle = frontAngle;
-        this.backAngle = backAngle;
         this.pivotPos = pivotPos;
         this.pivotPosTolerance = pivotPosTolerance;
         this.maxProfileVelo = maxVelo;
@@ -99,13 +95,15 @@ public class ProfiledClawArm {
      * Toggles the value of {@link #pivotIsFront}
      */
     public void togglePivot() {
-        setPivotIsFront(!pivotIsFront);
+        setPivotState(!pivotIsFront);
     }
 
     /**
-     * Sets the value of {@link #pivotIsFront}
+     * Set state of {@link #pivotServo}
+     *
+     * @param isFront True if oriented to front; false if oriented to back
      */
-    public void setPivotIsFront(boolean isFront) {
+    public void setPivotState(boolean isFront) {
         pivotIsFront = isFront;
         updateProfile();
     }
