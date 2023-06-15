@@ -10,14 +10,16 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * Contains a multi-function claw and motion-profiled passthrough
+ * Contains a claw mounted to a motion-profiled passthrough
  *
  * @author Arshad Anas
  * @since 2023/06/14
  */
 public class PowerplayPassthrough {
 
-    private SimpleServo clawServo, pivotServo, servoR, servoL;
+    public Claw claw;
+
+    private SimpleServo pivotServo, servoR, servoL;
 
     private ElapsedTime profileTimer = new ElapsedTime();
 
@@ -29,12 +31,7 @@ public class PowerplayPassthrough {
     private boolean pivotIsFront = true;
     private boolean inFront = true;
     private boolean triggered = false;
-    private boolean clawIsOpen = true;
     private boolean tilted = false;
-
-    public boolean getClawIsOpen() {
-        return clawIsOpen;
-    }
 
     private SimpleServo axonMINI(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 355);
@@ -47,7 +44,7 @@ public class PowerplayPassthrough {
      */
     public PowerplayPassthrough(HardwareMap hw) {
 
-        clawServo = axonMINI(hw, "claw right");
+        claw = new Claw(axonMINI(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED);
         pivotServo = axonMINI(hw, "claw pivot");
         servoR = axonMINI(hw, "passthrough 1");
         servoL = axonMINI(hw, "passthrough 2");
@@ -55,29 +52,6 @@ public class PowerplayPassthrough {
         profileTimer.reset();
 
         updateProfile();
-    }
-
-    /**
-     * Toggles the value of {@link #clawIsOpen}
-     */
-    public void toggleClaw() {
-        clawIsOpen = !clawIsOpen;
-    }
-
-    /**
-     * Set state of the claw
-     *
-     * @param open True if open; false if closed
-     */
-    public void setClawOpen(boolean open) {
-        clawIsOpen = open;
-    }
-
-    /**
-     * Holds {@link #clawServo} position
-     */
-    public void runClaw() {
-        clawServo.turnToAngle(clawIsOpen ? RobotConfig.ANGLE_CLAW_OPEN : RobotConfig.ANGLE_CLAW_CLOSED);
     }
 
     /**
@@ -184,12 +158,12 @@ public class PowerplayPassthrough {
     }
 
     /**
-     * Print lift, claw, pivot, and passthrough statuses
+     * Print claw, pivot, and passthrough statuses
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Claw is", clawIsOpen ? "open" : "closed");
+        claw.printTelemetry(telemetry);
         telemetry.addLine();
         telemetry.addData("Pivot is oriented to", pivotIsFront ? "front" : "back");
         telemetry.addLine();

@@ -28,8 +28,8 @@ public class ProfiledLift {
     private ElapsedTime profileTimer = new ElapsedTime();
     private ElapsedTime derivTimer = new ElapsedTime();
 
-    public FIRLowPassFilter accelFilter = new FIRLowPassFilter(0, 0);
-    public FIRLowPassFilter veloFilter = new FIRLowPassFilter(0, 0);
+    public FIRLowPassFilter accelFilter;
+    public FIRLowPassFilter veloFilter;
 
     private VoltageSensor batteryVoltageSensor;
 
@@ -238,7 +238,7 @@ public class ProfiledLift {
     }
 
     /**
-     * Print lift, claw, pivot, and passthrough statuses
+     * Prints user-friendly {@link #targetPositionName} to telemetry
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
