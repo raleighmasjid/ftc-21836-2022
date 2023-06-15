@@ -13,9 +13,9 @@ import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
-import org.firstinspires.ftc.teamcode.systems.Claw;
 import org.firstinspires.ftc.teamcode.systems.ProfiledFlipArm;
 import org.firstinspires.ftc.teamcode.systems.ProfiledLift;
+import org.firstinspires.ftc.teamcode.systems.SimpleClaw;
 
 /**
  * Contains a {@link ProfiledFlipArm} and {@link ProfiledLift} linked by automated methods
@@ -84,7 +84,7 @@ public class PowerplayScorer {
 
         passthrough = new ProfiledFlipArm(
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                new Claw(axonMINI(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
+                new SimpleClaw(axonMINI(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
                 axonMINI(hw, "claw pivot"),
                 axonMINI(hw, "passthrough 1"),
                 axonMINI(hw, "passthrough 2")

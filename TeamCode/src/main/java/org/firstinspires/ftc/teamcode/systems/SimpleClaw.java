@@ -10,7 +10,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
  * @author Arshad Anas
  * @since 2023/06/14
  */
-public class Claw {
+public class SimpleClaw {
 
     private SimpleServo servo;
 
@@ -21,7 +21,7 @@ public class Claw {
     /**
      * Initialize claw
      */
-    public Claw(SimpleServo servo, double openAngle, double closedAngle) {
+    public SimpleClaw(SimpleServo servo, double openAngle, double closedAngle) {
         this.servo = servo;
         updateAngles(openAngle, closedAngle);
     }

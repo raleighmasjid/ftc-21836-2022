@@ -16,10 +16,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class ProfiledFlipArm {
 
-    public Claw claw;
+    public SimpleClaw claw;
 
-    private SimpleServo pivotServo;
-    private SimpleServo[] servos;
+    private SimpleServo pivotServo, servoR, servoL;
 
     private ElapsedTime profileTimer = new ElapsedTime();
 
@@ -27,7 +26,7 @@ public class ProfiledFlipArm {
 
     private double
             currentAngle, backPivotAngle, frontPivotAngle, tiltOffset, miniTiltOffset, frontAngle,
-            backAngle, maxVelo, maxAccel, maxJerk, pivotPos, pivotPosTolerance;
+            backAngle, maxProfileVelo, maxProfileAccel, maxProfileJerk, pivotPos, pivotPosTolerance;
     private double currentVelocity = 0.0;
 
     private boolean pivotIsFront = true;
@@ -36,7 +35,7 @@ public class ProfiledFlipArm {
     private boolean tilted = false;
 
     /**
-     * Initialize fields
+     * Initialize fields, given servo range min = 0
      */
     public ProfiledFlipArm(
             double frontAngle,
@@ -47,18 +46,20 @@ public class ProfiledFlipArm {
             double pivotPosTolerance,
             double tiltOffset,
             double miniTiltOffset,
-            double maxVelo,
-            double maxAccel,
-            double maxJerk,
-            Claw claw,
+            double maxProfileVelo,
+            double maxProfileAccel,
+            double maxProfileJerk,
+            SimpleClaw claw,
             SimpleServo pivotServo,
-            SimpleServo... servos
+            SimpleServo servoR,
+            SimpleServo servoL
     ) {
-        updateValues(frontAngle, backAngle, frontPivotAngle, backPivotAngle, pivotPos, pivotPosTolerance, tiltOffset, miniTiltOffset, maxVelo, maxAccel, maxJerk);
+        updateValues(frontAngle, backAngle, frontPivotAngle, backPivotAngle, pivotPos, pivotPosTolerance, tiltOffset, miniTiltOffset, maxProfileVelo, maxProfileAccel, maxProfileJerk);
 
         this.claw = claw;
         this.pivotServo = pivotServo;
-        this.servos = servos;
+        this.servoR = servoR;
+        this.servoL = servoL;
 
         profileTimer.reset();
 
@@ -87,9 +88,9 @@ public class ProfiledFlipArm {
         this.backAngle = backAngle;
         this.pivotPos = pivotPos;
         this.pivotPosTolerance = pivotPosTolerance;
-        this.maxVelo = maxVelo;
-        this.maxAccel = maxAccel;
-        this.maxJerk = maxJerk;
+        this.maxProfileVelo = maxVelo;
+        this.maxProfileAccel = maxAccel;
+        this.maxProfileJerk = maxJerk;
     }
 
     /**
@@ -111,7 +112,7 @@ public class ProfiledFlipArm {
      * Holds pivot servo position
      */
     public void runPivot() {
-        pivotServo.turnToAngle(355.0 - (pivotIsFront ? frontPivotAngle : backPivotAngle));
+        pivotServo.turnToAngle(pivotServo.getAngleRange() - (pivotIsFront ? frontPivotAngle : backPivotAngle));
     }
 
     /**
@@ -138,7 +139,7 @@ public class ProfiledFlipArm {
     }
 
     /**
-     * Toggles position of {@link #servos}
+     * Toggles position of {@link #servoR} and {@link #servoL}
      */
     public void toggle() {
         inFront = !inFront;
@@ -162,21 +163,21 @@ public class ProfiledFlipArm {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentAngle, currentVelocity),
                 new MotionState(targetAngle, 0.0),
-                maxVelo, maxAccel, maxJerk
+                maxProfileVelo, maxProfileAccel, maxProfileJerk
         );
 
         profileTimer.reset();
     }
 
     /**
-     * Hold {@link #servos} positions
+     * Hold {@link #servoR} and {@link #servoL} positions
      */
     public void run() {
         MotionState state = profile.get(profileTimer.seconds());
         currentAngle = state.getX();
         currentVelocity = state.getV();
-        servos[0].turnToAngle(currentAngle);
-        servos[1].turnToAngle(servos[1].getAngleRange() - currentAngle);
+        servoR.turnToAngle(currentAngle);
+        servoL.turnToAngle(servoL.getAngleRange() - currentAngle);
         if (triggered && Math.abs(pivotPos - currentAngle) <= pivotPosTolerance) {
             pivotIsFront = inFront;
             triggered = false;
