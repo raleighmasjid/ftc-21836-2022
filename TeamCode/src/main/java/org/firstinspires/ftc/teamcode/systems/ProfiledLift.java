@@ -56,7 +56,7 @@ public class ProfiledLift {
     private double maxAcceleration = 0.0;
     private double kG = 0.0;
     private double inchesPerTick = 0;
-    private double maxProfileVelo, maxProfileAccel, maxProfileJerk;
+    private double maxProfileVelo = 1.0, maxProfileAccel = 1.0, maxProfileJerk = 0.0;
 
     public double getCurrentPosition() {
         return currentPosition;
