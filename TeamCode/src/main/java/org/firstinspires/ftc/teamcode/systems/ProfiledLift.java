@@ -167,7 +167,7 @@ public class ProfiledLift {
         accelFilter.clearMemory();
         veloFilter.clearMemory();
 
-        motors.resetEncoder();
+        motors.encoder.reset();
         controller.pid.resetIntegral();
         controller.pid.derivFilter.clearMemory();
 
