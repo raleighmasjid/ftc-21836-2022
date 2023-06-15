@@ -208,10 +208,11 @@ public class ProfiledLift {
      * @param voltageCompensate Whether to voltage compensate veloCommand
      */
     public void run(double veloCommand, boolean voltageCompensate) {
-        double scalar = (12.0 / currentBatteryVoltage);
-        if (voltageCompensate) veloCommand *= scalar;
-        veloCommand += kG * scalar;
-        motors.set(veloCommand);
+        double scalar = 12.0 / currentBatteryVoltage;
+        if (voltageCompensate) {
+            veloCommand *= scalar;
+        }
+        motors.set((kG * scalar) + veloCommand);
     }
 
     /**
