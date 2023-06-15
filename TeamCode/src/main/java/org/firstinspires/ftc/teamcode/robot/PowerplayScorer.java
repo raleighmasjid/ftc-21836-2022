@@ -68,9 +68,6 @@ public class PowerplayScorer {
         liftMotor1.setInverted(true);
         liftMotor3.setInverted(true);
 
-        coneArmServoR = goBILDAServo(hw, "arm right");
-        coneArmServoL = goBILDAServo(hw, "arm left");
-
         lift = new ProfiledLift(
                 new MotorGroup(liftMotor2, liftMotor1, liftMotor3),
                 hw.voltageSensor.iterator().next(),
@@ -91,6 +88,9 @@ public class PowerplayScorer {
         );
 
         updateValues();
+
+        coneArmServoR = goBILDAServo(hw, "arm right");
+        coneArmServoL = goBILDAServo(hw, "arm left");
 
         liftClawTimer.reset();
     }
