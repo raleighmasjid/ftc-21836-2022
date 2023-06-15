@@ -65,13 +65,11 @@ public class MecanumDrivetrain {
 
     public double getHeading() {
         double angle = (latestIMUReading - headingOffset) % 360.0;
-        return (angle == -0.0) ?
-                0.0 :
-                (angle > 180.0) ?
-                        angle - 360.0 :
-                        (angle <= -180.0) ?
-                                angle + 360.0 :
-                                angle;
+        return
+                (angle == -0.0) ? 0.0 :
+                        (angle > 180.0) ? angle - 360.0 :
+                                (angle <= -180.0) ? angle + 360.0 :
+                                        angle;
     }
 
     public void readIMU() {
