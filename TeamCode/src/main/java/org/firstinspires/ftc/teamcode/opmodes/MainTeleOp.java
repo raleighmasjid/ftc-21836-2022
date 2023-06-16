@@ -188,12 +188,16 @@ public class MainTeleOp extends LinearOpMode {
                                     "junction heights mode"
             );
             myTelemetry.addLine();
-            scorer.printTelemetry(myTelemetry);
+            scorer.lift.printTelemetry(myTelemetry);
+            myTelemetry.addLine();
+            scorer.passthrough.printTelemetry(myTelemetry);
             myTelemetry.addLine();
             myTelemetry.addLine();
             myTelemetry.addData("Robot heading", drivetrain.getHeading());
             myTelemetry.addLine();
-            scorer.printNumericalTelemetry(myTelemetry);
+            scorer.passthrough.printNumericalTelemetry(myTelemetry);
+            myTelemetry.addLine();
+            scorer.lift.printNumericalTelemetry(myTelemetry);
             myTelemetry.update();
         }
     }

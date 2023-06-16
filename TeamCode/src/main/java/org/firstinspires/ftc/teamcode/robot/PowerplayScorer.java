@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
@@ -163,25 +162,4 @@ public class PowerplayScorer {
         coneArmServoR.turnToAngle(angleR);
     }
 
-    /**
-     * Print tuning telemetry from {@link #lift} and {@link #passthrough}
-     *
-     * @param telemetry MultipleTelemetry object to add data to
-     */
-    public void printNumericalTelemetry(MultipleTelemetry telemetry) {
-        passthrough.printNumericalTelemetry(telemetry);
-        telemetry.addLine();
-        lift.printNumericalTelemetry(telemetry);
-    }
-
-    /**
-     * Print lift, claw, pivot, and passthrough statuses
-     *
-     * @param telemetry MultipleTelemetry object to add data to
-     */
-    public void printTelemetry(MultipleTelemetry telemetry) {
-        lift.printTelemetry(telemetry);
-        telemetry.addLine();
-        passthrough.printTelemetry(telemetry);
-    }
 }

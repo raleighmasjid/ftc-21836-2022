@@ -411,7 +411,9 @@ public abstract class BaseAuton extends LinearOpMode {
             scorer.run(0, 0);
 
             // everything below is telemetry
-            scorer.printTelemetry(myTelemetry);
+            scorer.lift.printTelemetry(myTelemetry);
+            myTelemetry.addLine();
+            scorer.passthrough.printTelemetry(myTelemetry);
             myTelemetry.update();
 
         }
