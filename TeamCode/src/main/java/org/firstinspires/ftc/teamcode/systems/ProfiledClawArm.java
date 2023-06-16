@@ -18,7 +18,8 @@ public class ProfiledClawArm {
 
     public final SimpleClaw claw;
 
-    protected final SimpleServo pivotServo, servoR, servoL;
+    protected final SimpleServo pivotServo;
+    protected final SimpleServo[] servos;
 
     protected final ElapsedTime profileTimer = new ElapsedTime();
 
@@ -38,10 +39,6 @@ public class ProfiledClawArm {
     protected boolean triggered = false;
     protected boolean tilted = false;
 
-    public ProfiledClawArm(SimpleClaw claw, SimpleServo pivotServo, SimpleServo servo) {
-        this(claw, pivotServo, servo, null);
-    }
-
     /**
      * Initialize fields <p>
      * Use {@link #updateAngles} and {@link #updateConstants} to update angles and constants, respectively
@@ -49,13 +46,11 @@ public class ProfiledClawArm {
     public ProfiledClawArm(
             SimpleClaw claw,
             SimpleServo pivotServo,
-            SimpleServo servoR,
-            SimpleServo servoL
+            SimpleServo... servos
     ) {
         this.claw = claw;
         this.pivotServo = pivotServo;
-        this.servoR = servoR;
-        this.servoL = servoL;
+        this.servos = servos;
 
         profileTimer.reset();
 
@@ -106,7 +101,7 @@ public class ProfiledClawArm {
      * Holds pivot servo position
      */
     public void runPivot() {
-        pivotServo.turnToAngle(pivotServo.getAngleRange() - (pivotIsFront ? ANGLE_PIVOT_FRONT : ANGLE_PIVOT_BACK));
+        pivotServo.turnToAngle(pivotIsFront ? ANGLE_PIVOT_FRONT : ANGLE_PIVOT_BACK);
     }
 
     /**
@@ -133,7 +128,7 @@ public class ProfiledClawArm {
     }
 
     /**
-     * Toggles position of {@link #servoR} and {@link #servoL}
+     * Toggles position of {@link #servos}
      */
     public void toggle() {
         inFront = !inFront;
@@ -164,15 +159,14 @@ public class ProfiledClawArm {
     }
 
     /**
-     * Hold {@link #servoR} and {@link #servoL} positions
+     * Hold {@link #servos} positions
      */
     public void run() {
         MotionState state = profile.get(profileTimer.seconds());
         currentAngle = state.getX();
         currentVelocity = state.getV();
-        servoR.turnToAngle(currentAngle);
-        if (servoL != null) {
-            servoL.turnToAngle(currentAngle);
+        for (SimpleServo servo : servos) {
+            servo.turnToAngle(currentAngle);
         }
         if (triggered && Math.abs(ANGLE_PIVOT_POS - currentAngle) <= TOLERANCE_PIVOT_POS) {
             pivotIsFront = inFront;

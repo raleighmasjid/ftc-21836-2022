@@ -71,12 +71,14 @@ public class PowerplayScorer {
                 new FIRLowPassFilter(0, 0)
         );
 
+        SimpleServo pivotServo = axonMINI(hw, "claw pivot");
+        pivotServo.setInverted(true);
         SimpleServo passThruServoL = axonMINI(hw, "passthrough 2");
         passThruServoL.setInverted(true);
 
         passthrough = new PowerplayPassthrough(
                 new SimpleClaw(axonMINI(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
-                axonMINI(hw, "claw pivot"),
+                pivotServo,
                 axonMINI(hw, "passthrough 1"),
                 passThruServoL
         );
