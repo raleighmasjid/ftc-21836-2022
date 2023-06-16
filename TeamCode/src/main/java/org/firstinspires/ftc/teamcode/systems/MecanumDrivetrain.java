@@ -11,14 +11,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 public class MecanumDrivetrain {
-    private final IMU imu;
+    protected final IMU imu;
 
-    private final MecanumDrive mecanumDrivetrain;
+    protected final MecanumDrive mecanumDrivetrain;
 
-    private double headingOffset = 0.0;
-    private double latestIMUReading = 0.0;
+    protected double headingOffset = 0.0;
+    protected double latestIMUReading = 0.0;
 
-    private MotorEx drivetrainMotor(HardwareMap hw, String name) {
+    protected MotorEx drivetrainMotor(HardwareMap hw, String name) {
         return new MotorEx(hw, name, 537.7, 312);
     }
 
