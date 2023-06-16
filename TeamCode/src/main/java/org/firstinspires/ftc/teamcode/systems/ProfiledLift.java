@@ -45,18 +45,17 @@ public class ProfiledLift {
      */
     private MotionState profileState = new MotionState(0.0, 0.0, 0.0, 0.0);
 
-    private String targetPositionName = "Zero";
-
     private double currentBatteryVoltage = 12.0;
     private double currentPosition = 0.0;
     private double currentVelocity = 0.0;
     private double currentAcceleration = 0.0;
     private double targetPosition = 0.0;
+    private String targetPositionName = "Zero";
     private double maxVelocity = 0.0;
     private double maxAcceleration = 0.0;
     private double kG = 0.0;
-    private double inchesPerTick = 0;
-    private double maxProfileVelo = 1.0, maxProfileAccel = 1.0, maxProfileJerk = 0.0;
+    private double INCHES_PER_TICK = 0;
+    private double PROFILE_MAX_VELO = 1.0, PROFILE_MAX_ACCEL = 1.0, PROFILE_MAX_JERK = 0.0;
 
     public double getCurrentPosition() {
         return currentPosition;
@@ -67,7 +66,8 @@ public class ProfiledLift {
     }
 
     /**
-     * Initialize fields
+     * Initialize fields <p>
+     * Use {@link #updateConstants} to update constants
      */
     public ProfiledLift(
             MotorGroup motors,
@@ -93,18 +93,18 @@ public class ProfiledLift {
     /**
      * Update {@link #controller}, {@link #veloFilter}, and {@link #accelFilter} gains
      */
-    public void updateGains(
+    public void updateConstants(
             double kG,
-            double inchesPerTick,
-            double maxProfileVelo,
-            double maxProfileAccel,
-            double maxProfileJerk
+            double INCHES_PER_TICK,
+            double PROFILE_MAX_VELO,
+            double PROFILE_MAX_ACCEL,
+            double PROFILE_MAX_JERK
     ) {
         this.kG = kG;
-        this.inchesPerTick = inchesPerTick;
-        this.maxProfileVelo = maxProfileVelo;
-        this.maxProfileAccel = maxProfileAccel;
-        this.maxProfileJerk = maxProfileJerk;
+        this.INCHES_PER_TICK = INCHES_PER_TICK;
+        this.PROFILE_MAX_VELO = PROFILE_MAX_VELO;
+        this.PROFILE_MAX_ACCEL = PROFILE_MAX_ACCEL;
+        this.PROFILE_MAX_JERK = PROFILE_MAX_JERK;
     }
 
     /**
@@ -119,7 +119,7 @@ public class ProfiledLift {
         double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
 
         currentBatteryVoltage = batteryVoltageSensor.getVoltage();
-        currentPosition = motors.encoder.getPosition() * inchesPerTick;
+        currentPosition = motors.encoder.getPosition() * INCHES_PER_TICK;
         currentVelocity = veloFilter.getEstimate((currentPosition - lastPosition) / dt);
         currentAcceleration = accelFilter.getEstimate((currentVelocity - lastVelocity) / dt);
         maxVelocity = Math.max(currentVelocity, maxVelocity);
@@ -153,9 +153,9 @@ public class ProfiledLift {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentPosition, currentVelocity),
                 new MotionState(targetPosition, 0.0),
-                maxProfileVelo,
-                maxProfileAccel,
-                maxProfileJerk
+                PROFILE_MAX_VELO,
+                PROFILE_MAX_ACCEL,
+                PROFILE_MAX_JERK
         );
         profileTimer.reset();
     }

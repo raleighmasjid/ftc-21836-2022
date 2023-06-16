@@ -84,7 +84,6 @@ public class PowerplayScorer {
         passThruServoL.setInverted(true);
 
         passthrough = new ProfiledClawArm(
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 new SimpleClaw(axonMINI(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
                 axonMINI(hw, "claw pivot"),
                 axonMINI(hw, "passthrough 1"),
@@ -155,7 +154,7 @@ public class PowerplayScorer {
         );
         lift.controller.setOutputBounds(-1.0, 1.0);
 
-        lift.updateGains(
+        lift.updateConstants(
                 kG(),
                 RobotConfig.LIFT_INCHES_PER_TICK,
                 RobotConfig.LIFT_MAX_VELO,
@@ -163,15 +162,17 @@ public class PowerplayScorer {
                 RobotConfig.LIFT_MAX_JERK
         );
 
-        passthrough.updateValues(
+        passthrough.updateAngles(
                 RobotConfig.ANGLE_PASS_FRONT,
                 RobotConfig.ANGLE_PASS_BACK,
                 RobotConfig.ANGLE_PIVOT_FRONT,
                 RobotConfig.ANGLE_PIVOT_BACK,
                 RobotConfig.ANGLE_PIVOT_POS,
-                RobotConfig.PASS_PIVOT_POS_TOLERANCE,
                 RobotConfig.ANGLE_PASS_TILT_OFFSET,
-                RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET,
+                RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET
+        );
+        passthrough.updateConstants(
+                RobotConfig.PASS_PIVOT_POS_TOLERANCE,
                 RobotConfig.PASS_MAX_VELO,
                 RobotConfig.PASS_MAX_ACCEL,
                 RobotConfig.PASS_MAX_JERK

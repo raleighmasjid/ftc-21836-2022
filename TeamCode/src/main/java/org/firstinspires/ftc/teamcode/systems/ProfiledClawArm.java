@@ -25,11 +25,11 @@ public class ProfiledClawArm {
     private MotionProfile profile;
 
     private double
-            currentAngle, frontAngle, backAngle,
-            frontPivotAngle, backPivotAngle,
-            pivotPos, pivotPosTolerance,
-            tiltOffset, miniTiltOffset,
-            maxProfileVelo, maxProfileAccel, maxProfileJerk;
+            currentAngle, ANGLE_FRONT, ANGLE_BACK,
+            ANGLE_PIVOT_FRONT, ANGLE_PIVOT_BACK,
+            ANGLE_PIVOT_POS, TOLERANCE_PIVOT_POS,
+            ANGLE_TILT_OFFSET, ANGLE_MINI_TILT_OFFSET,
+            PROFILE_MAX_VELO, PROFILE_MAX_ACCEL, PROFILE_MAX_JERK;
 
     private double currentVelocity = 0.0;
 
@@ -38,28 +38,20 @@ public class ProfiledClawArm {
     private boolean triggered = false;
     private boolean tilted = false;
 
+    public ProfiledClawArm(SimpleClaw claw, SimpleServo pivotServo, SimpleServo servo) {
+        this(claw, pivotServo, servo, null);
+    }
+
     /**
-     * Initialize fields, given servo range min = 0
+     * Initialize fields <p>
+     * Use {@link #updateAngles} and {@link #updateConstants} to update angles and constants, respectively
      */
     public ProfiledClawArm(
-            double frontAngle, double backAngle,
-            double frontPivotAngle, double backPivotAngle,
-            double pivotPos, double pivotPosTolerance,
-            double tiltOffset, double miniTiltOffset,
-            double maxProfileVelo, double maxProfileAccel, double maxProfileJerk,
             SimpleClaw claw,
             SimpleServo pivotServo,
             SimpleServo servoR,
             SimpleServo servoL
     ) {
-        updateValues(
-                frontAngle, backAngle,
-                frontPivotAngle, backPivotAngle,
-                pivotPos, pivotPosTolerance,
-                tiltOffset, miniTiltOffset,
-                maxProfileVelo, maxProfileAccel, maxProfileJerk
-        );
-
         this.claw = claw;
         this.pivotServo = pivotServo;
         this.servoR = servoR;
@@ -70,25 +62,27 @@ public class ProfiledClawArm {
         updateProfile();
     }
 
-    public void updateValues(
-            double frontAngle, double backAngle,
-            double frontPivotAngle, double backPivotAngle,
-            double pivotPos, double pivotPosTolerance,
-            double tiltOffset, double miniTiltOffset,
-            double maxVelo, double maxAccel, double maxJerk
+    public void updateAngles(
+            double ANGLE_FRONT, double ANGLE_BACK,
+            double ANGLE_PIVOT_FRONT, double ANGLE_PIVOT_BACK,
+            double ANGLE_PIVOT_POS,
+            double ANGLE_TILT_OFFSET, double ANGLE_MINI_TILT_OFFSET
     ) {
-        this.currentAngle = frontAngle;
-        this.frontAngle = frontAngle;
-        this.backAngle = backAngle;
-        this.frontPivotAngle = frontPivotAngle;
-        this.backPivotAngle = backPivotAngle;
-        this.tiltOffset = tiltOffset;
-        this.miniTiltOffset = miniTiltOffset;
-        this.pivotPos = pivotPos;
-        this.pivotPosTolerance = pivotPosTolerance;
-        this.maxProfileVelo = maxVelo;
-        this.maxProfileAccel = maxAccel;
-        this.maxProfileJerk = maxJerk;
+        this.currentAngle = ANGLE_FRONT;
+        this.ANGLE_FRONT = ANGLE_FRONT;
+        this.ANGLE_BACK = ANGLE_BACK;
+        this.ANGLE_PIVOT_FRONT = ANGLE_PIVOT_FRONT;
+        this.ANGLE_PIVOT_BACK = ANGLE_PIVOT_BACK;
+        this.ANGLE_TILT_OFFSET = ANGLE_TILT_OFFSET;
+        this.ANGLE_MINI_TILT_OFFSET = ANGLE_MINI_TILT_OFFSET;
+        this.ANGLE_PIVOT_POS = ANGLE_PIVOT_POS;
+    }
+
+    public void updateConstants(double PIVOT_POS_TOLERANCE, double PROFILE_MAX_VELO, double PROFILE_MAX_ACCEL, double PROFILE_MAX_JERK) {
+        this.TOLERANCE_PIVOT_POS = PIVOT_POS_TOLERANCE;
+        this.PROFILE_MAX_VELO = PROFILE_MAX_VELO;
+        this.PROFILE_MAX_ACCEL = PROFILE_MAX_ACCEL;
+        this.PROFILE_MAX_JERK = PROFILE_MAX_JERK;
     }
 
     /**
@@ -112,7 +106,7 @@ public class ProfiledClawArm {
      * Holds pivot servo position
      */
     public void runPivot() {
-        pivotServo.turnToAngle(pivotServo.getAngleRange() - (pivotIsFront ? frontPivotAngle : backPivotAngle));
+        pivotServo.turnToAngle(pivotServo.getAngleRange() - (pivotIsFront ? ANGLE_PIVOT_FRONT : ANGLE_PIVOT_BACK));
     }
 
     /**
@@ -152,18 +146,18 @@ public class ProfiledClawArm {
     private void updateProfile() {
         double tiltOffset =
                 tilted ?
-                        this.tiltOffset :
-                        (!triggered) && (inFront != pivotIsFront) ? miniTiltOffset : 0.0;
+                        this.ANGLE_TILT_OFFSET :
+                        (!triggered) && (inFront != pivotIsFront) ? ANGLE_MINI_TILT_OFFSET : 0.0;
 
         double targetAngle =
                 inFront ?
-                        frontAngle + tiltOffset :
-                        backAngle - tiltOffset;
+                        ANGLE_FRONT + tiltOffset :
+                        ANGLE_BACK - tiltOffset;
 
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentAngle, currentVelocity),
                 new MotionState(targetAngle, 0.0),
-                maxProfileVelo, maxProfileAccel, maxProfileJerk
+                PROFILE_MAX_VELO, PROFILE_MAX_ACCEL, PROFILE_MAX_JERK
         );
 
         profileTimer.reset();
@@ -180,7 +174,7 @@ public class ProfiledClawArm {
         if (servoL != null) {
             servoL.turnToAngle(currentAngle);
         }
-        if (triggered && Math.abs(pivotPos - currentAngle) <= pivotPosTolerance) {
+        if (triggered && Math.abs(ANGLE_PIVOT_POS - currentAngle) <= TOLERANCE_PIVOT_POS) {
             pivotIsFront = inFront;
             triggered = false;
         }
