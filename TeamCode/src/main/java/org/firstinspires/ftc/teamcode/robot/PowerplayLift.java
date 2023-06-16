@@ -37,7 +37,7 @@ public class PowerplayLift extends ProfiledLift {
         super.readPosition();
     }
 
-    public void updateConstants() {
+    protected void updateConstants() {
         boolean goingDown = targetPosition < currentPosition;
 
         veloFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_VELO, RobotConfig.LIFT_FILTER_COUNT_VELO);

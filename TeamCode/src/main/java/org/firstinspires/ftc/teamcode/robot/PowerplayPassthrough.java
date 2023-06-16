@@ -9,10 +9,16 @@ public class PowerplayPassthrough extends ProfiledClawArm {
 
     public PowerplayPassthrough(SimpleClaw claw, SimpleServo pivotServo, SimpleServo servoR, SimpleServo servoL) {
         super(claw, pivotServo, servoR, servoL);
+        updateValues();
     }
 
     @Override
     public void run() {
+        updateValues();
+        super.run();
+    }
+
+    protected void updateValues() {
         updateAngles(
                 RobotConfig.ANGLE_PASS_FRONT,
                 RobotConfig.ANGLE_PASS_BACK,
@@ -29,6 +35,5 @@ public class PowerplayPassthrough extends ProfiledClawArm {
                 RobotConfig.PASS_MAX_JERK
         );
         claw.updateAngles(RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED);
-        super.run();
     }
 }
