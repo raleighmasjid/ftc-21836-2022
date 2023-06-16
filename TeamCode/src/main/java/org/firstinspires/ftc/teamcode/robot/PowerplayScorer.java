@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.systems.SimpleClaw;
 
 /**
- * Contains a {@link PowerplayPassthrough} and {@link PowerplayLift} linked by automated methods
+ * Merger class, linking a {@link PowerplayPassthrough} and {@link PowerplayLift} by automated methods
  *
  * @author Arshad Anas
  * @since 2022/12/24
