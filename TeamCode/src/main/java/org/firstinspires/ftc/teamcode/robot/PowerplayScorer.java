@@ -87,6 +87,13 @@ public class PowerplayScorer {
         coneArmServoL = goBILDAServo(hw, "arm left");
         coneArmServoL.setInverted(true);
 
+        reset();
+    }
+
+    public void reset() {
+        lift.reset();
+        passthrough.reset();
+        clawHasLifted = true;
         liftClawTimer.reset();
     }
 
