@@ -94,14 +94,6 @@ public class PowerplayScorer {
     }
 
     /**
-     * Resets all internal lift variables
-     */
-    public void resetLift() {
-        lift.reset();
-        passthrough.setTilt(false);
-    }
-
-    /**
      * Runs {@link #grabCone} if open
      * Runs {@link #dropCone} if already closed
      */

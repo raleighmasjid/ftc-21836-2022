@@ -116,7 +116,10 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             if (overrideMode) {
-                if (control2LShoulder.wasJustPressed()) scorer.resetLift();
+                if (control2LShoulder.wasJustPressed()) {
+                    scorer.lift.reset();
+                    scorer.passthrough.reset();
+                }
 
                 if (control2B.wasJustPressed()) scorer.passthrough.claw.toggle();
 

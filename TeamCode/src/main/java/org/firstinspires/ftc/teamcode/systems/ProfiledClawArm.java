@@ -180,6 +180,14 @@ public class ProfiledClawArm {
         }
     }
 
+    public void reset() {
+        if (!inFront) {
+            trigger();
+        }
+        claw.setClosed(false);
+        setTilt(false);
+    }
+
     /**
      * Print tuning telemetry from {@link #profile}
      *
