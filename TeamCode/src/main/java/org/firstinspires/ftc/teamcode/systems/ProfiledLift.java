@@ -23,39 +23,39 @@ public class ProfiledLift {
     /**
      * Motor powering the dual lift system
      */
-    private final MotorGroup motors;
+    protected final MotorGroup motors;
 
-    private final ElapsedTime profileTimer = new ElapsedTime();
-    private final ElapsedTime derivTimer = new ElapsedTime();
+    protected final ElapsedTime profileTimer = new ElapsedTime();
+    protected final ElapsedTime derivTimer = new ElapsedTime();
 
     public final FIRLowPassFilter accelFilter;
     public final FIRLowPassFilter veloFilter;
 
-    private final VoltageSensor batteryVoltageSensor;
+    protected final VoltageSensor batteryVoltageSensor;
 
     /**
      * PIDF controller for lift
      */
     public final PIDFController controller;
 
-    private MotionProfile profile;
+    protected MotionProfile profile;
 
     /**
      * Immediate target lift state grabbed from {@link #profile}
      */
-    private MotionState profileState = new MotionState(0.0, 0.0, 0.0, 0.0);
+    protected MotionState profileState = new MotionState(0.0, 0.0, 0.0, 0.0);
 
-    private double currentBatteryVoltage = 12.0;
-    private double currentPosition = 0.0;
-    private double currentVelocity = 0.0;
-    private double currentAcceleration = 0.0;
-    private double targetPosition = 0.0;
-    private String targetPositionName = "Zero";
-    private double maxVelocity = 0.0;
-    private double maxAcceleration = 0.0;
-    private double kG = 0.0;
-    private double INCHES_PER_TICK = 0;
-    private double PROFILE_MAX_VELO = 1.0, PROFILE_MAX_ACCEL = 1.0, PROFILE_MAX_JERK = 0.0;
+    protected double currentBatteryVoltage = 12.0;
+    protected double currentPosition = 0.0;
+    protected double currentVelocity = 0.0;
+    protected double currentAcceleration = 0.0;
+    protected double targetPosition = 0.0;
+    protected String targetPositionName = "Zero";
+    protected double maxVelocity = 0.0;
+    protected double maxAcceleration = 0.0;
+    protected double kG = 0.0;
+    protected double INCHES_PER_TICK = 0;
+    protected double PROFILE_MAX_VELO = 1.0, PROFILE_MAX_ACCEL = 1.0, PROFILE_MAX_JERK = 0.0;
 
     public double getCurrentPosition() {
         return currentPosition;
@@ -149,7 +149,7 @@ public class ProfiledLift {
     /**
      * Update {@link #profile} with a {@link #targetPosition} set with {@link #setTargetPosition}
      */
-    private void updateProfile() {
+    protected void updateProfile() {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentPosition, currentVelocity),
                 new MotionState(targetPosition, 0.0),

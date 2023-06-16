@@ -25,16 +25,16 @@ import org.firstinspires.ftc.teamcode.systems.SimpleClaw;
  */
 public class PowerplayScorer {
 
-    private final SimpleServo coneArmServoR;
-    private final SimpleServo coneArmServoL;
+    protected final SimpleServo coneArmServoR;
+    protected final SimpleServo coneArmServoL;
 
-    private final ElapsedTime liftClawTimer = new ElapsedTime();
+    protected final ElapsedTime liftClawTimer = new ElapsedTime();
 
-    public final ProfiledLift lift;
+    public final PowerplayLift lift;
 
     public final ProfiledClawArm passthrough;
 
-    private boolean clawHasLifted = true;
+    protected boolean clawHasLifted = true;
 
     /**
      * Named lift position
@@ -43,15 +43,15 @@ public class PowerplayScorer {
         FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
     }
 
-    private SimpleServo goBILDAServo(HardwareMap hw, String name) {
+    protected SimpleServo goBILDAServo(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 280);
     }
 
-    private MotorEx liftMotor(HardwareMap hw, String name) {
+    protected MotorEx liftMotor(HardwareMap hw, String name) {
         return new MotorEx(hw, name, 145.1, 1150);
     }
 
-    private SimpleServo axonMINI(HardwareMap hw, String name) {
+    protected SimpleServo axonMINI(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 355);
     }
 

@@ -18,25 +18,25 @@ public class ProfiledClawArm {
 
     public final SimpleClaw claw;
 
-    private final SimpleServo pivotServo, servoR, servoL;
+    protected final SimpleServo pivotServo, servoR, servoL;
 
-    private final ElapsedTime profileTimer = new ElapsedTime();
+    protected final ElapsedTime profileTimer = new ElapsedTime();
 
-    private MotionProfile profile;
+    protected MotionProfile profile;
 
-    private double
+    protected double
             currentAngle, ANGLE_FRONT, ANGLE_BACK,
             ANGLE_PIVOT_FRONT, ANGLE_PIVOT_BACK,
             ANGLE_PIVOT_POS, TOLERANCE_PIVOT_POS,
             ANGLE_TILT_OFFSET, ANGLE_MINI_TILT_OFFSET,
             PROFILE_MAX_VELO, PROFILE_MAX_ACCEL, PROFILE_MAX_JERK;
 
-    private double currentVelocity = 0.0;
+    protected double currentVelocity = 0.0;
 
-    private boolean pivotIsFront = true;
-    private boolean inFront = true;
-    private boolean triggered = false;
-    private boolean tilted = false;
+    protected boolean pivotIsFront = true;
+    protected boolean inFront = true;
+    protected boolean triggered = false;
+    protected boolean tilted = false;
 
     public ProfiledClawArm(SimpleClaw claw, SimpleServo pivotServo, SimpleServo servo) {
         this(claw, pivotServo, servo, null);
@@ -143,7 +143,7 @@ public class ProfiledClawArm {
     /**
      * Updates {@link #profile} with a new target position, including diagonal drop and floor grab tilt presets
      */
-    private void updateProfile() {
+    protected void updateProfile() {
         double tiltOffset =
                 tilted ?
                         this.ANGLE_TILT_OFFSET :
