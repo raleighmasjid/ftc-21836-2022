@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
+import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
 import org.firstinspires.ftc.teamcode.systems.MecanumDrivetrain;
@@ -129,13 +130,13 @@ public class MainTeleOp extends LinearOpMode {
                 scorer.lift.run(Gamepad2.getLeftY(), true);
             } else {
                 if (control2Up.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.FIVE : PowerplayScorer.LiftPos.TALL);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.FIVE : PowerplayLift.Position.TALL);
                 else if (control2Left.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.FOUR : PowerplayScorer.LiftPos.MED);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.FOUR : PowerplayLift.Position.MED);
                 else if (control2Right.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.THREE : PowerplayScorer.LiftPos.LOW);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.THREE : PowerplayLift.Position.LOW);
                 else if (control2Down.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayScorer.LiftPos.TWO : PowerplayScorer.LiftPos.FLOOR);
+                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.TWO : PowerplayLift.Position.FLOOR);
 
                 if (control2Y.wasJustPressed()) scorer.passthrough.trigger();
 
