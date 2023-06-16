@@ -98,10 +98,15 @@ public class MainTeleOp extends LinearOpMode {
             drivetrain.readIMU();
 
             // Field-centric resets
-            if (control1Up.wasJustPressed()) drivetrain.setHeading(0.0);
-            else if (control1Left.wasJustPressed()) drivetrain.setHeading(90.0);
-            else if (control1Down.wasJustPressed()) drivetrain.setHeading(180.0);
-            else if (control1Right.wasJustPressed()) drivetrain.setHeading(270.0);
+            if (control1Up.wasJustPressed()) {
+                drivetrain.setHeading(0.0);
+            } else if (control1Left.wasJustPressed()) {
+                drivetrain.setHeading(90.0);
+            } else if (control1Down.wasJustPressed()) {
+                drivetrain.setHeading(180.0);
+            } else if (control1Right.wasJustPressed()) {
+                drivetrain.setHeading(270.0);
+            }
 
             // Precision mode driving triggers
             double precisionScale = Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER) ?
@@ -128,21 +133,37 @@ public class MainTeleOp extends LinearOpMode {
                 if (control2Up.wasJustPressed()) scorer.passthrough.toggleTilt();
 
                 scorer.lift.run(Gamepad2.getLeftY(), true);
+
             } else {
-                if (control2Up.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.FIVE : PowerplayLift.Position.TALL);
-                else if (control2Left.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.FOUR : PowerplayLift.Position.MED);
-                else if (control2Right.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.THREE : PowerplayLift.Position.LOW);
-                else if (control2Down.wasJustPressed())
-                    scorer.setTargetLiftPos(stackHeights ? PowerplayLift.Position.TWO : PowerplayLift.Position.FLOOR);
+
+                if (control2Up.wasJustPressed()) {
+                    scorer.setTargetLiftPos(stackHeights ?
+                            PowerplayLift.Position.FIVE :
+                            PowerplayLift.Position.TALL
+                    );
+                } else if (control2Left.wasJustPressed()) {
+                    scorer.setTargetLiftPos(stackHeights ?
+                            PowerplayLift.Position.FOUR :
+                            PowerplayLift.Position.MED
+                    );
+                } else if (control2Right.wasJustPressed()) {
+                    scorer.setTargetLiftPos(stackHeights ?
+                            PowerplayLift.Position.THREE :
+                            PowerplayLift.Position.LOW
+                    );
+                } else if (control2Down.wasJustPressed()) {
+                    scorer.setTargetLiftPos(stackHeights ?
+                            PowerplayLift.Position.TWO :
+                            PowerplayLift.Position.FLOOR
+                    );
+                }
 
                 if (control2Y.wasJustPressed()) scorer.passthrough.trigger();
 
                 if (control2B.wasJustPressed()) scorer.triggerClaw();
 
                 scorer.lift.runToPosition();
+
             }
 
             scorer.passthrough.run();
@@ -158,7 +179,7 @@ public class MainTeleOp extends LinearOpMode {
                     Gamepad1.getRightX() * precisionScale
             );
 
-            //everything below is telemetry
+            // everything below is telemetry
             myTelemetry.addData(
                     "Robot is in", overrideMode ?
                             "manual override mode" : // override
