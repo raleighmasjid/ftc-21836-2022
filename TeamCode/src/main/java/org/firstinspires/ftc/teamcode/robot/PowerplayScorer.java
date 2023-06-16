@@ -96,7 +96,7 @@ public class PowerplayScorer {
     }
 
     /**
-     * Runs {@link #grabCone} if open
+     * Runs {@link #grabCone} if open <p>
      * Runs {@link #dropCone} if already closed
      */
     public void triggerClaw() {
@@ -105,8 +105,8 @@ public class PowerplayScorer {
     }
 
     /**
-     * Closes claw
-     * Waits for claw to close
+     * Closes claw <p>
+     * Waits for claw to close <p>
      * Runs {@link #liftClaw}
      */
     public void grabCone() {
@@ -118,8 +118,8 @@ public class PowerplayScorer {
     }
 
     /**
-     * Lifts claw either:
-     * 6 inches if grabbing off a stack
+     * Lifts claw either: <p>
+     * 6 inches if grabbing off a stack <p>
      * 2 inches if grabbing off the floor
      */
     public void liftClaw() {
