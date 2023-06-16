@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
 
 /**
- * Contains a 3-motor motion-profiled lift
+ * Motion-profiled DC motor-powered linear slide lift
  *
  * @author Arshad Anas
  * @since 2023/06/14
