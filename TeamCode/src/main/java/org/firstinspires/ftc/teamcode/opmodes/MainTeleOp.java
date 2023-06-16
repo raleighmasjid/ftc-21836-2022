@@ -94,7 +94,6 @@ public class MainTeleOp extends LinearOpMode {
             control2Right.readValue();
             control2Down.readValue();
 
-            scorer.updateValues();
             scorer.lift.readPosition();
             drivetrain.readIMU();
 

@@ -32,7 +32,7 @@ public class PowerplayScorer {
 
     public final PowerplayLift lift;
 
-    public final ProfiledClawArm passthrough;
+    public final PowerplayPassthrough passthrough;
 
     protected boolean clawHasLifted = true;
 
@@ -76,14 +76,12 @@ public class PowerplayScorer {
         SimpleServo passThruServoL = axonMINI(hw, "passthrough 2");
         passThruServoL.setInverted(true);
 
-        passthrough = new ProfiledClawArm(
+        passthrough = new PowerplayPassthrough(
                 new SimpleClaw(axonMINI(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
                 axonMINI(hw, "claw pivot"),
                 axonMINI(hw, "passthrough 1"),
                 passThruServoL
         );
-
-        updateValues();
 
         coneArmServoR = goBILDAServo(hw, "arm right");
         coneArmServoL = goBILDAServo(hw, "arm left");
@@ -95,25 +93,6 @@ public class PowerplayScorer {
     public void setTargetLiftPos(PowerplayLift.Position height) {
         passthrough.setTilt(height == PowerplayLift.Position.LOW || height == PowerplayLift.Position.MED || height == PowerplayLift.Position.TALL);
         lift.setTargetPosition(height);
-    }
-
-    public void updateValues() {
-        passthrough.updateAngles(
-                RobotConfig.ANGLE_PASS_FRONT,
-                RobotConfig.ANGLE_PASS_BACK,
-                RobotConfig.ANGLE_PIVOT_FRONT,
-                RobotConfig.ANGLE_PIVOT_BACK,
-                RobotConfig.ANGLE_PIVOT_POS,
-                RobotConfig.ANGLE_PASS_TILT_OFFSET,
-                RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET
-        );
-        passthrough.updateConstants(
-                RobotConfig.PASS_PIVOT_POS_TOLERANCE,
-                RobotConfig.PASS_MAX_VELO,
-                RobotConfig.PASS_MAX_ACCEL,
-                RobotConfig.PASS_MAX_JERK
-        );
-        passthrough.claw.updateAngles(RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED);
     }
 
     /**

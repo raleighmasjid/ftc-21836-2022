@@ -402,7 +402,6 @@ public abstract class BaseAuton extends LinearOpMode {
                 hasParked = true;
             }
 
-            scorer.updateValues();
             scorer.lift.readPosition();
             drivetrain.update();
             scorer.lift.runToPosition();
