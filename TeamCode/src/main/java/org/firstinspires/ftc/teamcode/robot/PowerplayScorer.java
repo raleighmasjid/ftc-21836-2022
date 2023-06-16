@@ -98,8 +98,6 @@ public class PowerplayScorer {
     }
 
     public void updateValues() {
-        lift.updateConstants();
-
         passthrough.updateAngles(
                 RobotConfig.ANGLE_PASS_FRONT,
                 RobotConfig.ANGLE_PASS_BACK,

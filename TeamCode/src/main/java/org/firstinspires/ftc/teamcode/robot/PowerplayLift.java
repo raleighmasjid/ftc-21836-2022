@@ -28,40 +28,13 @@ public class PowerplayLift extends ProfiledLift {
             FIRLowPassFilter accelFilter
     ) {
         super(motors, batteryVoltageSensor, controller, veloFilter, accelFilter);
+        updateConstants();
     }
 
-    public double getConesHeight(int numOfCones) {
-        return (numOfCones - 1) * (RobotConfig.HEIGHT_2 - RobotConfig.HEIGHT_FLOOR) + RobotConfig.HEIGHT_FLOOR;
-    }
-
-    public void setTargetPosition(PowerplayLift.Position height) {
-        switch (height) {
-            case TALL:
-                setTargetPosition(RobotConfig.HEIGHT_TALL, "Tall junction");
-                break;
-            case MED:
-                setTargetPosition(RobotConfig.HEIGHT_MEDIUM, "Medium junction");
-                break;
-            case LOW:
-                setTargetPosition(RobotConfig.HEIGHT_LOW, "Low junction");
-                break;
-            case FIVE:
-                setTargetPosition(getConesHeight(5), "5 cones");
-                break;
-            case FOUR:
-                setTargetPosition(getConesHeight(4), "4 cones");
-                break;
-            case THREE:
-                setTargetPosition(getConesHeight(3), "3 cones");
-                break;
-            case TWO:
-                setTargetPosition(getConesHeight(2), "2 cones / ground junction");
-                break;
-            case FLOOR:
-            default:
-                setTargetPosition(getConesHeight(1), "Floor / 1 cone");
-                break;
-        }
+    @Override
+    public void readPosition() {
+        updateConstants();
+        super.readPosition();
     }
 
     public void updateConstants() {
@@ -104,5 +77,37 @@ public class PowerplayLift extends ProfiledLift {
                                         0.0;
     }
 
+    public double getConesHeight(int numOfCones) {
+        return (numOfCones - 1) * (RobotConfig.HEIGHT_2 - RobotConfig.HEIGHT_FLOOR) + RobotConfig.HEIGHT_FLOOR;
+    }
 
+    public void setTargetPosition(PowerplayLift.Position height) {
+        switch (height) {
+            case TALL:
+                setTargetPosition(RobotConfig.HEIGHT_TALL, "Tall junction");
+                break;
+            case MED:
+                setTargetPosition(RobotConfig.HEIGHT_MEDIUM, "Medium junction");
+                break;
+            case LOW:
+                setTargetPosition(RobotConfig.HEIGHT_LOW, "Low junction");
+                break;
+            case FIVE:
+                setTargetPosition(getConesHeight(5), "5 cones");
+                break;
+            case FOUR:
+                setTargetPosition(getConesHeight(4), "4 cones");
+                break;
+            case THREE:
+                setTargetPosition(getConesHeight(3), "3 cones");
+                break;
+            case TWO:
+                setTargetPosition(getConesHeight(2), "2 cones / ground junction");
+                break;
+            case FLOOR:
+            default:
+                setTargetPosition(getConesHeight(1), "Floor / 1 cone");
+                break;
+        }
+    }
 }
