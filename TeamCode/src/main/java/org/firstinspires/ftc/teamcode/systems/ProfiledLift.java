@@ -143,7 +143,7 @@ public class ProfiledLift {
      * @param targetPosition Desired position (in inches) to run to
      */
     public void setTargetPosition(double targetPosition) {
-        setTargetPosition(targetPosition, "Custom position");
+        setTargetPosition(targetPosition, Double.toString(targetPosition));
     }
 
     /**
