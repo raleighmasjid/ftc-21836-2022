@@ -166,9 +166,6 @@ public class MainTeleOp extends LinearOpMode {
 
             }
 
-            scorer.passthrough.run();
-            scorer.passthrough.runPivot();
-            scorer.passthrough.claw.run();
             scorer.run(
                     Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN,
                     Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN

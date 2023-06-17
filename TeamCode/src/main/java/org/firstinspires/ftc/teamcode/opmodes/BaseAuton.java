@@ -405,9 +405,6 @@ public abstract class BaseAuton extends LinearOpMode {
             scorer.lift.readPosition();
             drivetrain.update();
             scorer.lift.runToPosition();
-            scorer.passthrough.run();
-            scorer.passthrough.runPivot();
-            scorer.passthrough.claw.run();
             scorer.run(0, 0);
 
             // everything below is telemetry

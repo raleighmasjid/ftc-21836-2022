@@ -157,6 +157,9 @@ public class PowerplayScorer {
      * @param angleL The angle to turn {@link #coneArmServoL} to
      */
     public void run(double angleR, double angleL) {
+        passthrough.run();
+        passthrough.runPivot();
+        passthrough.claw.run();
         if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
         coneArmServoL.turnToAngle(angleL);
         coneArmServoR.turnToAngle(angleR);
