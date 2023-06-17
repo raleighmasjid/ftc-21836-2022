@@ -176,6 +176,7 @@ public class ProfiledClawArm {
         if (!inFront) {
             trigger();
         }
+        setPivotState(true);
         claw.setClosed(false);
         setTilt(false);
     }
