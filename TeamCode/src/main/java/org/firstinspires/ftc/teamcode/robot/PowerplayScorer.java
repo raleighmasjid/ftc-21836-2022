@@ -33,16 +33,16 @@ public class PowerplayScorer {
 
     protected boolean clawHasLifted = true;
 
-    protected SimpleServo goBILDAServo(HardwareMap hw, String name) {
+    public static SimpleServo goBILDAServo(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 280);
     }
 
-    protected MotorEx liftMotor(HardwareMap hw, String name) {
-        return new MotorEx(hw, name, 145.1, 1150);
+    public static SimpleServo axonMINI(HardwareMap hw, String name) {
+        return new SimpleServo(hw, name, 0, 355);
     }
 
-    protected SimpleServo axonMINI(HardwareMap hw, String name) {
-        return new SimpleServo(hw, name, 0, 355);
+    public static MotorEx liftMotor(HardwareMap hw, String name) {
+        return new MotorEx(hw, name, 145.1, 1150);
     }
 
     /**
