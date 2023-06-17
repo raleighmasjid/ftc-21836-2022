@@ -14,21 +14,21 @@ public class SimpleClaw {
 
     protected final SimpleServo servo;
 
-    protected double openAngle, closedAngle;
+    protected double ANGLE_OPEN, ANGLE_CLOSED;
 
     protected boolean closed = false;
 
     /**
      * Initialize claw
      */
-    public SimpleClaw(SimpleServo servo, double openAngle, double closedAngle) {
+    public SimpleClaw(SimpleServo servo, double ANGLE_OPEN, double ANGLE_CLOSED) {
         this.servo = servo;
-        updateAngles(openAngle, closedAngle);
+        updateAngles(ANGLE_OPEN, ANGLE_CLOSED);
     }
 
-    public void updateAngles(double openAngle, double closedAngle) {
-        this.openAngle = openAngle;
-        this.closedAngle = closedAngle;
+    public void updateAngles(double ANGLE_OPEN, double ANGLE_CLOSED) {
+        this.ANGLE_OPEN = ANGLE_OPEN;
+        this.ANGLE_CLOSED = ANGLE_CLOSED;
     }
 
     /**
@@ -59,7 +59,7 @@ public class SimpleClaw {
      * Holds {@link #servo} position
      */
     public void run() {
-        servo.turnToAngle(closed ? closedAngle : openAngle);
+        servo.turnToAngle(closed ? ANGLE_CLOSED : ANGLE_OPEN);
     }
 
     /**
