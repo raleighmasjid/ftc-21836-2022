@@ -10,6 +10,7 @@ public class PowerplayPassthrough extends ProfiledClawArm {
     public PowerplayPassthrough(SimpleClaw claw, SimpleServo pivotServo, SimpleServo servoR, SimpleServo servoL) {
         super(claw, pivotServo, servoR, servoL);
         updateConstants();
+        currentAngle = ANGLE_FRONT;
     }
 
     @Override

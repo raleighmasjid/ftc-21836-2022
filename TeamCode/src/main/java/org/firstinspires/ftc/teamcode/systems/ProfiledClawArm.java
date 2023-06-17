@@ -138,7 +138,7 @@ public class ProfiledClawArm {
     protected void updateProfile() {
         double tiltOffset =
                 tilted ?
-                        this.ANGLE_TILT_OFFSET :
+                        ANGLE_TILT_OFFSET :
                         (!triggered) && (inFront != pivotIsFront) ? ANGLE_MINI_TILT_OFFSET : 0.0;
 
         double targetAngle =
