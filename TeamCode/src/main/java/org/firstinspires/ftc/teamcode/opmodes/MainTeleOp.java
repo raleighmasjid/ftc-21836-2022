@@ -124,13 +124,13 @@ public class MainTeleOp extends LinearOpMode {
 
                 if (control2LShoulder.wasJustPressed()) scorer.reset();
 
+                if (control2A.wasJustPressed()) scorer.passthrough.toggleTilt();
+
                 if (control2B.wasJustPressed()) scorer.passthrough.claw.toggle();
 
                 if (control2X.wasJustPressed()) scorer.passthrough.togglePivot();
 
                 if (control2Y.wasJustPressed()) scorer.passthrough.toggle();
-
-                if (control2Up.wasJustPressed()) scorer.passthrough.toggleTilt();
 
                 scorer.lift.run(Gamepad2.getLeftY(), true);
 
