@@ -64,7 +64,6 @@ public class ProfiledClawArm {
             double ANGLE_PIVOT_POS, double TOLERANCE_PIVOT_POS,
             double PROFILE_MAX_VELO, double PROFILE_MAX_ACCEL, double PROFILE_MAX_JERK
     ) {
-        this.currentAngle = ANGLE_FRONT;
         this.ANGLE_FRONT = ANGLE_FRONT;
         this.ANGLE_BACK = ANGLE_BACK;
         this.ANGLE_PIVOT_FRONT = ANGLE_PIVOT_FRONT;
