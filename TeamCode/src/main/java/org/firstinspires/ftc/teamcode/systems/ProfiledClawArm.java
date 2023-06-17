@@ -30,7 +30,7 @@ public class ProfiledClawArm {
             ANGLE_PIVOT_FRONT, ANGLE_PIVOT_BACK,
             ANGLE_PIVOT_POS, TOLERANCE_PIVOT_POS,
             ANGLE_TILT_OFFSET, ANGLE_MINI_TILT_OFFSET,
-            PROFILE_MAX_VELO, PROFILE_MAX_ACCEL, PROFILE_MAX_JERK;
+            PROFILE_MAX_VELO = 1, PROFILE_MAX_ACCEL = 1, PROFILE_MAX_JERK;
 
     protected double currentVelocity = 0.0;
 

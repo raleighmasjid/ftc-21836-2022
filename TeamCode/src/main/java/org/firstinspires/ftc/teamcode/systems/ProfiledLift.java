@@ -45,17 +45,9 @@ public class ProfiledLift {
      */
     protected MotionState profileState = new MotionState(0.0, 0.0, 0.0, 0.0);
 
-    protected double currentBatteryVoltage = 12.0;
-    protected double currentPosition = 0.0;
-    protected double currentVelocity = 0.0;
-    protected double currentAcceleration = 0.0;
-    protected double targetPosition = 0.0;
     protected String targetPositionName = "Zero";
-    protected double maxVelocity = 0.0;
-    protected double maxAcceleration = 0.0;
-    protected double kG = 0.0;
-    protected double INCHES_PER_TICK = 0;
-    protected double PROFILE_MAX_VELO = 1.0, PROFILE_MAX_ACCEL = 1.0, PROFILE_MAX_JERK = 0.0;
+    protected double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, INCHES_PER_TICK, PROFILE_MAX_VELO = 1, PROFILE_MAX_ACCEL = 1, PROFILE_MAX_JERK;
+    protected double currentBatteryVoltage = 12.0;
 
     public double getCurrentPosition() {
         return currentPosition;
