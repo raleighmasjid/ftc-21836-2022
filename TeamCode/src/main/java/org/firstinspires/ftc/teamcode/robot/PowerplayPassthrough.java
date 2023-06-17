@@ -9,26 +9,24 @@ public class PowerplayPassthrough extends ProfiledClawArm {
 
     public PowerplayPassthrough(SimpleClaw claw, SimpleServo pivotServo, SimpleServo servoR, SimpleServo servoL) {
         super(claw, pivotServo, servoR, servoL);
-        updateValues();
+        updateConstants();
     }
 
     @Override
     public void run() {
-        updateValues();
+        updateConstants();
         super.run();
     }
 
-    protected void updateValues() {
-        updateAngles(
+    protected void updateConstants() {
+        updateConstants(
                 RobotConfig.ANGLE_PASS_FRONT,
                 RobotConfig.ANGLE_PASS_BACK,
                 RobotConfig.ANGLE_PIVOT_FRONT,
                 RobotConfig.ANGLE_PIVOT_BACK,
-                RobotConfig.ANGLE_PIVOT_POS,
                 RobotConfig.ANGLE_PASS_TILT_OFFSET,
-                RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET
-        );
-        updateConstants(
+                RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET,
+                RobotConfig.ANGLE_PIVOT_POS,
                 RobotConfig.PASS_PIVOT_POS_TOLERANCE,
                 RobotConfig.PASS_MAX_VELO,
                 RobotConfig.PASS_MAX_ACCEL,

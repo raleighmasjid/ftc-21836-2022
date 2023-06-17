@@ -41,7 +41,7 @@ public class ProfiledClawArm {
 
     /**
      * Initialize fields <p>
-     * Use {@link #updateAngles} and {@link #updateConstants} to update angles and constants, respectively
+     * Use {@link #updateConstants} to update angles and constants
      */
     public ProfiledClawArm(
             SimpleClaw claw,
@@ -57,11 +57,12 @@ public class ProfiledClawArm {
         updateProfile();
     }
 
-    public void updateAngles(
+    public void updateConstants(
             double ANGLE_FRONT, double ANGLE_BACK,
             double ANGLE_PIVOT_FRONT, double ANGLE_PIVOT_BACK,
-            double ANGLE_PIVOT_POS,
-            double ANGLE_TILT_OFFSET, double ANGLE_MINI_TILT_OFFSET
+            double ANGLE_TILT_OFFSET, double ANGLE_MINI_TILT_OFFSET,
+            double ANGLE_PIVOT_POS, double TOLERANCE_PIVOT_POS,
+            double PROFILE_MAX_VELO, double PROFILE_MAX_ACCEL, double PROFILE_MAX_JERK
     ) {
         this.currentAngle = ANGLE_FRONT;
         this.ANGLE_FRONT = ANGLE_FRONT;
@@ -71,10 +72,7 @@ public class ProfiledClawArm {
         this.ANGLE_TILT_OFFSET = ANGLE_TILT_OFFSET;
         this.ANGLE_MINI_TILT_OFFSET = ANGLE_MINI_TILT_OFFSET;
         this.ANGLE_PIVOT_POS = ANGLE_PIVOT_POS;
-    }
-
-    public void updateConstants(double PIVOT_POS_TOLERANCE, double PROFILE_MAX_VELO, double PROFILE_MAX_ACCEL, double PROFILE_MAX_JERK) {
-        this.TOLERANCE_PIVOT_POS = PIVOT_POS_TOLERANCE;
+        this.TOLERANCE_PIVOT_POS = TOLERANCE_PIVOT_POS;
         this.PROFILE_MAX_VELO = PROFILE_MAX_VELO;
         this.PROFILE_MAX_ACCEL = PROFILE_MAX_ACCEL;
         this.PROFILE_MAX_JERK = PROFILE_MAX_JERK;
