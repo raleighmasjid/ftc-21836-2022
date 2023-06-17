@@ -57,11 +57,13 @@ public class PowerplayLift extends ProfiledLift {
         );
         controller.setOutputBounds(-1.0, 1.0);
 
-        kG = kG();
-        INCHES_PER_TICK = RobotConfig.LIFT_INCHES_PER_TICK;
-        PROFILE_MAX_VELO = RobotConfig.LIFT_MAX_VELO;
-        PROFILE_MAX_ACCEL = RobotConfig.LIFT_MAX_ACCEL;
-        PROFILE_MAX_JERK = RobotConfig.LIFT_MAX_JERK;
+        updateConstants(
+                kG(),
+                RobotConfig.LIFT_INCHES_PER_TICK,
+                RobotConfig.LIFT_MAX_VELO,
+                RobotConfig.LIFT_MAX_ACCEL,
+                RobotConfig.LIFT_MAX_JERK
+        );
     }
 
     /**
