@@ -6,12 +6,7 @@ import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
 
 public class PIDController {
 
-    private double kP, kI, kD, maxOutputWithIntegral;
-    private double lastError = 0.0;
-    private double error = 0.0;
-    private double errorIntegral = 0.0;
-    private double errorVelocity = 0.0;
-    private double target = 0.0;
+    private double kP, kI, kD, maxOutputWithIntegral, lastError, error, errorIntegral, errorVelocity, target;
 
     private boolean integrate = true;
 
