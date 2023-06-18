@@ -24,8 +24,8 @@ public class RobotConfig {
             LIFT_FILTER_GAIN_kD = 0.98,
             LIFT_FILTER_GAIN_VELO = 0.8,
             LIFT_FILTER_GAIN_ACCEL = 0.8,
-            LIFT_MAX_VELO = 39,
-            LIFT_MAX_ACCEL = 200,
+            LIFT_MAX_VELO = 46.6,
+            LIFT_MAX_ACCEL = 189.16,
             LIFT_MAX_JERK = 600,
             LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL = 0.6,
             LIFT_TOLERANCE_POS = 0.15843625,
@@ -50,6 +50,6 @@ public class RobotConfig {
             TIME_LIFT_TALL = 1;
     public static int
             LIFT_FILTER_COUNT_kD = 5,
-            LIFT_FILTER_COUNT_VELO = 5,
-            LIFT_FILTER_COUNT_ACCEL = 5;
+            LIFT_FILTER_COUNT_VELO = 300,
+            LIFT_FILTER_COUNT_ACCEL = 300;
 }
