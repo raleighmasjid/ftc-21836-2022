@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.control.controller;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
+import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
 
 public class PIDController {
 
@@ -12,9 +12,9 @@ public class PIDController {
 
     private final ElapsedTime dtTimer = new ElapsedTime();
 
-    public IIRLowPassFilter derivFilter;
+    public FIRLowPassFilter derivFilter;
 
-    public PIDController(double kP, double kI, double kD, double maxOutputWithIntegral, IIRLowPassFilter derivFilter) {
+    public PIDController(double kP, double kI, double kD, double maxOutputWithIntegral, FIRLowPassFilter derivFilter) {
         setGains(kP, kI, kD, maxOutputWithIntegral);
         dtTimer.reset();
         this.derivFilter = derivFilter;
@@ -46,10 +46,10 @@ public class PIDController {
     }
 
     public PIDController(double kP, double kI, double kD, double maxOutputWithIntegral) {
-        this(kP, kI, kD, maxOutputWithIntegral, new IIRLowPassFilter(0));
+        this(kP, kI, kD, maxOutputWithIntegral, new FIRLowPassFilter());
     }
 
-    public PIDController(double kP, double kI, double kD, IIRLowPassFilter derivFilter) {
+    public PIDController(double kP, double kI, double kD, FIRLowPassFilter derivFilter) {
         this(kP, kI, kD, Double.POSITIVE_INFINITY, derivFilter);
     }
 

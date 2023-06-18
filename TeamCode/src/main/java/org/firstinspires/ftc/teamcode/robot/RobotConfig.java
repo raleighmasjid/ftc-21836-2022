@@ -50,7 +50,7 @@ public class RobotConfig {
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1;
     public static int
-            LIFT_FILTER_COUNT_kD = 5,
+            LIFT_FILTER_COUNT_kD = 300,
             LIFT_FILTER_COUNT_VELO = 300,
             LIFT_FILTER_COUNT_ACCEL = 300;
 }

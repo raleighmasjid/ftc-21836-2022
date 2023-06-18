@@ -49,7 +49,10 @@ public class PowerplayLift extends ProfiledLift {
                 RobotConfig.LIFT_kD,
                 RobotConfig.LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL
         );
-        controller.pid.derivFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_kD);
+        controller.pid.derivFilter.setGains(
+                RobotConfig.LIFT_FILTER_GAIN_kD,
+                RobotConfig.LIFT_FILTER_COUNT_kD
+        );
         controller.feedforward.setGains(
                 goingDown ? RobotConfig.LIFT_kV_DOWN : RobotConfig.LIFT_kV_UP,
                 goingDown ? RobotConfig.LIFT_kA_DOWN : RobotConfig.LIFT_kA_UP,
