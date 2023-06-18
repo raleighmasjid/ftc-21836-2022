@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
@@ -20,14 +19,8 @@ public class PowerplayLift extends ProfiledLift {
      * Initialize fields <p>
      * Use {@link #updateConstants} to update constants
      */
-    public PowerplayLift(
-            MotorEx[] motors,
-            VoltageSensor batteryVoltageSensor,
-            PIDFController controller,
-            FIRLowPassFilter veloFilter,
-            FIRLowPassFilter accelFilter
-    ) {
-        super(motors, batteryVoltageSensor, controller, veloFilter, accelFilter);
+    public PowerplayLift(HardwareMap hw) {
+        super(PowerplayScorer.getLiftMotors(hw), hw.voltageSensor.iterator().next(), new PIDFController(), new FIRLowPassFilter(), new FIRLowPassFilter());
         updateConstants();
     }
 
