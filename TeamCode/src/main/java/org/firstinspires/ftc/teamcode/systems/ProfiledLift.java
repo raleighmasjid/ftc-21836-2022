@@ -6,7 +6,7 @@ import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,7 +23,7 @@ public class ProfiledLift {
     /**
      * Motor powering the dual lift system
      */
-    protected final MotorGroup motors;
+    protected final MotorEx[] motors;
 
     protected final ElapsedTime profileTimer = new ElapsedTime();
     protected final ElapsedTime derivTimer = new ElapsedTime();
@@ -62,14 +62,16 @@ public class ProfiledLift {
      * Use {@link #updateConstants} to update constants
      */
     public ProfiledLift(
-            MotorGroup motors,
+            MotorEx[] motors,
             VoltageSensor batteryVoltageSensor,
             PIDFController controller,
             FIRLowPassFilter veloFilter,
             FIRLowPassFilter accelFilter
     ) {
         this.motors = motors;
-        this.motors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        for (MotorEx motor : this.motors) {
+            motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        }
         this.batteryVoltageSensor = batteryVoltageSensor;
 
         profileTimer.reset();
@@ -111,7 +113,7 @@ public class ProfiledLift {
         double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
 
         currentBatteryVoltage = batteryVoltageSensor.getVoltage();
-        currentPosition = motors.encoder.getPosition() * INCHES_PER_TICK;
+        currentPosition = motors[0].encoder.getPosition() * INCHES_PER_TICK;
         currentVelocity = veloFilter.getEstimate((currentPosition - lastPosition) / dt);
         currentAcceleration = accelFilter.getEstimate((currentVelocity - lastVelocity) / dt);
         maxVelocity = Math.max(currentVelocity, maxVelocity);
@@ -159,7 +161,7 @@ public class ProfiledLift {
         accelFilter.clearMemory();
         veloFilter.clearMemory();
 
-        motors.encoder.reset();
+        motors[0].encoder.reset();
         controller.pid.resetIntegral();
         controller.pid.derivFilter.clearMemory();
 
@@ -204,7 +206,9 @@ public class ProfiledLift {
         if (voltageCompensate) {
             veloCommand *= scalar;
         }
-        motors.set((kG * scalar) + veloCommand);
+        for (MotorEx motor : motors) {
+            motor.set((kG * scalar) + veloCommand);
+        }
     }
 
     /**

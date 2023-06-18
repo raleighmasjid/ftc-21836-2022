@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -60,7 +59,7 @@ public class PowerplayScorer {
         liftMotor3.setInverted(true);
 
         lift = new PowerplayLift(
-                new MotorGroup(liftMotor2, liftMotor1, liftMotor3),
+                new MotorEx[]{liftMotor2, liftMotor1, liftMotor3},
                 hw.voltageSensor.iterator().next(),
                 new PIDFController(
                         new PIDController(0, 0, 0, 0, new IIRLowPassFilter(0)),
