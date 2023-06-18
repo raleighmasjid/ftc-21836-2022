@@ -11,6 +11,10 @@ public class FIRLowPassFilter {
     private int filterCount;
     private ArrayList<Double> values = new ArrayList<>();
 
+    public FIRLowPassFilter() {
+        this(0.8, 300);
+    }
+
     public FIRLowPassFilter(double filterGain, int filterCount) {
         setGains(filterGain, filterCount);
     }

@@ -54,7 +54,11 @@ public class PIDController {
     }
 
     public PIDController(double kP, double kI, double kD) {
-        this(kP, kI, kD, Double.POSITIVE_INFINITY, new IIRLowPassFilter(0));
+        this(kP, kI, kD, new FIRLowPassFilter());
+    }
+
+    public PIDController() {
+        this(0, 0, 0);
     }
 
     public void setGains(double kP, double kI, double kD) {

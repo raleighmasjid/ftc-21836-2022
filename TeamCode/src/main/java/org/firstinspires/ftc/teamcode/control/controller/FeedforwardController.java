@@ -3,6 +3,10 @@ package org.firstinspires.ftc.teamcode.control.controller;
 public class FeedforwardController {
     private double kV, kA, kS, targetVelocity, targetAcceleration;
 
+    public FeedforwardController() {
+        this(0, 0, 0);
+    }
+
     public FeedforwardController(double kV, double kA, double kS) {
         setGains(kV, kA, kS);
     }

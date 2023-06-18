@@ -19,6 +19,10 @@ public class PIDFController {
         this.feedforward = feedforward;
     }
 
+    public PIDFController() {
+        this(new PIDController(), new FeedforwardController());
+    }
+
     /**
      * Sets bounds on the output of the controller.
      *
