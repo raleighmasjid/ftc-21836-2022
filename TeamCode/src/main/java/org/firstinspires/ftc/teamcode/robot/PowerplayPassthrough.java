@@ -4,7 +4,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.systems.ProfiledClawArm;
-import org.firstinspires.ftc.teamcode.systems.SimpleClaw;
+import org.firstinspires.ftc.teamcode.systems.SimplePivot;
 
 public class PowerplayPassthrough extends ProfiledClawArm {
 
@@ -14,7 +14,7 @@ public class PowerplayPassthrough extends ProfiledClawArm {
 
     public PowerplayPassthrough(HardwareMap hw) {
         super(
-                new SimpleClaw(axon(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
+                new SimplePivot(axon(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
                 RobotConfig.reverseServo(axon(hw, "claw pivot")),
                 axon(hw, "passthrough 1"),
                 RobotConfig.reverseServo(axon(hw, "passthrough 2"))

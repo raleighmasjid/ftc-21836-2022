@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class ProfiledClawArm {
 
-    public final SimpleClaw claw;
+    public final SimplePivot claw;
 
     protected final SimpleServo pivotServo;
     protected final SimpleServo[] servos;
@@ -44,7 +44,7 @@ public class ProfiledClawArm {
      * Use {@link #updateConstants} to update angles and constants
      */
     public ProfiledClawArm(
-            SimpleClaw claw,
+            SimplePivot claw,
             SimpleServo pivotServo,
             SimpleServo... servos
     ) {
@@ -176,7 +176,7 @@ public class ProfiledClawArm {
             trigger();
         }
         setPivotState(true);
-        claw.setClosed(false);
+        claw.setActivated(false);
         setTilt(false);
     }
 
@@ -196,7 +196,7 @@ public class ProfiledClawArm {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry(MultipleTelemetry telemetry) {
-        claw.printTelemetry(telemetry);
+        telemetry.addData("Claw is", claw.getActivated() ? "closed" : "open");
         telemetry.addLine();
         telemetry.addData("Pivot is oriented to", pivotIsFront ? "front" : "back");
         telemetry.addLine();
