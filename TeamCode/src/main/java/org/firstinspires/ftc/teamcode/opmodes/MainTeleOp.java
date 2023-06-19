@@ -128,7 +128,7 @@ public class MainTeleOp extends LinearOpMode {
 
                 if (control2B.wasJustPressed()) scorer.passthrough.claw.toggle();
 
-                if (control2X.wasJustPressed()) scorer.passthrough.togglePivot();
+                if (control2X.wasJustPressed()) scorer.passthrough.pivot.toggle();
 
                 if (control2Y.wasJustPressed()) scorer.passthrough.toggle();
 

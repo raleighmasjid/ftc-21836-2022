@@ -14,8 +14,16 @@ public class PowerplayPassthrough extends ProfiledClawArm {
 
     public PowerplayPassthrough(HardwareMap hw) {
         super(
-                new SimplePivot(axon(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
-                RobotConfig.reverseServo(axon(hw, "claw pivot")),
+                new SimplePivot(
+                        axon(hw, "claw right"),
+                        RobotConfig.ANGLE_CLAW_OPEN,
+                        RobotConfig.ANGLE_CLAW_CLOSED
+                ),
+                new SimplePivot(
+                        RobotConfig.reverseServo(axon(hw, "claw pivot")),
+                        RobotConfig.ANGLE_PIVOT_FRONT,
+                        RobotConfig.ANGLE_PIVOT_BACK
+                ),
                 axon(hw, "passthrough 1"),
                 RobotConfig.reverseServo(axon(hw, "passthrough 2"))
         );
@@ -33,8 +41,6 @@ public class PowerplayPassthrough extends ProfiledClawArm {
         updateConstants(
                 RobotConfig.ANGLE_PASS_FRONT,
                 RobotConfig.ANGLE_PASS_BACK,
-                RobotConfig.ANGLE_PIVOT_FRONT,
-                RobotConfig.ANGLE_PIVOT_BACK,
                 RobotConfig.ANGLE_PASS_TILT_OFFSET,
                 RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET,
                 RobotConfig.ANGLE_PIVOT_POS,
@@ -44,5 +50,6 @@ public class PowerplayPassthrough extends ProfiledClawArm {
                 RobotConfig.PASS_MAX_JERK
         );
         claw.updateAngles(RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED);
+        pivot.updateAngles(RobotConfig.ANGLE_PIVOT_FRONT, RobotConfig.ANGLE_PIVOT_BACK);
     }
 }
