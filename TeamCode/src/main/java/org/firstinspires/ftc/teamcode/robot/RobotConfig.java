@@ -1,9 +1,16 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.hardware.SimpleServo;
 
 @Config
 public class RobotConfig {
+
+    public static SimpleServo reverseServo(SimpleServo servo) {
+        servo.setInverted(true);
+        return servo;
+    }
+
     public static double
             HEIGHT_FLOOR = 0,
             HEIGHT_2_CONES = 1.35,
@@ -49,6 +56,7 @@ public class RobotConfig {
             TIME_CLAW = 0.0,
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1;
+
     public static int
             LIFT_FILTER_COUNT_kD = 300,
             LIFT_FILTER_COUNT_VELO = 300,

@@ -24,13 +24,8 @@ public class PowerplayScorer {
 
     protected boolean clawHasLifted = true;
 
-    public static SimpleServo getGoBILDAServo(HardwareMap hw, String name) {
+    public static SimpleServo goBILDAServo(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 280);
-    }
-
-    public static SimpleServo getReversedServo(SimpleServo servo) {
-        servo.setInverted(true);
-        return servo;
     }
 
     /**
@@ -43,8 +38,8 @@ public class PowerplayScorer {
         lift = new PowerplayLift(hw);
         passthrough = new PowerplayPassthrough(hw);
 
-        coneArmServoR = getGoBILDAServo(hw, "arm right");
-        coneArmServoL = getReversedServo(getGoBILDAServo(hw, "arm left"));
+        coneArmServoR = goBILDAServo(hw, "arm right");
+        coneArmServoL = RobotConfig.reverseServo(goBILDAServo(hw, "arm left"));
 
         reset();
     }

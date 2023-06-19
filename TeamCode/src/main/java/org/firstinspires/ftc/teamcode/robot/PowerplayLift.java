@@ -16,21 +16,22 @@ public class PowerplayLift extends ProfiledLift {
         FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
     }
 
-    public static MotorEx getLiftMotor(HardwareMap hw, String name) {
+    public static MotorEx liftMotor(HardwareMap hw, String name) {
         return new MotorEx(hw, name, 145.1, 1150);
     }
 
     public static MotorEx[] getLiftMotors(HardwareMap hw) {
 
-        MotorEx liftMotor1 = getLiftMotor(hw, "lift motor 1");
-        MotorEx liftMotor2 = getLiftMotor(hw, "lift motor 2");
-        MotorEx liftMotor3 = getLiftMotor(hw, "lift motor 3");
+        MotorEx[] motors = {
+                liftMotor(hw, "lift motor 2"),
+                liftMotor(hw, "lift motor 1"),
+                liftMotor(hw, "lift motor 3")
+        };
 
-        liftMotor2.setInverted(false);
-        liftMotor1.setInverted(true);
-        liftMotor3.setInverted(true);
+        motors[1].setInverted(true);
+        motors[2].setInverted(true);
 
-        return new MotorEx[]{liftMotor2, liftMotor1, liftMotor3};
+        return motors;
     }
 
     /**

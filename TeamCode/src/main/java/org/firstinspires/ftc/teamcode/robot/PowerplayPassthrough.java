@@ -8,16 +8,16 @@ import org.firstinspires.ftc.teamcode.systems.SimpleClaw;
 
 public class PowerplayPassthrough extends ProfiledClawArm {
 
-    public static SimpleServo getAxon(HardwareMap hw, String name) {
+    public static SimpleServo axon(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 355);
     }
 
     public PowerplayPassthrough(HardwareMap hw) {
         super(
-                new SimpleClaw(getAxon(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
-                PowerplayScorer.getReversedServo(getAxon(hw, "claw pivot")),
-                getAxon(hw, "passthrough 1"),
-                PowerplayScorer.getReversedServo(getAxon(hw, "passthrough 2"))
+                new SimpleClaw(axon(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
+                RobotConfig.reverseServo(axon(hw, "claw pivot")),
+                axon(hw, "passthrough 1"),
+                RobotConfig.reverseServo(axon(hw, "passthrough 2"))
         );
         updateConstants();
         currentAngle = ANGLE_FRONT;
