@@ -1,14 +1,34 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.arcrobotics.ftclib.hardware.SimpleServo;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.systems.ProfiledClawArm;
-import org.firstinspires.ftc.teamcode.systems.SimpleClaw;
+import org.firstinspires.ftc.teamcode.systems.SimplePivot;
 
 public class PowerplayPassthrough extends ProfiledClawArm {
 
-    public PowerplayPassthrough(SimpleClaw claw, SimpleServo pivotServo, SimpleServo servoR, SimpleServo servoL) {
-        super(claw, pivotServo, servoR, servoL);
+    public static SimpleServo axon(HardwareMap hw, String name) {
+        return new SimpleServo(hw, name, 0, 355);
+    }
+
+    public PowerplayPassthrough(HardwareMap hw) {
+        super(
+                new SimplePivot(
+                        axon(hw, "claw right"),
+                        RobotConfig.ANGLE_CLAW_OPEN,
+                        RobotConfig.ANGLE_CLAW_CLOSED
+                ),
+                new SimplePivot(
+                        RobotConfig.reverseServo(axon(hw, "claw pivot")),
+                        RobotConfig.ANGLE_PIVOT_FRONT,
+                        RobotConfig.ANGLE_PIVOT_BACK
+                ),
+                new SimpleServo[]{
+                        axon(hw, "passthrough 1"),
+                        RobotConfig.reverseServo(axon(hw, "passthrough 2"))
+                }
+        );
         updateConstants();
         currentAngle = ANGLE_FRONT;
     }
@@ -23,8 +43,6 @@ public class PowerplayPassthrough extends ProfiledClawArm {
         updateConstants(
                 RobotConfig.ANGLE_PASS_FRONT,
                 RobotConfig.ANGLE_PASS_BACK,
-                RobotConfig.ANGLE_PIVOT_FRONT,
-                RobotConfig.ANGLE_PIVOT_BACK,
                 RobotConfig.ANGLE_PASS_TILT_OFFSET,
                 RobotConfig.ANGLE_PASS_MINI_TILT_OFFSET,
                 RobotConfig.ANGLE_PIVOT_POS,
@@ -34,5 +52,6 @@ public class PowerplayPassthrough extends ProfiledClawArm {
                 RobotConfig.PASS_MAX_JERK
         );
         claw.updateAngles(RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED);
+        pivot.updateAngles(RobotConfig.ANGLE_PIVOT_FRONT, RobotConfig.ANGLE_PIVOT_BACK);
     }
 }

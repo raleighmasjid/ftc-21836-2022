@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
@@ -16,18 +16,30 @@ public class PowerplayLift extends ProfiledLift {
         FLOOR, TWO, THREE, FOUR, FIVE, LOW, MED, TALL
     }
 
+    public static MotorEx liftMotor(HardwareMap hw, String name) {
+        return new MotorEx(hw, name, 145.1, 1150);
+    }
+
+    public static MotorEx[] getLiftMotors(HardwareMap hw) {
+
+        MotorEx[] motors = {
+                liftMotor(hw, "lift motor 2"),
+                liftMotor(hw, "lift motor 1"),
+                liftMotor(hw, "lift motor 3")
+        };
+
+        motors[1].setInverted(true);
+        motors[2].setInverted(true);
+
+        return motors;
+    }
+
     /**
      * Initialize fields <p>
      * Use {@link #updateConstants} to update constants
      */
-    public PowerplayLift(
-            MotorGroup motors,
-            VoltageSensor batteryVoltageSensor,
-            PIDFController controller,
-            FIRLowPassFilter veloFilter,
-            FIRLowPassFilter accelFilter
-    ) {
-        super(motors, batteryVoltageSensor, controller, veloFilter, accelFilter);
+    public PowerplayLift(HardwareMap hw) {
+        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new PIDFController(), new FIRLowPassFilter(), new FIRLowPassFilter());
         updateConstants();
     }
 
@@ -49,11 +61,14 @@ public class PowerplayLift extends ProfiledLift {
                 RobotConfig.LIFT_kD,
                 RobotConfig.LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL
         );
-        controller.pid.derivFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_kD);
+        controller.pid.derivFilter.setGains(
+                RobotConfig.LIFT_FILTER_GAIN_kD,
+                RobotConfig.LIFT_FILTER_COUNT_kD
+        );
         controller.feedforward.setGains(
                 goingDown ? RobotConfig.LIFT_kV_DOWN : RobotConfig.LIFT_kV_UP,
                 goingDown ? RobotConfig.LIFT_kA_DOWN : RobotConfig.LIFT_kA_UP,
-                RobotConfig.LIFT_kS
+                goingDown ? RobotConfig.LIFT_kS_DOWN : RobotConfig.LIFT_kS_UP
         );
         controller.setOutputBounds(-1.0, 1.0);
 

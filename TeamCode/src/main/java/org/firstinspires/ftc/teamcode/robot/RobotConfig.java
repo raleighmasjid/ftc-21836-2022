@@ -1,9 +1,16 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.hardware.SimpleServo;
 
 @Config
 public class RobotConfig {
+
+    public static SimpleServo reverseServo(SimpleServo servo) {
+        servo.setInverted(true);
+        return servo;
+    }
+
     public static double
             HEIGHT_FLOOR = 0,
             HEIGHT_2_CONES = 1.35,
@@ -13,19 +20,20 @@ public class RobotConfig {
             HEIGHT_1_STAGE = 9.6,
             LIFT_kG_4 = 0.18,
             LIFT_kG_3 = 0.14,
-            LIFT_kP = 0.15,
-            LIFT_kI = 0.21,
-            LIFT_kD = 0.0,
-            LIFT_kV_UP = 0.019,
-            LIFT_kA_UP = 0.001,
-            LIFT_kV_DOWN = 0.0087,
-            LIFT_kA_DOWN = 0.0005,
-            LIFT_kS = 0.0,
-            LIFT_FILTER_GAIN_kD = 0.98,
+            LIFT_kP = 0.25,
+            LIFT_kI = 0.2,
+            LIFT_kD = 0.01,
+            LIFT_kV_DOWN = 0.006,
+            LIFT_kV_UP = 0.005,
+            LIFT_kA_DOWN = 0.0015,
+            LIFT_kA_UP = 0.00075,
+            LIFT_kS_DOWN = 0.02,
+            LIFT_kS_UP = 0.02,
+            LIFT_FILTER_GAIN_kD = 0.875,
             LIFT_FILTER_GAIN_VELO = 0.8,
             LIFT_FILTER_GAIN_ACCEL = 0.8,
-            LIFT_MAX_VELO = 39,
-            LIFT_MAX_ACCEL = 200,
+            LIFT_MAX_VELO = 46.6,
+            LIFT_MAX_ACCEL = 189.16,
             LIFT_MAX_JERK = 600,
             LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL = 0.6,
             LIFT_TOLERANCE_POS = 0.15843625,
@@ -48,8 +56,9 @@ public class RobotConfig {
             TIME_CLAW = 0.0,
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1;
+
     public static int
-            LIFT_FILTER_COUNT_kD = 5,
-            LIFT_FILTER_COUNT_VELO = 5,
-            LIFT_FILTER_COUNT_ACCEL = 5;
+            LIFT_FILTER_COUNT_kD = 300,
+            LIFT_FILTER_COUNT_VELO = 300,
+            LIFT_FILTER_COUNT_ACCEL = 300;
 }

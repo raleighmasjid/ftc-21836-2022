@@ -2,17 +2,8 @@ package org.firstinspires.ftc.teamcode.robot;
 
 
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.control.controller.FeedforwardController;
-import org.firstinspires.ftc.teamcode.control.controller.PIDController;
-import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
-import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
-import org.firstinspires.ftc.teamcode.control.filter.IIRLowPassFilter;
-import org.firstinspires.ftc.teamcode.systems.SimpleClaw;
 
 /**
  * Merger class, linking a {@link PowerplayPassthrough} and {@link PowerplayLift} by automated methods
@@ -37,54 +28,18 @@ public class PowerplayScorer {
         return new SimpleServo(hw, name, 0, 280);
     }
 
-    public static SimpleServo axonMINI(HardwareMap hw, String name) {
-        return new SimpleServo(hw, name, 0, 355);
-    }
-
-    public static MotorEx liftMotor(HardwareMap hw, String name) {
-        return new MotorEx(hw, name, 145.1, 1150);
-    }
-
     /**
      * Initialize fields
      *
      * @param hw Passed-in hardware map from the op mode
      */
     public PowerplayScorer(HardwareMap hw) {
-        MotorEx liftMotor1 = liftMotor(hw, "lift motor 1");
-        MotorEx liftMotor2 = liftMotor(hw, "lift motor 2");
-        MotorEx liftMotor3 = liftMotor(hw, "lift motor 3");
 
-        liftMotor2.setInverted(false);
-        liftMotor1.setInverted(true);
-        liftMotor3.setInverted(true);
-
-        lift = new PowerplayLift(
-                new MotorGroup(liftMotor2, liftMotor1, liftMotor3),
-                hw.voltageSensor.iterator().next(),
-                new PIDFController(
-                        new PIDController(0, 0, 0, 0, new IIRLowPassFilter(0)),
-                        new FeedforwardController(0, 0, 0)
-                ),
-                new FIRLowPassFilter(0, 0),
-                new FIRLowPassFilter(0, 0)
-        );
-
-        SimpleServo pivotServo = axonMINI(hw, "claw pivot");
-        pivotServo.setInverted(true);
-        SimpleServo passThruServoL = axonMINI(hw, "passthrough 2");
-        passThruServoL.setInverted(true);
-
-        passthrough = new PowerplayPassthrough(
-                new SimpleClaw(axonMINI(hw, "claw right"), RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED),
-                pivotServo,
-                axonMINI(hw, "passthrough 1"),
-                passThruServoL
-        );
+        lift = new PowerplayLift(hw);
+        passthrough = new PowerplayPassthrough(hw);
 
         coneArmServoR = goBILDAServo(hw, "arm right");
-        coneArmServoL = goBILDAServo(hw, "arm left");
-        coneArmServoL.setInverted(true);
+        coneArmServoL = RobotConfig.reverseServo(goBILDAServo(hw, "arm left"));
 
         reset();
     }
@@ -106,7 +61,7 @@ public class PowerplayScorer {
      * Runs {@link #dropCone} if already closed
      */
     public void triggerClaw() {
-        if (!passthrough.claw.getClosed()) grabCone();
+        if (!passthrough.claw.getActivated()) grabCone();
         else dropCone();
     }
 
@@ -116,7 +71,7 @@ public class PowerplayScorer {
      * Runs {@link #liftClaw}
      */
     public void grabCone() {
-        passthrough.claw.setClosed(true);
+        passthrough.claw.setActivated(true);
         if (lift.getCurrentPosition() <= (lift.getConesHeight(5) + RobotConfig.LIFT_TOLERANCE_POS)) {
             clawHasLifted = false;
             liftClawTimer.reset();
@@ -146,7 +101,7 @@ public class PowerplayScorer {
      * @param height Named position to run lift to
      */
     public void dropCone(PowerplayLift.Position height) {
-        passthrough.claw.setClosed(false);
+        passthrough.claw.setActivated(false);
         setTargetLiftPos(height);
     }
 
@@ -158,8 +113,6 @@ public class PowerplayScorer {
      */
     public void run(double angleR, double angleL) {
         passthrough.run();
-        passthrough.runPivot();
-        passthrough.claw.run();
         if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
         coneArmServoL.turnToAngle(angleL);
         coneArmServoR.turnToAngle(angleR);
