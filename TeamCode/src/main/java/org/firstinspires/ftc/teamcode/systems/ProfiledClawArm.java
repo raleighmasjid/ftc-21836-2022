@@ -42,7 +42,7 @@ public class ProfiledClawArm {
     public ProfiledClawArm(
             SimplePivot claw,
             SimplePivot pivot,
-            SimpleServo... servos
+            SimpleServo[] servos
     ) {
         this.claw = claw;
         this.pivot = pivot;

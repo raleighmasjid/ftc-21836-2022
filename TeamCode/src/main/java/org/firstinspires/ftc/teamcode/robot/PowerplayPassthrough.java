@@ -24,8 +24,10 @@ public class PowerplayPassthrough extends ProfiledClawArm {
                         RobotConfig.ANGLE_PIVOT_FRONT,
                         RobotConfig.ANGLE_PIVOT_BACK
                 ),
-                axon(hw, "passthrough 1"),
-                RobotConfig.reverseServo(axon(hw, "passthrough 2"))
+                new SimpleServo[]{
+                        axon(hw, "passthrough 1"),
+                        RobotConfig.reverseServo(axon(hw, "passthrough 2"))
+                }
         );
         updateConstants();
         currentAngle = ANGLE_FRONT;
