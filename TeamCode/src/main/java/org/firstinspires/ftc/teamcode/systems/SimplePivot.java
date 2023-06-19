@@ -41,7 +41,7 @@ public class SimplePivot {
     /**
      * Set state of the {@link #servo}
      *
-     * @param activated True if closed; false if open
+     * @param activated False for position A, true for position B
      */
     public void setActivated(boolean activated) {
         this.activated = activated;
@@ -49,8 +49,8 @@ public class SimplePivot {
 
     /**
      * Get state of the {@link #servo} <p>
-     * True if in position B <p>
-     * False if position A (default)
+     * False if position A (default) <p>
+     * True if in position B
      */
     public boolean getActivated() {
         return activated;
