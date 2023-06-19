@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.robot;
 
 
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -29,30 +28,9 @@ public class PowerplayScorer {
         return new SimpleServo(hw, name, 0, 280);
     }
 
-    public static SimpleServo getAxon(HardwareMap hw, String name) {
-        return new SimpleServo(hw, name, 0, 355);
-    }
-
     public static SimpleServo getReversedServo(SimpleServo servo) {
         servo.setInverted(true);
         return servo;
-    }
-
-    public static MotorEx getLiftMotor(HardwareMap hw, String name) {
-        return new MotorEx(hw, name, 145.1, 1150);
-    }
-
-    public static MotorEx[] getLiftMotors(HardwareMap hw) {
-
-        MotorEx liftMotor1 = getLiftMotor(hw, "lift motor 1");
-        MotorEx liftMotor2 = getLiftMotor(hw, "lift motor 2");
-        MotorEx liftMotor3 = getLiftMotor(hw, "lift motor 3");
-
-        liftMotor2.setInverted(false);
-        liftMotor1.setInverted(true);
-        liftMotor3.setInverted(true);
-
-        return new MotorEx[]{liftMotor2, liftMotor1, liftMotor3};
     }
 
     /**
