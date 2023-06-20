@@ -23,18 +23,15 @@ public class ProfiledClawArm {
 
     private MotionProfile profile;
 
-    protected double currentAngle;
-    private double
-            ANGLE_FRONT, ANGLE_BACK,
+    protected double
+            currentAngle, ANGLE_FRONT, ANGLE_BACK,
             ANGLE_PIVOT_POS, TOLERANCE_PIVOT_POS,
-            ANGLE_TILT_OFFSET, ANGLE_MINI_TILT_OFFSET,
             PROFILE_MAX_VELO = 1, PROFILE_MAX_ACCEL = 1, PROFILE_MAX_JERK;
 
-    private double currentVelocity = 0.0;
+    protected double currentVelocity = 0.0;
 
-    private boolean inBack = false;
-    private boolean triggered = false;
-    private boolean tilted = false;
+    protected boolean inBack = false;
+    protected boolean triggered = false;
 
     /**
      * Initialize fields <p>
@@ -56,34 +53,16 @@ public class ProfiledClawArm {
 
     public void updateConstants(
             double ANGLE_FRONT, double ANGLE_BACK,
-            double ANGLE_TILT_OFFSET, double ANGLE_MINI_TILT_OFFSET,
             double ANGLE_PIVOT_POS, double TOLERANCE_PIVOT_POS,
             double PROFILE_MAX_VELO, double PROFILE_MAX_ACCEL, double PROFILE_MAX_JERK
     ) {
         this.ANGLE_FRONT = ANGLE_FRONT;
         this.ANGLE_BACK = ANGLE_BACK;
-        this.ANGLE_TILT_OFFSET = ANGLE_TILT_OFFSET;
-        this.ANGLE_MINI_TILT_OFFSET = ANGLE_MINI_TILT_OFFSET;
         this.ANGLE_PIVOT_POS = ANGLE_PIVOT_POS;
         this.TOLERANCE_PIVOT_POS = TOLERANCE_PIVOT_POS;
         this.PROFILE_MAX_VELO = PROFILE_MAX_VELO;
         this.PROFILE_MAX_ACCEL = PROFILE_MAX_ACCEL;
         this.PROFILE_MAX_JERK = PROFILE_MAX_JERK;
-    }
-
-    /**
-     * Toggles the value of {@link #tilted}
-     */
-    public void toggleTilt() {
-        setTilt(!tilted);
-    }
-
-    /**
-     * Sets the value of {@link #tilted} and runs {@link #updateProfile}
-     */
-    public void setTilt(boolean tilted) {
-        this.tilted = tilted;
-        updateProfile();
     }
 
     /**
@@ -105,20 +84,10 @@ public class ProfiledClawArm {
     /**
      * Updates {@link #profile} with a new target position, including diagonal drop and floor grab tilt presets
      */
-    private void updateProfile() {
-        double tiltOffset =
-                tilted ?
-                        ANGLE_TILT_OFFSET :
-                        (!triggered) && (inBack != wrist.getActivated()) ? ANGLE_MINI_TILT_OFFSET : 0.0;
-
-        double targetAngle =
-                inBack ?
-                        ANGLE_BACK - tiltOffset :
-                        ANGLE_FRONT + tiltOffset;
-
+    protected void updateProfile() {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentAngle, currentVelocity),
-                new MotionState(targetAngle, 0.0),
+                new MotionState(inBack ? ANGLE_BACK : ANGLE_FRONT, 0.0),
                 PROFILE_MAX_VELO, PROFILE_MAX_ACCEL, PROFILE_MAX_JERK
         );
 
@@ -149,7 +118,6 @@ public class ProfiledClawArm {
         }
         wrist.setActivated(false);
         claw.setActivated(false);
-        setTilt(false);
     }
 
     /**
@@ -170,8 +138,8 @@ public class ProfiledClawArm {
     public void printTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Claw is", claw.getActivated() ? "closed" : "open");
         telemetry.addLine();
-        telemetry.addData("Pivot is oriented to", wrist.getActivated() ? "back" : "front");
+        telemetry.addData("Wrist is oriented to", wrist.getActivated() ? "back" : "front");
         telemetry.addLine();
-        telemetry.addData("Passthrough is", (tilted ? "tilted " : "") + "at the " + (inBack ? "back" : "front"));
+        telemetry.addData("Arm is in the", inBack ? "back" : "front");
     }
 }
