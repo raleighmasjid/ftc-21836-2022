@@ -30,7 +30,7 @@ public class PowerplayPassthrough extends ProfiledClawArm {
                 }
         );
         updateConstants();
-        currentAngle = ANGLE_FRONT;
+        currentAngle = RobotConfig.ANGLE_PASS_FRONT;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class PowerplayPassthrough extends ProfiledClawArm {
         super.run();
     }
 
-    protected void updateConstants() {
+    private void updateConstants() {
         updateConstants(
                 RobotConfig.ANGLE_PASS_FRONT,
                 RobotConfig.ANGLE_PASS_BACK,

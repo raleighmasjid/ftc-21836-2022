@@ -13,16 +13,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class PowerplayScorer {
 
-    protected final SimpleServo coneArmServoR;
-    protected final SimpleServo coneArmServoL;
+    private final SimpleServo coneArmServoR;
+    private final SimpleServo coneArmServoL;
 
-    protected final ElapsedTime liftClawTimer = new ElapsedTime();
+    private final ElapsedTime liftClawTimer = new ElapsedTime();
 
     public final PowerplayLift lift;
 
     public final PowerplayPassthrough passthrough;
 
-    protected boolean clawHasLifted = true;
+    private boolean clawHasLifted = true;
 
     public static SimpleServo goBILDAServo(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 280);

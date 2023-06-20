@@ -23,31 +23,31 @@ public class ProfiledLift {
     /**
      * Motor powering the dual lift system
      */
-    protected final MotorEx[] motors;
+    private final MotorEx[] motors;
 
-    protected final ElapsedTime profileTimer = new ElapsedTime();
-    protected final ElapsedTime derivTimer = new ElapsedTime();
+    private final ElapsedTime profileTimer = new ElapsedTime();
+    private final ElapsedTime derivTimer = new ElapsedTime();
 
     public final FIRLowPassFilter accelFilter;
     public final FIRLowPassFilter veloFilter;
 
-    protected final VoltageSensor batteryVoltageSensor;
+    private final VoltageSensor batteryVoltageSensor;
 
     /**
      * PIDF controller for lift
      */
     public final PIDFController controller;
 
-    protected MotionProfile profile;
+    private MotionProfile profile;
 
     /**
      * Immediate target lift state grabbed from {@link #profile}
      */
-    protected MotionState profileState = new MotionState(0.0, 0.0, 0.0, 0.0);
+    private MotionState profileState = new MotionState(0.0, 0.0, 0.0, 0.0);
 
-    protected String targetPositionName = "Zero";
-    protected double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, INCHES_PER_TICK, PROFILE_MAX_VELO = 1, PROFILE_MAX_ACCEL = 1, PROFILE_MAX_JERK;
-    protected double currentBatteryVoltage = 12.0;
+    private String targetPositionName = "Zero";
+    private double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, INCHES_PER_TICK, PROFILE_MAX_VELO = 1, PROFILE_MAX_ACCEL = 1, PROFILE_MAX_JERK;
+    private double currentBatteryVoltage = 12.0;
 
     public double getCurrentPosition() {
         return currentPosition;
@@ -73,13 +73,12 @@ public class ProfiledLift {
             motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         }
         this.batteryVoltageSensor = batteryVoltageSensor;
+        this.controller = controller;
+        this.veloFilter = veloFilter;
+        this.accelFilter = accelFilter;
 
         profileTimer.reset();
         derivTimer.reset();
-
-        this.veloFilter = veloFilter;
-        this.accelFilter = accelFilter;
-        this.controller = controller;
 
         reset();
     }
@@ -143,7 +142,7 @@ public class ProfiledLift {
     /**
      * Update {@link #profile} with a {@link #targetPosition} set with {@link #setTargetPosition}
      */
-    protected void updateProfile() {
+    private void updateProfile() {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentPosition, currentVelocity),
                 new MotionState(targetPosition, 0.0),

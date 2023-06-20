@@ -49,8 +49,8 @@ public class PowerplayLift extends ProfiledLift {
         super.readPosition();
     }
 
-    protected void updateConstants() {
-        boolean goingDown = targetPosition < currentPosition;
+    private void updateConstants() {
+        boolean goingDown = getTargetPosition() < getCurrentPosition();
 
         veloFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_VELO, RobotConfig.LIFT_FILTER_COUNT_VELO);
         accelFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_ACCEL, RobotConfig.LIFT_FILTER_COUNT_ACCEL);
@@ -86,7 +86,8 @@ public class PowerplayLift extends ProfiledLift {
      *
      * @return Velocity command for lift
      */
-    protected double kG() {
+    private double kG() {
+        double currentPosition = getCurrentPosition();
         return currentPosition >= RobotConfig.HEIGHT_1_STAGE * 3 ? RobotConfig.LIFT_kG_4 :
                 currentPosition >= RobotConfig.HEIGHT_1_STAGE * 2 ? RobotConfig.LIFT_kG_3 :
                         currentPosition >= RobotConfig.HEIGHT_1_STAGE ? RobotConfig.LIFT_kG_3 - (RobotConfig.LIFT_kG_4 - RobotConfig.LIFT_kG_3) :

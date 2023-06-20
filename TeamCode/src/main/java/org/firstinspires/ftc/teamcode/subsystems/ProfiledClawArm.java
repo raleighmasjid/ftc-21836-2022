@@ -17,23 +17,24 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class ProfiledClawArm {
 
     public final SimplePivot claw, wrist;
-    protected final SimpleServo[] servos;
+    private final SimpleServo[] servos;
 
-    protected final ElapsedTime profileTimer = new ElapsedTime();
+    private final ElapsedTime profileTimer = new ElapsedTime();
 
-    protected MotionProfile profile;
+    private MotionProfile profile;
 
-    protected double
-            currentAngle, ANGLE_FRONT, ANGLE_BACK,
+    protected double currentAngle;
+    private double
+            ANGLE_FRONT, ANGLE_BACK,
             ANGLE_PIVOT_POS, TOLERANCE_PIVOT_POS,
             ANGLE_TILT_OFFSET, ANGLE_MINI_TILT_OFFSET,
             PROFILE_MAX_VELO = 1, PROFILE_MAX_ACCEL = 1, PROFILE_MAX_JERK;
 
-    protected double currentVelocity = 0.0;
+    private double currentVelocity = 0.0;
 
-    protected boolean inBack = false;
-    protected boolean triggered = false;
-    protected boolean tilted = false;
+    private boolean inBack = false;
+    private boolean triggered = false;
+    private boolean tilted = false;
 
     /**
      * Initialize fields <p>
@@ -104,7 +105,7 @@ public class ProfiledClawArm {
     /**
      * Updates {@link #profile} with a new target position, including diagonal drop and floor grab tilt presets
      */
-    protected void updateProfile() {
+    private void updateProfile() {
         double tiltOffset =
                 tilted ?
                         ANGLE_TILT_OFFSET :

@@ -12,11 +12,11 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
  */
 public class SimplePivot {
 
-    protected final SimpleServo servo;
+    private final SimpleServo servo;
 
-    protected double ANGLE_A, ANGLE_B;
+    private double ANGLE_A, ANGLE_B;
 
-    protected boolean activated = false;
+    private boolean activated = false;
 
     /**
      * Initialize {@link SimplePivot}
