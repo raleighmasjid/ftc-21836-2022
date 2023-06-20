@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
-import org.firstinspires.ftc.teamcode.systems.ProfiledLift;
+import org.firstinspires.ftc.teamcode.subsystems.ProfiledLift;
 
 public class PowerplayLift extends ProfiledLift {
 

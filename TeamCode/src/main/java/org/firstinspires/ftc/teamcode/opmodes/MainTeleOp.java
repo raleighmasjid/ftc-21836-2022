@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
-import org.firstinspires.ftc.teamcode.systems.MecanumDrivetrain;
+import org.firstinspires.ftc.teamcode.subsystems.MecanumDrivetrain;
 
 import java.util.List;
 
@@ -128,7 +128,7 @@ public class MainTeleOp extends LinearOpMode {
 
                 if (control2B.wasJustPressed()) scorer.passthrough.claw.toggle();
 
-                if (control2X.wasJustPressed()) scorer.passthrough.pivot.toggle();
+                if (control2X.wasJustPressed()) scorer.passthrough.wrist.toggle();
 
                 if (control2Y.wasJustPressed()) scorer.passthrough.toggle();
 

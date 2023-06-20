@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.systems;
+package org.firstinspires.ftc.teamcode.subsystems;
 
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class ProfiledClawArm {
 
-    public final SimplePivot claw, pivot;
+    public final SimplePivot claw, wrist;
     protected final SimpleServo[] servos;
 
     protected final ElapsedTime profileTimer = new ElapsedTime();
@@ -41,11 +41,11 @@ public class ProfiledClawArm {
      */
     public ProfiledClawArm(
             SimplePivot claw,
-            SimplePivot pivot,
+            SimplePivot wrist,
             SimpleServo[] servos
     ) {
         this.claw = claw;
-        this.pivot = pivot;
+        this.wrist = wrist;
         this.servos = servos;
 
         profileTimer.reset();
@@ -108,7 +108,7 @@ public class ProfiledClawArm {
         double tiltOffset =
                 tilted ?
                         ANGLE_TILT_OFFSET :
-                        (!triggered) && (inBack != pivot.getActivated()) ? ANGLE_MINI_TILT_OFFSET : 0.0;
+                        (!triggered) && (inBack != wrist.getActivated()) ? ANGLE_MINI_TILT_OFFSET : 0.0;
 
         double targetAngle =
                 inBack ?
@@ -135,10 +135,10 @@ public class ProfiledClawArm {
             servo.turnToAngle(currentAngle);
         }
         if (triggered && Math.abs(ANGLE_PIVOT_POS - currentAngle) <= TOLERANCE_PIVOT_POS) {
-            pivot.setActivated(inBack);
+            wrist.setActivated(inBack);
             triggered = false;
         }
-        pivot.run();
+        wrist.run();
         claw.run();
     }
 
@@ -146,7 +146,7 @@ public class ProfiledClawArm {
         if (inBack) {
             trigger();
         }
-        pivot.setActivated(false);
+        wrist.setActivated(false);
         claw.setActivated(false);
         setTilt(false);
     }
@@ -169,7 +169,7 @@ public class ProfiledClawArm {
     public void printTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Claw is", claw.getActivated() ? "closed" : "open");
         telemetry.addLine();
-        telemetry.addData("Pivot is oriented to", pivot.getActivated() ? "back" : "front");
+        telemetry.addData("Pivot is oriented to", wrist.getActivated() ? "back" : "front");
         telemetry.addLine();
         telemetry.addData("Passthrough is", (tilted ? "tilted " : "") + "at the " + (inBack ? "back" : "front"));
     }

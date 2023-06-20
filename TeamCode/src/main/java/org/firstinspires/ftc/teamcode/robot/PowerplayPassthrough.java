@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.systems.ProfiledClawArm;
-import org.firstinspires.ftc.teamcode.systems.SimplePivot;
+import org.firstinspires.ftc.teamcode.subsystems.ProfiledClawArm;
+import org.firstinspires.ftc.teamcode.subsystems.SimplePivot;
 
 public class PowerplayPassthrough extends ProfiledClawArm {
 
@@ -52,6 +52,6 @@ public class PowerplayPassthrough extends ProfiledClawArm {
                 RobotConfig.PASS_MAX_JERK
         );
         claw.updateAngles(RobotConfig.ANGLE_CLAW_OPEN, RobotConfig.ANGLE_CLAW_CLOSED);
-        pivot.updateAngles(RobotConfig.ANGLE_PIVOT_FRONT, RobotConfig.ANGLE_PIVOT_BACK);
+        wrist.updateAngles(RobotConfig.ANGLE_PIVOT_FRONT, RobotConfig.ANGLE_PIVOT_BACK);
     }
 }
