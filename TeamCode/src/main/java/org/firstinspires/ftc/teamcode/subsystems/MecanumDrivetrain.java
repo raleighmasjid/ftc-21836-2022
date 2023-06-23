@@ -18,7 +18,7 @@ public class MecanumDrivetrain {
     private double headingOffset = 0.0;
     private double latestIMUReading = 0.0;
 
-    private MotorEx drivetrainMotor(HardwareMap hw, String name) {
+    public static MotorEx getDrivetrainMotor(HardwareMap hw, String name) {
         return new MotorEx(hw, name, 537.7, 312);
     }
 
@@ -26,10 +26,10 @@ public class MecanumDrivetrain {
 
         // Assign motors using their hardware map names, each drive-type can have different names if needed
         MotorEx
-                motor_frontLeft = drivetrainMotor(hw, "left front"),
-                motor_frontRight = drivetrainMotor(hw, "right front"),
-                motor_backLeft = drivetrainMotor(hw, "left back"),
-                motor_backRight = drivetrainMotor(hw, "right back");
+                motor_frontLeft = getDrivetrainMotor(hw, "left front"),
+                motor_frontRight = getDrivetrainMotor(hw, "right front"),
+                motor_backLeft = getDrivetrainMotor(hw, "left back"),
+                motor_backRight = getDrivetrainMotor(hw, "right back");
 
         imu = hw.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientation = new RevHubOrientationOnRobot(
