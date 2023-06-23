@@ -170,7 +170,7 @@ public class MainTeleOp extends LinearOpMode {
                     Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN,
                     Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN
             );
-            drivetrain.driveFieldCentric(
+            drivetrain.run(
                     Gamepad1.getLeftX() * precisionScale,
                     Gamepad1.getLeftY() * precisionScale,
                     Gamepad1.getRightX() * precisionScale

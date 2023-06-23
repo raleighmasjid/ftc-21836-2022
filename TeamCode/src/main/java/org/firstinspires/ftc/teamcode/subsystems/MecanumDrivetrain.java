@@ -59,7 +59,7 @@ public class MecanumDrivetrain {
     }
 
     // ftclib field-centric mecanum drive code:
-    public void driveFieldCentric(double leftX, double leftY, double rightX) {
+    public void run(double leftX, double leftY, double rightX) {
         mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, getHeading());
     }
 
