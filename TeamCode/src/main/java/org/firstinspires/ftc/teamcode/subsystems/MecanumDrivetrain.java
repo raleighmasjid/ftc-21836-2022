@@ -63,13 +63,17 @@ public class MecanumDrivetrain {
         mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, getHeading());
     }
 
-    public double getHeading() {
-        double angle = (latestIMUReading - headingOffset) % 360.0;
+    public static double normalizeAngle(double angle) {
+        angle %= 360.0;
         return
                 (angle == -0.0) ? 0.0 :
                         (angle > 180.0) ? angle - 360.0 :
                                 (angle <= -180.0) ? angle + 360.0 :
                                         angle;
+    }
+
+    public double getHeading() {
+        return normalizeAngle(latestIMUReading - headingOffset);
     }
 
     public void readIMU() {
