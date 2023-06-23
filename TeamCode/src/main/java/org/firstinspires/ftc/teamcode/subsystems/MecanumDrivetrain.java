@@ -15,6 +15,8 @@ public class MecanumDrivetrain {
 
     private final MecanumDrive mecanumDrivetrain;
 
+    protected final MotorEx[] motors;
+
     private double headingOffset = 0.0;
     private double latestIMUReading = 0.0;
 
@@ -23,39 +25,31 @@ public class MecanumDrivetrain {
     }
 
     public MecanumDrivetrain(HardwareMap hw) {
-
         // Assign motors using their hardware map names, each drive-type can have different names if needed
-        MotorEx
-                motor_frontLeft = getDrivetrainMotor(hw, "left front"),
-                motor_frontRight = getDrivetrainMotor(hw, "right front"),
-                motor_backLeft = getDrivetrainMotor(hw, "left back"),
-                motor_backRight = getDrivetrainMotor(hw, "right back");
+        motors = new MotorEx[]{
+                getDrivetrainMotor(hw, "left front"),
+                getDrivetrainMotor(hw, "right front"),
+                getDrivetrainMotor(hw, "left back"),
+                getDrivetrainMotor(hw, "right back")
+        };
 
-        imu = hw.get(IMU.class, "imu");
-        RevHubOrientationOnRobot orientation = new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                RevHubOrientationOnRobot.UsbFacingDirection.UP
-        );
-        IMU.Parameters parameters = new IMU.Parameters(orientation);
-        imu.initialize(parameters);
+        motors[0].setInverted(true);
+        motors[1].setInverted(false);
+        motors[2].setInverted(true);
+        motors[3].setInverted(false);
 
-        motor_frontLeft.setInverted(true);
-        motor_backLeft.setInverted(true);
-        motor_frontRight.setInverted(true);
-        motor_backRight.setInverted(true);
-
-        motor_frontLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        motor_frontRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        motor_backLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        motor_backRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        for (MotorEx motor : motors) {
+            motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        }
 
         // Initialize the FTCLib drive-base
-        mecanumDrivetrain = new MecanumDrive(
-                motor_frontLeft,
-                motor_frontRight,
-                motor_backLeft,
-                motor_backRight
-        );
+        mecanumDrivetrain = new MecanumDrive(false, motors[0], motors[1], motors[2], motors[3]);
+
+        imu = hw.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP
+        )));
     }
 
     // ftclib field-centric mecanum drive code:
