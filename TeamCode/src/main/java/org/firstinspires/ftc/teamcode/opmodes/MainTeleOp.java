@@ -110,8 +110,8 @@ public class MainTeleOp extends LinearOpMode {
 
             // Precision mode driving triggers
             double precisionScale = Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER) ?
-                    RobotConfig.SCALE_PRECISION_MODE :
-                    (RobotConfig.SCALE_PRECISION_MODE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
+                    RobotConfig.DRIVETRAIN_PRECISION_MODE_SCALE :
+                    (RobotConfig.DRIVETRAIN_PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
 
             boolean stackHeights = control2LShoulder.isDown();
 
