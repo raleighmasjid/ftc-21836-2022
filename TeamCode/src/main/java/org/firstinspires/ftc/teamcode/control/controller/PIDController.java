@@ -40,7 +40,7 @@ public class PIDController {
 
         double output = (kP * error) + (kI * errorIntegral) + (kD * errorVelocity);
 
-        integrate = !(Math.abs(output) > maxOutputWithIntegral && Math.signum(output) == Math.signum(error));
+        setIntegrate(!(Math.abs(output) > maxOutputWithIntegral && Math.signum(output) == Math.signum(error)));
 
         return output;
     }
