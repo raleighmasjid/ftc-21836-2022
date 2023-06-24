@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
@@ -81,6 +82,10 @@ public class MecanumDrivetrain {
      */
     public void setCurrentHeading(double angle) {
         headingOffset = latestIMUReading - angle;
+    }
+
+    public void printNumericalTelemetry(MultipleTelemetry telemetry) {
+        telemetry.addData("Robot current heading", getCurrentHeading());
     }
 }
 

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.controller.PIDController;
@@ -30,7 +31,10 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
         super.run(xCommand, yCommand, turnCommand);
     }
 
-    public void setTargetHeading(double targetHeading) {
-        this.targetHeading = targetHeading;
+    @Override
+    public void printNumericalTelemetry(MultipleTelemetry telemetry) {
+        super.printNumericalTelemetry(telemetry);
+        telemetry.addData("Robot target heading", targetHeading);
+        telemetry.addData("Robot heading error derivative (ticks/s)", headingController.getErrorVelocity());
     }
 }

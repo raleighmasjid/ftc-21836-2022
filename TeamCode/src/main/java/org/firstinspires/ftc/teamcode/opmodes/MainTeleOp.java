@@ -190,7 +190,7 @@ public class MainTeleOp extends LinearOpMode {
             scorer.passthrough.printTelemetry(myTelemetry);
             myTelemetry.addLine();
             myTelemetry.addLine();
-            myTelemetry.addData("Robot heading", drivetrain.getCurrentHeading());
+            drivetrain.printNumericalTelemetry(myTelemetry);
             myTelemetry.addLine();
             scorer.passthrough.printNumericalTelemetry(myTelemetry);
             myTelemetry.addLine();
