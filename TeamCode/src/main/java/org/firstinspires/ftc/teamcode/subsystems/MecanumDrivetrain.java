@@ -54,7 +54,7 @@ public class MecanumDrivetrain {
 
     // ftclib field-centric mecanum drive code:
     public void run(double leftX, double leftY, double rightX) {
-        mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, getHeading());
+        mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, getCurrentHeading());
     }
 
     public static double normalizeAngle(double angle) {
@@ -66,11 +66,11 @@ public class MecanumDrivetrain {
                                         angle;
     }
 
-    public double getHeading() {
+    public double getCurrentHeading() {
         return normalizeAngle(latestIMUReading - headingOffset);
     }
 
-    public void readIMU() {
+    public void readCurrentHeading() {
         latestIMUReading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
@@ -79,7 +79,7 @@ public class MecanumDrivetrain {
      *
      * @param angle Angle of the robot in degrees, 0 facing forward and increases counter-clockwise
      */
-    public void setHeading(double angle) {
+    public void setCurrentHeading(double angle) {
         headingOffset = latestIMUReading - angle;
     }
 }

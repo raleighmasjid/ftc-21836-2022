@@ -64,7 +64,7 @@ public class MainTeleOp extends LinearOpMode {
 
         boolean overrideMode = false;
 
-        drivetrain.setHeading(HeadingHolder.getHeading());
+        drivetrain.setCurrentHeading(HeadingHolder.getHeading());
 
         for (LynxModule hub : hubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
 
@@ -95,17 +95,17 @@ public class MainTeleOp extends LinearOpMode {
             control2Down.readValue();
 
             scorer.lift.readPosition();
-            drivetrain.readIMU();
+            drivetrain.readCurrentHeading();
 
             // Field-centric resets
             if (control1Up.wasJustPressed()) {
-                drivetrain.setHeading(0.0);
+                drivetrain.setCurrentHeading(0.0);
             } else if (control1Left.wasJustPressed()) {
-                drivetrain.setHeading(90.0);
+                drivetrain.setCurrentHeading(90.0);
             } else if (control1Down.wasJustPressed()) {
-                drivetrain.setHeading(180.0);
+                drivetrain.setCurrentHeading(180.0);
             } else if (control1Right.wasJustPressed()) {
-                drivetrain.setHeading(270.0);
+                drivetrain.setCurrentHeading(270.0);
             }
 
             // Precision mode driving triggers
@@ -190,7 +190,7 @@ public class MainTeleOp extends LinearOpMode {
             scorer.passthrough.printTelemetry(myTelemetry);
             myTelemetry.addLine();
             myTelemetry.addLine();
-            myTelemetry.addData("Robot heading", drivetrain.getHeading());
+            myTelemetry.addData("Robot heading", drivetrain.getCurrentHeading());
             myTelemetry.addLine();
             scorer.passthrough.printNumericalTelemetry(myTelemetry);
             myTelemetry.addLine();
