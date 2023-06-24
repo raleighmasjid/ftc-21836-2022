@@ -192,6 +192,7 @@ public class MainTeleOp extends LinearOpMode {
             myTelemetry.addLine();
             drivetrain.printNumericalTelemetry(myTelemetry);
             myTelemetry.addLine();
+            myTelemetry.addLine();
             scorer.passthrough.printNumericalTelemetry(myTelemetry);
             myTelemetry.addLine();
             scorer.lift.printNumericalTelemetry(myTelemetry);

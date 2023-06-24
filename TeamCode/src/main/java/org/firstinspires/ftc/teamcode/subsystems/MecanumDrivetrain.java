@@ -53,11 +53,6 @@ public class MecanumDrivetrain {
         )));
     }
 
-    // ftclib field-centric mecanum drive code:
-    public void run(double leftX, double leftY, double rightX) {
-        mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, getCurrentHeading());
-    }
-
     public static double normalizeAngle(double angle) {
         angle %= 360.0;
         return
@@ -65,10 +60,6 @@ public class MecanumDrivetrain {
                         (angle > 180.0) ? angle - 360.0 :
                                 (angle <= -180.0) ? angle + 360.0 :
                                         angle;
-    }
-
-    public double getCurrentHeading() {
-        return normalizeAngle(latestIMUReading - headingOffset);
     }
 
     public void readCurrentHeading() {
@@ -84,8 +75,36 @@ public class MecanumDrivetrain {
         headingOffset = latestIMUReading - angle;
     }
 
+    public double getHeading() {
+        return normalizeAngle(latestIMUReading - headingOffset);
+    }
+
+    protected double getMotorPos(int motorIndex) {
+        return motors[motorIndex].encoder.getPosition();
+    }
+
+    protected double getY() {
+        return (getMotorPos(0) + getMotorPos(1) + getMotorPos(2) + getMotorPos(3)) * 0.25;
+    }
+
+    protected double getX() {
+        return (getMotorPos(0) - getMotorPos(1) - getMotorPos(2) + getMotorPos(3)) * 0.25;
+    }
+
+    public void run(double leftX, double leftY, double rightX) {
+        mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, getHeading());
+    }
+
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Robot current heading", getCurrentHeading());
+        telemetry.addData("Robot current heading", getHeading());
+        telemetry.addLine();
+        telemetry.addData("Robot current x", getX());
+        telemetry.addData("Robot current y", getY());
+        telemetry.addLine();
+        telemetry.addData("Front left", getMotorPos(0));
+        telemetry.addData("Front right", getMotorPos(1));
+        telemetry.addData("Back left", getMotorPos(2));
+        telemetry.addData("Back right", getMotorPos(3));
     }
 }
 

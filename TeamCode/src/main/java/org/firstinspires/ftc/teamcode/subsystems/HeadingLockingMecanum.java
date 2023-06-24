@@ -7,7 +7,10 @@ import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 
 public class HeadingLockingMecanum extends MecanumDrivetrain {
 
+    public final PIDController xController = new PIDController();
+    public final PIDController yController = new PIDController();
     public final PIDController headingController = new PIDController();
+    public final PIDController[] controllers = {xController, yController, headingController};
 
     private double targetHeading;
 
@@ -17,15 +20,19 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     @Override
     public void run(double xCommand, double yCommand, double turnCommand) {
+
+
         if (turnCommand != 0) {
-            targetHeading = getCurrentHeading();
+            targetHeading = getHeading();
             headingController.setTarget(targetHeading);
         } else
-            turnCommand = headingController.update(targetHeading - normalizeAngle(targetHeading - getCurrentHeading()));
+            turnCommand = headingController.update(targetHeading - normalizeAngle(targetHeading - getHeading()));
 
-        double error = headingController.getError();
-        if (error == 0.0 || Math.signum(error) != Math.signum(headingController.getLastError())) {
-            headingController.resetIntegral();
+        for (PIDController controller : controllers) {
+            double error = controller.getError();
+            if (error == 0.0 || Math.signum(error) != Math.signum(controller.getLastError())) {
+                controller.resetIntegral();
+            }
         }
 
         super.run(xCommand, yCommand, turnCommand);
@@ -34,6 +41,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
     @Override
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         super.printNumericalTelemetry(telemetry);
+        telemetry.addLine();
         telemetry.addData("Robot target heading", targetHeading);
         telemetry.addData("Robot heading error derivative (ticks/s)", headingController.getErrorVelocity());
     }
