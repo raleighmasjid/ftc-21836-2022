@@ -73,6 +73,10 @@ public class PIDController {
         this.target = target;
     }
 
+    public double getTarget() {
+        return target;
+    }
+
     public double getLastError() {
         return lastError;
     }
