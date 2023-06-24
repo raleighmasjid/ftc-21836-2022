@@ -79,7 +79,7 @@ public class MecanumDrivetrain {
         return normalizeAngle(latestIMUReading - headingOffset);
     }
 
-    protected double getMotorPos(int motorIndex) {
+    protected int getMotorPos(int motorIndex) {
         return motors[motorIndex].encoder.getPosition();
     }
 
@@ -97,7 +97,6 @@ public class MecanumDrivetrain {
 
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Robot current heading", getHeading());
-        telemetry.addLine();
         telemetry.addData("Robot current x", getX());
         telemetry.addData("Robot current y", getY());
         telemetry.addLine();

@@ -10,10 +10,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
+import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
-import org.firstinspires.ftc.teamcode.subsystems.MecanumDrivetrain;
+import org.firstinspires.ftc.teamcode.subsystems.PositionLockingMecanum;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class MainTeleOp extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
     PowerplayScorer scorer;
-    MecanumDrivetrain drivetrain;
+    PositionLockingMecanum drivetrain;
     List<LynxModule> hubs;
     GamepadEx Gamepad1, Gamepad2;
 
@@ -35,7 +36,7 @@ public class MainTeleOp extends LinearOpMode {
         myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         scorer = new PowerplayScorer(hardwareMap);
-        drivetrain = new MecanumDrivetrain(hardwareMap);
+        drivetrain = new PositionLockingMecanum(hardwareMap);
 
         hubs = hardwareMap.getAll(LynxModule.class);
 
@@ -95,6 +96,28 @@ public class MainTeleOp extends LinearOpMode {
             control2Down.readValue();
 
             scorer.lift.readPosition();
+
+            for (PIDController controller : drivetrain.positionControllers) {
+                controller.setGains(
+                        RobotConfig.DRIVETRAIN_POSITION_kP,
+                        RobotConfig.DRIVETRAIN_POSITION_kI,
+                        RobotConfig.DRIVETRAIN_POSITION_kD
+                );
+                controller.derivFilter.setGains(
+                        RobotConfig.DRIVETRAIN_POSITION_FILTER_GAIN,
+                        RobotConfig.DRIVETRAIN_POSITION_FILTER_COUNT
+                );
+            }
+            drivetrain.headingController.setGains(
+                    RobotConfig.DRIVETRAIN_HEADING_kP,
+                    RobotConfig.DRIVETRAIN_HEADING_kI,
+                    RobotConfig.DRIVETRAIN_HEADING_kD
+            );
+            drivetrain.headingController.derivFilter.setGains(
+                    RobotConfig.DRIVETRAIN_HEADING_FILTER_GAIN,
+                    RobotConfig.DRIVETRAIN_HEADING_FILTER_COUNT
+            );
+
             drivetrain.readCurrentHeading();
 
             // Field-centric resets

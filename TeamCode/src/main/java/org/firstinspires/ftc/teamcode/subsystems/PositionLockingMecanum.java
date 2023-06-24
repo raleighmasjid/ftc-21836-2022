@@ -10,6 +10,7 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
     public final PIDController xController = new PIDController();
     public final PIDController yController = new PIDController();
     public final PIDController headingController = new PIDController();
+    public final PIDController[] positionControllers = {xController, yController};
     public final PIDController[] controllers = {xController, yController, headingController};
 
     public PositionLockingMecanum(HardwareMap hw) {

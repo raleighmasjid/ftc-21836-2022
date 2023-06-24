@@ -55,10 +55,20 @@ public class RobotConfig {
             TIME_CLAW = 0.0,
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1.0,
+            DRIVETRAIN_HEADING_kP = 0.0,
+            DRIVETRAIN_HEADING_kI = 0.0,
+            DRIVETRAIN_HEADING_kD = 0.0,
+            DRIVETRAIN_HEADING_FILTER_GAIN = 0.0,
+            DRIVETRAIN_POSITION_kP = 0.0,
+            DRIVETRAIN_POSITION_kI = 0.0,
+            DRIVETRAIN_POSITION_kD = 0.0,
+            DRIVETRAIN_POSITION_FILTER_GAIN = 0.0,
             DRIVETRAIN_PRECISION_MODE_SCALE = 0.3;
 
     public static int
             LIFT_FILTER_COUNT_kD = 300,
             LIFT_FILTER_COUNT_VELO = 300,
-            LIFT_FILTER_COUNT_ACCEL = 300;
+            LIFT_FILTER_COUNT_ACCEL = 300,
+            DRIVETRAIN_HEADING_FILTER_COUNT = 0,
+            DRIVETRAIN_POSITION_FILTER_COUNT = 0;
 }
