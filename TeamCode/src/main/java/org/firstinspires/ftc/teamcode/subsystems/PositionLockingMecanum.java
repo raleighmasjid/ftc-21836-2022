@@ -15,8 +15,8 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
     public final PIDFController[] controllers = {xController, yController, headingController};
     private final VoltageSensor batteryVoltageSensor;
 
-    public PositionLockingMecanum(HardwareMap hw) {
-        super(hw);
+    public PositionLockingMecanum(HardwareMap hw, double motorCPR, double motorRPM) {
+        super(hw, motorCPR, motorRPM);
         this.batteryVoltageSensor = hw.voltageSensor.iterator().next();
         for (PIDFController controller : controllers) {
             controller.setOutputBounds(-1.0, 1.0);

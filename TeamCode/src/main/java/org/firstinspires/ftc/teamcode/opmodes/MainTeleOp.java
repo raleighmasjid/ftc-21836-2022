@@ -36,7 +36,7 @@ public class MainTeleOp extends LinearOpMode {
         myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         scorer = new PowerplayScorer(hardwareMap);
-        drivetrain = new PositionLockingMecanum(hardwareMap);
+        drivetrain = new PositionLockingMecanum(hardwareMap, 537.7, 312);
 
         hubs = hardwareMap.getAll(LynxModule.class);
 

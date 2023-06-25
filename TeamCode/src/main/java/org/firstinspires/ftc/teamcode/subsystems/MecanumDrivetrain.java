@@ -20,11 +20,16 @@ public class MecanumDrivetrain {
 
     private double headingOffset, latestIMUReading;
 
-    public static MotorEx getDrivetrainMotor(HardwareMap hw, String name) {
-        return new MotorEx(hw, name, 537.7, 312);
+    private final double motorCPR, motorRPM;
+
+    protected MotorEx getDrivetrainMotor(HardwareMap hw, String name) {
+        return new MotorEx(hw, name, motorCPR, motorRPM);
     }
 
-    public MecanumDrivetrain(HardwareMap hw) {
+    public MecanumDrivetrain(HardwareMap hw, double motorCPR, double motorRPM) {
+        this.motorCPR = motorCPR;
+        this.motorRPM = motorRPM;
+
         // Assign motors using their hardware map names, each drive-type can have different names if needed
         motors = new MotorEx[]{
                 getDrivetrainMotor(hw, "left front"),
