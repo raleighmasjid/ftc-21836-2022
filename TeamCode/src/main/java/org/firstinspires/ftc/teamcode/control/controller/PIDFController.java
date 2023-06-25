@@ -48,7 +48,8 @@ public class PIDFController {
      * @param voltage          measured battery voltage (for feedforward voltage correction)
      */
     public double update(double measuredPosition, double voltage) {
-        double output = pid.update(measuredPosition) + feedforward.update(voltage);
+        double pidOutput = pid.update(measuredPosition);
+        double output = pidOutput + feedforward.update(voltage, pidOutput);
 
         return (outputBounded) ? Math.max(minOutput, Math.min(output, maxOutput)) : output;
     }

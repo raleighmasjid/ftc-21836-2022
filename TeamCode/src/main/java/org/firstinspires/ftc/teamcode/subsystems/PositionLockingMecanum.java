@@ -2,64 +2,62 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.teamcode.control.controller.PIDController;
+import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 
 public class PositionLockingMecanum extends MecanumDrivetrain {
 
-    public final PIDController xController = new PIDController();
-    public final PIDController yController = new PIDController();
-    public final PIDController headingController = new PIDController();
-    public final PIDController[] positionControllers = {xController, yController};
+    public final PIDFController xController = new PIDFController();
+    public final PIDFController yController = new PIDFController();
+    public final PIDFController headingController = new PIDFController();
+    public final PIDFController[] positionControllers = {xController, yController};
+    public final PIDFController[] controllers = {xController, yController, headingController};
+    private final VoltageSensor batteryVoltageSensor;
 
     public PositionLockingMecanum(HardwareMap hw) {
         super(hw);
+        this.batteryVoltageSensor = hw.voltageSensor.iterator().next();
+        for (PIDFController controller : controllers) {
+            controller.setOutputBounds(-1.0, 1.0);
+        }
     }
 
     @Override
     public void run(double xCommand, double yCommand, double turnCommand) {
+        double voltage = batteryVoltageSensor.getVoltage();
 
         if (xCommand == 0.0) {
-            evaluateIntegralReset(xController);
-            xCommand = xController.update(getX());
+            xCommand = xController.update(getX(), voltage);
         } else {
-            xController.setTarget(getX());
+            xController.pid.setTarget(getX());
         }
 
         if (yCommand == 0.0) {
-            evaluateIntegralReset(yController);
-            yCommand = yController.update(getY());
+            yCommand = yController.update(getY(), voltage);
         } else {
-            yController.setTarget(getY());
+            yController.pid.setTarget(getY());
         }
 
         if (turnCommand == 0.0) {
-            evaluateIntegralReset(headingController);
-            turnCommand = headingController.update(headingController.getTarget() - normalizeAngle(headingController.getTarget() - getHeading()));
+            turnCommand = headingController.update(headingController.pid.getTarget() - normalizeAngle(headingController.pid.getTarget() - getHeading()), voltage);
         } else {
-            headingController.setTarget(getHeading());
+            headingController.pid.setTarget(getHeading());
         }
 
         super.run(xCommand, yCommand, turnCommand);
-    }
-
-    protected void evaluateIntegralReset(PIDController controller) {
-        double error = controller.getError();
-        if (error == 0.0 || Math.signum(error) != Math.signum(controller.getLastError())) {
-            controller.resetIntegral();
-        }
     }
 
     @Override
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         super.printNumericalTelemetry(telemetry);
         telemetry.addLine();
-        telemetry.addData("Robot target heading", headingController.getTarget());
-        telemetry.addData("Robot target x", xController.getTarget());
-        telemetry.addData("Robot target y", yController.getTarget());
+        telemetry.addData("Robot target heading", headingController.pid.getTarget());
+        telemetry.addData("Robot target x", xController.pid.getTarget());
+        telemetry.addData("Robot target y", yController.pid.getTarget());
         telemetry.addLine();
-        telemetry.addData("Robot heading error derivative (ticks/s)", headingController.getErrorVelocity());
-        telemetry.addData("Robot x error derivative (ticks/s)", xController.getErrorVelocity());
-        telemetry.addData("Robot y error derivative (ticks/s)", yController.getErrorVelocity());
+        telemetry.addData("Robot heading error derivative (ticks/s)", headingController.pid.getErrorVelocity());
+        telemetry.addData("Robot x error derivative (ticks/s)", xController.pid.getErrorVelocity());
+        telemetry.addData("Robot y error derivative (ticks/s)", yController.pid.getErrorVelocity());
     }
 }

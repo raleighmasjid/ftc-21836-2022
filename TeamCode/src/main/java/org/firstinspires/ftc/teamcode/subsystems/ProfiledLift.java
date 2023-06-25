@@ -216,8 +216,6 @@ public class ProfiledLift {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Current battery voltage", currentBatteryVoltage);
-        telemetry.addLine();
         telemetry.addData("Lift current position (in)", currentPosition);
         telemetry.addData("Lift profile position (in)", profileState.getX());
         telemetry.addLine();

@@ -27,8 +27,7 @@ public class RobotConfig {
             LIFT_kV_UP = 0.005,
             LIFT_kA_DOWN = 0.0015,
             LIFT_kA_UP = 0.00075,
-            LIFT_kS_DOWN = 0.02,
-            LIFT_kS_UP = 0.02,
+            LIFT_kS = 0.02,
             LIFT_FILTER_GAIN_kD = 0.875,
             LIFT_FILTER_GAIN_VELO = 0.8,
             LIFT_FILTER_GAIN_ACCEL = 0.8,
@@ -63,6 +62,7 @@ public class RobotConfig {
             DRIVETRAIN_POSITION_kI = 0.0,
             DRIVETRAIN_POSITION_kD = 0.0,
             DRIVETRAIN_POSITION_FILTER_GAIN = 0.0,
+            DRIVETRAIN_kS = 0.0,
             DRIVETRAIN_PRECISION_MODE_SCALE = 0.3;
 
     public static int

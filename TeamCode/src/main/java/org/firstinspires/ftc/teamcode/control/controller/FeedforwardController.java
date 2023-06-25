@@ -17,9 +17,13 @@ public class FeedforwardController {
         this.kS = kS;
     }
 
-    public double update(double voltage) {
+    public double update(double voltage, double additionalOutput) {
         double baseOutput = (kV * targetVelocity) + (kA * targetAcceleration);
-        return (Math.signum(baseOutput) * kS + baseOutput) * (12.0 / voltage);
+        return (Math.signum(baseOutput + additionalOutput) * kS + baseOutput) * (12.0 / voltage);
+    }
+
+    public double update(double voltage) {
+        return update(voltage, 0.0);
     }
 
     public double update() {

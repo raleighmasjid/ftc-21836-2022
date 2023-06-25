@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
-import org.firstinspires.ftc.teamcode.control.controller.PIDController;
+import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.robot.RobotConfig;
@@ -97,26 +97,29 @@ public class MainTeleOp extends LinearOpMode {
 
             scorer.lift.readPosition();
 
-            for (PIDController controller : drivetrain.positionControllers) {
-                controller.setGains(
+            for (PIDFController controller : drivetrain.positionControllers) {
+                controller.pid.setGains(
                         RobotConfig.DRIVETRAIN_POSITION_kP,
                         RobotConfig.DRIVETRAIN_POSITION_kI,
                         RobotConfig.DRIVETRAIN_POSITION_kD
                 );
-                controller.derivFilter.setGains(
+                controller.pid.derivFilter.setGains(
                         RobotConfig.DRIVETRAIN_POSITION_FILTER_GAIN,
                         RobotConfig.DRIVETRAIN_POSITION_FILTER_COUNT
                 );
             }
-            drivetrain.headingController.setGains(
+            drivetrain.headingController.pid.setGains(
                     RobotConfig.DRIVETRAIN_HEADING_kP,
                     RobotConfig.DRIVETRAIN_HEADING_kI,
                     RobotConfig.DRIVETRAIN_HEADING_kD
             );
-            drivetrain.headingController.derivFilter.setGains(
+            drivetrain.headingController.pid.derivFilter.setGains(
                     RobotConfig.DRIVETRAIN_HEADING_FILTER_GAIN,
                     RobotConfig.DRIVETRAIN_HEADING_FILTER_COUNT
             );
+            for (PIDFController controller : drivetrain.controllers) {
+                controller.feedforward.setGains(0.0, 0.0, RobotConfig.DRIVETRAIN_kS);
+            }
 
             drivetrain.readIMU();
 

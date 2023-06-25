@@ -68,7 +68,7 @@ public class PowerplayLift extends ProfiledLift {
         controller.feedforward.setGains(
                 goingDown ? RobotConfig.LIFT_kV_DOWN : RobotConfig.LIFT_kV_UP,
                 goingDown ? RobotConfig.LIFT_kA_DOWN : RobotConfig.LIFT_kA_UP,
-                goingDown ? RobotConfig.LIFT_kS_DOWN : RobotConfig.LIFT_kS_UP
+                RobotConfig.LIFT_kS
         );
         controller.setOutputBounds(-1.0, 1.0);
 
