@@ -118,7 +118,7 @@ public class MainTeleOp extends LinearOpMode {
                     RobotConfig.DRIVETRAIN_HEADING_FILTER_COUNT
             );
 
-            drivetrain.readCurrentHeading();
+            drivetrain.readIMU();
 
             // Field-centric resets
             if (control1Up.wasJustPressed()) {

@@ -62,7 +62,7 @@ public class MecanumDrivetrain {
                                         angle;
     }
 
-    public void readCurrentHeading() {
+    public void readIMU() {
         latestIMUReading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
@@ -91,8 +91,8 @@ public class MecanumDrivetrain {
         return (getMotorPos(0) - getMotorPos(1) - getMotorPos(2) + getMotorPos(3)) * 0.25;
     }
 
-    public void run(double leftX, double leftY, double rightX) {
-        mecanumDrivetrain.driveFieldCentric(leftX, leftY, rightX, getHeading());
+    public void run(double xCommand, double yCommand, double turnCommand) {
+        mecanumDrivetrain.driveFieldCentric(xCommand, yCommand, turnCommand, getHeading());
     }
 
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
