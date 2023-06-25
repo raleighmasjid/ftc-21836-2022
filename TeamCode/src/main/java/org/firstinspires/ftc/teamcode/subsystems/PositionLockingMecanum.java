@@ -27,23 +27,15 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
     public void run(double xCommand, double yCommand, double turnCommand) {
         double voltage = batteryVoltageSensor.getVoltage();
 
-        if (xCommand == 0.0) {
-            xCommand = xController.update(getX(), voltage);
-        } else {
-            xController.pid.setTarget(getX());
-        }
+        if (xCommand == 0.0) xCommand = xController.update(getX(), voltage);
+        else xController.pid.setTarget(getX());
 
-        if (yCommand == 0.0) {
-            yCommand = yController.update(getY(), voltage);
-        } else {
-            yController.pid.setTarget(getY());
-        }
+        if (yCommand == 0.0) yCommand = yController.update(getY(), voltage);
+        else yController.pid.setTarget(getY());
 
         if (turnCommand == 0.0) {
             turnCommand = headingController.update(headingController.pid.getTarget() - normalizeAngle(headingController.pid.getTarget() - getHeading()), voltage);
-        } else {
-            headingController.pid.setTarget(getHeading());
-        }
+        } else headingController.pid.setTarget(getHeading());
 
         super.run(xCommand, yCommand, turnCommand);
     }

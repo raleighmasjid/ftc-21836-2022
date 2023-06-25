@@ -18,8 +18,7 @@ public class MecanumDrivetrain {
 
     protected final MotorEx[] motors;
 
-    private double headingOffset = 0.0;
-    private double latestIMUReading = 0.0;
+    private double headingOffset, latestIMUReading;
 
     public static MotorEx getDrivetrainMotor(HardwareMap hw, String name) {
         return new MotorEx(hw, name, 537.7, 312);
