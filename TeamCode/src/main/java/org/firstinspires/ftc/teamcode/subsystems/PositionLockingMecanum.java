@@ -11,7 +11,6 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
     public final PIDController yController = new PIDController();
     public final PIDController headingController = new PIDController();
     public final PIDController[] positionControllers = {xController, yController};
-    public final PIDController[] controllers = {xController, yController, headingController};
 
     public PositionLockingMecanum(HardwareMap hw) {
         super(hw);
@@ -21,31 +20,34 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
     public void run(double xCommand, double yCommand, double turnCommand) {
 
         if (xCommand == 0.0) {
+            evaluateIntegralReset(xController);
             xCommand = xController.update(getX());
         } else {
             xController.setTarget(getX());
         }
 
         if (yCommand == 0.0) {
+            evaluateIntegralReset(yController);
             yCommand = yController.update(getY());
         } else {
             yController.setTarget(getY());
         }
 
         if (turnCommand == 0.0) {
+            evaluateIntegralReset(headingController);
             turnCommand = headingController.update(headingController.getTarget() - normalizeAngle(headingController.getTarget() - getHeading()));
         } else {
-            headingController.setTarget(headingController.getTarget());
-        }
-
-        for (PIDController controller : controllers) {
-            double error = controller.getError();
-            if (error == 0.0 || Math.signum(error) != Math.signum(controller.getLastError())) {
-                controller.resetIntegral();
-            }
+            headingController.setTarget(getHeading());
         }
 
         super.run(xCommand, yCommand, turnCommand);
+    }
+
+    protected void evaluateIntegralReset(PIDController controller) {
+        double error = controller.getError();
+        if (error == 0.0 || Math.signum(error) != Math.signum(controller.getLastError())) {
+            controller.resetIntegral();
+        }
     }
 
     @Override
