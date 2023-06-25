@@ -88,6 +88,10 @@ public class MecanumDrivetrain {
         return (getMotorPos(0) - getMotorPos(1) - getMotorPos(2) + getMotorPos(3)) * 0.25;
     }
 
+    public void resetPosition() {
+        for (MotorEx motor : motors) motor.encoder.reset();
+    }
+
     public void run(double xCommand, double yCommand, double turnCommand) {
         mecanumDrivetrain.driveFieldCentric(xCommand, yCommand, turnCommand, getHeading());
     }
