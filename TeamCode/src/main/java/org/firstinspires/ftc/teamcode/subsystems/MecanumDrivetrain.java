@@ -79,15 +79,15 @@ public class MecanumDrivetrain {
         return normalizeAngle(latestIMUReading - headingOffset);
     }
 
-    protected int getMotorPos(int motorIndex) {
+    public int getMotorPos(int motorIndex) {
         return motors[motorIndex].encoder.getPosition();
     }
 
-    protected double getY() {
+    public double getY() {
         return (getMotorPos(0) + getMotorPos(1) + getMotorPos(2) + getMotorPos(3)) * 0.25;
     }
 
-    protected double getX() {
+    public double getX() {
         return (getMotorPos(0) - getMotorPos(1) - getMotorPos(2) + getMotorPos(3)) * 0.25;
     }
 
