@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -118,4 +119,15 @@ public class PowerplayScorer {
         coneArmServoR.turnToAngle(angleR);
     }
 
+    public void printTelemetry(MultipleTelemetry telemetry) {
+        lift.printTelemetry(telemetry);
+        telemetry.addLine();
+        passthrough.printTelemetry(telemetry);
+    }
+
+    public void printNumericalTelemetry(MultipleTelemetry telemetry) {
+        lift.printNumericalTelemetry(telemetry);
+        telemetry.addLine();
+        passthrough.printNumericalTelemetry(telemetry);
+    }
 }
