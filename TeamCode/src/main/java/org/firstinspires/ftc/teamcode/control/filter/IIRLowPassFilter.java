@@ -4,7 +4,7 @@ package org.firstinspires.ftc.teamcode.control.filter;
  * Infinite impulse response low-pass filter;
  * Filters out sensor noise
  */
-public class IIRLowPassFilter {
+public class IIRLowPassFilter implements Filter {
     private double filterGain = 0.0;
     private double estimate = Double.NaN;
 

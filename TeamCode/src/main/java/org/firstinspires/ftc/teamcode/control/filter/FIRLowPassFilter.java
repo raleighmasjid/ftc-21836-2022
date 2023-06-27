@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Finite impulse response low-pass filter;
  * Filters out sensor noise
  */
-public class FIRLowPassFilter {
+public class FIRLowPassFilter implements Filter {
     private double filterGain;
     private int filterCount;
     private ArrayList<Double> values = new ArrayList<>();
