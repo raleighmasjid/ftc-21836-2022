@@ -40,6 +40,10 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
         super.run(xCommand, yCommand, turnCommand);
     }
 
+    public void setTargetHeading(double targetHeading) {
+        headingController.pid.setTarget(targetHeading);
+    }
+
     @Override
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         super.printNumericalTelemetry(telemetry);

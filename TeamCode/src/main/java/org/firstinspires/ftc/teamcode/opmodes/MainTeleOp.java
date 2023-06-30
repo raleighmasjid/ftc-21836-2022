@@ -45,6 +45,11 @@ public class MainTeleOp extends LinearOpMode {
         Gamepad2 = new GamepadEx(gamepad2);
 
         ButtonReader
+                control2Up = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_UP),
+                control2Left = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_LEFT),
+                control2Right = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_RIGHT),
+                control2Down = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_DOWN),
+
                 control2A = new ButtonReader(Gamepad2, GamepadKeys.Button.A), // cone-flipping arms
                 control2B = new ButtonReader(Gamepad2, GamepadKeys.Button.B), // claw
                 control2X = new ButtonReader(Gamepad2, GamepadKeys.Button.X), // pivot
@@ -58,10 +63,10 @@ public class MainTeleOp extends LinearOpMode {
                 control1Right = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_RIGHT),
                 control1Down = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_DOWN),
 
-                control2Up = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_UP),
-                control2Left = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_LEFT),
-                control2Right = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_RIGHT),
-                control2Down = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_DOWN);
+                control1A = new ButtonReader(Gamepad2, GamepadKeys.Button.A), // 270
+                control1X = new ButtonReader(Gamepad2, GamepadKeys.Button.X), // 180
+                control1B = new ButtonReader(Gamepad2, GamepadKeys.Button.B), // 90
+                control1Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); // 0
 
         boolean overrideMode = false;
 
@@ -77,6 +82,11 @@ public class MainTeleOp extends LinearOpMode {
             for (LynxModule hub : hubs) hub.clearBulkCache();
 
             // Get button reader states
+            control2Up.readValue();
+            control2Left.readValue();
+            control2Right.readValue();
+            control2Down.readValue();
+
             control2A.readValue();
             control2B.readValue();
             control2X.readValue();
@@ -90,10 +100,10 @@ public class MainTeleOp extends LinearOpMode {
             control1Right.readValue();
             control1Down.readValue();
 
-            control2Up.readValue();
-            control2Left.readValue();
-            control2Right.readValue();
-            control2Down.readValue();
+            control1A.readValue();
+            control1B.readValue();
+            control1X.readValue();
+            control1Y.readValue();
 
             scorer.lift.readPosition();
 
@@ -132,6 +142,17 @@ public class MainTeleOp extends LinearOpMode {
                 drivetrain.setCurrentHeading(180.0);
             } else if (control1Right.wasJustPressed()) {
                 drivetrain.setCurrentHeading(270.0);
+            }
+
+            // Auto-turn
+            if (control1Y.wasJustPressed()) {
+                drivetrain.setTargetHeading(0.0);
+            } else if (control1X.wasJustPressed()) {
+                drivetrain.setTargetHeading(90.0);
+            } else if (control1A.wasJustPressed()) {
+                drivetrain.setTargetHeading(180.0);
+            } else if (control1B.wasJustPressed()) {
+                drivetrain.setTargetHeading(270.0);
             }
 
             // Precision mode driving triggers
