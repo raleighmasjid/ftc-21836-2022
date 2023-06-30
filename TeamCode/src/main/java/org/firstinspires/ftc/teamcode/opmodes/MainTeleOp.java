@@ -68,6 +68,14 @@ public class MainTeleOp extends LinearOpMode {
                 control1B = new ButtonReader(Gamepad2, GamepadKeys.Button.B), // 90
                 control1Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); // 0
 
+        ButtonReader[] buttonReaders = {
+                control2Up, control2Left, control2Right, control2Down,
+                control2A, control2B, control2X, control2Y,
+                control2LShoulder, control2RShoulder,
+                control1Up, control1Left, control1Right, control1Down,
+                control1A, control1X, control1B, control1Y
+        };
+
         boolean overrideMode = false;
 
         drivetrain.setCurrentHeading(HeadingHolder.getHeading());
@@ -82,28 +90,7 @@ public class MainTeleOp extends LinearOpMode {
             for (LynxModule hub : hubs) hub.clearBulkCache();
 
             // Get button reader states
-            control2Up.readValue();
-            control2Left.readValue();
-            control2Right.readValue();
-            control2Down.readValue();
-
-            control2A.readValue();
-            control2B.readValue();
-            control2X.readValue();
-            control2Y.readValue();
-
-            control2LShoulder.readValue();
-            control2RShoulder.readValue();
-
-            control1Up.readValue();
-            control1Left.readValue();
-            control1Right.readValue();
-            control1Down.readValue();
-
-            control1A.readValue();
-            control1B.readValue();
-            control1X.readValue();
-            control1Y.readValue();
+            for (ButtonReader buttonReader : buttonReaders) buttonReader.readValue();
 
             scorer.lift.readPosition();
 
