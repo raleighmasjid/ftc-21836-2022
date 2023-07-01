@@ -28,10 +28,10 @@ import java.util.List;
 
 public abstract class BaseAuton extends LinearOpMode {
 
-    MultipleTelemetry myTelemetry;
-    AutonMecanumDrivetrain drivetrain;
-    PowerplayScorer scorer;
-    List<LynxModule> hubs;
+    private MultipleTelemetry myTelemetry;
+    private AutonMecanumDrivetrain drivetrain;
+    private PowerplayScorer scorer;
+    private List<LynxModule> hubs;
 
     public enum Side {
         LEFT, RIGHT
