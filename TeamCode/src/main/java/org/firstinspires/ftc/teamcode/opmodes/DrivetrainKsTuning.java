@@ -13,7 +13,7 @@ import java.util.List;
 @Config
 @TeleOp(name = "Drivetrain kS Tuner", group = "21836 Teleop")
 
-public class DrivetrainStaticFeedforwardTuning extends LinearOpMode {
+public class DrivetrainKsTuning extends LinearOpMode {
 
     MecanumDrivetrain drivetrain;
     List<LynxModule> hubs;

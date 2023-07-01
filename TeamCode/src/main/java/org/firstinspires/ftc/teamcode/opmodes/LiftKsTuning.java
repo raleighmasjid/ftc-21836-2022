@@ -13,7 +13,7 @@ import java.util.List;
 @Config
 @TeleOp(name = "Lift kS Tuner", group = "21836 Teleop")
 
-public class LiftStaticFeedforwardTuning extends LinearOpMode {
+public class LiftKsTuning extends LinearOpMode {
 
     PowerplayScorer scorer;
     List<LynxModule> hubs;

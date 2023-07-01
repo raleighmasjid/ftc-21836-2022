@@ -5,11 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
 
-@Autonomous(name = "1+5 Tall Left", group = "21836 Autonomous")
-public class Tall6Left extends BaseAuton {
+@Autonomous(name = "1+5 Medium Left", group = "21836 Autonomous")
+public class MediumLeft extends BaseAuton {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        super.runOpMode(PowerplayLift.Position.TALL, Side.LEFT);
+        super.runOpMode(PowerplayLift.Position.MED, Side.LEFT);
     }
 }
