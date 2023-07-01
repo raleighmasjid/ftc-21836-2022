@@ -21,10 +21,13 @@
 
 package org.firstinspires.ftc.teamcode.opmodes;
 
+
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.autonomous.AutonConfig;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -36,35 +39,32 @@ import java.util.ArrayList;
 @Autonomous(name = "Camera Test", group = "21836 Backup")
 public class AprilTagInitDetectionTest extends LinearOpMode {
 
-    OpenCvCamera camera;
-    AprilTagDetectionPipeline aprilTagDetectionPipeline;
-
-    // Lens intrinsics
-    // UNITS ARE PIXELS
-    // NOTE: this calibration is for the C920 webcam at 800x448.
-    // You will need to do your own calibration for other configurations!
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
-
-    // UNITS ARE METERS
-    double tagsize = 0.166;
-
-    int LEFT = 1;
-    int MIDDLE = 2;
-    int RIGHT = 3;
-
-
-    AprilTagDetection tagOfInterest = null;
+    MultipleTelemetry myTelemetry;
 
     @Override
-    public void runOpMode() {
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+    public void runOpMode() throws InterruptedException {
 
-        camera.setPipeline(aprilTagDetectionPipeline);
+        // Lens intrinsics
+        // UNITS ARE PIXELS
+        // NOTE: this calibration is for the C920 webcam at 800x448.
+        // You will need to do your own calibration for other configurations!
+        int ONE = 1;
+        int TWO = 2;
+        int THREE = 3;
+
+        AprilTagDetection tagOfInterest = null;
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        AprilTagDetectionPipeline pipeline = new AprilTagDetectionPipeline(
+                AutonConfig.TAG_SIZE,
+                AutonConfig.CAMERA_FX,
+                AutonConfig.CAMERA_FY,
+                AutonConfig.CAMERA_CX,
+                AutonConfig.CAMERA_CY
+        );
+
+        camera.setPipeline(pipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -79,20 +79,22 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
+        //  Initialize telemetry and dashboard
+        myTelemetry = new MultipleTelemetry(telemetry);
+
         /*
          * The INIT-loop:
          * This REPLACES waitForStart!
          */
 
-
         while (!isStarted() && !isStopRequested()) {
-            ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
+            ArrayList<AprilTagDetection> currentDetections = pipeline.getLatestDetections();
 
             if (currentDetections.size() != 0) {
                 boolean tagFound = false;
 
                 for (AprilTagDetection tag : currentDetections) {
-                    if (tag.id == LEFT || tag.id == MIDDLE || tag.id == RIGHT) {
+                    if (tag.id == ONE || tag.id == TWO || tag.id == THREE) {
                         tagOfInterest = tag;
                         tagFound = true;
                         break;
@@ -100,74 +102,49 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
                 }
 
                 if (tagFound) {
-                    telemetry.addLine("Tag of interest is in sight!");
+                    myTelemetry.addLine("Tag of interest is in sight!");
                     tagToTelemetry(tagOfInterest);
                 } else {
-                    telemetry.addLine("Don't see tag of interest :(");
+                    myTelemetry.addLine("Don't see tag of interest :(");
 
-                    if (tagOfInterest == null) {
-                        telemetry.addLine("(The tag has never been seen)");
-                    } else {
-                        telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                    if (tagOfInterest == null) myTelemetry.addLine("(The tag has never been seen)");
+                    else {
+                        myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                         tagToTelemetry(tagOfInterest);
                     }
                 }
 
             } else {
-                telemetry.addLine("Don't see tag of interest :(");
+                myTelemetry.addLine("Don't see tag of interest :(");
 
-                if (tagOfInterest == null) {
-                    telemetry.addLine("(The tag has never been seen)");
-                } else {
-                    telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                if (tagOfInterest == null) myTelemetry.addLine("(The tag has never been seen)");
+                else {
+                    myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                     tagToTelemetry(tagOfInterest);
 
                 }
 
             }
 
-            telemetry.update();
-            sleep(20);
+            myTelemetry.update();
         }
 
+        //START IS HERE//
 
-        /*
-         * The START command just came in: now work off the latest snapshot acquired
-         * during the init loop.
-         */
+        camera.stopStreaming();
+        camera.closeCameraDevice();
 
-
-
-        /* Update the telemetry */
         if (tagOfInterest != null) {
-            telemetry.addLine("Tag snapshot:\n");
+            myTelemetry.addLine("Tag snapshot:\n");
             tagToTelemetry(tagOfInterest);
-            telemetry.update();
+            myTelemetry.update();
         } else {
-            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-            telemetry.update();
-        }
-
-
-        if (tagOfInterest.id == LEFT) {
-            //zone 1 park
-
-        } else if (tagOfInterest == null || tagOfInterest.id == MIDDLE) {
-            //zone 2 park
-
-        } else {
-            //zone 3 park
-
-        }
-
-
-        /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
-        while (opModeIsActive()) {
-            sleep(20);
+            myTelemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
+            myTelemetry.update();
         }
     }
 
     void tagToTelemetry(AprilTagDetection detection) {
-        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+        myTelemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
     }
 }
