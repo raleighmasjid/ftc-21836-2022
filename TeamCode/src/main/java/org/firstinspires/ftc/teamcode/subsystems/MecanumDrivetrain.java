@@ -59,6 +59,8 @@ public class MecanumDrivetrain {
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP
         )));
+
+        resetPosition();
     }
 
     public static double normalizeAngle(double angle) {
