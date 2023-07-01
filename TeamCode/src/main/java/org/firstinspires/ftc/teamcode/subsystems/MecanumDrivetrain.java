@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -22,6 +23,8 @@ public class MecanumDrivetrain {
 
     private final double motorCPR, motorRPM;
 
+    protected final VoltageSensor batteryVoltageSensor;
+
     protected MotorEx getDrivetrainMotor(HardwareMap hw, String name) {
         return new MotorEx(hw, name, motorCPR, motorRPM);
     }
@@ -29,6 +32,7 @@ public class MecanumDrivetrain {
     public MecanumDrivetrain(HardwareMap hw, double motorCPR, double motorRPM) {
         this.motorCPR = motorCPR;
         this.motorRPM = motorRPM;
+        this.batteryVoltageSensor = hw.voltageSensor.iterator().next();
 
         // Assign motors using their hardware map names, each drive-type can have different names if needed
         motors = new MotorEx[]{
@@ -96,7 +100,13 @@ public class MecanumDrivetrain {
         for (MotorEx motor : motors) motor.encoder.reset();
     }
 
-    public void run(double xCommand, double yCommand, double turnCommand) {
+    public void run(double xCommand, double yCommand, double turnCommand, boolean voltageCompensate) {
+        if (voltageCompensate) {
+            double voltage = batteryVoltageSensor.getVoltage();
+            xCommand *= (12.0 / voltage);
+            yCommand *= (12.0 / voltage);
+            turnCommand *= (12.0 / voltage);
+        }
         mecanumDrivetrain.driveFieldCentric(xCommand, yCommand, turnCommand, getHeading());
     }
 
