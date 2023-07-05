@@ -43,8 +43,8 @@ public class PowerplayPassthrough extends ProfiledPivot {
     public PowerplayPassthrough(HardwareMap hw) {
         super(new SimpleServo[]{axon(hw, "passthrough 1"), reverseServo(axon(hw, "passthrough 2"))});
 
-        claw = new SimplePivot(axon(hw, "claw right"), ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
-        pivot = new SimplePivot(reverseServo(axon(hw, "claw pivot")), ANGLE_PIVOT_FRONT, ANGLE_PIVOT_BACK);
+        claw = new SimplePivot(new SimpleServo[]{axon(hw, "claw right")}, ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
+        pivot = new SimplePivot(new SimpleServo[]{reverseServo(axon(hw, "claw pivot"))}, ANGLE_PIVOT_FRONT, ANGLE_PIVOT_BACK);
 
         updateConstants();
         currentAngle = ANGLE_PASS_FRONT;

@@ -4,7 +4,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 
 /**
- * Servo with two set positions <p>
+ * Servo(s) with two set positions <p>
  * Controlled by {@link #toggle} and {@link #setActivated}
  *
  * @author Arshad Anas
@@ -12,7 +12,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
  */
 public class SimplePivot {
 
-    private final SimpleServo servo;
+    private final SimpleServo[] servos;
 
     private double ANGLE_A, ANGLE_B;
 
@@ -21,8 +21,8 @@ public class SimplePivot {
     /**
      * Initialize {@link SimplePivot}
      */
-    public SimplePivot(SimpleServo servo, double ANGLE_A, double ANGLE_B) {
-        this.servo = servo;
+    public SimplePivot(SimpleServo[] servos, double ANGLE_A, double ANGLE_B) {
+        this.servos = servos;
         updateAngles(ANGLE_A, ANGLE_B);
     }
 
@@ -32,14 +32,14 @@ public class SimplePivot {
     }
 
     /**
-     * Toggles the state of the {@link #servo}
+     * Toggles the state of the {@link #servos}
      */
     public void toggle() {
         setActivated(!activated);
     }
 
     /**
-     * Set state of the {@link #servo}
+     * Set state of the {@link #servos}
      *
      * @param activated False for position A, true for position B
      */
@@ -48,7 +48,7 @@ public class SimplePivot {
     }
 
     /**
-     * Get state of the {@link #servo} <p>
+     * Get state of the {@link #servos} <p>
      * False if position A (default) <p>
      * True if in position B
      */
@@ -57,9 +57,9 @@ public class SimplePivot {
     }
 
     /**
-     * Holds {@link #servo} position
+     * Holds {@link #servos} position
      */
     public void run() {
-        servo.turnToAngle(activated ? ANGLE_B : ANGLE_A);
+        for (SimpleServo servo : servos) servo.turnToAngle(activated ? ANGLE_B : ANGLE_A);
     }
 }
