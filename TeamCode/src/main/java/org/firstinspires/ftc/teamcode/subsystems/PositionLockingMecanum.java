@@ -83,21 +83,21 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
         if (turnCommand == 0.0) {
             turnCommand = headingController.update(getHeading(), voltage);
         } else {
-            headingController.pid.setTarget(getHeading());
+            setTargetHeading(getHeading());
             turnCommand *= (12.0 / voltage);
         }
 
         super.run(xCommand, yCommand, turnCommand, false);
     }
 
-    public void setTargetHeading(double targetHeading) {
-        headingController.pid.setTarget(targetHeading);
+    public void setTargetHeading(double angle) {
+        headingController.pid.setTarget(normalizeAngle(angle));
     }
 
     @Override
     public void setCurrentHeading(double angle) {
         super.setCurrentHeading(angle);
-        setTargetHeading(normalizeAngle(angle));
+        setTargetHeading(angle);
     }
 
     @Override

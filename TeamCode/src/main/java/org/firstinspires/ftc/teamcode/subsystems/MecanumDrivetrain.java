@@ -60,6 +60,8 @@ public class MecanumDrivetrain {
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP
         )));
+
+        resetPosition();
     }
 
     public static double normalizeAngle(double angle) {
@@ -78,7 +80,7 @@ public class MecanumDrivetrain {
      * @param angle Angle of the robot in degrees, 0 facing forward and increases counter-clockwise
      */
     public void setCurrentHeading(double angle) {
-        headingOffset = latestIMUReading - angle;
+        headingOffset = latestIMUReading - normalizeAngle(angle);
     }
 
     public double getHeading() {
