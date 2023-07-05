@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.control.controller;
+package org.firstinspires.ftc.teamcode.control.controllers;
 
 /**
  * Wrapper class combining a PID controller and a kV-kA-kS feedforward controller.

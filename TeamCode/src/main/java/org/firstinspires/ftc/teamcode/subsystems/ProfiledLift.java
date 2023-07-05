@@ -7,8 +7,8 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.controller.ProfiledPIDF;
-import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
+import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDF;
+import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 /**
  * Motion-profiled DC motor-powered linear slide lift

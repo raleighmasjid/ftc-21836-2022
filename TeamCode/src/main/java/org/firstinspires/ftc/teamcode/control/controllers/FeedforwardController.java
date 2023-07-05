@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.control.controller;
+package org.firstinspires.ftc.teamcode.control.controllers;
 
 public class FeedforwardController {
     private double kV, kA, kS, targetVelocity, targetAcceleration;

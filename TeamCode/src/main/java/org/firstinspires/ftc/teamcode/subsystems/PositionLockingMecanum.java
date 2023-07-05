@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
+import org.firstinspires.ftc.teamcode.control.controllers.PIDFController;
 
 @Config
 public class PositionLockingMecanum extends MecanumDrivetrain {

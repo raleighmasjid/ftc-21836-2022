@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.control.controller;
+package org.firstinspires.ftc.teamcode.control.controllers;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
+import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 public class PIDController {
 

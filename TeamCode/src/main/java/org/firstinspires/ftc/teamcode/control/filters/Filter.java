@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.control.filter;
+package org.firstinspires.ftc.teamcode.control.filters;
 
 public interface Filter {
 

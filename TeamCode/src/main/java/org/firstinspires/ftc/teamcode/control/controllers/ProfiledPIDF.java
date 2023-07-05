@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.control.controller;
+package org.firstinspires.ftc.teamcode.control.controllers;
 
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
