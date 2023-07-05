@@ -13,7 +13,7 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
             HEADING_kP = 0.0,
             HEADING_kI = 0.0,
             HEADING_kD = 0.0,
-            HEADING_FILTER_GAIN = 0.0,
+            HEADING_FILTER_GAIN = 0.85,
             POSITION_kP = 0.0,
             POSITION_kI = 0.0,
             POSITION_kD = 0.0,
@@ -21,7 +21,7 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
             kS = 0.0;
 
     public static int
-            HEADING_FILTER_COUNT = 0,
+            HEADING_FILTER_COUNT = 300,
             POSITION_FILTER_COUNT = 0;
 
     public final PIDFController xController = new PIDFController();
@@ -81,7 +81,7 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
         }
 
         if (turnCommand == 0.0) {
-            turnCommand = headingController.update(headingController.pid.getTarget() - normalizeAngle(headingController.pid.getTarget() - getHeading()), voltage);
+            turnCommand = headingController.update(getHeading(), voltage);
         } else {
             headingController.pid.setTarget(getHeading());
             turnCommand *= (12.0 / voltage);
@@ -97,14 +97,7 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
     @Override
     public void setCurrentHeading(double angle) {
         super.setCurrentHeading(angle);
-        setTargetHeading(angle);
-    }
-
-    @Override
-    public void resetPosition() {
-        super.resetPosition();
-        xController.pid.setTarget(0.0);
-        yController.pid.setTarget(0.0);
+        setTargetHeading(normalizeAngle(angle));
     }
 
     @Override
