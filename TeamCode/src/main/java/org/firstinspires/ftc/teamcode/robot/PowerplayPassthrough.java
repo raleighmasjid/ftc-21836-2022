@@ -5,11 +5,11 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.subsystems.ProfiledClawArm;
+import org.firstinspires.ftc.teamcode.subsystems.ProfiledPivot;
 import org.firstinspires.ftc.teamcode.subsystems.SimplePivot;
 
 @Config
-public class PowerplayPassthrough extends ProfiledClawArm {
+public class PowerplayPassthrough extends ProfiledPivot {
 
     public static double
             ANGLE_CLAW_CLOSED = 0.0,
@@ -27,8 +27,9 @@ public class PowerplayPassthrough extends ProfiledClawArm {
             PASS_MAX_JERK = 7000.0;
 
     private boolean tilted = false;
+    private boolean triggered = false;
 
-    public final SimplePivot claw;
+    public final SimplePivot claw, pivot;
 
     public static SimpleServo axon(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 355);
@@ -40,22 +41,11 @@ public class PowerplayPassthrough extends ProfiledClawArm {
     }
 
     public PowerplayPassthrough(HardwareMap hw) {
-        super(
-                new SimplePivot(
-                        reverseServo(axon(hw, "claw pivot")),
-                        ANGLE_PIVOT_FRONT,
-                        ANGLE_PIVOT_BACK
-                ),
-                new SimpleServo[]{
-                        axon(hw, "passthrough 1"),
-                        reverseServo(axon(hw, "passthrough 2"))
-                }
-        );
-        claw = new SimplePivot(
-                axon(hw, "claw right"),
-                ANGLE_CLAW_OPEN,
-                ANGLE_CLAW_CLOSED
-        );
+        super(new SimpleServo[]{axon(hw, "passthrough 1"), reverseServo(axon(hw, "passthrough 2"))});
+
+        claw = new SimplePivot(axon(hw, "claw right"), ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
+        pivot = new SimplePivot(reverseServo(axon(hw, "claw pivot")), ANGLE_PIVOT_FRONT, ANGLE_PIVOT_BACK);
+
         updateConstants();
         currentAngle = ANGLE_PASS_FRONT;
     }
@@ -92,6 +82,7 @@ public class PowerplayPassthrough extends ProfiledClawArm {
     public void reset() {
         super.reset();
         setTilted(false);
+        pivot.setActivated(false);
         claw.setActivated(false);
     }
 
@@ -99,6 +90,11 @@ public class PowerplayPassthrough extends ProfiledClawArm {
     public void run() {
         updateConstants();
         super.run();
+        if (triggered && Math.abs(ANGLE_PIVOT_POS - currentAngle) <= PASS_PIVOT_POS_TOLERANCE) {
+            pivot.setActivated(inBack);
+            triggered = false;
+        }
+        pivot.run();
         claw.run();
     }
 
@@ -106,8 +102,6 @@ public class PowerplayPassthrough extends ProfiledClawArm {
         updateConstants(
                 ANGLE_PASS_FRONT,
                 ANGLE_PASS_BACK,
-                ANGLE_PIVOT_POS,
-                PASS_PIVOT_POS_TOLERANCE,
                 PASS_MAX_VELO,
                 PASS_MAX_ACCEL,
                 PASS_MAX_JERK
@@ -116,9 +110,19 @@ public class PowerplayPassthrough extends ProfiledClawArm {
         pivot.updateAngles(ANGLE_PIVOT_FRONT, ANGLE_PIVOT_BACK);
     }
 
+    /**
+     * Runs {@link #toggle} and toggles pivot when at the halfway position
+     */
+    public void trigger() {
+        triggered = true;
+        toggle();
+    }
+
     @Override
     public void printTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Claw is", claw.getActivated() ? "closed" : "open");
+        telemetry.addLine();
+        telemetry.addData("Pivot is oriented to", pivot.getActivated() ? "back" : "front");
         telemetry.addLine();
         super.printTelemetry(telemetry);
     }

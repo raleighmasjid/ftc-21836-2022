@@ -14,9 +14,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * @author Arshad Anas
  * @since 2023/06/14
  */
-public class ProfiledClawArm {
+public class ProfiledPivot {
 
-    public final SimplePivot pivot;
     private final SimpleServo[] servos;
 
     private final ElapsedTime profileTimer = new ElapsedTime();
@@ -25,50 +24,31 @@ public class ProfiledClawArm {
 
     protected double
             currentAngle, ANGLE_FRONT, ANGLE_BACK,
-            ANGLE_PIVOT_POS, TOLERANCE_PIVOT_POS,
             PROFILE_MAX_VELO = 1, PROFILE_MAX_ACCEL = 1, PROFILE_MAX_JERK;
 
     protected double currentVelocity = 0.0;
 
     protected boolean inBack = false;
-    protected boolean triggered = false;
 
     /**
      * Initialize fields <p>
      * Use {@link #updateConstants} to update angles and constants
      */
-    public ProfiledClawArm(
-            SimplePivot pivot,
-            SimpleServo[] servos
-    ) {
-        this.pivot = pivot;
+    public ProfiledPivot(SimpleServo[] servos) {
         this.servos = servos;
-
         profileTimer.reset();
-
         updateProfile();
     }
 
     public void updateConstants(
             double ANGLE_FRONT, double ANGLE_BACK,
-            double ANGLE_PIVOT_POS, double TOLERANCE_PIVOT_POS,
             double PROFILE_MAX_VELO, double PROFILE_MAX_ACCEL, double PROFILE_MAX_JERK
     ) {
         this.ANGLE_FRONT = ANGLE_FRONT;
         this.ANGLE_BACK = ANGLE_BACK;
-        this.ANGLE_PIVOT_POS = ANGLE_PIVOT_POS;
-        this.TOLERANCE_PIVOT_POS = TOLERANCE_PIVOT_POS;
         this.PROFILE_MAX_VELO = PROFILE_MAX_VELO;
         this.PROFILE_MAX_ACCEL = PROFILE_MAX_ACCEL;
         this.PROFILE_MAX_JERK = PROFILE_MAX_JERK;
-    }
-
-    /**
-     * Runs {@link #toggle} and toggles pivot when at the halfway position
-     */
-    public void trigger() {
-        triggered = true;
-        toggle();
     }
 
     /**
@@ -102,18 +82,12 @@ public class ProfiledClawArm {
         for (SimpleServo servo : servos) {
             servo.turnToAngle(currentAngle);
         }
-        if (triggered && Math.abs(ANGLE_PIVOT_POS - currentAngle) <= TOLERANCE_PIVOT_POS) {
-            pivot.setActivated(inBack);
-            triggered = false;
-        }
-        pivot.run();
     }
 
     public void reset() {
         if (inBack) {
-            trigger();
+            toggle();
         }
-        pivot.setActivated(false);
     }
 
     /**
@@ -132,8 +106,6 @@ public class ProfiledClawArm {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Pivot is oriented to", pivot.getActivated() ? "back" : "front");
-        telemetry.addLine();
         telemetry.addData("Arm is in the", inBack ? "back" : "front");
     }
 }
