@@ -2,15 +2,12 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.profile.MotionProfile;
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
-import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
+import org.firstinspires.ftc.teamcode.control.controller.ProfiledPIDF;
 import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
 
 /**
@@ -25,7 +22,6 @@ public class ProfiledLift {
      */
     private final MotorEx[] motors;
 
-    private final ElapsedTime profileTimer = new ElapsedTime();
     private final ElapsedTime derivTimer = new ElapsedTime();
 
     public final FIRLowPassFilter accelFilter;
@@ -36,17 +32,10 @@ public class ProfiledLift {
     /**
      * PIDF controller for lift
      */
-    public final PIDFController controller;
-
-    private MotionProfile profile;
-
-    /**
-     * Immediate target lift state grabbed from {@link #profile}
-     */
-    private MotionState profileState = new MotionState(0.0, 0.0, 0.0, 0.0);
+    public final ProfiledPIDF controller;
 
     private String targetPositionName = "Zero";
-    private double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, INCHES_PER_TICK, PROFILE_MAX_VELO = 1, PROFILE_MAX_ACCEL = 1, PROFILE_MAX_JERK;
+    private double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, INCHES_PER_TICK;
     private double currentBatteryVoltage = 12.0;
 
     public double getCurrentPosition() {
@@ -64,7 +53,7 @@ public class ProfiledLift {
     public ProfiledLift(
             MotorEx[] motors,
             VoltageSensor batteryVoltageSensor,
-            PIDFController controller,
+            ProfiledPIDF controller,
             FIRLowPassFilter veloFilter,
             FIRLowPassFilter accelFilter
     ) {
@@ -77,7 +66,6 @@ public class ProfiledLift {
         this.veloFilter = veloFilter;
         this.accelFilter = accelFilter;
 
-        profileTimer.reset();
         derivTimer.reset();
 
         reset();
@@ -86,18 +74,9 @@ public class ProfiledLift {
     /**
      * Update {@link #controller}, {@link #veloFilter}, and {@link #accelFilter} gains
      */
-    public void updateConstants(
-            double kG,
-            double INCHES_PER_TICK,
-            double PROFILE_MAX_VELO,
-            double PROFILE_MAX_ACCEL,
-            double PROFILE_MAX_JERK
-    ) {
+    public void updateConstants(double kG, double INCHES_PER_TICK) {
         this.kG = kG;
         this.INCHES_PER_TICK = INCHES_PER_TICK;
-        this.PROFILE_MAX_VELO = PROFILE_MAX_VELO;
-        this.PROFILE_MAX_ACCEL = PROFILE_MAX_ACCEL;
-        this.PROFILE_MAX_JERK = PROFILE_MAX_JERK;
     }
 
     /**
@@ -136,21 +115,7 @@ public class ProfiledLift {
     public void setTargetPosition(double targetPosition, String targetPositionName) {
         this.targetPosition = targetPosition;
         this.targetPositionName = targetPositionName;
-        updateProfile();
-    }
-
-    /**
-     * Update {@link #profile} with a {@link #targetPosition} set with {@link #setTargetPosition}
-     */
-    private void updateProfile() {
-        profile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(currentPosition, currentVelocity),
-                new MotionState(targetPosition, 0.0),
-                PROFILE_MAX_VELO,
-                PROFILE_MAX_ACCEL,
-                PROFILE_MAX_JERK
-        );
-        profileTimer.reset();
+        controller.setTargetPosition(currentPosition, currentVelocity, this.targetPosition);
     }
 
     /**
@@ -173,19 +138,13 @@ public class ProfiledLift {
         targetPosition = 0.0;
         targetPositionName = "Zero";
 
-        updateProfile();
-        profileState = new MotionState(0.0, 0.0, 0.0, 0.0);
+        setTargetPosition(targetPosition, targetPositionName);
     }
 
     /**
-     * Runs {@link #controller} to track along {@link #profile}
+     * Runs {@link #controller}
      */
     public void runToPosition() {
-        profileState = profile.get(profileTimer.seconds());
-
-        controller.pid.setTarget(profileState.getX());
-        controller.feedforward.setTargetVelocity(profileState.getV());
-        controller.feedforward.setTargetAcceleration(profileState.getA());
 
         run(controller.update(currentPosition, currentBatteryVoltage), false);
     }
@@ -203,16 +162,16 @@ public class ProfiledLift {
     }
 
     /**
-     * Print tuning telemetry from {@link #readPosition}, {@link #profile}, and {@link #controller}
+     * Print tuning telemetry from {@link #readPosition} and {@link #controller}
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Lift current position (in)", currentPosition);
-        telemetry.addData("Lift profile position (in)", profileState.getX());
+        telemetry.addData("Lift profile position (in)", controller.getProfilePosition());
         telemetry.addLine();
         telemetry.addData("Lift current velocity (in/s)", currentVelocity);
-        telemetry.addData("Lift profile velocity (in/s)", profileState.getV());
+        telemetry.addData("Lift profile velocity (in/s)", controller.getProfileVelocity());
         telemetry.addData("Lift max velocity (in/s)", maxVelocity);
         telemetry.addLine();
         telemetry.addData("Lift current acceleration (in/s^2)", currentAcceleration);

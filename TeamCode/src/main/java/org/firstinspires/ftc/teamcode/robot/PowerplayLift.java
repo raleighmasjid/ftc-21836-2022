@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
+import org.firstinspires.ftc.teamcode.control.controller.ProfiledPIDF;
 import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledLift;
 
@@ -70,11 +70,11 @@ public class PowerplayLift extends ProfiledLift {
 
     /**
      * Initialize fields <p>
-     * Use {@link #updateConstants} to update constants
      */
     public PowerplayLift(HardwareMap hw) {
-        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new PIDFController(), new FIRLowPassFilter(), new FIRLowPassFilter());
+        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledPIDF(), new FIRLowPassFilter(), new FIRLowPassFilter());
         updateConstants();
+        controller.setOutputBounds(-1.0, 1.0);
     }
 
     @Override
@@ -104,15 +104,13 @@ public class PowerplayLift extends ProfiledLift {
                 goingDown ? kA_DOWN : kA_UP,
                 kS
         );
-        controller.setOutputBounds(-1.0, 1.0);
-
-        updateConstants(
-                kG(),
-                INCHES_PER_TICK,
+        controller.updateConstraints(
                 MAX_VELO,
                 MAX_ACCEL,
                 MAX_JERK
         );
+
+        super.updateConstants(kG(), INCHES_PER_TICK);
     }
 
     /**
@@ -133,7 +131,7 @@ public class PowerplayLift extends ProfiledLift {
         return (numOfCones - 1) * (HEIGHT_2_CONES - HEIGHT_FLOOR) + HEIGHT_FLOOR;
     }
 
-    public void setTargetPosition(PowerplayLift.Position height) {
+    public void setTargetPosition(Position height) {
         switch (height) {
             case TALL:
                 setTargetPosition(HEIGHT_TALL, "Tall junction");
