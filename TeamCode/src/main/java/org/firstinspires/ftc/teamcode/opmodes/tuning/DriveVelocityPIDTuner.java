@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.opmodes.tuners;
+package org.firstinspires.ftc.teamcode.opmodes.tuning;
 
-import static org.firstinspires.ftc.teamcode.opmodes.tuners.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.opmodes.tuners.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.opmodes.tuners.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.opmodes.tuners.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.opmodes.tuners.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.opmodes.tuning.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.opmodes.tuning.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.opmodes.tuning.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.opmodes.tuning.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.opmodes.tuning.DriveConstants.kV;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;

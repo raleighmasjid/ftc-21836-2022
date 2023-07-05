@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.tuners;
+package org.firstinspires.ftc.teamcode.opmodes.tuning;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
