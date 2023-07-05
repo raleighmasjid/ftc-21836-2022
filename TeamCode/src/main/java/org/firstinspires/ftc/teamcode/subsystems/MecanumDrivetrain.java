@@ -117,11 +117,6 @@ public class MecanumDrivetrain {
         telemetry.addData("Robot current heading", getHeading());
         telemetry.addData("Robot current x", getX());
         telemetry.addData("Robot current y", getY());
-        telemetry.addLine();
-        telemetry.addData("Front left", getMotorPos(0));
-        telemetry.addData("Front right", getMotorPos(1));
-        telemetry.addData("Back left", getMotorPos(2));
-        telemetry.addData("Back right", getMotorPos(3));
     }
 }
 

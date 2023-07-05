@@ -39,7 +39,6 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
 
     @Override
     public void readIMU() {
-
         for (PIDFController controller : positionControllers) {
             controller.pid.setGains(
                     POSITION_kP,
@@ -93,6 +92,19 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
 
     public void setTargetHeading(double targetHeading) {
         headingController.pid.setTarget(targetHeading);
+    }
+
+    @Override
+    public void setCurrentHeading(double angle) {
+        super.setCurrentHeading(angle);
+        setTargetHeading(angle);
+    }
+
+    @Override
+    public void resetPosition() {
+        super.resetPosition();
+        xController.pid.setTarget(0.0);
+        yController.pid.setTarget(0.0);
     }
 
     @Override
