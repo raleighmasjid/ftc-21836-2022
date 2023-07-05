@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.autonomous.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.autonomous.utility.AutonMecanumDrivetrain;
+import org.firstinspires.ftc.teamcode.control.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.subsystems.AutonMecanumDrivetrain;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
