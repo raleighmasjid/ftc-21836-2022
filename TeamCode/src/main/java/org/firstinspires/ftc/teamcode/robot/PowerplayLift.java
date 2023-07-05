@@ -18,30 +18,30 @@ public class PowerplayLift extends ProfiledLift {
             HEIGHT_MEDIUM = 16.4,
             HEIGHT_TALL = 26.6,
             HEIGHT_1_STAGE = 9.6,
-            LIFT_kG_4 = 0.25,
-            LIFT_kG_3 = 0.21,
-            LIFT_kP = 0.25,
-            LIFT_kI = 0.2,
-            LIFT_kD = 0.01,
-            LIFT_kV_DOWN = 0.006,
-            LIFT_kV_UP = 0.005,
-            LIFT_kA_DOWN = 0.0015,
-            LIFT_kA_UP = 0.00075,
-            LIFT_kS = 0.17,
-            LIFT_FILTER_GAIN_kD = 0.875,
-            LIFT_FILTER_GAIN_VELO = 0.8,
-            LIFT_FILTER_GAIN_ACCEL = 0.8,
-            LIFT_MAX_VELO = 46.6,
-            LIFT_MAX_ACCEL = 189.16,
-            LIFT_MAX_JERK = 600.0,
-            LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL = 0.6,
-            LIFT_TOLERANCE_POS = 0.15843625,
-            LIFT_INCHES_PER_TICK = 0.03168725;
+            kG_4 = 0.25,
+            kG_3 = 0.21,
+            kP = 0.25,
+            kI = 0.2,
+            kD = 0.01,
+            kV_DOWN = 0.006,
+            kV_UP = 0.005,
+            kA_DOWN = 0.0015,
+            kA_UP = 0.00075,
+            kS = 0.17,
+            FILTER_GAIN_kD = 0.875,
+            FILTER_GAIN_VELO = 0.8,
+            FILTER_GAIN_ACCEL = 0.8,
+            MAX_VELO = 46.6,
+            MAX_ACCEL = 189.16,
+            MAX_JERK = 600.0,
+            MAX_PID_OUTPUT_WITH_INTEGRAL = 0.6,
+            TOLERANCE = 0.15843625,
+            INCHES_PER_TICK = 0.03168725;
 
     public static int
-            LIFT_FILTER_COUNT_kD = 300,
-            LIFT_FILTER_COUNT_VELO = 300,
-            LIFT_FILTER_COUNT_ACCEL = 300;
+            FILTER_COUNT_kD = 300,
+            FILTER_COUNT_VELO = 300,
+            FILTER_COUNT_ACCEL = 300;
 
     /**
      * Named lift position
@@ -86,32 +86,32 @@ public class PowerplayLift extends ProfiledLift {
     private void updateConstants() {
         boolean goingDown = getTargetPosition() < getCurrentPosition();
 
-        veloFilter.setGains(LIFT_FILTER_GAIN_VELO, LIFT_FILTER_COUNT_VELO);
-        accelFilter.setGains(LIFT_FILTER_GAIN_ACCEL, LIFT_FILTER_COUNT_ACCEL);
+        veloFilter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
+        accelFilter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
         controller.pid.setGains(
-                LIFT_kP,
-                LIFT_kI,
-                LIFT_kD,
-                LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL
+                kP,
+                kI,
+                kD,
+                MAX_PID_OUTPUT_WITH_INTEGRAL
         );
         controller.pid.derivFilter.setGains(
-                LIFT_FILTER_GAIN_kD,
-                LIFT_FILTER_COUNT_kD
+                FILTER_GAIN_kD,
+                FILTER_COUNT_kD
         );
         controller.feedforward.setGains(
-                goingDown ? LIFT_kV_DOWN : LIFT_kV_UP,
-                goingDown ? LIFT_kA_DOWN : LIFT_kA_UP,
-                LIFT_kS
+                goingDown ? kV_DOWN : kV_UP,
+                goingDown ? kA_DOWN : kA_UP,
+                kS
         );
         controller.setOutputBounds(-1.0, 1.0);
 
         updateConstants(
                 kG(),
-                LIFT_INCHES_PER_TICK,
-                LIFT_MAX_VELO,
-                LIFT_MAX_ACCEL,
-                LIFT_MAX_JERK
+                INCHES_PER_TICK,
+                MAX_VELO,
+                MAX_ACCEL,
+                MAX_JERK
         );
     }
 
@@ -122,10 +122,10 @@ public class PowerplayLift extends ProfiledLift {
      */
     private double kG() {
         double currentPosition = getCurrentPosition();
-        return currentPosition >= HEIGHT_1_STAGE * 3 ? LIFT_kG_4 :
-                currentPosition >= HEIGHT_1_STAGE * 2 ? LIFT_kG_3 :
-                        currentPosition >= HEIGHT_1_STAGE ? LIFT_kG_3 - (LIFT_kG_4 - LIFT_kG_3) :
-                                currentPosition > LIFT_TOLERANCE_POS ? LIFT_kG_3 - 2 * (LIFT_kG_4 - LIFT_kG_3) :
+        return currentPosition >= HEIGHT_1_STAGE * 3 ? kG_4 :
+                currentPosition >= HEIGHT_1_STAGE * 2 ? kG_3 :
+                        currentPosition >= HEIGHT_1_STAGE ? kG_3 - (kG_4 - kG_3) :
+                                currentPosition > TOLERANCE ? kG_3 - 2 * (kG_4 - kG_3) :
                                         0.0;
     }
 

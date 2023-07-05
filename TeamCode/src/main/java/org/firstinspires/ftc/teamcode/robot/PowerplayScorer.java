@@ -16,8 +16,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class PowerplayScorer {
 
-    private final SimpleServo coneArmServoR;
-    private final SimpleServo coneArmServoL;
+    private final SimpleServo coneArmR;
+    private final SimpleServo coneArmL;
 
     private final ElapsedTime liftClawTimer = new ElapsedTime();
 
@@ -27,9 +27,8 @@ public class PowerplayScorer {
 
     private boolean clawHasLifted = true;
 
-    public static double
-            ANGLE_CONE_ARMS_DOWN = 100.0,
-            TIME_CLAW = 0.0;
+    public static double ANGLE_CONE_ARMS_DOWN = 100.0;
+    public static double TIME_CLAW = 0.0;
 
     public static SimpleServo goBILDAServo(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 280);
@@ -45,9 +44,9 @@ public class PowerplayScorer {
         lift = new PowerplayLift(hw);
         passthrough = new PowerplayPassthrough(hw);
 
-        coneArmServoR = goBILDAServo(hw, "arm right");
-        coneArmServoL = goBILDAServo(hw, "arm left");
-        coneArmServoL.setInverted(true);
+        coneArmR = goBILDAServo(hw, "arm right");
+        coneArmL = goBILDAServo(hw, "arm left");
+        coneArmL.setInverted(true);
 
         reset();
     }
@@ -80,7 +79,7 @@ public class PowerplayScorer {
      */
     public void grabCone() {
         passthrough.claw.setActivated(true);
-        if (lift.getCurrentPosition() <= (lift.getConesHeight(5) + PowerplayLift.LIFT_TOLERANCE_POS)) {
+        if (lift.getCurrentPosition() <= (lift.getConesHeight(5) + PowerplayLift.TOLERANCE)) {
             clawHasLifted = false;
             liftClawTimer.reset();
         }
@@ -92,7 +91,7 @@ public class PowerplayScorer {
      * 2 inches if grabbing off the floor
      */
     public void liftClaw() {
-        lift.setTargetPosition(lift.getCurrentPosition() + ((lift.getCurrentPosition() > PowerplayLift.LIFT_TOLERANCE_POS) ? 6 : 2));
+        lift.setTargetPosition(lift.getCurrentPosition() + ((lift.getCurrentPosition() > PowerplayLift.TOLERANCE) ? 6 : 2));
         clawHasLifted = true;
     }
 
@@ -114,16 +113,16 @@ public class PowerplayScorer {
     }
 
     /**
-     * Holds {@link #coneArmServoR} and {@link #coneArmServoL} positions
+     * Holds {@link #coneArmR} and {@link #coneArmL} positions
      *
-     * @param angleR The angle to turn {@link #coneArmServoR} to
-     * @param angleL The angle to turn {@link #coneArmServoL} to
+     * @param angleR The angle to turn {@link #coneArmR} to
+     * @param angleL The angle to turn {@link #coneArmL} to
      */
     public void run(double angleR, double angleL) {
         passthrough.run();
         if (!clawHasLifted && liftClawTimer.seconds() >= TIME_CLAW) liftClaw();
-        coneArmServoL.turnToAngle(angleL);
-        coneArmServoR.turnToAngle(angleR);
+        coneArmL.turnToAngle(angleL);
+        coneArmR.turnToAngle(angleR);
     }
 
     public void printTelemetry(MultipleTelemetry telemetry) {

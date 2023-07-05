@@ -30,7 +30,7 @@ public class LiftKsTuning extends LinearOpMode {
 //      teleop control loop
         while (opModeIsActive()) {
             for (LynxModule hub : hubs) hub.clearBulkCache();
-            scorer.lift.run(PowerplayLift.LIFT_kS, true);
+            scorer.lift.run(PowerplayLift.kS, true);
         }
     }
 }

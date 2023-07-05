@@ -124,10 +124,8 @@ public class ProfiledLift {
      *
      * @param targetPosition Desired position (in inches) to run to
      */
-    public void setTargetPosition(double targetPosition, String targetPositionName) {
-        this.targetPosition = targetPosition;
-        this.targetPositionName = targetPositionName;
-        updateProfile();
+    public void setTargetPosition(double targetPosition) {
+        setTargetPosition(targetPosition, Double.toString(targetPosition));
     }
 
     /**
@@ -135,8 +133,10 @@ public class ProfiledLift {
      *
      * @param targetPosition Desired position (in inches) to run to
      */
-    public void setTargetPosition(double targetPosition) {
-        setTargetPosition(targetPosition, Double.toString(targetPosition));
+    public void setTargetPosition(double targetPosition, String targetPositionName) {
+        this.targetPosition = targetPosition;
+        this.targetPositionName = targetPositionName;
+        updateProfile();
     }
 
     /**
@@ -202,12 +202,8 @@ public class ProfiledLift {
      */
     public void run(double veloCommand, boolean voltageCompensate) {
         double scalar = 12.0 / currentBatteryVoltage;
-        if (voltageCompensate) {
-            veloCommand *= scalar;
-        }
-        for (MotorEx motor : motors) {
-            motor.set((kG * scalar) + veloCommand);
-        }
+        if (voltageCompensate) veloCommand *= scalar;
+        for (MotorEx motor : motors) motor.set(kG * scalar + veloCommand);
     }
 
     /**
