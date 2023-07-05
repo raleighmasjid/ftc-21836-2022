@@ -11,7 +11,7 @@ import java.util.List;
 
 @TeleOp(name = "Drivetrain kS Tuner", group = "21836 Teleop")
 
-public class DrivetrainKsTuning extends LinearOpMode {
+public class DrivetrainKsTuner extends LinearOpMode {
 
     MecanumDrivetrain drivetrain;
     List<LynxModule> hubs;
