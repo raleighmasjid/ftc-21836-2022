@@ -57,7 +57,7 @@ public class SimplePivot {
     }
 
     /**
-     * Holds {@link #servos} position
+     * Hold {@link #servos} position
      */
     public void run() {
         for (SimpleServo servo : servos) servo.turnToAngle(activated ? ANGLE_B : ANGLE_A);

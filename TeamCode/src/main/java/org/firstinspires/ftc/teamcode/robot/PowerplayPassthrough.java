@@ -14,17 +14,17 @@ public class PowerplayPassthrough extends ProfiledPivot {
     public static double
             ANGLE_CLAW_CLOSED = 0.0,
             ANGLE_CLAW_OPEN = 62.0,
-            ANGLE_PIVOT_FRONT = 17.0,
-            ANGLE_PIVOT_BACK = 216.0,
             ANGLE_PASS_FRONT = 8.0,
             ANGLE_PASS_TILT_OFFSET = 45.0,
             ANGLE_PASS_BACK = 310.0,
             ANGLE_PASS_MINI_TILT_OFFSET = 17.0,
-            ANGLE_PIVOT_POS = (ANGLE_PASS_BACK - ANGLE_PASS_FRONT) * 0.5,
-            PASS_PIVOT_POS_TOLERANCE = 30.0,
-            PASS_MAX_VELO = 600.0,
-            PASS_MAX_ACCEL = 3000.0,
-            PASS_MAX_JERK = 7000.0;
+            ANGLE_WRIST_FRONT = 17.0,
+            ANGLE_WRIST_BACK = 216.0,
+            ANGLE_WRIST_PIVOT_POS = (ANGLE_PASS_BACK - ANGLE_PASS_FRONT) * 0.5,
+            WRIST_PIVOT_POS_TOLERANCE = 30.0,
+            PROFILE_MAX_VELO = 600.0,
+            PROFILE_MAX_ACCEL = 3000.0,
+            PROFILE_MAX_JERK = 7000.0;
 
     private boolean tilted = false;
     private boolean triggered = false;
@@ -44,7 +44,7 @@ public class PowerplayPassthrough extends ProfiledPivot {
         super(new SimpleServo[]{axon(hw, "passthrough 1"), reverseServo(axon(hw, "passthrough 2"))});
 
         claw = new SimplePivot(new SimpleServo[]{axon(hw, "claw right")}, ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
-        pivot = new SimplePivot(new SimpleServo[]{reverseServo(axon(hw, "claw pivot"))}, ANGLE_PIVOT_FRONT, ANGLE_PIVOT_BACK);
+        pivot = new SimplePivot(new SimpleServo[]{reverseServo(axon(hw, "claw pivot"))}, ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
 
         updateConstants();
         currentAngle = ANGLE_PASS_FRONT;
@@ -70,44 +70,24 @@ public class PowerplayPassthrough extends ProfiledPivot {
         double tiltOffset =
                 tilted ?
                         ANGLE_PASS_TILT_OFFSET :
-                        (!triggered) && (inBack != pivot.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
+                        (!triggered) && (activated != pivot.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
 
-        ANGLE_FRONT = ANGLE_PASS_FRONT + tiltOffset;
-        ANGLE_BACK = ANGLE_PASS_BACK - tiltOffset;
+        ANGLE_A = ANGLE_PASS_FRONT + tiltOffset;
+        ANGLE_B = ANGLE_PASS_BACK - tiltOffset;
 
         super.updateProfile();
-    }
-
-    @Override
-    public void reset() {
-        super.reset();
-        setTilted(false);
-        pivot.setActivated(false);
-        claw.setActivated(false);
-    }
-
-    @Override
-    public void run() {
-        updateConstants();
-        super.run();
-        if (triggered && Math.abs(ANGLE_PIVOT_POS - currentAngle) <= PASS_PIVOT_POS_TOLERANCE) {
-            pivot.setActivated(inBack);
-            triggered = false;
-        }
-        pivot.run();
-        claw.run();
     }
 
     private void updateConstants() {
         updateConstants(
                 ANGLE_PASS_FRONT,
                 ANGLE_PASS_BACK,
-                PASS_MAX_VELO,
-                PASS_MAX_ACCEL,
-                PASS_MAX_JERK
+                PROFILE_MAX_VELO,
+                PROFILE_MAX_ACCEL,
+                PROFILE_MAX_JERK
         );
         claw.updateAngles(ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
-        pivot.updateAngles(ANGLE_PIVOT_FRONT, ANGLE_PIVOT_BACK);
+        pivot.updateAngles(ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
     }
 
     /**
@@ -116,6 +96,26 @@ public class PowerplayPassthrough extends ProfiledPivot {
     public void trigger() {
         triggered = true;
         toggle();
+    }
+
+    @Override
+    public void run() {
+        updateConstants();
+        super.run();
+        if (triggered && Math.abs(ANGLE_WRIST_PIVOT_POS - currentAngle) <= WRIST_PIVOT_POS_TOLERANCE) {
+            pivot.setActivated(activated);
+            triggered = false;
+        }
+        pivot.run();
+        claw.run();
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        setTilted(false);
+        pivot.setActivated(false);
+        claw.setActivated(false);
     }
 
     @Override

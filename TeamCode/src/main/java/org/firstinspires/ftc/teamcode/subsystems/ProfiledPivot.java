@@ -9,7 +9,8 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * Contains a claw mounted to a wrist on a motion-profiled flip-arm
+ * Servo(s) with two set positions <p>
+ * Controlled by {@link #toggle}
  *
  * @author Arshad Anas
  * @since 2023/06/14
@@ -22,13 +23,11 @@ public class ProfiledPivot {
 
     private MotionProfile profile;
 
-    protected double
-            currentAngle, ANGLE_FRONT, ANGLE_BACK,
-            PROFILE_MAX_VELO = 1, PROFILE_MAX_ACCEL = 1, PROFILE_MAX_JERK;
+    private double PROFILE_MAX_VELO = 1, PROFILE_MAX_ACCEL = 1, PROFILE_MAX_JERK;
 
-    protected double currentVelocity = 0.0;
+    protected double currentAngle, currentVelocity, ANGLE_A, ANGLE_B;
 
-    protected boolean inBack = false;
+    protected boolean activated = false;
 
     /**
      * Initialize fields <p>
@@ -44,19 +43,11 @@ public class ProfiledPivot {
             double ANGLE_FRONT, double ANGLE_BACK,
             double PROFILE_MAX_VELO, double PROFILE_MAX_ACCEL, double PROFILE_MAX_JERK
     ) {
-        this.ANGLE_FRONT = ANGLE_FRONT;
-        this.ANGLE_BACK = ANGLE_BACK;
+        this.ANGLE_A = ANGLE_FRONT;
+        this.ANGLE_B = ANGLE_BACK;
         this.PROFILE_MAX_VELO = PROFILE_MAX_VELO;
         this.PROFILE_MAX_ACCEL = PROFILE_MAX_ACCEL;
         this.PROFILE_MAX_JERK = PROFILE_MAX_JERK;
-    }
-
-    /**
-     * Toggles position of {@link #servos}
-     */
-    public void toggle() {
-        inBack = !inBack;
-        updateProfile();
     }
 
     /**
@@ -65,15 +56,40 @@ public class ProfiledPivot {
     protected void updateProfile() {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentAngle, currentVelocity),
-                new MotionState(inBack ? ANGLE_BACK : ANGLE_FRONT, 0.0),
+                new MotionState(activated ? ANGLE_B : ANGLE_A, 0.0),
                 PROFILE_MAX_VELO, PROFILE_MAX_ACCEL, PROFILE_MAX_JERK
         );
-
         profileTimer.reset();
     }
 
     /**
-     * Hold {@link #servos} positions
+     * Toggles the state of the {@link #servos}
+     */
+    public void toggle() {
+        setActivated(!activated);
+    }
+
+    /**
+     * Set state of the {@link #servos}
+     *
+     * @param activated False for position A, true for position B
+     */
+    public void setActivated(boolean activated) {
+        this.activated = activated;
+        updateProfile();
+    }
+
+    /**
+     * Get state of the {@link #servos} <p>
+     * False if position A (default) <p>
+     * True if in position B
+     */
+    public boolean getActivated() {
+        return activated;
+    }
+
+    /**
+     * Hold {@link #servos} position
      */
     public void run() {
         MotionState state = profile.get(profileTimer.seconds());
@@ -85,7 +101,7 @@ public class ProfiledPivot {
     }
 
     public void reset() {
-        if (inBack) {
+        if (activated) {
             toggle();
         }
     }
@@ -106,6 +122,6 @@ public class ProfiledPivot {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Arm is in the", inBack ? "back" : "front");
+        telemetry.addData("Arm is in the", activated ? "back" : "front");
     }
 }
