@@ -27,7 +27,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.autonomous.AutonConfig;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -57,11 +56,11 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         AprilTagDetectionPipeline pipeline = new AprilTagDetectionPipeline(
-                AutonConfig.TAG_SIZE,
-                AutonConfig.CAMERA_FX,
-                AutonConfig.CAMERA_FY,
-                AutonConfig.CAMERA_CX,
-                AutonConfig.CAMERA_CY
+                BaseAuton.TAG_SIZE,
+                BaseAuton.CAMERA_FX,
+                BaseAuton.CAMERA_FY,
+                BaseAuton.CAMERA_CX,
+                BaseAuton.CAMERA_CY
         );
 
         camera.setPipeline(pipeline);

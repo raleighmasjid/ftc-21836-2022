@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -7,7 +8,40 @@ import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.control.filter.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledLift;
 
+@Config
 public class PowerplayLift extends ProfiledLift {
+
+    public static double
+            HEIGHT_FLOOR = 0.0,
+            HEIGHT_2_CONES = 1.35,
+            HEIGHT_LOW = 6.2,
+            HEIGHT_MEDIUM = 16.4,
+            HEIGHT_TALL = 26.6,
+            HEIGHT_1_STAGE = 9.6,
+            LIFT_kG_4 = 0.18,
+            LIFT_kG_3 = 0.14,
+            LIFT_kP = 0.25,
+            LIFT_kI = 0.2,
+            LIFT_kD = 0.01,
+            LIFT_kV_DOWN = 0.006,
+            LIFT_kV_UP = 0.005,
+            LIFT_kA_DOWN = 0.0015,
+            LIFT_kA_UP = 0.00075,
+            LIFT_kS = 0.02,
+            LIFT_FILTER_GAIN_kD = 0.875,
+            LIFT_FILTER_GAIN_VELO = 0.8,
+            LIFT_FILTER_GAIN_ACCEL = 0.8,
+            LIFT_MAX_VELO = 46.6,
+            LIFT_MAX_ACCEL = 189.16,
+            LIFT_MAX_JERK = 600.0,
+            LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL = 0.6,
+            LIFT_TOLERANCE_POS = 0.15843625,
+            LIFT_INCHES_PER_TICK = 0.03168725;
+
+    public static int
+            LIFT_FILTER_COUNT_kD = 300,
+            LIFT_FILTER_COUNT_VELO = 300,
+            LIFT_FILTER_COUNT_ACCEL = 300;
 
     /**
      * Named lift position
@@ -52,32 +86,32 @@ public class PowerplayLift extends ProfiledLift {
     private void updateConstants() {
         boolean goingDown = getTargetPosition() < getCurrentPosition();
 
-        veloFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_VELO, RobotConfig.LIFT_FILTER_COUNT_VELO);
-        accelFilter.setGains(RobotConfig.LIFT_FILTER_GAIN_ACCEL, RobotConfig.LIFT_FILTER_COUNT_ACCEL);
+        veloFilter.setGains(LIFT_FILTER_GAIN_VELO, LIFT_FILTER_COUNT_VELO);
+        accelFilter.setGains(LIFT_FILTER_GAIN_ACCEL, LIFT_FILTER_COUNT_ACCEL);
 
         controller.pid.setGains(
-                RobotConfig.LIFT_kP,
-                RobotConfig.LIFT_kI,
-                RobotConfig.LIFT_kD,
-                RobotConfig.LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL
+                LIFT_kP,
+                LIFT_kI,
+                LIFT_kD,
+                LIFT_MAX_PID_OUTPUT_WITH_INTEGRAL
         );
         controller.pid.derivFilter.setGains(
-                RobotConfig.LIFT_FILTER_GAIN_kD,
-                RobotConfig.LIFT_FILTER_COUNT_kD
+                LIFT_FILTER_GAIN_kD,
+                LIFT_FILTER_COUNT_kD
         );
         controller.feedforward.setGains(
-                goingDown ? RobotConfig.LIFT_kV_DOWN : RobotConfig.LIFT_kV_UP,
-                goingDown ? RobotConfig.LIFT_kA_DOWN : RobotConfig.LIFT_kA_UP,
-                RobotConfig.LIFT_kS
+                goingDown ? LIFT_kV_DOWN : LIFT_kV_UP,
+                goingDown ? LIFT_kA_DOWN : LIFT_kA_UP,
+                LIFT_kS
         );
         controller.setOutputBounds(-1.0, 1.0);
 
         updateConstants(
                 kG(),
-                RobotConfig.LIFT_INCHES_PER_TICK,
-                RobotConfig.LIFT_MAX_VELO,
-                RobotConfig.LIFT_MAX_ACCEL,
-                RobotConfig.LIFT_MAX_JERK
+                LIFT_INCHES_PER_TICK,
+                LIFT_MAX_VELO,
+                LIFT_MAX_ACCEL,
+                LIFT_MAX_JERK
         );
     }
 
@@ -88,27 +122,27 @@ public class PowerplayLift extends ProfiledLift {
      */
     private double kG() {
         double currentPosition = getCurrentPosition();
-        return currentPosition >= RobotConfig.HEIGHT_1_STAGE * 3 ? RobotConfig.LIFT_kG_4 :
-                currentPosition >= RobotConfig.HEIGHT_1_STAGE * 2 ? RobotConfig.LIFT_kG_3 :
-                        currentPosition >= RobotConfig.HEIGHT_1_STAGE ? RobotConfig.LIFT_kG_3 - (RobotConfig.LIFT_kG_4 - RobotConfig.LIFT_kG_3) :
-                                currentPosition > RobotConfig.LIFT_TOLERANCE_POS ? RobotConfig.LIFT_kG_3 - 2 * (RobotConfig.LIFT_kG_4 - RobotConfig.LIFT_kG_3) :
+        return currentPosition >= HEIGHT_1_STAGE * 3 ? LIFT_kG_4 :
+                currentPosition >= HEIGHT_1_STAGE * 2 ? LIFT_kG_3 :
+                        currentPosition >= HEIGHT_1_STAGE ? LIFT_kG_3 - (LIFT_kG_4 - LIFT_kG_3) :
+                                currentPosition > LIFT_TOLERANCE_POS ? LIFT_kG_3 - 2 * (LIFT_kG_4 - LIFT_kG_3) :
                                         0.0;
     }
 
     public double getConesHeight(int numOfCones) {
-        return (numOfCones - 1) * (RobotConfig.HEIGHT_2_CONES - RobotConfig.HEIGHT_FLOOR) + RobotConfig.HEIGHT_FLOOR;
+        return (numOfCones - 1) * (HEIGHT_2_CONES - HEIGHT_FLOOR) + HEIGHT_FLOOR;
     }
 
     public void setTargetPosition(PowerplayLift.Position height) {
         switch (height) {
             case TALL:
-                setTargetPosition(RobotConfig.HEIGHT_TALL, "Tall junction");
+                setTargetPosition(HEIGHT_TALL, "Tall junction");
                 break;
             case MED:
-                setTargetPosition(RobotConfig.HEIGHT_MEDIUM, "Medium junction");
+                setTargetPosition(HEIGHT_MEDIUM, "Medium junction");
                 break;
             case LOW:
-                setTargetPosition(RobotConfig.HEIGHT_LOW, "Low junction");
+                setTargetPosition(HEIGHT_LOW, "Low junction");
                 break;
             case FIVE:
                 setTargetPosition(getConesHeight(5), "5 cones");

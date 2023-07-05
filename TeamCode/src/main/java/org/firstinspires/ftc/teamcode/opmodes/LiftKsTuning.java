@@ -5,8 +5,8 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
-import org.firstinspires.ftc.teamcode.robot.RobotConfig;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class LiftKsTuning extends LinearOpMode {
 //      teleop control loop
         while (opModeIsActive()) {
             for (LynxModule hub : hubs) hub.clearBulkCache();
-            scorer.lift.run(RobotConfig.LIFT_kS, true);
+            scorer.lift.run(PowerplayLift.LIFT_kS, true);
         }
     }
 }

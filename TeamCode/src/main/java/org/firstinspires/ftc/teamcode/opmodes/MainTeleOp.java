@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -10,15 +11,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
-import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
-import org.firstinspires.ftc.teamcode.robot.RobotConfig;
 import org.firstinspires.ftc.teamcode.subsystems.PositionLockingMecanum;
 
 import java.util.List;
 
-
+@Config
 @TeleOp(name = "Main TeleOp", group = "21836 Teleop")
 
 public class MainTeleOp extends LinearOpMode {
@@ -28,6 +27,8 @@ public class MainTeleOp extends LinearOpMode {
     PositionLockingMecanum drivetrain;
     List<LynxModule> hubs;
     GamepadEx Gamepad1, Gamepad2;
+
+    public static double DRIVETRAIN_PRECISION_MODE_SCALE = 0.3;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -93,31 +94,6 @@ public class MainTeleOp extends LinearOpMode {
             for (ButtonReader buttonReader : buttonReaders) buttonReader.readValue();
 
             scorer.lift.readPosition();
-
-            for (PIDFController controller : drivetrain.positionControllers) {
-                controller.pid.setGains(
-                        RobotConfig.DRIVETRAIN_POSITION_kP,
-                        RobotConfig.DRIVETRAIN_POSITION_kI,
-                        RobotConfig.DRIVETRAIN_POSITION_kD
-                );
-                controller.pid.derivFilter.setGains(
-                        RobotConfig.DRIVETRAIN_POSITION_FILTER_GAIN,
-                        RobotConfig.DRIVETRAIN_POSITION_FILTER_COUNT
-                );
-            }
-            drivetrain.headingController.pid.setGains(
-                    RobotConfig.DRIVETRAIN_HEADING_kP,
-                    RobotConfig.DRIVETRAIN_HEADING_kI,
-                    RobotConfig.DRIVETRAIN_HEADING_kD
-            );
-            drivetrain.headingController.pid.derivFilter.setGains(
-                    RobotConfig.DRIVETRAIN_HEADING_FILTER_GAIN,
-                    RobotConfig.DRIVETRAIN_HEADING_FILTER_COUNT
-            );
-            for (PIDFController controller : drivetrain.controllers) {
-                controller.feedforward.setGains(0.0, 0.0, RobotConfig.DRIVETRAIN_kS);
-            }
-
             drivetrain.readIMU();
 
             // Field-centric resets
@@ -134,8 +110,8 @@ public class MainTeleOp extends LinearOpMode {
 
             // Precision mode driving triggers
             double precisionScale = Gamepad1.isDown(GamepadKeys.Button.RIGHT_BUMPER) ?
-                    RobotConfig.DRIVETRAIN_PRECISION_MODE_SCALE :
-                    (RobotConfig.DRIVETRAIN_PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
+                    DRIVETRAIN_PRECISION_MODE_SCALE :
+                    (DRIVETRAIN_PRECISION_MODE_SCALE - 1) * Gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) + 1;
 
             boolean stackHeights = control2LShoulder.isDown();
 
@@ -191,8 +167,8 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             scorer.run(
-                    Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN,
-                    Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * RobotConfig.ANGLE_ARMS_DOWN
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * PowerplayScorer.ANGLE_CONE_ARMS_DOWN,
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * PowerplayScorer.ANGLE_CONE_ARMS_DOWN
             );
             drivetrain.run(
                     Gamepad1.getLeftX() * precisionScale,

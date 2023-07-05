@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * @author Arshad Anas
  * @since 2022/12/24
  */
+@Config
 public class PowerplayScorer {
 
     private final SimpleServo coneArmServoR;
@@ -24,6 +26,10 @@ public class PowerplayScorer {
     public final PowerplayPassthrough passthrough;
 
     private boolean clawHasLifted = true;
+
+    public static double
+            ANGLE_CONE_ARMS_DOWN = 100.0,
+            TIME_CLAW = 0.0;
 
     public static SimpleServo goBILDAServo(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 280);
@@ -40,7 +46,8 @@ public class PowerplayScorer {
         passthrough = new PowerplayPassthrough(hw);
 
         coneArmServoR = goBILDAServo(hw, "arm right");
-        coneArmServoL = RobotConfig.reverseServo(goBILDAServo(hw, "arm left"));
+        coneArmServoL = goBILDAServo(hw, "arm left");
+        coneArmServoL.setInverted(true);
 
         reset();
     }
@@ -73,7 +80,7 @@ public class PowerplayScorer {
      */
     public void grabCone() {
         passthrough.claw.setActivated(true);
-        if (lift.getCurrentPosition() <= (lift.getConesHeight(5) + RobotConfig.LIFT_TOLERANCE_POS)) {
+        if (lift.getCurrentPosition() <= (lift.getConesHeight(5) + PowerplayLift.LIFT_TOLERANCE_POS)) {
             clawHasLifted = false;
             liftClawTimer.reset();
         }
@@ -85,7 +92,7 @@ public class PowerplayScorer {
      * 2 inches if grabbing off the floor
      */
     public void liftClaw() {
-        lift.setTargetPosition(lift.getCurrentPosition() + ((lift.getCurrentPosition() > RobotConfig.LIFT_TOLERANCE_POS) ? 6 : 2));
+        lift.setTargetPosition(lift.getCurrentPosition() + ((lift.getCurrentPosition() > PowerplayLift.LIFT_TOLERANCE_POS) ? 6 : 2));
         clawHasLifted = true;
     }
 
@@ -114,7 +121,7 @@ public class PowerplayScorer {
      */
     public void run(double angleR, double angleL) {
         passthrough.run();
-        if (!clawHasLifted && liftClawTimer.seconds() >= RobotConfig.TIME_CLAW) liftClaw();
+        if (!clawHasLifted && liftClawTimer.seconds() >= TIME_CLAW) liftClaw();
         coneArmServoL.turnToAngle(angleL);
         coneArmServoR.turnToAngle(angleR);
     }

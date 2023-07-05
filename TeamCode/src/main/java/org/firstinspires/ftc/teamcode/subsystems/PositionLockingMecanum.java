@@ -1,11 +1,28 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.controller.PIDFController;
 
+@Config
 public class PositionLockingMecanum extends MecanumDrivetrain {
+
+    public static double
+            HEADING_kP = 0.0,
+            HEADING_kI = 0.0,
+            HEADING_kD = 0.0,
+            HEADING_FILTER_GAIN = 0.0,
+            POSITION_kP = 0.0,
+            POSITION_kI = 0.0,
+            POSITION_kD = 0.0,
+            POSITION_FILTER_GAIN = 0.0,
+            kS = 0.0;
+
+    public static int
+            HEADING_FILTER_COUNT = 0,
+            POSITION_FILTER_COUNT = 0;
 
     public final PIDFController xController = new PIDFController();
     public final PIDFController yController = new PIDFController();
@@ -18,6 +35,35 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
         for (PIDFController controller : controllers) {
             controller.setOutputBounds(-1.0, 1.0);
         }
+    }
+
+    @Override
+    public void readIMU() {
+
+        for (PIDFController controller : positionControllers) {
+            controller.pid.setGains(
+                    POSITION_kP,
+                    POSITION_kI,
+                    POSITION_kD
+            );
+            controller.pid.derivFilter.setGains(
+                    POSITION_FILTER_GAIN,
+                    POSITION_FILTER_COUNT
+            );
+        }
+        headingController.pid.setGains(
+                HEADING_kP,
+                HEADING_kI,
+                HEADING_kD
+        );
+        headingController.pid.derivFilter.setGains(
+                HEADING_FILTER_GAIN,
+                HEADING_FILTER_COUNT
+        );
+        for (PIDFController controller : controllers) {
+            controller.feedforward.setGains(0.0, 0.0, kS);
+        }
+        super.readIMU();
     }
 
     public void run(double xCommand, double yCommand, double turnCommand) {
