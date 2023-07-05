@@ -187,10 +187,6 @@ public class ProfiledLift {
         controller.feedforward.setTargetVelocity(profileState.getV());
         controller.feedforward.setTargetAcceleration(profileState.getA());
 
-        if (targetPosition == currentPosition || Math.signum(controller.pid.getError()) != Math.signum(controller.pid.getLastError())) {
-            controller.pid.resetIntegral();
-        }
-
         run(controller.update(currentPosition, currentBatteryVoltage), false);
     }
 
