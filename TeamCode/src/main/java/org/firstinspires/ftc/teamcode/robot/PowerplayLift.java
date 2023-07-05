@@ -84,7 +84,7 @@ public class PowerplayLift extends ProfiledLift {
     }
 
     private void updateConstants() {
-        boolean goingDown = getTargetPosition() < getCurrentPosition();
+        boolean goingDown = targetPosition < getCurrentPosition();
 
         veloFilter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
         accelFilter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);

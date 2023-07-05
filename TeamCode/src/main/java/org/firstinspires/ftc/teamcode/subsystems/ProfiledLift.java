@@ -34,16 +34,12 @@ public class ProfiledLift {
      */
     public final ProfiledPIDF controller;
 
-    private String targetPositionName = "Zero";
-    private double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, INCHES_PER_TICK;
-    private double currentBatteryVoltage = 12.0;
+    protected String targetPositionName = "Zero";
+    protected double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, INCHES_PER_TICK;
+    protected double currentBatteryVoltage = 12.0;
 
     public double getCurrentPosition() {
         return currentPosition;
-    }
-
-    public double getTargetPosition() {
-        return targetPosition;
     }
 
     /**
