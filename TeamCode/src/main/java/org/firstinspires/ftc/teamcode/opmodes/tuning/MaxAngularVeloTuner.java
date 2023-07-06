@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.subsystems.AutonMecanumDrivetrain;
 
 import java.util.Objects;
@@ -27,8 +28,10 @@ import java.util.Objects;
 public class MaxAngularVeloTuner extends LinearOpMode {
     public static double RUNTIME = 4.0;
 
-    private ElapsedTime timer;
-    private double maxAngVelocity = 0.0;
+    private ElapsedTime timer, accelTimer;
+    private double maxAngVelocity = 0.0, maxAngAcceleration = 0.0;
+
+    private FIRLowPassFilter accelFilter = new FIRLowPassFilter();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -57,15 +60,18 @@ public class MaxAngularVeloTuner extends LinearOpMode {
 
             Pose2d poseVelo = Objects.requireNonNull(drive.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
 
+            double lastMaxAngVelocity = maxAngVelocity;
             maxAngVelocity = Math.max(poseVelo.getHeading(), maxAngVelocity);
+            maxAngAcceleration = Math.max(accelFilter.getEstimate((maxAngVelocity - lastMaxAngVelocity) / accelTimer.seconds()), maxAngAcceleration);
+            accelTimer.reset();
         }
 
         drive.setDrivePower(new Pose2d());
 
-        telemetry.addData("Max Angular Velocity (rad)", maxAngVelocity);
         telemetry.addData("Max Angular Velocity (deg)", Math.toDegrees(maxAngVelocity));
-        telemetry.addData("Max Recommended Angular Velocity (rad)", maxAngVelocity * 0.8);
-        telemetry.addData("Max Recommended Angular Velocity (deg)", Math.toDegrees(maxAngVelocity * 0.8));
+        telemetry.addData("Max Recommended Angular Velocity (deg)", Math.toDegrees(maxAngVelocity * 0.9));
+        telemetry.addData("Max Angular Acceleration (deg)", Math.toDegrees(maxAngAcceleration));
+        telemetry.addData("Max Recommended Angular Acceleration (deg)", Math.toDegrees(maxAngAcceleration * 0.9));
         telemetry.update();
 
         while (!isStopRequested()) idle();

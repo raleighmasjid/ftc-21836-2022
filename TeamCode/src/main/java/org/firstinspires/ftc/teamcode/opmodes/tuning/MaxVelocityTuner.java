@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.subsystems.AutonMecanumDrivetrain;
 
 import java.util.Objects;
@@ -28,10 +29,12 @@ import java.util.Objects;
 public class MaxVelocityTuner extends LinearOpMode {
     public static double RUNTIME = 2.0;
 
-    private ElapsedTime timer;
-    private double maxVelocity = 0.0;
+    private ElapsedTime timer, accelTimer;
+    private double maxVelocity = 0.0, maxAcceleration = 0.0;
 
     private VoltageSensor batteryVoltageSensor;
+
+    private FIRLowPassFilter accelFilter = new FIRLowPassFilter();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -56,13 +59,17 @@ public class MaxVelocityTuner extends LinearOpMode {
 
         drive.setDrivePower(new Pose2d(1, 0, 0));
         timer = new ElapsedTime();
+        accelTimer = new ElapsedTime();
 
         while (!isStopRequested() && timer.seconds() < RUNTIME) {
             drive.updatePoseEstimate();
 
             Pose2d poseVelo = Objects.requireNonNull(drive.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
 
+            double lastMaxVelocity = maxVelocity;
             maxVelocity = Math.max(poseVelo.vec().norm(), maxVelocity);
+            maxAcceleration = Math.max(accelFilter.getEstimate((maxVelocity - lastMaxVelocity) / accelTimer.seconds()), maxAcceleration);
+            accelTimer.reset();
         }
 
         drive.setDrivePower(new Pose2d());
@@ -70,7 +77,9 @@ public class MaxVelocityTuner extends LinearOpMode {
         double effectiveKf = DriveConstants.getMotorVelocityF(veloInchesToTicks(maxVelocity));
 
         telemetry.addData("Max Velocity", maxVelocity);
-        telemetry.addData("Max Recommended Velocity", maxVelocity * 0.8);
+        telemetry.addData("Max Recommended Velocity", maxVelocity * 0.9);
+        telemetry.addData("Max Acceleration", maxAcceleration);
+        telemetry.addData("Max Recommended Acceleration", maxAcceleration * 0.9);
         telemetry.addData("Voltage Compensated kF", effectiveKf * batteryVoltageSensor.getVoltage() / 12);
         telemetry.update();
 
