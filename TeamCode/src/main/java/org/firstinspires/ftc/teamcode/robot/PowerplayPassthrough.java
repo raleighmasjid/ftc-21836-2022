@@ -6,7 +6,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledPivot;
-import org.firstinspires.ftc.teamcode.subsystems.SimplePivot;
+import org.firstinspires.ftc.teamcode.subsystems.SimpleServoPivot;
 
 @Config
 public class PowerplayPassthrough extends ProfiledPivot {
@@ -29,7 +29,7 @@ public class PowerplayPassthrough extends ProfiledPivot {
     private boolean tilted = false;
     private boolean triggered = false;
 
-    public final SimplePivot claw, pivot;
+    public final SimpleServoPivot claw, pivot;
 
     public static SimpleServo axon(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 355);
@@ -43,8 +43,8 @@ public class PowerplayPassthrough extends ProfiledPivot {
     public PowerplayPassthrough(HardwareMap hw) {
         super(new SimpleServo[]{axon(hw, "passthrough 1"), reverseServo(axon(hw, "passthrough 2"))});
 
-        claw = new SimplePivot(new SimpleServo[]{axon(hw, "claw right")}, ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
-        pivot = new SimplePivot(new SimpleServo[]{reverseServo(axon(hw, "claw pivot"))}, ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
+        claw = new SimpleServoPivot(new SimpleServo[]{axon(hw, "claw right")}, ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
+        pivot = new SimpleServoPivot(new SimpleServo[]{reverseServo(axon(hw, "claw pivot"))}, ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
 
         updateConstants();
         currentAngle = ANGLE_PASS_FRONT;

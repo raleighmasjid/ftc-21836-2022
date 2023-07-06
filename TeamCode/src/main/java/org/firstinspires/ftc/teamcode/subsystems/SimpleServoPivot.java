@@ -10,7 +10,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
  * @author Arshad Anas
  * @since 2023/06/14
  */
-public class SimplePivot {
+public class SimpleServoPivot {
 
     private final SimpleServo[] servos;
 
@@ -19,9 +19,9 @@ public class SimplePivot {
     private boolean activated = false;
 
     /**
-     * Initialize {@link SimplePivot}
+     * Initialize {@link SimpleServoPivot}
      */
-    public SimplePivot(SimpleServo[] servos, double ANGLE_A, double ANGLE_B) {
+    public SimpleServoPivot(SimpleServo[] servos, double ANGLE_A, double ANGLE_B) {
         this.servos = servos;
         updateAngles(ANGLE_A, ANGLE_B);
     }
