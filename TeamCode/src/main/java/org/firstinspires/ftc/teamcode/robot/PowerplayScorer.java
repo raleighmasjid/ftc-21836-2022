@@ -59,7 +59,7 @@ public class PowerplayScorer {
     }
 
     public void setTargetLiftPos(PowerplayLift.Position height) {
-        passthrough.setTilted(height == PowerplayLift.Position.LOW || height == PowerplayLift.Position.MED || height == PowerplayLift.Position.TALL);
+        passthrough.setTilt(height == PowerplayLift.Position.LOW || height == PowerplayLift.Position.MED || height == PowerplayLift.Position.TALL);
         lift.setTargetPosition(height);
     }
 

@@ -2,14 +2,23 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.profile.MotionProfile;
+import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
+import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.subsystems.ProfiledPivot;
 import org.firstinspires.ftc.teamcode.subsystems.SimpleServoPivot;
 
 @Config
-public class PowerplayPassthrough extends ProfiledPivot {
+public class PowerplayPassthrough {
+
+    private final SimpleServo[] servos;
+
+    private final ElapsedTime profileTimer = new ElapsedTime();
+
+    private MotionProfile profile;
 
     public static double
             ANGLE_CLAW_CLOSED = 0.0,
@@ -26,8 +35,11 @@ public class PowerplayPassthrough extends ProfiledPivot {
             PROFILE_MAX_ACCEL = 3000.0,
             PROFILE_MAX_JERK = 7000.0;
 
+    private double currentVelocity, currentAngle = ANGLE_PASS_FRONT;
+
     private boolean tilted = false;
     private boolean triggered = false;
+    private boolean inBack = false;
 
     public final SimpleServoPivot claw, pivot;
 
@@ -41,51 +53,45 @@ public class PowerplayPassthrough extends ProfiledPivot {
     }
 
     public PowerplayPassthrough(HardwareMap hw) {
-        super(new SimpleServo[]{axon(hw, "passthrough 1"), reverseServo(axon(hw, "passthrough 2"))});
-
+        servos = new SimpleServo[]{axon(hw, "passthrough 1"), reverseServo(axon(hw, "passthrough 2"))};
         claw = new SimpleServoPivot(new SimpleServo[]{axon(hw, "claw right")}, ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
         pivot = new SimpleServoPivot(new SimpleServo[]{reverseServo(axon(hw, "claw pivot"))}, ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
 
-        updateConstants();
-        currentAngle = ANGLE_PASS_FRONT;
+        profileTimer.reset();
+        updateProfile();
     }
 
     /**
      * Toggles the value of {@link #tilted}
      */
     public void toggleTilt() {
-        setTilted(!tilted);
+        setTilt(!tilted);
     }
 
     /**
      * Sets the value of {@link #tilted} and runs {@link #updateProfile}
      */
-    public void setTilted(boolean tilted) {
+    public void setTilt(boolean tilted) {
         this.tilted = tilted;
         updateProfile();
     }
 
-    @Override
-    protected void updateProfile() {
+    private void updateProfile() {
         double tiltOffset =
                 tilted ?
                         ANGLE_PASS_TILT_OFFSET :
-                        (!triggered) && (activated != pivot.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
+                        (!triggered) && (inBack != pivot.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
 
-        ANGLE_A = ANGLE_PASS_FRONT + tiltOffset;
-        ANGLE_B = ANGLE_PASS_BACK - tiltOffset;
+        profile = MotionProfileGenerator.generateSimpleMotionProfile(
+                new MotionState(currentAngle, currentVelocity),
+                new MotionState(inBack ? ANGLE_PASS_FRONT + tiltOffset : ANGLE_PASS_BACK - tiltOffset, 0.0),
+                PROFILE_MAX_VELO, PROFILE_MAX_ACCEL, PROFILE_MAX_JERK
+        );
 
-        super.updateProfile();
+        profileTimer.reset();
     }
 
     private void updateConstants() {
-        updateConstants(
-                ANGLE_PASS_FRONT,
-                ANGLE_PASS_BACK,
-                PROFILE_MAX_VELO,
-                PROFILE_MAX_ACCEL,
-                PROFILE_MAX_JERK
-        );
         claw.updateAngles(ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
         pivot.updateAngles(ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
     }
@@ -98,32 +104,74 @@ public class PowerplayPassthrough extends ProfiledPivot {
         toggle();
     }
 
-    @Override
+    /**
+     * Toggles the state of the {@link #servos}
+     */
+    public void toggle() {
+        setPosition(!inBack);
+    }
+
+    /**
+     * Set state of the {@link #servos}
+     *
+     * @param inBack False for front, true for back
+     */
+    public void setPosition(boolean inBack) {
+        this.inBack = inBack;
+        updateProfile();
+    }
+
+    /**
+     * Get state of the {@link #servos} <p>
+     * False for front, true for back
+     */
+    public boolean getPosition() {
+        return inBack;
+    }
+
     public void run() {
         updateConstants();
-        super.run();
+        MotionState state = profile.get(profileTimer.seconds());
+        currentAngle = state.getX();
+        currentVelocity = state.getV();
+        for (SimpleServo servo : servos) {
+            servo.turnToAngle(currentAngle);
+        }
         if (triggered && Math.abs(ANGLE_WRIST_PIVOT_POS - currentAngle) <= WRIST_PIVOT_POS_TOLERANCE) {
-            pivot.setActivated(activated);
+            pivot.setActivated(inBack);
             triggered = false;
         }
         pivot.run();
         claw.run();
     }
 
-    @Override
     public void reset() {
-        super.reset();
-        setTilted(false);
+        setPosition(false);
+        setTilt(false);
         pivot.setActivated(false);
         claw.setActivated(false);
     }
 
-    @Override
+    /**
+     * Print tuning telemetry from {@link #profile}
+     *
+     * @param telemetry MultipleTelemetry object to add data to
+     */
+    public void printNumericalTelemetry(MultipleTelemetry telemetry) {
+        telemetry.addData("Passthrough angle", currentAngle);
+        telemetry.addData("Passthrough velocity (ticks/s)", currentVelocity);
+    }
+
+    /**
+     * Print claw, pivot, and passthrough statuses
+     *
+     * @param telemetry MultipleTelemetry object to add data to
+     */
     public void printTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Claw is", claw.getActivated() ? "closed" : "open");
         telemetry.addLine();
         telemetry.addData("Pivot is oriented to", pivot.getActivated() ? "back" : "front");
         telemetry.addLine();
-        super.printTelemetry(telemetry);
+        telemetry.addData("Arm is in the", inBack ? "back" : "front");
     }
 }
