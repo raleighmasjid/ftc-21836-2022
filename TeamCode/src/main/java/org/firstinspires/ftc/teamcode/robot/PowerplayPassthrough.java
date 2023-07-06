@@ -84,7 +84,7 @@ public class PowerplayPassthrough {
 
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentAngle, currentVelocity),
-                new MotionState(inBack ? ANGLE_PASS_FRONT + tiltOffset : ANGLE_PASS_BACK - tiltOffset, 0.0),
+                new MotionState(inBack ? ANGLE_PASS_BACK - tiltOffset : ANGLE_PASS_FRONT + tiltOffset, 0.0),
                 PROFILE_MAX_VELO, PROFILE_MAX_ACCEL, PROFILE_MAX_JERK
         );
 
