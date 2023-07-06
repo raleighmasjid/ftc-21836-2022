@@ -11,15 +11,13 @@ import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDF;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 /**
- * Motion-profiled DC motor-powered linear slide lift
+ * Motion-profiled DC motor(s)
  *
  * @author Arshad Anas
  * @since 2023/06/14
  */
-public class ProfiledLift {
-    /**
-     * Motor powering the dual lift system
-     */
+public class ProfiledMotor {
+
     private final MotorEx[] motors;
 
     private final ElapsedTime derivTimer = new ElapsedTime();
@@ -30,13 +28,13 @@ public class ProfiledLift {
     private final VoltageSensor batteryVoltageSensor;
 
     /**
-     * PIDF controller for lift
+     * PIDF controller
      */
     public final ProfiledPIDF controller;
 
     protected String targetPositionName = "Zero";
-    protected double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, INCHES_PER_TICK;
-    protected double currentBatteryVoltage = 12.0;
+
+    protected double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, INCHES_PER_TICK, currentBatteryVoltage = 12.0;
 
     public double getCurrentPosition() {
         return currentPosition;
@@ -46,7 +44,7 @@ public class ProfiledLift {
      * Initialize fields <p>
      * Use {@link #updateConstants} to update constants
      */
-    public ProfiledLift(
+    public ProfiledMotor(
             MotorEx[] motors,
             VoltageSensor batteryVoltageSensor,
             ProfiledPIDF controller,
@@ -68,7 +66,8 @@ public class ProfiledLift {
     }
 
     /**
-     * Update {@link #controller}, {@link #veloFilter}, and {@link #accelFilter} gains
+     * @param kG              Additive constant motor power (voltage compensated)
+     * @param INCHES_PER_TICK Inches per tick constant
      */
     public void updateConstants(double kG, double INCHES_PER_TICK) {
         this.kG = kG;
@@ -76,7 +75,7 @@ public class ProfiledLift {
     }
 
     /**
-     * Reads lift encoder value and converts to {@link #currentPosition} in inches
+     * Reads encoder value and converts to {@link #currentPosition} in inches
      * Calculates {@link #currentVelocity} and {@link #currentAcceleration} via time-based differentiation
      */
     public void readPosition() {
@@ -95,7 +94,7 @@ public class ProfiledLift {
     }
 
     /**
-     * Set target for lift motion profile
+     * Set target for motion profile
      *
      * @param targetPosition Desired position (in inches) to run to
      */
@@ -104,7 +103,7 @@ public class ProfiledLift {
     }
 
     /**
-     * Set target for lift motion profile
+     * Set target for motion profile
      *
      * @param targetPosition Desired position (in inches) to run to
      */
@@ -115,7 +114,7 @@ public class ProfiledLift {
     }
 
     /**
-     * Resets all internal lift variables
+     * Resets internal states to 0
      */
     public void reset() {
         accelFilter.clearMemory();
@@ -141,7 +140,6 @@ public class ProfiledLift {
      * Runs {@link #controller}
      */
     public void runToPosition() {
-
         run(controller.update(currentPosition, currentBatteryVoltage), false);
     }
 
@@ -163,19 +161,19 @@ public class ProfiledLift {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Lift current position (in)", currentPosition);
-        telemetry.addData("Lift profile position (in)", controller.getProfilePosition());
+        telemetry.addData("Current position (in)", currentPosition);
+        telemetry.addData("Profile position (in)", controller.getProfilePosition());
         telemetry.addLine();
-        telemetry.addData("Lift current velocity (in/s)", currentVelocity);
-        telemetry.addData("Lift profile velocity (in/s)", controller.getProfileVelocity());
-        telemetry.addData("Lift max velocity (in/s)", maxVelocity);
+        telemetry.addData("Current velocity (in/s)", currentVelocity);
+        telemetry.addData("Profile velocity (in/s)", controller.getProfileVelocity());
+        telemetry.addData("Max velocity (in/s)", maxVelocity);
         telemetry.addLine();
-        telemetry.addData("Lift current acceleration (in/s^2)", currentAcceleration);
-        telemetry.addData("Lift max acceleration (in/s^2)", maxAcceleration);
+        telemetry.addData("Current acceleration (in/s^2)", currentAcceleration);
+        telemetry.addData("Max acceleration (in/s^2)", maxAcceleration);
         telemetry.addLine();
-        telemetry.addData("Lift error integral (in*s)", controller.pid.getErrorIntegral());
-        telemetry.addData("Lift error (in)", controller.pid.getError());
-        telemetry.addData("Lift error derivative (in/s)", controller.pid.getErrorVelocity());
+        telemetry.addData("Error integral (in*s)", controller.pid.getErrorIntegral());
+        telemetry.addData("Error (in)", controller.pid.getError());
+        telemetry.addData("Error derivative (in/s)", controller.pid.getErrorVelocity());
     }
 
     /**
@@ -184,6 +182,6 @@ public class ProfiledLift {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Named target lift position", targetPositionName);
+        telemetry.addData("Named target position", targetPositionName);
     }
 }

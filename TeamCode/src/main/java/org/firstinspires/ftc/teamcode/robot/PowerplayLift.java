@@ -6,10 +6,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDF;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
-import org.firstinspires.ftc.teamcode.subsystems.ProfiledLift;
+import org.firstinspires.ftc.teamcode.subsystems.ProfiledMotor;
 
 @Config
-public class PowerplayLift extends ProfiledLift {
+public class PowerplayLift extends ProfiledMotor {
 
     public static double
             HEIGHT_FLOOR = 0.0,
