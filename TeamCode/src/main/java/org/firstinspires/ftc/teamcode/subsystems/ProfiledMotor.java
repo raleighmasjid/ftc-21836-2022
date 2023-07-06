@@ -34,7 +34,7 @@ public class ProfiledMotor {
 
     protected String targetPositionName = "Zero";
 
-    protected double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, INCHES_PER_TICK, currentBatteryVoltage = 12.0;
+    protected double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, UNIT_PER_TICK, currentBatteryVoltage = 12.0;
 
     public double getCurrentPosition() {
         return currentPosition;
@@ -66,12 +66,12 @@ public class ProfiledMotor {
     }
 
     /**
-     * @param kG              Additive constant motor power (voltage compensated)
-     * @param INCHES_PER_TICK Inches per tick constant
+     * @param kG            Additive constant motor power (voltage compensated)
+     * @param UNIT_PER_TICK Arbitrary unit per tick scale factor
      */
-    public void updateConstants(double kG, double INCHES_PER_TICK) {
+    public void updateConstants(double kG, double UNIT_PER_TICK) {
         this.kG = kG;
-        this.INCHES_PER_TICK = INCHES_PER_TICK;
+        this.UNIT_PER_TICK = UNIT_PER_TICK;
     }
 
     /**
@@ -86,7 +86,7 @@ public class ProfiledMotor {
         double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
 
         currentBatteryVoltage = batteryVoltageSensor.getVoltage();
-        currentPosition = motors[0].encoder.getPosition() * INCHES_PER_TICK;
+        currentPosition = motors[0].encoder.getPosition() * UNIT_PER_TICK;
         currentVelocity = veloFilter.getEstimate((currentPosition - lastPosition) / dt);
         currentAcceleration = accelFilter.getEstimate((currentVelocity - lastVelocity) / dt);
         maxVelocity = Math.max(currentVelocity, maxVelocity);
