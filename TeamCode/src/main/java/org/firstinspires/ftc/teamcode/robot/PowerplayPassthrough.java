@@ -41,7 +41,7 @@ public class PowerplayPassthrough {
     private boolean triggered = false;
     private boolean inBack = false;
 
-    public final SimpleServoPivot claw, pivot;
+    public final SimpleServoPivot claw, wrist;
 
     public static SimpleServo axon(HardwareMap hw, String name) {
         return new SimpleServo(hw, name, 0, 355);
@@ -55,7 +55,7 @@ public class PowerplayPassthrough {
     public PowerplayPassthrough(HardwareMap hw) {
         servos = new SimpleServo[]{axon(hw, "passthrough 1"), reverseServo(axon(hw, "passthrough 2"))};
         claw = new SimpleServoPivot(new SimpleServo[]{axon(hw, "claw right")}, ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
-        pivot = new SimpleServoPivot(new SimpleServo[]{reverseServo(axon(hw, "claw pivot"))}, ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
+        wrist = new SimpleServoPivot(new SimpleServo[]{reverseServo(axon(hw, "claw pivot"))}, ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
 
         profileTimer.reset();
         updateProfile();
@@ -80,7 +80,7 @@ public class PowerplayPassthrough {
         double tiltOffset =
                 tilted ?
                         ANGLE_PASS_TILT_OFFSET :
-                        (!triggered) && (inBack != pivot.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
+                        (!triggered) && (inBack != wrist.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
 
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentAngle, currentVelocity),
@@ -93,7 +93,7 @@ public class PowerplayPassthrough {
 
     private void updateConstants() {
         claw.updateAngles(ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
-        pivot.updateAngles(ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
+        wrist.updateAngles(ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
     }
 
     /**
@@ -138,17 +138,17 @@ public class PowerplayPassthrough {
             servo.turnToAngle(currentAngle);
         }
         if (triggered && Math.abs(ANGLE_WRIST_PIVOT_POS - currentAngle) <= WRIST_PIVOT_POS_TOLERANCE) {
-            pivot.setActivated(inBack);
+            wrist.setActivated(inBack);
             triggered = false;
         }
-        pivot.run();
+        wrist.run();
         claw.run();
     }
 
     public void reset() {
         setPosition(false);
         setTilt(false);
-        pivot.setActivated(false);
+        wrist.setActivated(false);
         claw.setActivated(false);
     }
 
@@ -170,7 +170,7 @@ public class PowerplayPassthrough {
     public void printTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Claw is", claw.getActivated() ? "closed" : "open");
         telemetry.addLine();
-        telemetry.addData("Pivot is oriented to", pivot.getActivated() ? "back" : "front");
+        telemetry.addData("Pivot is oriented to", wrist.getActivated() ? "back" : "front");
         telemetry.addLine();
         telemetry.addData("Arm is in the", inBack ? "back" : "front");
     }
