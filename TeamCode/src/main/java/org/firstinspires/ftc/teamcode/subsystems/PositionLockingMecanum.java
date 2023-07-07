@@ -32,9 +32,6 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
 
     public PositionLockingMecanum(HardwareMap hw, double motorCPR, double motorRPM) {
         super(hw, motorCPR, motorRPM);
-        for (PIDFController controller : controllers) {
-            controller.setOutputBounds(-1.0, 1.0);
-        }
     }
 
     @Override
