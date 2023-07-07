@@ -21,11 +21,11 @@ public class AprilTagCamera {
             CAMERA_CX = 402.145,
             CAMERA_CY = 221.506;
 
-    AprilTagDetection tagOfInterest = null;
+    public AprilTagDetection tagOfInterest = null;
 
-    OpenCvCamera camera;
+    private final OpenCvCamera camera;
 
-    AprilTagDetectionPipeline pipeline = new AprilTagDetectionPipeline(
+    private final AprilTagDetectionPipeline pipeline = new AprilTagDetectionPipeline(
             TAG_SIZE,
             CAMERA_FX,
             CAMERA_FY,
@@ -33,9 +33,9 @@ public class AprilTagCamera {
             CAMERA_CY
     );
 
-    MultipleTelemetry myTelemetry;
+    private final MultipleTelemetry myTelemetry;
 
-    int[] tagIDsToLookFor;
+    private final int[] tagIDsToLookFor;
 
     public AprilTagCamera(HardwareMap hardwareMap, MultipleTelemetry myTelemetry, int[] tagIDsToLookFor) {
         camera = OpenCvCameraFactory.getInstance().createWebcam(
