@@ -298,20 +298,26 @@ public class AutonMecanumDrivetrain extends MecanumDrive {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        double voltage = batteryVoltageSensor.getVoltage();
-        double scalar = 12.0 / voltage;
+        if (!RUN_USING_ENCODER) {
+            double scalar = 12.0 / batteryVoltageSensor.getVoltage();
 
-        v *= scalar;
-        v1 *= scalar;
-        v2 *= scalar;
-        v3 *= scalar;
+            v *= scalar;
+            v1 *= scalar;
+            v2 *= scalar;
+            v3 *= scalar;
 
-        double max = Collections.max(Arrays.asList(v, v1, v2, v3, 1.0));
+            double max = Collections.max(Arrays.asList(v, v1, v2, v3, 1.0));
 
-        leftFront.setPower(v / max);
-        leftRear.setPower(v1 / max);
-        rightRear.setPower(v2 / max);
-        rightFront.setPower(v3 / max);
+            v /= max;
+            v1 /= max;
+            v2 /= max;
+            v3 /= max;
+        }
+        
+        leftFront.setPower(v);
+        leftRear.setPower(v1);
+        rightRear.setPower(v2);
+        rightFront.setPower(v3);
     }
 
     @Override
