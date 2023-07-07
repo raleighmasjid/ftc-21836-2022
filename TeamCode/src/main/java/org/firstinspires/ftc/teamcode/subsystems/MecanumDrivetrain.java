@@ -11,6 +11,9 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 
 public class MecanumDrivetrain {
 
@@ -105,11 +108,17 @@ public class MecanumDrivetrain {
 
     public void run(double xCommand, double yCommand, double turnCommand, boolean voltageCompensate) {
         if (voltageCompensate) {
-            double voltage = batteryVoltageSensor.getVoltage();
-            xCommand *= (12.0 / voltage);
-            yCommand *= (12.0 / voltage);
-            turnCommand *= (12.0 / voltage);
+            double scalar = 12.0 / batteryVoltageSensor.getVoltage();
+            xCommand *= scalar;
+            yCommand *= scalar;
+            turnCommand *= scalar;
         }
+
+        double max = Collections.max(Arrays.asList(xCommand, yCommand, turnCommand, 1.0));
+        xCommand /= max;
+        yCommand /= max;
+        turnCommand /= max;
+
         mecanumDrivetrain.driveFieldCentric(xCommand, yCommand, turnCommand, getHeading());
     }
 
