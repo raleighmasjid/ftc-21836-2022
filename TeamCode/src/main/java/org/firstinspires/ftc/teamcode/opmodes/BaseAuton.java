@@ -10,12 +10,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.control.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.subsystems.AutonMecanumDrivetrain;
 import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
+import org.firstinspires.ftc.teamcode.control.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
+import org.firstinspires.ftc.teamcode.subsystems.AprilTagCamera;
+import org.firstinspires.ftc.teamcode.subsystems.AutonMecanumDrivetrain;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -55,12 +56,7 @@ public abstract class BaseAuton extends LinearOpMode {
             ZONE_1_X = 12.5,
             ZONE_2_X = 35,
             ZONE_3_X = 57,
-            STARTING_Y = -62.5,
-            TAG_SIZE = 0.166,
-            CAMERA_FX = 578.272,
-            CAMERA_FY = 578.272,
-            CAMERA_CX = 402.145,
-            CAMERA_CY = 221.506;
+            STARTING_Y = -62.5;
 
     public enum Side {
         LEFT, RIGHT
@@ -317,11 +313,11 @@ public abstract class BaseAuton extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         AprilTagDetectionPipeline signalSleeveDetectionPipeline = new AprilTagDetectionPipeline(
-                TAG_SIZE,
-                CAMERA_FX,
-                CAMERA_FY,
-                CAMERA_CX,
-                CAMERA_CY
+                AprilTagCamera.TAG_SIZE,
+                AprilTagCamera.CAMERA_FX,
+                AprilTagCamera.CAMERA_FY,
+                AprilTagCamera.CAMERA_CX,
+                AprilTagCamera.CAMERA_CY
         );
 
         camera.setPipeline(signalSleeveDetectionPipeline);
