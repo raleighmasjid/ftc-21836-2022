@@ -37,6 +37,12 @@ public class PIDFController {
         }
     }
 
+    public void setTargetState(double targetPosition, double targetVelocity, double targetAcceleration) {
+        pid.setTarget(targetPosition);
+        feedforward.setTargetVelocity(targetVelocity);
+        feedforward.setTargetAcceleration(targetAcceleration);
+    }
+
     public double update(double measuredPosition) {
         return update(measuredPosition, 12.0);
     }
@@ -44,11 +50,11 @@ public class PIDFController {
     /**
      * Run a single iteration of the controller.
      *
-     * @param measuredPosition measured position
-     * @param voltage          measured battery voltage (for feedforward voltage correction)
+     * @param currentPosition measured position
+     * @param voltage         measured battery voltage (for feedforward voltage correction)
      */
-    public double update(double measuredPosition, double voltage) {
-        double pidOutput = pid.update(measuredPosition);
+    public double update(double currentPosition, double voltage) {
+        double pidOutput = pid.update(currentPosition);
         double output = pidOutput + feedforward.update(voltage, pidOutput);
 
         return (outputBounded) ? Math.max(minOutput, Math.min(output, maxOutput)) : output;

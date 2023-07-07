@@ -59,19 +59,15 @@ public class ProfiledPIDF extends PIDFController {
     }
 
     @Override
-    public double update(double measuredPosition, double voltage) {
+    public double update(double currentPosition, double voltage) {
         profileState = profile.get(profileTimer.seconds());
-
-        pid.setTarget(profileState.getX());
-        feedforward.setTargetVelocity(profileState.getV());
-        feedforward.setTargetAcceleration(profileState.getA());
-
-        return super.update(measuredPosition, voltage);
+        setTargetState(profileState.getX(), profileState.getV(), profileState.getA());
+        return super.update(currentPosition, voltage);
     }
 
     @Override
-    public double update(double measuredPosition) {
-        return this.update(measuredPosition, 12.0);
+    public double update(double currentPosition) {
+        return this.update(currentPosition, 12.0);
     }
 
     public double getProfilePosition() {
