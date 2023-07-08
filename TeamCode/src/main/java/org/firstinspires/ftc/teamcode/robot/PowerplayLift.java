@@ -104,8 +104,9 @@ public class PowerplayLift extends ProfiledMotor {
                 MAX_JERK
         );
 
-        super.updateConstants(kG(), INCHES_PER_TICK);
+        super.updateConstants(kG, INCHES_PER_TICK);
         super.readPosition();
+        super.updateConstants(kG(), UNIT_PER_TICK);
     }
 
     /**
