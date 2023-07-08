@@ -27,6 +27,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagCamera;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Autonomous(name = "Camera Test", group = "21836 Backup")
 public class AprilTagInitDetectionTest extends LinearOpMode {
@@ -39,7 +40,8 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
         AprilTagCamera camera = new AprilTagCamera(
                 hardwareMap,
                 new MultipleTelemetry(telemetry),
-                new int[]{1, 2, 3}
+                new int[]{1, 2, 3},
+                OpenCvCameraRotation.UPRIGHT
         );
 
         while (!isStarted() && !isStopRequested()) camera.initLoop();

@@ -37,7 +37,7 @@ public class AprilTagCamera {
 
     private final int[] tagIDsToLookFor;
 
-    public AprilTagCamera(HardwareMap hardwareMap, MultipleTelemetry myTelemetry, int[] tagIDsToLookFor) {
+    public AprilTagCamera(HardwareMap hardwareMap, MultipleTelemetry myTelemetry, int[] tagIDsToLookFor, OpenCvCameraRotation cameraRotation) {
         camera = OpenCvCameraFactory.getInstance().createWebcam(
                 hardwareMap.get(WebcamName.class, "Webcam 1"),
                 hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName())
@@ -46,7 +46,7 @@ public class AprilTagCamera {
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(800, 448, cameraRotation);
             }
 
             @Override
