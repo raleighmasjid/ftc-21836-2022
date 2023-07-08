@@ -8,7 +8,7 @@ public class PIDController {
 
     private double kP, kI, kD, maxOutputWithIntegral, lastError, error, errorIntegral, errorDerivative, target;
 
-    private boolean integrate = true;
+    private boolean integrate = true, calculateError = true;
 
     private final ElapsedTime dtTimer = new ElapsedTime();
 
@@ -28,8 +28,10 @@ public class PIDController {
     }
 
     public double update(double measurement) {
-        lastError = error;
-        error = target - measurement;
+        if (calculateError) {
+            lastError = error;
+            error = target - measurement;
+        }
 
         if (Math.signum(error) != Math.signum(lastError)) resetIntegral();
 
@@ -85,6 +87,12 @@ public class PIDController {
 
     public double getError() {
         return error;
+    }
+
+    public void setError(double error) {
+        lastError = this.error;
+        this.error = error;
+        calculateError = false;
     }
 
     public double getErrorDerivative() {

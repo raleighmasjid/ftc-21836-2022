@@ -76,6 +76,7 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
         }
 
         if (turnCommand == 0.0) {
+            double error = normalizeAngle(-normalizeAngle(headingController.pid.getTarget() - getHeading()));
             turnCommand = headingController.update(getHeading(), voltage);
         } else {
             setTargetHeading(getHeading());
