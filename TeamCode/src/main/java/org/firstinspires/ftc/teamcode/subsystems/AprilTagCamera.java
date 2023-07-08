@@ -77,25 +77,8 @@ public class AprilTagCamera {
             if (tagFound) {
                 myTelemetry.addLine("Tag of interest is in sight!");
                 tagToTelemetry(tagOfInterest);
-            } else {
-                myTelemetry.addLine("Don't see tag of interest :(");
-                if (tagOfInterest == null) myTelemetry.addLine("(The tag has never been seen)");
-                else {
-                    myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                    tagToTelemetry(tagOfInterest);
-                }
-            }
-        } else {
-            myTelemetry.addLine("Don't see tag of interest :(");
-
-            if (tagOfInterest == null) myTelemetry.addLine("(The tag has never been seen)");
-            else {
-                myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                tagToTelemetry(tagOfInterest);
-
-            }
-
-        }
+            } else printNoTagFound();
+        } else printNoTagFound();
 
         myTelemetry.update();
     }
@@ -111,6 +94,15 @@ public class AprilTagCamera {
         } else {
             myTelemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
             myTelemetry.update();
+        }
+    }
+
+    private void printNoTagFound() {
+        myTelemetry.addLine("Don't see tag of interest :(");
+        if (tagOfInterest == null) myTelemetry.addLine("(The tag has never been seen)");
+        else {
+            myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+            tagToTelemetry(tagOfInterest);
         }
     }
 
