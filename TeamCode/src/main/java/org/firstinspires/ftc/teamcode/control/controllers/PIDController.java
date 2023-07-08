@@ -31,7 +31,7 @@ public class PIDController {
         lastError = error;
         error = target - measurement;
 
-        if (error == 0.0 || Math.signum(error) != Math.signum(lastError)) resetIntegral();
+        if (Math.signum(error) != Math.signum(lastError)) resetIntegral();
 
         double timerSeconds = dtTimer.seconds();
         dtTimer.reset();
