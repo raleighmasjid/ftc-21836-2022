@@ -64,12 +64,13 @@ public class AprilTagCamera {
         if (currentDetections.size() != 0) {
             boolean tagFound = false;
 
+            iterateTags:
             for (AprilTagDetection tag : currentDetections) {
                 for (int tagId : tagIDsToLookFor) {
                     if (tag.id == tagId) {
                         tagOfInterest = tag;
                         tagFound = true;
-                        break;
+                        break iterateTags;
                     }
                 }
             }
