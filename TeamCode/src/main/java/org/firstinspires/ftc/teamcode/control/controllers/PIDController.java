@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 public class PIDController {
 
-    private double kP, kI, kD, maxOutputWithIntegral, lastError, error, errorIntegral, errorVelocity, target;
+    private double kP, kI, kD, maxOutputWithIntegral, lastError, error, errorIntegral, errorDerivative, target;
 
     private boolean integrate = true;
 
@@ -37,10 +37,10 @@ public class PIDController {
         dtTimer.reset();
         double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
 
-        errorVelocity = derivFilter.getEstimate((error - lastError) / dt);
+        errorDerivative = derivFilter.getEstimate((error - lastError) / dt);
         if (integrate) errorIntegral += 0.5 * (error + lastError) * dt;
 
-        double output = (kP * error) + (kI * errorIntegral) + (kD * errorVelocity);
+        double output = (kP * error) + (kI * errorIntegral) + (kD * errorDerivative);
 
         setIntegrate(!(Math.abs(output) > maxOutputWithIntegral && Math.signum(output) == Math.signum(error)));
 
@@ -87,8 +87,8 @@ public class PIDController {
         return error;
     }
 
-    public double getErrorVelocity() {
-        return errorVelocity;
+    public double getErrorDerivative() {
+        return errorDerivative;
     }
 
     public double getErrorIntegral() {

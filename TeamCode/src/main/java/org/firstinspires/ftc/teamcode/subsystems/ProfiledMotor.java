@@ -174,7 +174,7 @@ public class ProfiledMotor {
         telemetry.addLine();
         telemetry.addData("Error integral (in*s)", controller.pid.getErrorIntegral());
         telemetry.addData("Error (in)", controller.pid.getError());
-        telemetry.addData("Error derivative (in/s)", controller.pid.getErrorVelocity());
+        telemetry.addData("Error derivative (in/s)", controller.pid.getErrorDerivative());
     }
 
     /**
