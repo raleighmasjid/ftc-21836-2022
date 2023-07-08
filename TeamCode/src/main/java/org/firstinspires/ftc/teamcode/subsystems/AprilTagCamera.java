@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -12,6 +13,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
+@Config
 public class AprilTagCamera {
 
     public static double
@@ -21,7 +23,7 @@ public class AprilTagCamera {
             CAMERA_CX = 402.145,
             CAMERA_CY = 221.506;
 
-    public AprilTagDetection tagOfInterest = null;
+    public AprilTagDetection detectedTag = null;
 
     private final OpenCvCamera camera;
 
@@ -35,9 +37,9 @@ public class AprilTagCamera {
 
     private final MultipleTelemetry myTelemetry;
 
-    private final int[] tagIDsToLookFor;
+    private final int[] tagIdsToLookFor;
 
-    public AprilTagCamera(HardwareMap hardwareMap, MultipleTelemetry myTelemetry, int[] tagIDsToLookFor, OpenCvCameraRotation cameraRotation) {
+    public AprilTagCamera(HardwareMap hardwareMap, MultipleTelemetry myTelemetry, int[] tagIdsToLookFor, OpenCvCameraRotation cameraRotation) {
         camera = OpenCvCameraFactory.getInstance().createWebcam(
                 hardwareMap.get(WebcamName.class, "Webcam 1"),
                 hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName())
@@ -55,7 +57,7 @@ public class AprilTagCamera {
             }
         });
         this.myTelemetry = myTelemetry;
-        this.tagIDsToLookFor = tagIDsToLookFor;
+        this.tagIdsToLookFor = tagIdsToLookFor;
     }
 
     public void initLoop() {
@@ -65,10 +67,10 @@ public class AprilTagCamera {
             boolean tagFound = false;
 
             iterateTags:
-            for (AprilTagDetection tag : currentDetections) {
-                for (int tagId : tagIDsToLookFor) {
-                    if (tag.id == tagId) {
-                        tagOfInterest = tag;
+            for (AprilTagDetection detection : currentDetections) {
+                for (int tagId : tagIdsToLookFor) {
+                    if (detection.id == tagId) {
+                        detectedTag = detection;
                         tagFound = true;
                         break iterateTags;
                     }
@@ -76,7 +78,7 @@ public class AprilTagCamera {
             }
             if (tagFound) {
                 myTelemetry.addLine("Tag of interest is in sight!");
-                tagToTelemetry(tagOfInterest);
+                tagToTelemetry(detectedTag);
             } else printNoTagFound();
         } else printNoTagFound();
 
@@ -87,9 +89,9 @@ public class AprilTagCamera {
         camera.stopStreaming();
         camera.closeCameraDevice();
 
-        if (tagOfInterest != null) {
+        if (detectedTag != null) {
             myTelemetry.addLine("Tag snapshot:\n");
-            tagToTelemetry(tagOfInterest);
+            tagToTelemetry(detectedTag);
             myTelemetry.update();
         } else {
             myTelemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
@@ -99,10 +101,10 @@ public class AprilTagCamera {
 
     private void printNoTagFound() {
         myTelemetry.addLine("Don't see tag of interest :(");
-        if (tagOfInterest == null) myTelemetry.addLine("(The tag has never been seen)");
+        if (detectedTag == null) myTelemetry.addLine("(The tag has never been seen)");
         else {
             myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-            tagToTelemetry(tagOfInterest);
+            tagToTelemetry(detectedTag);
         }
     }
 
