@@ -123,9 +123,9 @@ public class MecanumDrivetrain {
     }
 
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Robot current heading", getHeading());
-        telemetry.addData("Robot current x", getX());
-        telemetry.addData("Robot current y", getY());
+        telemetry.addData("Drivetrain current heading", getHeading());
+        telemetry.addData("Drivetrain current x", getX());
+        telemetry.addData("Drivetrain current y", getY());
     }
 }
 

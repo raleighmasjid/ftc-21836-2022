@@ -100,12 +100,12 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         super.printNumericalTelemetry(telemetry);
         telemetry.addLine();
-        telemetry.addData("Robot target heading", headingController.pid.getTarget());
-        telemetry.addData("Robot target x", xController.pid.getTarget());
-        telemetry.addData("Robot target y", yController.pid.getTarget());
+        telemetry.addData("Drivetrain target heading", headingController.pid.getTarget());
+        telemetry.addData("Drivetrain target x", xController.pid.getTarget());
+        telemetry.addData("Drivetrain target y", yController.pid.getTarget());
         telemetry.addLine();
-        telemetry.addData("Robot heading error derivative (ticks/s)", headingController.pid.getErrorDerivative());
-        telemetry.addData("Robot x error derivative (ticks/s)", xController.pid.getErrorDerivative());
-        telemetry.addData("Robot y error derivative (ticks/s)", yController.pid.getErrorDerivative());
+        telemetry.addData("Drivetrain heading error derivative (ticks/s)", headingController.pid.getErrorDerivative());
+        telemetry.addData("Drivetrain x error derivative (ticks/s)", xController.pid.getErrorDerivative());
+        telemetry.addData("Drivetrain y error derivative (ticks/s)", yController.pid.getErrorDerivative());
     }
 }
