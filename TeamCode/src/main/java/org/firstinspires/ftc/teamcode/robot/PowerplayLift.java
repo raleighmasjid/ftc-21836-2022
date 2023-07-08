@@ -31,9 +31,9 @@ public class PowerplayLift extends ProfiledMotor {
             FILTER_GAIN_kD = 0.875,
             FILTER_GAIN_VELO = 0.8,
             FILTER_GAIN_ACCEL = 0.8,
-            PROFILE_MAX_VELO = 46.6,
-            PROFILE_MAX_ACCEL = 189.16,
-            PROFILE_MAX_JERK = 600.0,
+            MAX_VELO = 46.6,
+            MAX_ACCEL = 189.16,
+            MAX_JERK = 600.0,
             MAX_PID_OUTPUT_WITH_INTEGRAL = 0.6,
             TOLERANCE = 0.15843625,
             INCHES_PER_TICK = 0.03168725;
@@ -99,9 +99,9 @@ public class PowerplayLift extends ProfiledMotor {
                 kS
         );
         controller.updateConstraints(
-                PROFILE_MAX_VELO,
-                PROFILE_MAX_ACCEL,
-                PROFILE_MAX_JERK
+                MAX_VELO,
+                MAX_ACCEL,
+                MAX_JERK
         );
 
         super.updateConstants(kG(), INCHES_PER_TICK);

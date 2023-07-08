@@ -31,9 +31,9 @@ public class PowerplayPassthrough {
             ANGLE_WRIST_BACK = 216.0,
             ANGLE_WRIST_PIVOT_POS = (ANGLE_PASS_BACK - ANGLE_PASS_FRONT) * 0.5,
             WRIST_PIVOT_POS_TOLERANCE = 30.0,
-            PROFILE_MAX_VELO = 600.0,
-            PROFILE_MAX_ACCEL = 3000.0,
-            PROFILE_MAX_JERK = 7000.0;
+            MAX_VELO = 600.0,
+            MAX_ACCEL = 3000.0,
+            MAX_JERK = 7000.0;
 
     private double currentVelocity, currentAngle = ANGLE_PASS_FRONT;
 
@@ -85,7 +85,7 @@ public class PowerplayPassthrough {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(currentAngle, currentVelocity),
                 new MotionState(inBack ? ANGLE_PASS_BACK - tiltOffset : ANGLE_PASS_FRONT + tiltOffset, 0.0),
-                PROFILE_MAX_VELO, PROFILE_MAX_ACCEL, PROFILE_MAX_JERK
+                MAX_VELO, MAX_ACCEL, MAX_JERK
         );
 
         profileTimer.reset();
