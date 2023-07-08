@@ -32,10 +32,10 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
 
     public PositionLockingMecanum(HardwareMap hw, double motorCPR, double motorRPM) {
         super(hw, motorCPR, motorRPM);
-        updateConstants();
     }
 
-    private void updateConstants() {
+    @Override
+    public void readIMU() {
         for (PIDFController controller : positionControllers) {
             controller.pid.setGains(
                     POSITION_kP,
@@ -57,11 +57,6 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
                 HEADING_FILTER_COUNT
         );
         for (PIDFController controller : controllers) controller.feedforward.setGains(0.0, 0.0, kS);
-    }
-
-    @Override
-    public void readIMU() {
-        updateConstants();
         super.readIMU();
     }
 
