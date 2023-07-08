@@ -87,6 +87,6 @@ public class ProfiledPIDF extends PIDFController {
     }
 
     public boolean isDone() {
-        return profileTimer.seconds() > profile.duration();
+        return profileTimer.seconds() >= profile.duration();
     }
 }
