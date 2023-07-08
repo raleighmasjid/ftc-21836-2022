@@ -19,7 +19,7 @@ public class ProfiledPIDF extends PIDFController {
 
     /**
      * Initialize fields <p>
-     * Use {@link #updateConstraints} to update constants
+     * Use {@link #updateConstraints} to update {@link #MAX_VELO}, {@link #MAX_ACCEL}, and {@link #MAX_JERK}
      *
      * @param pid         PID feedback controller
      * @param feedforward kV-kA-kS feedforward controller
