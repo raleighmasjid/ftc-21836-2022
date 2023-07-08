@@ -68,9 +68,11 @@ public class MecanumDrivetrain {
     }
 
     public static double normalizeAngle(double angle) {
-        while (angle > 180.0) angle -= 360.0;
-        while (angle <= -180.0) angle += 360.0;
-        return (angle == -0.0) ? 0.0 : angle;
+        angle %= 360.0;
+        if (angle <= -180.0) return angle + 360.0;
+        if (angle > 180.0) return angle - 360.0;
+        if (angle == -0.0) return 0.0;
+        return angle;
     }
 
     public void readIMU() {
