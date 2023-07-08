@@ -31,7 +31,7 @@ public class PIDController {
         if (calculateError) {
             lastError = error;
             error = target - measurement;
-        }
+        } else calculateError = true;
 
         if (Math.signum(error) != Math.signum(lastError)) resetIntegral();
 
