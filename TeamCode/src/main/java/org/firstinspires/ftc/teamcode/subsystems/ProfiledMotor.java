@@ -2,14 +2,11 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.controllers.FeedforwardController;
-import org.firstinspires.ftc.teamcode.control.controllers.PIDController;
 import org.firstinspires.ftc.teamcode.control.controllers.ProfiledController;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
@@ -34,8 +31,6 @@ public class ProfiledMotor {
      * PIDF controller
      */
     public final ProfiledController controller;
-    protected final PIDController pid;
-    protected final FeedforwardController feedforward;
 
     protected String targetPositionName = "Zero";
 
@@ -52,8 +47,7 @@ public class ProfiledMotor {
     public ProfiledMotor(
             MotorEx[] motors,
             VoltageSensor batteryVoltageSensor,
-            PIDController pid,
-            FeedforwardController feedforward,
+            ProfiledController controller,
             FIRLowPassFilter veloFilter,
             FIRLowPassFilter accelFilter
     ) {
@@ -62,9 +56,7 @@ public class ProfiledMotor {
             motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         }
         this.batteryVoltageSensor = batteryVoltageSensor;
-        this.pid = pid;
-        this.feedforward = feedforward;
-        this.controller = new ProfiledController(this.pid, this.feedforward);
+        this.controller = controller;
         this.veloFilter = veloFilter;
         this.accelFilter = accelFilter;
 
@@ -118,7 +110,7 @@ public class ProfiledMotor {
     public void setTargetPosition(double targetPosition, String targetPositionName) {
         this.targetPosition = targetPosition;
         this.targetPositionName = targetPositionName;
-        controller.profiler.setTarget(new MotionState(currentPosition, currentVelocity), new MotionState(targetPosition, 0.0));
+        controller.profiler.setTarget(currentPosition, currentVelocity, this.targetPosition);
     }
 
     /**
@@ -129,8 +121,8 @@ public class ProfiledMotor {
         veloFilter.clearMemory();
 
         motors[0].encoder.reset();
-        pid.resetIntegral();
-        pid.derivFilter.clearMemory();
+        controller.feedback.resetIntegral();
+        controller.feedback.derivFilter.clearMemory();
 
         currentPosition = 0.0;
         currentVelocity = 0.0;
@@ -148,7 +140,7 @@ public class ProfiledMotor {
      * Runs {@link #controller}
      */
     public void runToPosition() {
-        run(controller.calculate(new MotionState(currentPosition, 0.0), currentBatteryVoltage), false);
+        run(controller.calculate(currentPosition, currentBatteryVoltage), false);
     }
 
     /**
@@ -180,9 +172,9 @@ public class ProfiledMotor {
         telemetry.addData("Current acceleration (in/s^2)", currentAcceleration);
         telemetry.addData("Max acceleration (in/s^2)", maxAcceleration);
         telemetry.addLine();
-        telemetry.addData("Error integral (in*s)", pid.getErrorIntegral());
-        telemetry.addData("Error (in)", pid.getError());
-        telemetry.addData("Error derivative (in/s)", pid.getErrorDerivative());
+        telemetry.addData("Error integral (in*s)", controller.feedback.getErrorIntegral());
+        telemetry.addData("Error (in)", controller.feedback.getError());
+        telemetry.addData("Error derivative (in/s)", controller.feedback.getErrorDerivative());
     }
 
     /**

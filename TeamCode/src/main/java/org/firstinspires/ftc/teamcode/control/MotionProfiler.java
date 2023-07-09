@@ -9,8 +9,6 @@ public class MotionProfiler {
 
     private MotionProfile profile;
 
-    private MotionState profileState = new MotionState(0.0, 0.0, 0.0, 0.0);
-
     private final ElapsedTime profileTimer = new ElapsedTime();
 
     private double MAX_VELO = 1.0;
@@ -29,8 +27,7 @@ public class MotionProfiler {
     }
 
     public MotionState update() {
-        profileState = profile.get(profileTimer.seconds());
-        return profileState;
+        return profile.get(profileTimer.seconds());
     }
 
     public void updateConstraints(double MAX_VELO, double MAX_ACCEL, double MAX_JERK) {
@@ -41,22 +38,6 @@ public class MotionProfiler {
 
     public void updateConstraints(double MAX_VELO, double MAX_ACCEL) {
         updateConstraints(MAX_VELO, MAX_ACCEL, MAX_JERK);
-    }
-
-    public double getX() {
-        return profileState.getX();
-    }
-
-    public double getV() {
-        return profileState.getV();
-    }
-
-    public double getA() {
-        return profileState.getA();
-    }
-
-    public double getJ() {
-        return profileState.getJ();
     }
 
     public boolean isDone() {

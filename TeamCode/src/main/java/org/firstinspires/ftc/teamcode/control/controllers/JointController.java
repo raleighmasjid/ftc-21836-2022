@@ -9,6 +9,10 @@ public class JointController implements FeedbackController {
     public final FeedbackController feedback;
     public final FeedforwardController feedforward;
 
+    /**
+     * @param feedback    PID feedback controller
+     * @param feedforward kV-kA-kS feedforward controller
+     */
     public JointController(FeedbackController feedback, FeedforwardController feedforward) {
         this.feedback = feedback;
         this.feedforward = feedforward;
