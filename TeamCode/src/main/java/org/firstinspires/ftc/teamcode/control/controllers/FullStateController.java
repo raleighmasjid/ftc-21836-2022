@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.control.controllers;
 
+import com.acmerobotics.roadrunner.profile.MotionState;
+
+import org.firstinspires.ftc.teamcode.control.controllers.gains.FullStateGainMatrix;
+
 public class FullStateController implements FeedbackController {
 
     private FullStateGainMatrix gainMatrix;
 
-    private double pTarget, vTarget, aTarget;
+    private MotionState targetState = new MotionState(0, 0, 0);
 
     public FullStateController(FullStateGainMatrix gainMatrix) {
         setGainMatrix(gainMatrix);
@@ -18,33 +22,15 @@ public class FullStateController implements FeedbackController {
         this.gainMatrix = gainMatrix;
     }
 
-    public void setTargetState(double pTarget, double vTarget, double aTarget) {
-        this.pTarget = pTarget;
-        this.vTarget = vTarget;
-        this.aTarget = aTarget;
+    public void setTarget(MotionState targetState) {
+        this.targetState = targetState;
     }
 
-    public void setTargetState(double pTarget, double vTarget) {
-        setTargetState(pTarget, vTarget, 0.0);
-    }
+    public double calculate(MotionState measuredState) {
+        double pError = targetState.getX() - measuredState.getX();
+        double vError = targetState.getV() - measuredState.getV();
+        double aError = targetState.getA() - measuredState.getA();
 
-    public void setTargetState(double pTarget) {
-        setTargetState(pTarget, 0.0);
-    }
-
-    public double update(double pCurrent, double vCurrent, double aCurrent) {
-        double pError = pTarget - pCurrent;
-        double vError = vTarget - vCurrent;
-        double aError = aTarget - aCurrent;
-
-        return (pError * gainMatrix.getPGain()) + (vError * gainMatrix.getVGain()) + (aError * gainMatrix.getAGain());
-    }
-
-    public double update(double pCurrent, double vCurrent) {
-        return update(pCurrent, vCurrent, 0.0);
-    }
-
-    public double update(double pCurrent) {
-        return update(pCurrent, 0.0);
+        return (pError * gainMatrix.pGain) + (vError * gainMatrix.vGain) + (aError * gainMatrix.aGain);
     }
 }

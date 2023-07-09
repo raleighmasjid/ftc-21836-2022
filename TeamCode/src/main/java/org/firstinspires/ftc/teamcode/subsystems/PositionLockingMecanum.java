@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.control.controllers.PIDFController;
+import org.firstinspires.ftc.teamcode.control.controllers.JointController;
 
 @Config
 public class PositionLockingMecanum extends MecanumDrivetrain {
@@ -24,11 +24,11 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
             HEADING_FILTER_COUNT = 300,
             POSITION_FILTER_COUNT = 0;
 
-    public final PIDFController xController = new PIDFController();
-    public final PIDFController yController = new PIDFController();
-    public final PIDFController headingController = new PIDFController();
-    public final PIDFController[] positionControllers = {xController, yController};
-    public final PIDFController[] controllers = {xController, yController, headingController};
+    public final JointController xController = new JointController();
+    public final JointController yController = new JointController();
+    public final JointController headingController = new JointController();
+    public final JointController[] positionControllers = {xController, yController};
+    public final JointController[] controllers = {xController, yController, headingController};
 
     public PositionLockingMecanum(HardwareMap hw, double motorCPR, double motorRPM) {
         super(hw, motorCPR, motorRPM);
@@ -36,48 +36,49 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
 
     @Override
     public void readIMU() {
-        for (PIDFController controller : positionControllers) {
-            controller.pid.setGains(
+        for (JointController controller : positionControllers) {
+            controller.feedback.setGains(
                     POSITION_kP,
                     POSITION_kI,
                     POSITION_kD
             );
-            controller.pid.derivFilter.setGains(
+            controller.feedback.derivFilter.setGains(
                     POSITION_FILTER_GAIN,
                     POSITION_FILTER_COUNT
             );
         }
-        headingController.pid.setGains(
+        headingController.feedback.setGains(
                 HEADING_kP,
                 HEADING_kI,
                 HEADING_kD
         );
-        headingController.pid.derivFilter.setGains(
+        headingController.feedback.derivFilter.setGains(
                 HEADING_FILTER_GAIN,
                 HEADING_FILTER_COUNT
         );
-        for (PIDFController controller : controllers) controller.feedforward.setGains(0.0, 0.0, kS);
+        for (JointController controller : controllers)
+            controller.feedforward.setGains(0.0, 0.0, kS);
         super.readIMU();
     }
 
     public void run(double xCommand, double yCommand, double turnCommand) {
         double voltage = batteryVoltageSensor.getVoltage();
 
-        if (xCommand == 0.0) xCommand = xController.update(getX(), voltage);
+        if (xCommand == 0.0) xCommand = xController.calculate(getX(), voltage);
         else {
-            xController.pid.setTarget(getX());
+            xController.feedback.setTarget(getX());
             xCommand *= (12.0 / voltage);
         }
 
-        if (yCommand == 0.0) yCommand = yController.update(getY(), voltage);
+        if (yCommand == 0.0) yCommand = yController.calculate(getY(), voltage);
         else {
-            yController.pid.setTarget(getY());
+            yController.feedback.setTarget(getY());
             yCommand *= (12.0 / voltage);
         }
 
         if (turnCommand == 0.0) {
-            headingController.pid.setError(normalizeAngle(-normalizeAngle(headingController.pid.getTarget() - getHeading())));
-            turnCommand = headingController.update(getHeading(), voltage);
+            headingController.feedback.setError(normalizeAngle(-normalizeAngle(headingController.feedback.getTarget() - getHeading())));
+            turnCommand = headingController.calculate(getHeading(), voltage);
         } else {
             setTargetHeading(getHeading());
             turnCommand *= (12.0 / voltage);
@@ -87,7 +88,7 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
     }
 
     public void setTargetHeading(double angle) {
-        headingController.pid.setTarget(normalizeAngle(angle));
+        headingController.feedback.setTarget(normalizeAngle(angle));
     }
 
     @Override
@@ -100,12 +101,12 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         super.printNumericalTelemetry(telemetry);
         telemetry.addLine();
-        telemetry.addData("Drivetrain target heading", headingController.pid.getTarget());
-        telemetry.addData("Drivetrain target x", xController.pid.getTarget());
-        telemetry.addData("Drivetrain target y", yController.pid.getTarget());
+        telemetry.addData("Drivetrain target heading", headingController.feedback.getTarget());
+        telemetry.addData("Drivetrain target x", xController.feedback.getTarget());
+        telemetry.addData("Drivetrain target y", yController.feedback.getTarget());
         telemetry.addLine();
-        telemetry.addData("Drivetrain heading error derivative (ticks/s)", headingController.pid.getErrorDerivative());
-        telemetry.addData("Drivetrain x error derivative (ticks/s)", xController.pid.getErrorDerivative());
-        telemetry.addData("Drivetrain y error derivative (ticks/s)", yController.pid.getErrorDerivative());
+        telemetry.addData("Drivetrain heading error derivative (ticks/s)", headingController.feedback.getErrorDerivative());
+        telemetry.addData("Drivetrain x error derivative (ticks/s)", xController.feedback.getErrorDerivative());
+        telemetry.addData("Drivetrain y error derivative (ticks/s)", yController.feedback.getErrorDerivative());
     }
 }

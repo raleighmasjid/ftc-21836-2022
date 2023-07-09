@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDF;
+import org.firstinspires.ftc.teamcode.control.controllers.ProfiledController;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledMotor;
 
@@ -72,7 +72,7 @@ public class PowerplayLift extends ProfiledMotor {
      * Initialize fields <p>
      */
     public PowerplayLift(HardwareMap hw) {
-        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledPIDF(), new FIRLowPassFilter(), new FIRLowPassFilter());
+        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledController(), new FIRLowPassFilter(), new FIRLowPassFilter());
     }
 
     @Override
@@ -82,13 +82,13 @@ public class PowerplayLift extends ProfiledMotor {
         veloFilter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
         accelFilter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
-        controller.pid.setGains(
+        controller.feedback.setGains(
                 kP,
                 kI,
                 kD,
                 MAX_PID_OUTPUT_WITH_INTEGRAL
         );
-        controller.pid.derivFilter.setGains(
+        controller.feedback.derivFilter.setGains(
                 FILTER_GAIN_kD,
                 FILTER_COUNT_kD
         );
