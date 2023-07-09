@@ -73,7 +73,6 @@ public class PowerplayLift extends ProfiledMotor {
      */
     public PowerplayLift(HardwareMap hw) {
         super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledPIDF(), new FIRLowPassFilter(), new FIRLowPassFilter());
-        controller.setOutputBounds(-1.0, 1.0);
     }
 
     @Override
