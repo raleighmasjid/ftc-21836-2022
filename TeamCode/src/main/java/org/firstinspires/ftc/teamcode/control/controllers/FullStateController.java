@@ -10,6 +10,10 @@ public class FullStateController implements FeedbackController {
         setGainMatrix(gainMatrix);
     }
 
+    public FullStateController() {
+        this(new FullStateGainMatrix(0.0, 0.0, 0.0));
+    }
+
     public void setGainMatrix(FullStateGainMatrix gainMatrix) {
         this.gainMatrix = gainMatrix;
     }
