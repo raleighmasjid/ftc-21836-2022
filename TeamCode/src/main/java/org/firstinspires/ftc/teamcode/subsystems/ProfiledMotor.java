@@ -110,7 +110,7 @@ public class ProfiledMotor {
     public void setTargetPosition(double targetPosition, String targetPositionName) {
         this.targetPosition = targetPosition;
         this.targetPositionName = targetPositionName;
-        controller.setTargetPosition(currentPosition, currentVelocity, this.targetPosition);
+        controller.profiler.setTargetPosition(currentPosition, currentVelocity, this.targetPosition);
     }
 
     /**
@@ -162,11 +162,11 @@ public class ProfiledMotor {
      */
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Current position (in)", currentPosition);
-        telemetry.addData("Profile position (in)", controller.getProfilePosition());
+        telemetry.addData("Profile position (in)", controller.profiler.getX());
         telemetry.addLine();
         telemetry.addData("Current velocity (in/s)", currentVelocity);
         telemetry.addData("Encoder-calculated velocity (in/s)", motors[0].encoder.getCorrectedVelocity());
-        telemetry.addData("Profile velocity (in/s)", controller.getProfileVelocity());
+        telemetry.addData("Profile velocity (in/s)", controller.profiler.getV());
         telemetry.addData("Max velocity (in/s)", maxVelocity);
         telemetry.addLine();
         telemetry.addData("Current acceleration (in/s^2)", currentAcceleration);

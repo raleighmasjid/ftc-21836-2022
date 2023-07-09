@@ -97,7 +97,7 @@ public class PowerplayLift extends ProfiledMotor {
                 goingDown ? kA_DOWN : kA_UP,
                 kS
         );
-        controller.updateConstraints(
+        controller.profiler.updateConstraints(
                 MAX_VELO,
                 MAX_ACCEL,
                 MAX_JERK
