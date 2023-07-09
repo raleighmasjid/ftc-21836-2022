@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode.control.controllers;
 
-import com.acmerobotics.roadrunner.profile.MotionState;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.controllers.gains.PIDGains;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 public class PIDController implements FeedbackController {
 
-    private PIDGains gains;
-
-    private double maxOutputWithIntegral, lastError, error, errorIntegral, errorDerivative, target;
+    private double kP, kI, kD, maxOutputWithIntegral, lastError, error, errorIntegral, errorDerivative, target;
 
     private boolean integrate = true, calculateError = true;
 
@@ -18,29 +14,23 @@ public class PIDController implements FeedbackController {
 
     public FIRLowPassFilter derivFilter;
 
-    public PIDController(PIDGains gains, double maxOutputWithIntegral, FIRLowPassFilter derivFilter) {
-        setGains(gains, maxOutputWithIntegral);
+    public PIDController(double kP, double kI, double kD, double maxOutputWithIntegral, FIRLowPassFilter derivFilter) {
+        setGains(kP, kI, kD, maxOutputWithIntegral);
         dtTimer.reset();
         this.derivFilter = derivFilter;
     }
 
-    public PIDController() {
-        this(new PIDGains(0, 0, 0), Double.POSITIVE_INFINITY, new FIRLowPassFilter());
-    }
-
-    public void setGains(PIDGains gains, double maxOutputWithIntegral) {
-        this.gains = gains;
+    public void setGains(double kP, double kI, double kD, double maxOutputWithIntegral) {
+        this.kP = kP;
+        this.kI = kI;
+        this.kD = kD;
         this.maxOutputWithIntegral = maxOutputWithIntegral;
     }
 
-    public void setGains(PIDGains gains) {
-        setGains(gains, maxOutputWithIntegral);
-    }
-
-    public double calculate(MotionState measuredState) {
+    public double update(double measurement) {
         if (calculateError) {
             lastError = error;
-            error = target - measuredState.getX();
+            error = target - measurement;
         } else calculateError = true;
 
         if (Math.signum(error) != Math.signum(lastError)) resetIntegral();
@@ -52,19 +42,39 @@ public class PIDController implements FeedbackController {
         errorDerivative = derivFilter.getEstimate((error - lastError) / dt);
         if (integrate) errorIntegral += 0.5 * (error + lastError) * dt;
 
-        double output = (gains.kP * error) + (gains.kI * errorIntegral) + (gains.kD * errorDerivative);
+        double output = (kP * error) + (kI * errorIntegral) + (kD * errorDerivative);
 
         setIntegrate(!(Math.abs(output) > maxOutputWithIntegral && Math.signum(output) == Math.signum(error)));
 
         return output;
     }
 
+    public PIDController(double kP, double kI, double kD, double maxOutputWithIntegral) {
+        this(kP, kI, kD, maxOutputWithIntegral, new FIRLowPassFilter());
+    }
+
+    public PIDController(double kP, double kI, double kD, FIRLowPassFilter derivFilter) {
+        this(kP, kI, kD, Double.POSITIVE_INFINITY, derivFilter);
+    }
+
+    public PIDController(double kP, double kI, double kD) {
+        this(kP, kI, kD, new FIRLowPassFilter());
+    }
+
+    public PIDController() {
+        this(0, 0, 0);
+    }
+
+    public void setGains(double kP, double kI, double kD) {
+        setGains(kP, kI, kD, maxOutputWithIntegral);
+    }
+
     public void setIntegrate(boolean integrate) {
         this.integrate = integrate;
     }
 
-    public void setTarget(MotionState targetState) {
-        this.target = targetState.getX();
+    public void setTarget(double target) {
+        this.target = target;
     }
 
     public double getTarget() {
