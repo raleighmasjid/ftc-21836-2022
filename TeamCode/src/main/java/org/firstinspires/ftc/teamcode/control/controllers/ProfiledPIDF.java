@@ -45,7 +45,7 @@ public class ProfiledPIDF extends PIDFController {
     }
 
     public void setTargetPosition(double currentPosition, double targetPosition) {
-        setTargetPosition(currentPosition, 0.0, targetPosition);
+        setTargetPosition(currentPosition, profileState.getV(), targetPosition);
     }
 
     public void updateConstraints(double MAX_VELO, double MAX_ACCEL, double MAX_JERK) {
