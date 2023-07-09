@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.controllers.FeedforwardController;
 import org.firstinspires.ftc.teamcode.control.controllers.PIDController;
-import org.firstinspires.ftc.teamcode.control.controllers.ProfiledJointController;
+import org.firstinspires.ftc.teamcode.control.controllers.ProfiledController;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 /**
@@ -33,7 +33,7 @@ public class ProfiledMotor {
     /**
      * PIDF controller
      */
-    public final ProfiledJointController controller;
+    public final ProfiledController controller;
     protected final PIDController pid;
     protected final FeedforwardController feedforward;
 
@@ -64,7 +64,7 @@ public class ProfiledMotor {
         this.batteryVoltageSensor = batteryVoltageSensor;
         this.pid = pid;
         this.feedforward = feedforward;
-        this.controller = new ProfiledJointController(this.pid, this.feedforward);
+        this.controller = new ProfiledController(this.pid, this.feedforward);
         this.veloFilter = veloFilter;
         this.accelFilter = accelFilter;
 

@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.control.controllers;
 
 import com.acmerobotics.roadrunner.profile.MotionState;
 
+/**
+ * Wrapper class combining a PID controller and a kV-kA-kS feedforward controller.
+ */
 public class JointController implements FeedbackController {
     public final FeedbackController feedback;
     public final FeedforwardController feedforward;
