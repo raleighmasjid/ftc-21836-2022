@@ -28,7 +28,7 @@ public class ProfiledPIDF extends PIDFController {
     }
 
     @Override
-    public double update(double currentPosition) {
+    public double calculate(double currentPosition) {
         return this.update(currentPosition, 12.0);
     }
 }

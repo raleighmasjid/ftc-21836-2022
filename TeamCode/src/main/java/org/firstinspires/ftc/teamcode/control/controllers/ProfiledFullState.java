@@ -17,7 +17,7 @@ public class ProfiledFullState {
         this(new FullStateController(), new FeedforwardController());
     }
 
-    public double update(double pCurrent, double vCurrent, double aCurrent, double voltage) {
+    public double calculate(double pCurrent, double vCurrent, double aCurrent, double voltage) {
         profiler.update();
 
         fullState.setTargetState(profiler.getX(), profiler.getV(), profiler.getA());
@@ -26,18 +26,18 @@ public class ProfiledFullState {
 
         double fullStateOutput = fullState.update(pCurrent, vCurrent, aCurrent);
 
-        return fullStateOutput + feedforward.update(voltage, fullStateOutput);
+        return fullStateOutput + feedforward.calculate(voltage, fullStateOutput);
     }
 
-    public double update(double pCurrent, double vCurrent, double aCurrent) {
-        return this.update(pCurrent, vCurrent, aCurrent, 12.0);
+    public double calculate(double pCurrent, double vCurrent, double aCurrent) {
+        return this.calculate(pCurrent, vCurrent, aCurrent, 12.0);
     }
 
-    public double update(double pCurrent, double vCurrent) {
-        return this.update(pCurrent, vCurrent, 0.0);
+    public double calculate(double pCurrent, double vCurrent) {
+        return this.calculate(pCurrent, vCurrent, 0.0);
     }
 
-    public double update(double pCurrent) {
-        return this.update(pCurrent, 0.0);
+    public double calculate(double pCurrent) {
+        return this.calculate(pCurrent, 0.0);
     }
 }

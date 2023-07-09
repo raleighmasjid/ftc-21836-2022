@@ -44,7 +44,7 @@ public class FullStateController implements FeedbackController {
         return update(pCurrent, vCurrent, 0.0);
     }
 
-    public double update(double pCurrent) {
+    public double calculate(double pCurrent) {
         return update(pCurrent, 0.0);
     }
 }

@@ -26,7 +26,7 @@ public class PIDFController implements FeedbackController {
         feedforward.setTargetAcceleration(targetAcceleration);
     }
 
-    public double update(double measuredPosition) {
+    public double calculate(double measuredPosition) {
         return update(measuredPosition, 12.0);
     }
 
@@ -37,7 +37,7 @@ public class PIDFController implements FeedbackController {
      * @param voltage         measured battery voltage (for feedforward voltage correction)
      */
     public double update(double currentPosition, double voltage) {
-        double pidOutput = pid.update(currentPosition);
-        return pidOutput + feedforward.update(voltage, pidOutput);
+        double pidOutput = pid.calculate(currentPosition);
+        return pidOutput + feedforward.calculate(voltage, pidOutput);
     }
 }

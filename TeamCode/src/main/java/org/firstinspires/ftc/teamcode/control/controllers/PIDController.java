@@ -27,7 +27,7 @@ public class PIDController implements FeedbackController {
         this.maxOutputWithIntegral = maxOutputWithIntegral;
     }
 
-    public double update(double measurement) {
+    public double calculate(double measurement) {
         if (calculateError) {
             lastError = error;
             error = target - measurement;
