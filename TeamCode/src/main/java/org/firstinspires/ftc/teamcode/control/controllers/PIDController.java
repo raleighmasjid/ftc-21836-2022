@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
-public class PIDController {
+public class PIDController implements FeedbackController {
 
     private double kP, kI, kD, maxOutputWithIntegral, lastError, error, errorIntegral, errorDerivative, target;
 

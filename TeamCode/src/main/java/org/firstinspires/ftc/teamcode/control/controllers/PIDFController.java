@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.control.controllers;
 /**
  * Wrapper class combining a PID controller and a kV-kA-kS feedforward controller.
  */
-public class PIDFController {
+public class PIDFController implements FeedbackController {
     public final PIDController pid;
     public final FeedforwardController feedforward;
 
