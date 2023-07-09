@@ -4,7 +4,10 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.control.controllers.ProfiledController;
+import org.firstinspires.ftc.teamcode.control.controllers.FeedforwardController;
+import org.firstinspires.ftc.teamcode.control.controllers.PIDController;
+import org.firstinspires.ftc.teamcode.control.controllers.gains.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.controllers.gains.PIDGains;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledMotor;
 
@@ -72,7 +75,7 @@ public class PowerplayLift extends ProfiledMotor {
      * Initialize fields <p>
      */
     public PowerplayLift(HardwareMap hw) {
-        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledController(), new FIRLowPassFilter(), new FIRLowPassFilter());
+        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new PIDController(), new FeedforwardController(), new FIRLowPassFilter(), new FIRLowPassFilter());
     }
 
     @Override
@@ -82,21 +85,21 @@ public class PowerplayLift extends ProfiledMotor {
         veloFilter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
         accelFilter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
-        controller.feedback.setGains(
-                kP,
-                kI,
-                kD,
+        pid.setGains(new PIDGains(
+                        kP,
+                        kI,
+                        kD),
                 MAX_PID_OUTPUT_WITH_INTEGRAL
         );
-        controller.feedback.derivFilter.setGains(
+        pid.derivFilter.setGains(
                 FILTER_GAIN_kD,
                 FILTER_COUNT_kD
         );
-        controller.feedforward.setGains(
+        controller.feedforward.setGains(new FeedforwardGains(
                 goingDown ? kV_DOWN : kV_UP,
                 goingDown ? kA_DOWN : kA_UP,
                 kS
-        );
+        ));
         controller.profiler.updateConstraints(
                 MAX_VELO,
                 MAX_ACCEL,

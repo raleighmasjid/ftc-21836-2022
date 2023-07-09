@@ -2,9 +2,14 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.profile.MotionState;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.control.controllers.FeedforwardController;
 import org.firstinspires.ftc.teamcode.control.controllers.JointController;
+import org.firstinspires.ftc.teamcode.control.controllers.PIDController;
+import org.firstinspires.ftc.teamcode.control.controllers.gains.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.controllers.gains.PIDGains;
 
 @Config
 public class PositionLockingMecanum extends MecanumDrivetrain {
@@ -24,10 +29,16 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
             HEADING_FILTER_COUNT = 300,
             POSITION_FILTER_COUNT = 0;
 
-    public final JointController xController = new JointController();
-    public final JointController yController = new JointController();
-    public final JointController headingController = new JointController();
-    public final JointController[] positionControllers = {xController, yController};
+    private final PIDController xPID = new PIDController();
+    public final JointController xController = new JointController(xPID, new FeedforwardController());
+
+    private final PIDController yPID = new PIDController();
+    public final JointController yController = new JointController(yPID, new FeedforwardController());
+
+    private final PIDController headingPid = new PIDController();
+    public final JointController headingController = new JointController(headingPid, new FeedforwardController());
+
+    public final PIDController[] positionPIDs = {xPID, yPID};
     public final JointController[] controllers = {xController, yController, headingController};
 
     public PositionLockingMecanum(HardwareMap hw, double motorCPR, double motorRPM) {
@@ -36,49 +47,51 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
 
     @Override
     public void readIMU() {
-        for (JointController controller : positionControllers) {
-            controller.feedback.setGains(
+        for (PIDController controller : positionPIDs) {
+            controller.setGains(new PIDGains(
                     POSITION_kP,
                     POSITION_kI,
                     POSITION_kD
-            );
-            controller.feedback.derivFilter.setGains(
+            ));
+            controller.derivFilter.setGains(
                     POSITION_FILTER_GAIN,
                     POSITION_FILTER_COUNT
             );
         }
-        headingController.feedback.setGains(
+        headingPid.setGains(new PIDGains(
                 HEADING_kP,
                 HEADING_kI,
                 HEADING_kD
-        );
-        headingController.feedback.derivFilter.setGains(
+        ));
+        headingPid.derivFilter.setGains(
                 HEADING_FILTER_GAIN,
                 HEADING_FILTER_COUNT
         );
         for (JointController controller : controllers)
-            controller.feedforward.setGains(0.0, 0.0, kS);
+            controller.feedforward.setGains(new FeedforwardGains(0.0, 0.0, kS));
         super.readIMU();
     }
 
     public void run(double xCommand, double yCommand, double turnCommand) {
         double voltage = batteryVoltageSensor.getVoltage();
 
-        if (xCommand == 0.0) xCommand = xController.calculate(getX(), voltage);
+        if (xCommand == 0.0)
+            xCommand = xController.calculate(new MotionState(getX(), 0.0), voltage);
         else {
-            xController.feedback.setTarget(getX());
+            xController.feedback.setTarget(new MotionState(getX(), 0.0));
             xCommand *= (12.0 / voltage);
         }
 
-        if (yCommand == 0.0) yCommand = yController.calculate(getY(), voltage);
+        if (yCommand == 0.0)
+            yCommand = yController.calculate(new MotionState(getY(), 0.0), voltage);
         else {
-            yController.feedback.setTarget(getY());
+            yController.feedback.setTarget(new MotionState(getY(), 0.0));
             yCommand *= (12.0 / voltage);
         }
 
         if (turnCommand == 0.0) {
-            headingController.feedback.setError(normalizeAngle(-normalizeAngle(headingController.feedback.getTarget() - getHeading())));
-            turnCommand = headingController.calculate(getHeading(), voltage);
+            headingPid.setError(normalizeAngle(-normalizeAngle(headingPid.getTarget() - getHeading())));
+            turnCommand = headingController.calculate(new MotionState(getHeading(), 0.0), voltage);
         } else {
             setTargetHeading(getHeading());
             turnCommand *= (12.0 / voltage);
@@ -88,7 +101,7 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
     }
 
     public void setTargetHeading(double angle) {
-        headingController.feedback.setTarget(normalizeAngle(angle));
+        headingController.feedback.setTarget(new MotionState(normalizeAngle(angle), 0.0));
     }
 
     @Override
@@ -101,12 +114,12 @@ public class PositionLockingMecanum extends MecanumDrivetrain {
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         super.printNumericalTelemetry(telemetry);
         telemetry.addLine();
-        telemetry.addData("Drivetrain target heading", headingController.feedback.getTarget());
-        telemetry.addData("Drivetrain target x", xController.feedback.getTarget());
-        telemetry.addData("Drivetrain target y", yController.feedback.getTarget());
+        telemetry.addData("Drivetrain target heading", headingPid.getTarget());
+        telemetry.addData("Drivetrain target x", xPID.getTarget());
+        telemetry.addData("Drivetrain target y", yPID.getTarget());
         telemetry.addLine();
-        telemetry.addData("Drivetrain heading error derivative (ticks/s)", headingController.feedback.getErrorDerivative());
-        telemetry.addData("Drivetrain x error derivative (ticks/s)", xController.feedback.getErrorDerivative());
-        telemetry.addData("Drivetrain y error derivative (ticks/s)", yController.feedback.getErrorDerivative());
+        telemetry.addData("Drivetrain heading error derivative (ticks/s)", headingPid.getErrorDerivative());
+        telemetry.addData("Drivetrain x error derivative (ticks/s)", xPID.getErrorDerivative());
+        telemetry.addData("Drivetrain y error derivative (ticks/s)", yPID.getErrorDerivative());
     }
 }
