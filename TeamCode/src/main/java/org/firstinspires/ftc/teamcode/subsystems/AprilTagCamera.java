@@ -12,6 +12,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Config
 public class AprilTagCamera {
@@ -37,9 +38,9 @@ public class AprilTagCamera {
 
     private final MultipleTelemetry myTelemetry;
 
-    private final int[] tagIdsToLookFor;
+    private final Integer[] tagIdsToLookFor;
 
-    public AprilTagCamera(HardwareMap hardwareMap, MultipleTelemetry myTelemetry, int[] tagIdsToLookFor, OpenCvCameraRotation cameraRotation) {
+    public AprilTagCamera(HardwareMap hardwareMap, MultipleTelemetry myTelemetry, Integer[] tagIdsToLookFor, OpenCvCameraRotation cameraRotation) {
         camera = OpenCvCameraFactory.getInstance().createWebcam(
                 hardwareMap.get(WebcamName.class, "Webcam 1"),
                 hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName())
@@ -60,26 +61,26 @@ public class AprilTagCamera {
         this.tagIdsToLookFor = tagIdsToLookFor;
     }
 
+    private boolean checkForTag(ArrayList<AprilTagDetection> currentDetections) {
+        for (AprilTagDetection detection : currentDetections) {
+            if (Arrays.asList(tagIdsToLookFor).contains(detection.id)) {
+                detectedTag = detection;
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public void initLoop() {
         ArrayList<AprilTagDetection> currentDetections = pipeline.getLatestDetections();
+        boolean tagFound = false;
 
-        if (currentDetections.size() != 0) {
-            boolean tagFound = false;
+        if (currentDetections.size() != 0) tagFound = checkForTag(currentDetections);
 
-            iterateTags:
-            for (AprilTagDetection detection : currentDetections) {
-                for (int tagId : tagIdsToLookFor) {
-                    if (detection.id == tagId) {
-                        detectedTag = detection;
-                        tagFound = true;
-                        break iterateTags;
-                    }
-                }
-            }
-            if (tagFound) {
-                myTelemetry.addLine("Tag of interest is in sight!");
-                tagToTelemetry(detectedTag);
-            } else printNoTagFound();
+        if (tagFound) {
+            myTelemetry.addLine("Tag of interest is in sight!");
+            tagToTelemetry();
         } else printNoTagFound();
 
         myTelemetry.update();
@@ -91,7 +92,7 @@ public class AprilTagCamera {
 
         if (detectedTag != null) {
             myTelemetry.addLine("Tag snapshot:\n");
-            tagToTelemetry(detectedTag);
+            tagToTelemetry();
             myTelemetry.update();
         } else {
             myTelemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
@@ -104,11 +105,11 @@ public class AprilTagCamera {
         if (detectedTag == null) myTelemetry.addLine("(The tag has never been seen)");
         else {
             myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-            tagToTelemetry(detectedTag);
+            tagToTelemetry();
         }
     }
 
-    private void tagToTelemetry(AprilTagDetection detection) {
-        myTelemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+    private void tagToTelemetry() {
+        myTelemetry.addLine(String.format("\nDetected tag ID=%d", detectedTag.id));
     }
 }
