@@ -2,24 +2,24 @@ package org.firstinspires.ftc.teamcode.control.controllers;
 
 import com.acmerobotics.roadrunner.profile.MotionState;
 
-import org.firstinspires.ftc.teamcode.control.controllers.gains.FullStateGains;
+import org.firstinspires.ftc.teamcode.control.controllers.gains.FullStateGainMatrix;
 
 public class FullStateController implements FeedbackController {
 
-    private FullStateGains gains;
+    private FullStateGainMatrix gainMatrix;
 
     private MotionState targetState = new MotionState(0, 0, 0);
 
-    public FullStateController(FullStateGains gains) {
-        setGains(gains);
+    public FullStateController(FullStateGainMatrix gainMatrix) {
+        setGainMatrix(gainMatrix);
     }
 
     public FullStateController() {
-        this(new FullStateGains(0.0, 0.0, 0.0));
+        this(new FullStateGainMatrix(0.0, 0.0, 0.0));
     }
 
-    public void setGains(FullStateGains gains) {
-        this.gains = gains;
+    public void setGainMatrix(FullStateGainMatrix gainMatrix) {
+        this.gainMatrix = gainMatrix;
     }
 
     public void setTarget(MotionState targetState) {
@@ -31,6 +31,6 @@ public class FullStateController implements FeedbackController {
         double vError = targetState.getV() - measuredState.getV();
         double aError = targetState.getA() - measuredState.getA();
 
-        return (pError * gains.pGain) + (vError * gains.vGain) + (aError * gains.aGain);
+        return (pError * gainMatrix.pGain) + (vError * gainMatrix.vGain) + (aError * gainMatrix.aGain);
     }
 }

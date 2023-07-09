@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.control.controllers.gains;
 
-public class FullStateGains {
+public class FullStateGainMatrix {
 
     public final double pGain, vGain, aGain;
 
-    public FullStateGains(
+    public FullStateGainMatrix(
             double pGain,
             double vGain,
             double aGain
