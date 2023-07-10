@@ -31,6 +31,7 @@ public class PowerplayPassthrough {
             MAX_JERK = 4000.0;
 
     private double currentAngle = ANGLE_PASS_FRONT;
+    private double angleOffset = 0.0;
 
     private boolean tilted = false;
     private boolean triggered = false;
@@ -77,6 +78,7 @@ public class PowerplayPassthrough {
 
         profiler.updateConstraints(MAX_VELO, MAX_ACCEL, MAX_JERK);
         profiler.setTargetPosition(currentAngle, inBack ? ANGLE_PASS_BACK - tiltOffset : ANGLE_PASS_FRONT + tiltOffset);
+        angleOffset = 0.0;
     }
 
     public boolean doneMoving() {
@@ -108,12 +110,13 @@ public class PowerplayPassthrough {
         updateProfile();
     }
 
-    public void run(double angle) {
+    public void run(double manualInput) {
         claw.updateAngles(ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
         wrist.updateAngles(ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
 
-        for (SimpleServo servo : servos) servo.turnToAngle(angle);
-        currentAngle = angle;
+        angleOffset += manualInput;
+        currentAngle = Math.min(Math.max(profiler.getX() + angleOffset, ANGLE_PASS_FRONT), ANGLE_PASS_BACK);
+        for (SimpleServo servo : servos) servo.turnToAngle(currentAngle);
 
         if (triggered && Math.abs(ANGLE_WRIST_PIVOT_POS - currentAngle) <= WRIST_PIVOT_POS_TOLERANCE) {
             wrist.setActivated(inBack);
@@ -124,7 +127,7 @@ public class PowerplayPassthrough {
     }
 
     public void run() {
-        this.run(profiler.getX());
+        this.run(0.0);
     }
 
     public void reset() {
