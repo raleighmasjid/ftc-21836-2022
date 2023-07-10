@@ -14,9 +14,9 @@ public class PowerplayLift extends ProfiledMotor {
     public static double
             HEIGHT_FLOOR = 0.0,
             HEIGHT_2_CONES = 1.35,
-            HEIGHT_LOW = 6.2,
-            HEIGHT_MEDIUM = 16.4,
-            HEIGHT_TALL = 26.6,
+            HEIGHT_LOW = 6.6,
+            HEIGHT_MEDIUM = 17,
+            HEIGHT_TALL = 27,
             HEIGHT_1_STAGE = 9.6,
             kG_4 = 0.18,
             kG_3 = 0.14,
