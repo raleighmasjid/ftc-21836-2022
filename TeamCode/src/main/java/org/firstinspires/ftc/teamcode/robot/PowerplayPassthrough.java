@@ -111,9 +111,7 @@ public class PowerplayPassthrough {
     }
 
     public void run(double manualInput) {
-        claw.updateAngles(ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
-        wrist.updateAngles(ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
-
+        profiler.update();
         angleOffset += manualInput;
         currentAngle = Math.min(Math.max(profiler.getX() + angleOffset, ANGLE_PASS_FRONT), ANGLE_PASS_BACK);
         for (SimpleServo servo : servos) servo.turnToAngle(currentAngle);
@@ -122,8 +120,11 @@ public class PowerplayPassthrough {
             wrist.setActivated(inBack);
             triggered = false;
         }
-        wrist.run();
+
+        claw.updateAngles(ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
         claw.run();
+        wrist.updateAngles(ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
+        wrist.run();
     }
 
     public void run() {
