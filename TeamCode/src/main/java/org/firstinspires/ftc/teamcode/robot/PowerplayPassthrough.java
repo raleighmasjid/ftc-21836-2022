@@ -112,10 +112,10 @@ public class PowerplayPassthrough {
         claw.updateAngles(ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
         wrist.updateAngles(ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
 
-        this.currentAngle = angle;
-        for (SimpleServo servo : servos) servo.turnToAngle(this.currentAngle);
+        for (SimpleServo servo : servos) servo.turnToAngle(angle);
+        currentAngle = angle;
 
-        if (triggered && Math.abs(ANGLE_WRIST_PIVOT_POS - this.currentAngle) <= WRIST_PIVOT_POS_TOLERANCE) {
+        if (triggered && Math.abs(ANGLE_WRIST_PIVOT_POS - currentAngle) <= WRIST_PIVOT_POS_TOLERANCE) {
             wrist.setActivated(inBack);
             triggered = false;
         }
