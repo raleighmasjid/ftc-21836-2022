@@ -2,13 +2,10 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.profile.MotionProfile;
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
-import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.control.MotionProfiler;
 import org.firstinspires.ftc.teamcode.subsystems.SimpleServoPivot;
 
 @Config
@@ -16,9 +13,7 @@ public class PowerplayPassthrough {
 
     private final SimpleServo[] servos;
 
-    private final ElapsedTime profileTimer = new ElapsedTime();
-
-    private MotionProfile profile;
+    private final MotionProfiler profiler = new MotionProfiler();
 
     public static double
             ANGLE_CLAW_CLOSED = 0.0,
@@ -35,7 +30,7 @@ public class PowerplayPassthrough {
             MAX_ACCEL = 1000.0,
             MAX_JERK = 4000.0;
 
-    private double currentVelocity, currentAngle = ANGLE_PASS_FRONT;
+    private double currentAngle = ANGLE_PASS_FRONT;
 
     private boolean tilted = false;
     private boolean triggered = false;
@@ -56,8 +51,6 @@ public class PowerplayPassthrough {
         servos = new SimpleServo[]{axon(hw, "passthrough 1"), reverseServo(axon(hw, "passthrough 2"))};
         claw = new SimpleServoPivot(new SimpleServo[]{axon(hw, "claw right")}, ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
         wrist = new SimpleServoPivot(new SimpleServo[]{reverseServo(axon(hw, "claw pivot"))}, ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
-
-        profileTimer.reset();
         updateProfile();
     }
 
@@ -82,18 +75,12 @@ public class PowerplayPassthrough {
                         ANGLE_PASS_TILT_OFFSET :
                         (!triggered) && (inBack != wrist.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
 
-        profile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(currentAngle, currentVelocity),
-                new MotionState(inBack ? ANGLE_PASS_BACK - tiltOffset : ANGLE_PASS_FRONT + tiltOffset, 0.0),
-                MAX_VELO, MAX_ACCEL, MAX_JERK
-        );
-
-        profileTimer.reset();
+        profiler.updateConstraints(MAX_VELO, MAX_ACCEL, MAX_JERK);
+        profiler.setTargetPosition(currentAngle, inBack ? ANGLE_PASS_BACK - tiltOffset : ANGLE_PASS_FRONT + tiltOffset);
     }
 
-    private void updateConstants() {
-        claw.updateAngles(ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
-        wrist.updateAngles(ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
+    public boolean doneMoving() {
+        return profiler.isDone();
     }
 
     /**
@@ -121,22 +108,13 @@ public class PowerplayPassthrough {
         updateProfile();
     }
 
-    /**
-     * Get state of the {@link #servos} <p>
-     * False for front, true for back
-     */
-    public boolean getPosition() {
-        return inBack;
-    }
-
     public void run() {
-        updateConstants();
-        MotionState state = profile.get(profileTimer.seconds());
-        currentAngle = state.getX();
-        currentVelocity = state.getV();
-        for (SimpleServo servo : servos) {
-            servo.turnToAngle(currentAngle);
-        }
+        claw.updateAngles(ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
+        wrist.updateAngles(ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
+
+        currentAngle = profiler.getX();
+        for (SimpleServo servo : servos) servo.turnToAngle(currentAngle);
+
         if (triggered && Math.abs(ANGLE_WRIST_PIVOT_POS - currentAngle) <= WRIST_PIVOT_POS_TOLERANCE) {
             wrist.setActivated(inBack);
             triggered = false;
@@ -153,13 +131,13 @@ public class PowerplayPassthrough {
     }
 
     /**
-     * Print tuning telemetry from {@link #profile}
+     * Print tuning telemetry from {@link #profiler}
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Passthrough angle", currentAngle);
-        telemetry.addData("Passthrough velocity (ticks/s)", currentVelocity);
+        telemetry.addData("Passthrough velocity (ticks/s)", profiler.getV());
     }
 
     /**
