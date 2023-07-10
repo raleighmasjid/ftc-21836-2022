@@ -29,12 +29,9 @@ import java.util.Objects;
 public class MaxVelocityTuner extends LinearOpMode {
     public static double RUNTIME = 2.0;
 
-    private ElapsedTime timer, accelTimer;
     private double maxVelocity = 0.0, maxAcceleration = 0.0;
 
-    private VoltageSensor batteryVoltageSensor;
-
-    private FIRLowPassFilter accelFilter = new FIRLowPassFilter();
+    private final FIRLowPassFilter accelFilter = new FIRLowPassFilter();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -42,7 +39,7 @@ public class MaxVelocityTuner extends LinearOpMode {
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+        VoltageSensor batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -58,8 +55,8 @@ public class MaxVelocityTuner extends LinearOpMode {
         telemetry.update();
 
         drive.setDrivePower(new Pose2d(1, 0, 0));
-        timer = new ElapsedTime();
-        accelTimer = new ElapsedTime();
+        ElapsedTime timer = new ElapsedTime();
+        ElapsedTime accelTimer = new ElapsedTime();
 
         while (!isStopRequested() && timer.seconds() < RUNTIME) {
             drive.updatePoseEstimate();
@@ -76,10 +73,9 @@ public class MaxVelocityTuner extends LinearOpMode {
 
         double effectiveKf = DriveConstants.getMotorVelocityF(veloInchesToTicks(maxVelocity));
 
-        telemetry.addData("Max Velocity", maxVelocity);
         telemetry.addData("Max Recommended Velocity", maxVelocity * 0.9);
-        telemetry.addData("Max Acceleration", maxAcceleration);
         telemetry.addData("Max Recommended Acceleration", maxAcceleration * 0.9);
+        telemetry.addLine();
         telemetry.addData("Voltage Compensated kF", effectiveKf * batteryVoltageSensor.getVoltage() / 12);
         telemetry.update();
 

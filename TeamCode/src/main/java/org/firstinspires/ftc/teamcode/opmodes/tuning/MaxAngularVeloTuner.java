@@ -28,10 +28,9 @@ import java.util.Objects;
 public class MaxAngularVeloTuner extends LinearOpMode {
     public static double RUNTIME = 4.0;
 
-    private ElapsedTime timer, accelTimer;
     private double maxAngVelocity = 0.0, maxAngAcceleration = 0.0;
 
-    private FIRLowPassFilter accelFilter = new FIRLowPassFilter();
+    private final FIRLowPassFilter accelFilter = new FIRLowPassFilter();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -53,8 +52,8 @@ public class MaxAngularVeloTuner extends LinearOpMode {
         telemetry.update();
 
         drive.setDrivePower(new Pose2d(0, 0, 1));
-        timer = new ElapsedTime();
-        accelTimer = new ElapsedTime();
+        ElapsedTime timer = new ElapsedTime();
+        ElapsedTime accelTimer = new ElapsedTime();
 
         while (!isStopRequested() && timer.seconds() < RUNTIME) {
             drive.updatePoseEstimate();
@@ -69,10 +68,8 @@ public class MaxAngularVeloTuner extends LinearOpMode {
 
         drive.setDrivePower(new Pose2d());
 
-        telemetry.addData("Max Angular Velocity (deg)", Math.toDegrees(maxAngVelocity));
-        telemetry.addData("Max Recommended Angular Velocity (deg)", Math.toDegrees(maxAngVelocity * 0.9));
-        telemetry.addData("Max Angular Acceleration (deg)", Math.toDegrees(maxAngAcceleration));
-        telemetry.addData("Max Recommended Angular Acceleration (deg)", Math.toDegrees(maxAngAcceleration * 0.9));
+        telemetry.addData("Max Recommended Angular Velocity (rad)", maxAngVelocity * 0.9);
+        telemetry.addData("Max Recommended Angular Acceleration (rad)", maxAngAcceleration * 0.9);
         telemetry.update();
 
         while (!isStopRequested()) idle();
