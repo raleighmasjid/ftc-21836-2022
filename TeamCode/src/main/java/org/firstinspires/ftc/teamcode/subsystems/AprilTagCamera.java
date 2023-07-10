@@ -39,6 +39,12 @@ public class AprilTagCamera {
 
     private final int[] tagIdsToLookFor;
 
+    /**
+     * @param hardwareMap     {@link HardwareMap} passed in from the opmode
+     * @param myTelemetry     {@link MultipleTelemetry} telemetry to print output to
+     * @param tagIdsToLookFor integer IDs of April Tags to look for
+     * @param cameraRotation  physical orientation of camera
+     */
     public AprilTagCamera(HardwareMap hardwareMap, MultipleTelemetry myTelemetry, int[] tagIdsToLookFor, OpenCvCameraRotation cameraRotation) {
         camera = OpenCvCameraFactory.getInstance().createWebcam(
                 hardwareMap.get(WebcamName.class, "Webcam 1"),
