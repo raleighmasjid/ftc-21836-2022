@@ -25,7 +25,7 @@ public class PowerplayScorer {
 
     public final PowerplayPassthrough passthrough;
 
-    private boolean clawHasLifted = true;
+    private boolean clawHasLifted = true, floorPickupToggled = false;
 
     public static double ANGLE_CONE_ARMS_DOWN = 100.0;
     public static double TIME_CLAW = 0.0;
@@ -112,6 +112,11 @@ public class PowerplayScorer {
         setTargetLiftPos(height);
     }
 
+    public void toggleFloorPickup() {
+        passthrough.toggleTilt();
+        floorPickupToggled = true;
+    }
+
     /**
      * Holds {@link #coneArmR} and {@link #coneArmL} positions
      *
@@ -119,10 +124,17 @@ public class PowerplayScorer {
      * @param angleL The angle to turn {@link #coneArmL} to
      */
     public void run(double angleR, double angleL) {
+        if (floorPickupToggled && passthrough.doneMoving()) {
+            passthrough.wrist.toggle();
+            passthrough.toggleTilt();
+            floorPickupToggled = false;
+        }
         passthrough.run();
+
         if (!clawHasLifted && liftClawTimer.seconds() >= TIME_CLAW) liftClaw();
-        coneArmL.turnToAngle(angleL);
+
         coneArmR.turnToAngle(angleR);
+        coneArmL.turnToAngle(angleL);
     }
 
     public void printTelemetry(MultipleTelemetry telemetry) {

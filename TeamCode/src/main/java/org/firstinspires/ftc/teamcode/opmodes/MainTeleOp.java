@@ -162,6 +162,8 @@ public class MainTeleOp extends LinearOpMode {
 
                 if (control2B.wasJustPressed()) scorer.triggerClaw();
 
+                if (control2X.wasJustPressed()) scorer.toggleFloorPickup();
+
                 scorer.lift.runToPosition();
 
             }
