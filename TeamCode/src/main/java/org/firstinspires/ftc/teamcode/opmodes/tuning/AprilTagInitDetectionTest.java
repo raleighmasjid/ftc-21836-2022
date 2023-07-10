@@ -41,7 +41,7 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
                 hardwareMap,
                 new MultipleTelemetry(telemetry),
                 new int[]{1, 2, 3},
-                OpenCvCameraRotation.UPRIGHT
+                OpenCvCameraRotation.SIDEWAYS_RIGHT
         );
 
         while (!isStarted() && !isStopRequested()) camera.initLoop();

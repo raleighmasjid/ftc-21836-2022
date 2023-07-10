@@ -9,20 +9,14 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.control.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.control.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagCamera;
 import org.firstinspires.ftc.teamcode.subsystems.AutonMecanumDrivetrain;
-import org.openftc.apriltag.AprilTagDetection;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Config
@@ -32,6 +26,7 @@ public abstract class BaseAuton extends LinearOpMode {
     private AutonMecanumDrivetrain drivetrain;
     private PowerplayScorer scorer;
     private List<LynxModule> hubs;
+    private AprilTagCamera camera;
 
     public static double
             MED_ANGLE = 35,
@@ -43,22 +38,22 @@ public abstract class BaseAuton extends LinearOpMode {
             STACK_X = 59,
             STACK_Y = -12,
             STACK_ANGLE_OFFSET = 5,
-            TURN_POS_X = 46,
             ONE_TILE = 24,
-            TIME_PRE_GRAB = 1,
-            TIME_GRAB = 1,
-            TIME_POST_GRAB = 1,
-            TIME_PRE_DROP = 1,
-            TIME_DROP = 1,
-            TIME_POST_DROP = 1,
-            TIME_FIRST_FLIP = 1,
-            TIME_LIFT_MEDIUM = 0.8,
-            TIME_LIFT_TALL = 1.0,
-            MAIN_Y = -12.5,
             ZONE_1_X = 12.5,
             ZONE_2_X = 35,
             ZONE_3_X = 57,
-            STARTING_Y = -62.5;
+            X_TURN_POS = 46,
+            Y_START = -62.5,
+            Y_MAIN_PATH = -12.5,
+            TIME_PRE_GRAB = 1,
+            TIME_GRAB = 1,
+            TIME_GRAB_TO_FLIP = 1,
+            TIME_PRE_DROP = 1,
+            TIME_DROP = 1,
+            TIME_DROP_TO_FLIP = 1,
+            TIME_FIRST_FLIP = 1,
+            TIME_LIFT_MEDIUM = 0.8,
+            TIME_LIFT_TALL = 1.0;
 
     public enum Side {
         LEFT, RIGHT
@@ -71,7 +66,7 @@ public abstract class BaseAuton extends LinearOpMode {
         boolean isRight = sideEnum == Side.RIGHT;
         double side = isRight ? 1 : -1;
 
-        double centerPathX = side * ZONE_2_X;
+        double X_START = side * ZONE_2_X;
 
         double facingRight = Math.toRadians(0);
         double facingForward = Math.toRadians(90);
@@ -79,19 +74,17 @@ public abstract class BaseAuton extends LinearOpMode {
         double stack = side * Math.toRadians(STACK_ANGLE_OFFSET);
 
         Vector2d stackPos = new Vector2d(side * STACK_X, STACK_Y);
-        Vector2d sideTurnPos = new Vector2d(side * TURN_POS_X, MAIN_Y);
+        Vector2d sideTurnPos = new Vector2d(side * X_TURN_POS, Y_MAIN_PATH);
         Pose2d tallScoringPos = new Pose2d(side * TALL_X, TALL_Y, Math.toRadians(isRight ? TALL_ANGLE : 180 - TALL_ANGLE));
         Pose2d medScoringPos = new Pose2d(side * MED_X, MED_Y, Math.toRadians(isRight ? MED_ANGLE : 180 - MED_ANGLE));
         Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * ONE_TILE, sideTurnPos.getY());
         Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * ONE_TILE, medScoringPos.getY(), medScoringPos.getHeading());
 
-        Pose2d parkingZone1 = new Pose2d(side * (isRight ? ZONE_1_X : ZONE_3_X), MAIN_Y, isRight ? facingRight : facingLeft);
-        Pose2d parkingZone2 = new Pose2d(centerPathX, MAIN_Y, parkingZone1.getHeading());
-        Pose2d parkingZone3 = new Pose2d(side * (isRight ? ZONE_3_X : ZONE_1_X), MAIN_Y, parkingZone1.getHeading());
+        Pose2d parkingZone1 = new Pose2d(side * (isRight ? ZONE_1_X : ZONE_3_X), Y_MAIN_PATH, isRight ? facingRight : facingLeft);
+        Pose2d parkingZone2 = new Pose2d(X_START, Y_MAIN_PATH, parkingZone1.getHeading());
+        Pose2d parkingZone3 = new Pose2d(side * (isRight ? ZONE_3_X : ZONE_1_X), Y_MAIN_PATH, parkingZone1.getHeading());
 
-        Pose2d startPose = new Pose2d(centerPathX, STARTING_Y, facingForward);
-
-        TrajectorySequence scoringTrajectory, parkInZone1, parkInZone2, parkInZone3;
+        Pose2d startPose = new Pose2d(X_START, Y_START, facingForward);
 
         drivetrain.setPoseEstimate(startPose);
 
@@ -110,7 +103,7 @@ public abstract class BaseAuton extends LinearOpMode {
                 break;
         }
 
-        scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
+        TrajectorySequence scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
                 .addTemporalMarker(() -> scorer.liftClaw())
                 .lineTo(parkingZone2.vec())
@@ -141,7 +134,7 @@ public abstract class BaseAuton extends LinearOpMode {
 //                .splineTo(stackPos, isRight ? facingRight : facingLeft)
                 .build();
 
-        parkInZone1 = isRight ?
+        TrajectorySequence parkInZone1 = isRight ?
                 drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                         .setReversed(true)
                         .splineTo(centerTurnPos, facingLeft)
@@ -150,7 +143,7 @@ public abstract class BaseAuton extends LinearOpMode {
                         .waitSeconds(TIME_PRE_DROP)
                         .addTemporalMarker(() -> scorer.dropCone())
                         .waitSeconds(TIME_DROP)
-                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+                        .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                         .lineToSplineHeading(parkingZone1)
                         .build() :
                 drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
@@ -161,13 +154,13 @@ public abstract class BaseAuton extends LinearOpMode {
                         .waitSeconds(TIME_PRE_DROP)
                         .addTemporalMarker(() -> scorer.dropCone())
                         .waitSeconds(TIME_DROP)
-                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+                        .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                         .setReversed(false)
                         .splineTo(sideTurnPos, facingLeft)
                         .splineTo(parkingZone1.vec(), parkingZone1.getHeading())
                         .build();
 
-        parkInZone2 = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
+        TrajectorySequence parkInZone2 = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                 .setReversed(true)
                 .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
                 .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
@@ -175,11 +168,11 @@ public abstract class BaseAuton extends LinearOpMode {
                 .waitSeconds(TIME_PRE_DROP)
                 .addTemporalMarker(() -> scorer.dropCone())
                 .waitSeconds(TIME_DROP)
-                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                 .lineToSplineHeading(parkingZone2)
                 .build();
 
-        parkInZone3 = isRight ?
+        TrajectorySequence parkInZone3 = isRight ?
                 drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                         .setReversed(true)
                         .splineTo(sideTurnPos, stack + facingLeft)
@@ -188,7 +181,7 @@ public abstract class BaseAuton extends LinearOpMode {
                         .waitSeconds(TIME_PRE_DROP)
                         .addTemporalMarker(() -> scorer.dropCone())
                         .waitSeconds(TIME_DROP)
-                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+                        .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                         .setReversed(false)
                         .splineTo(sideTurnPos, facingRight)
                         .splineTo(parkingZone3.vec(), parkingZone3.getHeading())
@@ -201,58 +194,24 @@ public abstract class BaseAuton extends LinearOpMode {
                         .waitSeconds(TIME_PRE_DROP)
                         .addTemporalMarker(() -> scorer.dropCone())
                         .waitSeconds(TIME_DROP)
-                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+                        .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                         .lineToSplineHeading(parkingZone3)
                         .build();
 
+        drivetrain.followTrajectorySequenceAsync(scoringTrajectory);
         HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
 
-        // Lens intrinsics
-        // UNITS ARE PIXELS
-        // NOTE: this calibration is for the C920 webcam at 800x448.
-        // You will need to do your own calibration for other configurations!
-        int LEFT = 1;
-        int MIDDLE = 2;
-        int RIGHT = 3;
-
-        ElapsedTime autonomousTimer = new ElapsedTime();
-
-        boolean hasParked = false;
-
-        AprilTagDetection tagOfInterest = null;
-
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        AprilTagDetectionPipeline signalSleeveDetectionPipeline = new AprilTagDetectionPipeline(
-                AprilTagCamera.TAG_SIZE,
-                AprilTagCamera.CAMERA_FX,
-                AprilTagCamera.CAMERA_FY,
-                AprilTagCamera.CAMERA_CX,
-                AprilTagCamera.CAMERA_CY
-        );
-
-        camera.setPipeline(signalSleeveDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                camera.startStreaming(800, 448, OpenCvCameraRotation.SIDEWAYS_RIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-
-            }
-        });
-
         telemetry.setMsTransmissionInterval(50);
-
-        //  Initialize telemetry and dashboard
         myTelemetry = new MultipleTelemetry(telemetry);
 
-        drivetrain.followTrajectorySequenceAsync(scoringTrajectory);
+        this.camera = new AprilTagCamera(
+                hardwareMap,
+                myTelemetry,
+                new int[]{1, 2, 3},
+                OpenCvCameraRotation.SIDEWAYS_RIGHT
+        );
 
         hubs = hardwareMap.getAll(LynxModule.class);
-
         for (LynxModule hub : hubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
 
         /*
@@ -262,65 +221,15 @@ public abstract class BaseAuton extends LinearOpMode {
 
         scorer.passthrough.claw.setActivated(true);
         while (!isStarted() && !isStopRequested()) {
-            ArrayList<AprilTagDetection> currentDetections = signalSleeveDetectionPipeline.getLatestDetections();
-
-            if (currentDetections.size() != 0) {
-                boolean tagFound = false;
-
-                for (AprilTagDetection tag : currentDetections) {
-                    if (tag.id == LEFT || tag.id == MIDDLE || tag.id == RIGHT) {
-                        tagOfInterest = tag;
-                        tagFound = true;
-                        break;
-                    }
-                }
-
-                if (tagFound) {
-                    myTelemetry.addLine("Tag of interest is in sight!");
-                    tagToTelemetry(tagOfInterest);
-                } else {
-                    myTelemetry.addLine("Don't see tag of interest :(");
-
-                    if (tagOfInterest == null) myTelemetry.addLine("(The tag has never been seen)");
-                    else {
-                        myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                        tagToTelemetry(tagOfInterest);
-                    }
-                }
-
-            } else {
-                myTelemetry.addLine("Don't see tag of interest :(");
-
-                if (tagOfInterest == null) myTelemetry.addLine("(The tag has never been seen)");
-                else {
-                    myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                    tagToTelemetry(tagOfInterest);
-
-                }
-
-            }
-
-            myTelemetry.update();
-//            sleep(20);
+            camera.initLoop();
             scorer.passthrough.claw.run();
         }
 
         //START IS HERE//
 
-        camera.stopStreaming();
-        camera.closeCameraDevice();
-
-        autonomousTimer.reset();
-
-        if (tagOfInterest != null) {
-            myTelemetry.addLine("Tag snapshot:\n");
-            tagToTelemetry(tagOfInterest);
-            myTelemetry.update();
-        } else {
-            myTelemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-            myTelemetry.update();
-        }
-
+        camera.printOutput();
+        ElapsedTime autonomousTimer = new ElapsedTime();
+        boolean hasParked = false;
 
         while (opModeIsActive()) {
 
@@ -346,11 +255,6 @@ public abstract class BaseAuton extends LinearOpMode {
             // everything below is telemetry
             scorer.printTelemetry(myTelemetry);
             myTelemetry.update();
-
         }
-    }
-
-    void tagToTelemetry(AprilTagDetection detection) {
-        myTelemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
     }
 }
