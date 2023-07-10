@@ -104,9 +104,9 @@ public abstract class BaseAuton extends LinearOpMode {
         }
 
         TrajectorySequence scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
-                .setReversed(true)
                 .addTemporalMarker(() -> scorer.liftClaw())
                 .lineTo(parkingZone2.vec())
+                .setReversed(true)
                 .lineToSplineHeading(scoringPos)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
