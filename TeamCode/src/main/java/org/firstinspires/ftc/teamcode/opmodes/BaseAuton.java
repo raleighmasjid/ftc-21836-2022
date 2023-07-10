@@ -85,227 +85,127 @@ public abstract class BaseAuton extends LinearOpMode {
         Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * ONE_TILE, sideTurnPos.getY());
         Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * ONE_TILE, medScoringPos.getY(), medScoringPos.getHeading());
 
-        Pose2d parkingZone1, parkingZone2, parkingZone3;
+        Pose2d parkingZone1 = new Pose2d(side * (isRight ? ZONE_1_X : ZONE_3_X), MAIN_Y, isRight ? facingRight : facingLeft);
+        Pose2d parkingZone2 = new Pose2d(centerPathX, MAIN_Y, parkingZone1.getHeading());
+        Pose2d parkingZone3 = new Pose2d(side * (isRight ? ZONE_3_X : ZONE_1_X), MAIN_Y, parkingZone1.getHeading());
 
         Pose2d startPose = new Pose2d(centerPathX, STARTING_Y, facingForward);
 
-        TrajectorySequence firstConeTrajectory, cycleTrajectory, parkInZone1, parkInZone2, parkInZone3;
+        TrajectorySequence scoringTrajectory, parkInZone1, parkInZone2, parkInZone3;
 
         drivetrain.setPoseEstimate(startPose);
 
+        double TIME_LIFT;
+        Pose2d scoringPos;
+
         switch (pole) {
             case TALL:
-                parkingZone1 = new Pose2d(side * (isRight ? ZONE_1_X : ZONE_3_X), MAIN_Y, !isRight ? facingRight : facingLeft);
-                parkingZone2 = new Pose2d(centerPathX, MAIN_Y, parkingZone1.getHeading());
-                parkingZone3 = new Pose2d(side * (isRight ? ZONE_3_X : ZONE_1_X), MAIN_Y, parkingZone1.getHeading());
-
-                firstConeTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
-                        .setReversed(false)
-                        .addTemporalMarker(() -> scorer.liftClaw())
-                        .splineTo(new Vector2d(centerPathX, -25), facingForward)
-                        .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
-                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(pole))
-                        .addTemporalMarker(() -> scorer.dropCone(PowerplayLift.Position.FIVE))
-                        .waitSeconds(TIME_DROP)
-                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                        .setReversed(true)
-                        .setTangent(tallScoringPos.getHeading() + facingLeft)
-                        .splineTo(sideTurnPos, stack + (isRight ? facingRight : facingLeft))
-                        .splineTo(stackPos, isRight ? facingRight : facingLeft)
-                        .addTemporalMarker(() -> scorer.grabCone())
-                        .waitSeconds(TIME_GRAB)
-                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_GRAB, () -> scorer.passthrough.trigger())
-                        // loop below
-                        .setReversed(false)
-                        .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
-                        .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
-                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(pole))
-                        .addTemporalMarker(() -> scorer.dropCone(PowerplayLift.Position.FOUR))
-                        .waitSeconds(TIME_DROP)
-                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                        .setReversed(true)
-                        .setTangent(tallScoringPos.getHeading() + facingLeft)
-                        .splineTo(sideTurnPos, stack + (isRight ? facingRight : facingLeft))
-                        .splineTo(stackPos, isRight ? facingRight : facingLeft)
-                        .addTemporalMarker(() -> scorer.grabCone())
-                        .waitSeconds(TIME_GRAB)
-                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_GRAB, () -> scorer.passthrough.trigger())
-                        .build();
-
-                parkInZone1 = isRight ?
-                        // right side of field
-                        drivetrain.trajectorySequenceBuilder(firstConeTrajectory.end())
-                                .setReversed(false)
-                                .splineTo(centerTurnPos, facingLeft)
-                                .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading() + facingLeft)
-                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(pole))
-                                .addTemporalMarker(() -> scorer.dropCone())
-                                .waitSeconds(TIME_DROP)
-                                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                                .lineToSplineHeading(parkingZone1)
-                                .build() :
-                        // left side of field
-                        drivetrain.trajectorySequenceBuilder(firstConeTrajectory.end())
-                                .setReversed(false)
-                                .splineTo(sideTurnPos, stack + facingRight)
-                                .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
-                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(pole))
-                                .addTemporalMarker(() -> scorer.dropCone())
-                                .waitSeconds(TIME_DROP)
-                                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                                .setReversed(true)
-                                .splineTo(sideTurnPos, facingLeft)
-                                .splineTo(parkingZone1.vec(), facingLeft)
-                                .build();
-
-                parkInZone2 = drivetrain.trajectorySequenceBuilder(firstConeTrajectory.end())
-                        .setReversed(false)
-                        .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
-                        .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
-                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(pole))
-                        .addTemporalMarker(() -> scorer.dropCone())
-                        .waitSeconds(TIME_DROP)
-                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                        .lineToSplineHeading(parkingZone2)
-                        .build();
-
-                parkInZone3 = isRight ?
-                        // right side of field
-                        drivetrain.trajectorySequenceBuilder(firstConeTrajectory.end())
-                                .setReversed(false)
-                                .splineTo(sideTurnPos, stack + facingLeft)
-                                .splineToSplineHeading(tallScoringPos, tallScoringPos.getHeading())
-                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(pole))
-                                .addTemporalMarker(() -> scorer.dropCone())
-                                .waitSeconds(TIME_DROP)
-                                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                                .setReversed(true)
-                                .splineTo(sideTurnPos, facingRight)
-                                .splineTo(parkingZone3.vec(), facingRight)
-                                .build() :
-                        // left side of field
-                        drivetrain.trajectorySequenceBuilder(firstConeTrajectory.end())
-                                .setReversed(false)
-                                .splineTo(centerTurnPos, facingRight)
-                                .splineTo(centerTallScoringPos.vec(), centerTallScoringPos.getHeading() + facingLeft)
-                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(pole))
-                                .addTemporalMarker(() -> scorer.dropCone())
-                                .waitSeconds(TIME_DROP)
-                                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                                .lineToSplineHeading(parkingZone3)
-                                .build();
-
-                HeadingHolder.setHeading(isRight ? 90.0 : 270.0);
+                TIME_LIFT = TIME_LIFT_TALL;
+                scoringPos = tallScoringPos;
                 break;
             default:
             case MED:
-                parkingZone1 = new Pose2d(side * (isRight ? ZONE_1_X : ZONE_3_X), MAIN_Y, isRight ? facingRight : facingLeft);
-                parkingZone2 = new Pose2d(centerPathX, MAIN_Y, parkingZone1.getHeading());
-                parkingZone3 = new Pose2d(side * (isRight ? ZONE_3_X : ZONE_1_X), MAIN_Y, parkingZone1.getHeading());
+                TIME_LIFT = TIME_LIFT_MEDIUM;
+                scoringPos = medScoringPos;
+                break;
+        }
 
-                firstConeTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
+        scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
+                .setReversed(true)
+                .addTemporalMarker(() -> scorer.liftClaw())
+                .lineTo(parkingZone2.vec())
+                .lineToSplineHeading(scoringPos)
+                .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
+                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
+//                .waitSeconds(TIME_PRE_DROP)
+//                .addTemporalMarker(() -> scorer.dropCone(PowerplayLift.Position.FIVE))
+//                .waitSeconds(TIME_DROP)
+//                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+//                .setReversed(false)
+//                .splineTo(sideTurnPos, stack + (isRight ? facingRight : facingLeft))
+//                .splineTo(stackPos, isRight ? facingRight : facingLeft)
+                // loop below
+//                .addTemporalMarker(() -> scorer.grabCone())
+//                .waitSeconds(TIME_GRAB)
+//                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_GRAB, () -> scorer.passthrough.trigger())
+//                .setReversed(true)
+//                .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
+//                .splineToSplineHeading(scoringPos, scoringPos.getHeading() - facingLeft)
+//                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
+//                .waitSeconds(TIME_PRE_DROP)
+//                .addTemporalMarker(() -> scorer.dropCone(PowerplayLift.Position.FOUR))
+//                .waitSeconds(TIME_DROP)
+//                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+//                .setReversed(false)
+//                .splineTo(sideTurnPos, stack + (isRight ? facingRight : facingLeft))
+//                .splineTo(stackPos, isRight ? facingRight : facingLeft)
+                .build();
+
+        parkInZone1 = isRight ?
+                drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                         .setReversed(true)
-                        .addTemporalMarker(() -> scorer.liftClaw())
-                        .lineTo(parkingZone2.vec())
-                        .lineToSplineHeading(medScoringPos)
-                        .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
-                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(pole))
-//                        .waitSeconds(TIME_PRE_DROP)
-//                        .addTemporalMarker(() -> scorer.dropCone(PowerplayLift.Position.FIVE))
-//                        .waitSeconds(TIME_DROP)
-//                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-//                        .setReversed(false)
-//                        .splineTo(sideTurnPos, stack + (isRight ? facingRight : facingLeft))
-//                        .splineTo(stackPos, isRight ? facingRight : facingLeft)
-//                        .addTemporalMarker(() -> scorer.grabCone())
-//                        .waitSeconds(TIME_GRAB)
-//                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_GRAB, () -> scorer.passthrough.trigger())
-                        .build();
-
-                cycleTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
-                        .setReversed(true)
-                        .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
-                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
-                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(pole))
-                        .waitSeconds(TIME_PRE_DROP)
-                        .addTemporalMarker(() -> scorer.dropCone(PowerplayLift.Position.FOUR))
-                        .waitSeconds(TIME_DROP)
-                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                        .setReversed(false)
-                        .splineTo(sideTurnPos, stack + (isRight ? facingRight : facingLeft))
-                        .splineTo(stackPos, isRight ? facingRight : facingLeft)
-                        .addTemporalMarker(() -> scorer.grabCone())
-                        .waitSeconds(TIME_GRAB)
-                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_GRAB, () -> scorer.passthrough.trigger())
-                        .build();
-
-                parkInZone1 = isRight ?
-                        drivetrain.trajectorySequenceBuilder(firstConeTrajectory.end())
-                                .setReversed(true)
-                                .splineTo(centerTurnPos, facingLeft)
-                                .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading() - facingLeft)
-                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(pole))
-                                .waitSeconds(TIME_PRE_DROP)
-                                .addTemporalMarker(() -> scorer.dropCone())
-                                .waitSeconds(TIME_DROP)
-                                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                                .lineToSplineHeading(parkingZone1)
-                                .build() :
-                        drivetrain.trajectorySequenceBuilder(firstConeTrajectory.end())
-                                .setReversed(true)
-                                .splineTo(sideTurnPos, stack + facingRight)
-                                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
-                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(pole))
-                                .waitSeconds(TIME_PRE_DROP)
-                                .addTemporalMarker(() -> scorer.dropCone())
-                                .waitSeconds(TIME_DROP)
-                                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                                .setReversed(false)
-                                .splineTo(sideTurnPos, facingLeft)
-                                .splineTo(parkingZone1.vec(), parkingZone1.getHeading())
-                                .build();
-
-                parkInZone2 = drivetrain.trajectorySequenceBuilder(firstConeTrajectory.end())
-                        .setReversed(true)
-                        .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
-                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
-                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(pole))
+                        .splineTo(centerTurnPos, facingLeft)
+                        .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading() - facingLeft)
+                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayLift.Position.TALL))
                         .waitSeconds(TIME_PRE_DROP)
                         .addTemporalMarker(() -> scorer.dropCone())
                         .waitSeconds(TIME_DROP)
                         .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                        .lineToSplineHeading(parkingZone2)
+                        .lineToSplineHeading(parkingZone1)
+                        .build() :
+                drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
+                        .setReversed(true)
+                        .splineTo(sideTurnPos, stack + facingRight)
+                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
+                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
+                        .waitSeconds(TIME_PRE_DROP)
+                        .addTemporalMarker(() -> scorer.dropCone())
+                        .waitSeconds(TIME_DROP)
+                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+                        .setReversed(false)
+                        .splineTo(sideTurnPos, facingLeft)
+                        .splineTo(parkingZone1.vec(), parkingZone1.getHeading())
                         .build();
 
-                parkInZone3 = isRight ?
-                        drivetrain.trajectorySequenceBuilder(firstConeTrajectory.end())
-                                .setReversed(true)
-                                .splineTo(sideTurnPos, stack + facingLeft)
-                                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
-                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_MEDIUM, () -> scorer.setTargetLiftPos(pole))
-                                .waitSeconds(TIME_PRE_DROP)
-                                .addTemporalMarker(() -> scorer.dropCone())
-                                .waitSeconds(TIME_DROP)
-                                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                                .setReversed(false)
-                                .splineTo(sideTurnPos, facingRight)
-                                .splineTo(parkingZone3.vec(), parkingZone3.getHeading())
-                                .build() :
-                        drivetrain.trajectorySequenceBuilder(firstConeTrajectory.end())
-                                .setReversed(true)
-                                .splineTo(centerTurnPos, facingRight)
-                                .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading() - facingLeft)
-                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(pole))
-                                .waitSeconds(TIME_PRE_DROP)
-                                .addTemporalMarker(() -> scorer.dropCone())
-                                .waitSeconds(TIME_DROP)
-                                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
-                                .lineToSplineHeading(parkingZone3)
-                                .build();
+        parkInZone2 = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
+                .setReversed(true)
+                .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
+                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
+                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
+                .waitSeconds(TIME_PRE_DROP)
+                .addTemporalMarker(() -> scorer.dropCone())
+                .waitSeconds(TIME_DROP)
+                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+                .lineToSplineHeading(parkingZone2)
+                .build();
 
-                HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
-                break;
-        }
+        parkInZone3 = isRight ?
+                drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
+                        .setReversed(true)
+                        .splineTo(sideTurnPos, stack + facingLeft)
+                        .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - facingLeft)
+                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
+                        .waitSeconds(TIME_PRE_DROP)
+                        .addTemporalMarker(() -> scorer.dropCone())
+                        .waitSeconds(TIME_DROP)
+                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+                        .setReversed(false)
+                        .splineTo(sideTurnPos, facingRight)
+                        .splineTo(parkingZone3.vec(), parkingZone3.getHeading())
+                        .build() :
+                drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
+                        .setReversed(true)
+                        .splineTo(centerTurnPos, facingRight)
+                        .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading() - facingLeft)
+                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayLift.Position.TALL))
+                        .waitSeconds(TIME_PRE_DROP)
+                        .addTemporalMarker(() -> scorer.dropCone())
+                        .waitSeconds(TIME_DROP)
+                        .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+                        .lineToSplineHeading(parkingZone3)
+                        .build();
+
+        HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
 
         // Lens intrinsics
         // UNITS ARE PIXELS
@@ -349,7 +249,7 @@ public abstract class BaseAuton extends LinearOpMode {
         //  Initialize telemetry and dashboard
         myTelemetry = new MultipleTelemetry(telemetry);
 
-        drivetrain.followTrajectorySequenceAsync(firstConeTrajectory);
+        drivetrain.followTrajectorySequenceAsync(scoringTrajectory);
 
         hubs = hardwareMap.getAll(LynxModule.class);
 
