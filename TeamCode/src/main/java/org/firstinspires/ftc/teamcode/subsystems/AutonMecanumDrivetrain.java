@@ -58,8 +58,8 @@ import java.util.List;
  */
 @Config
 public class AutonMecanumDrivetrain extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(2, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(2, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(3.5, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(3.5, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1.2177208938;
 
