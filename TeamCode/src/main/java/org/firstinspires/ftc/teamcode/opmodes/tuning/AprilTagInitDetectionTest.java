@@ -40,7 +40,7 @@ public class AprilTagInitDetectionTest extends LinearOpMode {
         AprilTagCamera camera = new AprilTagCamera(
                 hardwareMap,
                 new MultipleTelemetry(telemetry),
-                new Integer[]{1, 2, 3},
+                new int[]{1, 2, 3},
                 OpenCvCameraRotation.UPRIGHT
         );
 

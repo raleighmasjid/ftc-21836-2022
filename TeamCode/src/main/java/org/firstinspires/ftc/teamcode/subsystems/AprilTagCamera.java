@@ -12,7 +12,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 @Config
 public class AprilTagCamera {
@@ -38,9 +37,9 @@ public class AprilTagCamera {
 
     private final MultipleTelemetry myTelemetry;
 
-    private final Integer[] tagIdsToLookFor;
+    private final int[] tagIdsToLookFor;
 
-    public AprilTagCamera(HardwareMap hardwareMap, MultipleTelemetry myTelemetry, Integer[] tagIdsToLookFor, OpenCvCameraRotation cameraRotation) {
+    public AprilTagCamera(HardwareMap hardwareMap, MultipleTelemetry myTelemetry, int[] tagIdsToLookFor, OpenCvCameraRotation cameraRotation) {
         camera = OpenCvCameraFactory.getInstance().createWebcam(
                 hardwareMap.get(WebcamName.class, "Webcam 1"),
                 hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName())
@@ -61,55 +60,65 @@ public class AprilTagCamera {
         this.tagIdsToLookFor = tagIdsToLookFor;
     }
 
-    private boolean checkForTag(ArrayList<AprilTagDetection> currentDetections) {
-        for (AprilTagDetection detection : currentDetections) {
-            if (Arrays.asList(tagIdsToLookFor).contains(detection.id)) {
-                detectedTag = detection;
-                return true;
+    /**
+     * To be run in a "while (!isStarted() && !isStopRequested())" loop at the end of the init sequence
+     */
+    public void initLoop() {
+        if (checkIfTagDetected(pipeline.getLatestDetections())) {
+            myTelemetry.addLine("Tag of interest is in sight!");
+            printDetectedTag();
+        } else printNoTagVisible();
+
+        myTelemetry.update();
+    }
+
+    /**
+     * To be run once after the opmode is started (after init)
+     */
+    public void printOutput() {
+        camera.stopStreaming();
+        camera.closeCameraDevice();
+
+        if (detectedTag != null) printDetectedTag();
+        else myTelemetry.addLine("No tag was detected during the init loop :(");
+
+        myTelemetry.update();
+    }
+
+    /**
+     * @param detections {@link AprilTagDetection} ArrayList grabbed from an {@link AprilTagDetectionPipeline}
+     * @return Whether or not a {@link #detectedTag}'s id is one of the {@link #tagIdsToLookFor}
+     */
+    private boolean checkIfTagDetected(ArrayList<AprilTagDetection> detections) {
+        if (detections.size() == 0) return false;
+        for (AprilTagDetection detection : detections) {
+            for (int tagId : tagIdsToLookFor) {
+                if (detection.id == tagId) {
+                    detectedTag = detection;
+                    return true;
+                }
             }
         }
         return false;
     }
 
-
-    public void initLoop() {
-        ArrayList<AprilTagDetection> currentDetections = pipeline.getLatestDetections();
-        boolean tagFound = false;
-
-        if (currentDetections.size() != 0) tagFound = checkForTag(currentDetections);
-
-        if (tagFound) {
-            myTelemetry.addLine("Tag of interest is in sight!");
-            tagToTelemetry();
-        } else printNoTagFound();
-
-        myTelemetry.update();
-    }
-
-    public void printOutput() {
-        camera.stopStreaming();
-        camera.closeCameraDevice();
-
-        if (detectedTag != null) {
-            myTelemetry.addLine("Tag snapshot:\n");
-            tagToTelemetry();
-            myTelemetry.update();
-        } else {
-            myTelemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-            myTelemetry.update();
-        }
-    }
-
-    private void printNoTagFound() {
-        myTelemetry.addLine("Don't see tag of interest :(");
-        if (detectedTag == null) myTelemetry.addLine("(The tag has never been seen)");
+    /**
+     * Prints telemetry if no tag is visible at the moment <p>
+     * However, if a tag was previously detected, it's id will be printed
+     */
+    private void printNoTagVisible() {
+        myTelemetry.addLine("No tag visible");
+        if (detectedTag == null) myTelemetry.addLine("(A tag has never been detected)");
         else {
-            myTelemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-            tagToTelemetry();
+            myTelemetry.addLine("\nBut a tag WAS detected:");
+            printDetectedTag();
         }
     }
 
-    private void tagToTelemetry() {
+    /**
+     * Prints formatted id of the most recent {@link #detectedTag}
+     */
+    private void printDetectedTag() {
         myTelemetry.addLine(String.format("\nDetected tag ID=%d", detectedTag.id));
     }
 }
