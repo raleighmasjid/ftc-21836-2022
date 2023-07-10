@@ -108,19 +108,23 @@ public class PowerplayPassthrough {
         updateProfile();
     }
 
-    public void run() {
+    public void run(double angle) {
         claw.updateAngles(ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
         wrist.updateAngles(ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);
 
-        currentAngle = profiler.getX();
-        for (SimpleServo servo : servos) servo.turnToAngle(currentAngle);
+        this.currentAngle = angle;
+        for (SimpleServo servo : servos) servo.turnToAngle(this.currentAngle);
 
-        if (triggered && Math.abs(ANGLE_WRIST_PIVOT_POS - currentAngle) <= WRIST_PIVOT_POS_TOLERANCE) {
+        if (triggered && Math.abs(ANGLE_WRIST_PIVOT_POS - this.currentAngle) <= WRIST_PIVOT_POS_TOLERANCE) {
             wrist.setActivated(inBack);
             triggered = false;
         }
         wrist.run();
         claw.run();
+    }
+
+    public void run() {
+        this.run(profiler.getX());
     }
 
     public void reset() {

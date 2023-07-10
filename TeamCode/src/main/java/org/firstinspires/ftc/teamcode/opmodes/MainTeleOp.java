@@ -9,9 +9,11 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
+import org.firstinspires.ftc.teamcode.robot.PowerplayPassthrough;
 import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
 import org.firstinspires.ftc.teamcode.subsystems.PositionLockingMecanum;
 
@@ -29,6 +31,7 @@ public class MainTeleOp extends LinearOpMode {
     GamepadEx Gamepad1, Gamepad2;
 
     public static double DRIVETRAIN_PRECISION_MODE_SCALE = 0.3;
+    public static double PASSTHROUGH_CONTROL_SCALE = 10.0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -78,6 +81,7 @@ public class MainTeleOp extends LinearOpMode {
         };
 
         boolean overrideMode = false;
+        double manualPassthroughAngle = PowerplayPassthrough.ANGLE_PASS_FRONT;
 
         drivetrain.setCurrentHeading(HeadingHolder.getHeading());
 
@@ -133,7 +137,12 @@ public class MainTeleOp extends LinearOpMode {
                 if (control2Y.wasJustPressed()) scorer.passthrough.toggle();
 
                 scorer.lift.run(Gamepad2.getLeftY(), true);
-
+                manualPassthroughAngle = Range.clip(
+                        manualPassthroughAngle + Gamepad2.getRightX() * PASSTHROUGH_CONTROL_SCALE,
+                        PowerplayPassthrough.ANGLE_PASS_FRONT,
+                        PowerplayPassthrough.ANGLE_PASS_BACK
+                );
+                scorer.passthrough.run(manualPassthroughAngle);
             } else {
 
                 if (control2Up.wasJustPressed()) {
@@ -165,7 +174,7 @@ public class MainTeleOp extends LinearOpMode {
                 if (control2X.wasJustPressed()) scorer.toggleFloorPickup();
 
                 scorer.lift.runToPosition();
-
+                scorer.passthrough.run();
             }
 
             scorer.run(

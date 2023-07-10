@@ -129,7 +129,6 @@ public class PowerplayScorer {
             passthrough.toggleTilt();
             floorPickupToggled = false;
         }
-        passthrough.run();
 
         if (!clawHasLifted && liftClawTimer.seconds() >= TIME_CLAW) liftClaw();
 
