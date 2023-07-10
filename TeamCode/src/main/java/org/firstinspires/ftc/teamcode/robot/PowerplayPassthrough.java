@@ -170,7 +170,7 @@ public class PowerplayPassthrough {
     public void printTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Claw is", claw.getActivated() ? "closed" : "open");
         telemetry.addLine();
-        telemetry.addData("Pivot is oriented to", wrist.getActivated() ? "back" : "front");
+        telemetry.addData("Wrist is oriented to", wrist.getActivated() ? "back" : "front");
         telemetry.addLine();
         telemetry.addData("Arm is in the", inBack ? "back" : "front");
     }
