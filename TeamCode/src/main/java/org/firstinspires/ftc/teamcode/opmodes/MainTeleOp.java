@@ -29,7 +29,7 @@ public class MainTeleOp extends LinearOpMode {
     GamepadEx Gamepad1, Gamepad2;
 
     public static double DRIVETRAIN_PRECISION_MODE_SCALE = 0.3;
-    public static double PASSTHROUGH_CONTROL_SCALE = 20.0;
+    public static double PASSTHROUGH_CONTROL_SCALE = 5;
 
     @Override
     public void runOpMode() throws InterruptedException {
