@@ -18,7 +18,7 @@ public class PowerplayLift extends ProfiledMotor {
             HEIGHT_MEDIUM = 17,
             HEIGHT_TALL = 27,
             HEIGHT_1_STAGE = 9.6,
-            kG_4 = 0.25,
+            kG_1_STAGE = 0.06,
             kG_3 = 0.19,
             kP = 0.1,
             kI = 0.2,
@@ -115,10 +115,10 @@ public class PowerplayLift extends ProfiledMotor {
      */
     private double kG() {
         double currentPosition = getCurrentPosition();
-        return currentPosition >= HEIGHT_1_STAGE * 3 ? kG_4 :
+        return currentPosition >= HEIGHT_1_STAGE * 3 ? kG_3 + kG_1_STAGE :
                 currentPosition >= HEIGHT_1_STAGE * 2 ? kG_3 :
-                        currentPosition >= HEIGHT_1_STAGE ? kG_3 - (kG_4 - kG_3) :
-                                currentPosition > TOLERANCE ? kG_3 - 2 * (kG_4 - kG_3) :
+                        currentPosition >= HEIGHT_1_STAGE ? kG_3 - kG_1_STAGE :
+                                currentPosition > TOLERANCE ? kG_3 - 2 * kG_1_STAGE :
                                         0.0;
     }
 
