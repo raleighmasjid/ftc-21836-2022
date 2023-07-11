@@ -115,11 +115,11 @@ public class PowerplayLift extends ProfiledMotor {
      */
     private double kG() {
         double currentPosition = getCurrentPosition();
-        return currentPosition >= HEIGHT_1_STAGE * 3 ? kG_3 + kG_1_STAGE :
-                currentPosition >= HEIGHT_1_STAGE * 2 ? kG_3 :
-                        currentPosition >= HEIGHT_1_STAGE ? kG_3 - kG_1_STAGE :
-                                currentPosition > TOLERANCE ? kG_3 - 2 * kG_1_STAGE :
-                                        0.0;
+        if (currentPosition >= HEIGHT_1_STAGE * 3) return kG_3 + kG_1_STAGE;
+        if (currentPosition >= HEIGHT_1_STAGE * 2) return kG_3;
+        if (currentPosition >= HEIGHT_1_STAGE) return kG_3 - kG_1_STAGE;
+        if (currentPosition > TOLERANCE) return kG_3 - 2 * kG_1_STAGE;
+        return 0.0;
     }
 
     public double getConesHeight(int numOfCones) {
