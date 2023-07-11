@@ -114,7 +114,7 @@ public class PowerplayScorer {
 
     public void toggleFloorPickup() {
         passthrough.toggleTilt();
-        floorPickupActivated = true;
+        floorPickupActivated = !floorPickupActivated;
     }
 
     /**
