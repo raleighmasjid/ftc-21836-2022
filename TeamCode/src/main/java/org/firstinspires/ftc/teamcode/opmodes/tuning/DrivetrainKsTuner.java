@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.subsystems.HeadingLockingMecanum;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDrivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.PositionLockingMecanum;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class DrivetrainKsTuner extends LinearOpMode {
 //      teleop control loop
         while (opModeIsActive()) {
             for (LynxModule hub : hubs) hub.clearBulkCache();
-            drivetrain.run(0, PositionLockingMecanum.kS, 0, true);
+            drivetrain.run(0, 0, HeadingLockingMecanum.kS);
         }
     }
 }
