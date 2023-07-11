@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
-import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
-import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
+import org.firstinspires.ftc.teamcode.robot.Lift;
+import org.firstinspires.ftc.teamcode.robot.ScoringSystems;
 import org.firstinspires.ftc.teamcode.subsystems.HeadingLockingMecanum;
 
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 public class MainTeleOp extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
-    PowerplayScorer scorer;
+    ScoringSystems scorer;
     HeadingLockingMecanum drivetrain;
     List<LynxModule> hubs;
     GamepadEx Gamepad1, Gamepad2;
@@ -37,7 +37,7 @@ public class MainTeleOp extends LinearOpMode {
 //      Initialize telemetry
         myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        scorer = new PowerplayScorer(hardwareMap);
+        scorer = new ScoringSystems(hardwareMap);
         drivetrain = new HeadingLockingMecanum(hardwareMap, 537.7, 312);
 
         hubs = hardwareMap.getAll(LynxModule.class);
@@ -139,23 +139,23 @@ public class MainTeleOp extends LinearOpMode {
 
                 if (control2Up.wasJustPressed()) {
                     scorer.setTargetLiftPos(stackHeights ?
-                            PowerplayLift.Position.FIVE :
-                            PowerplayLift.Position.TALL
+                            Lift.Position.FIVE :
+                            Lift.Position.TALL
                     );
                 } else if (control2Left.wasJustPressed()) {
                     scorer.setTargetLiftPos(stackHeights ?
-                            PowerplayLift.Position.FOUR :
-                            PowerplayLift.Position.MED
+                            Lift.Position.FOUR :
+                            Lift.Position.MED
                     );
                 } else if (control2Right.wasJustPressed()) {
                     scorer.setTargetLiftPos(stackHeights ?
-                            PowerplayLift.Position.THREE :
-                            PowerplayLift.Position.LOW
+                            Lift.Position.THREE :
+                            Lift.Position.LOW
                     );
                 } else if (control2Down.wasJustPressed()) {
                     scorer.setTargetLiftPos(stackHeights ?
-                            PowerplayLift.Position.TWO :
-                            PowerplayLift.Position.FLOOR
+                            Lift.Position.TWO :
+                            Lift.Position.FLOOR
                     );
                 }
 
@@ -170,8 +170,8 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             scorer.run(
-                    Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * PowerplayScorer.ANGLE_CONE_ARMS_DOWN,
-                    Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * PowerplayScorer.ANGLE_CONE_ARMS_DOWN
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * ScoringSystems.ANGLE_CONE_ARMS_DOWN,
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * ScoringSystems.ANGLE_CONE_ARMS_DOWN
             );
             drivetrain.run(
                     Gamepad1.getLeftX() * precisionScale,

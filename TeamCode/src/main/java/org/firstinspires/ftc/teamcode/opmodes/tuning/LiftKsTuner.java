@@ -4,7 +4,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
+import org.firstinspires.ftc.teamcode.robot.Lift;
 
 import java.util.List;
 
@@ -12,13 +12,13 @@ import java.util.List;
 
 public class LiftKsTuner extends LinearOpMode {
 
-    PowerplayLift lift;
+    Lift lift;
     List<LynxModule> hubs;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        lift = new PowerplayLift(hardwareMap);
+        lift = new Lift(hardwareMap);
 
         hubs = hardwareMap.getAll(LynxModule.class);
 
@@ -29,7 +29,7 @@ public class LiftKsTuner extends LinearOpMode {
 //      teleop control loop
         while (opModeIsActive()) {
             for (LynxModule hub : hubs) hub.clearBulkCache();
-            lift.run(PowerplayLift.kS, true);
+            lift.run(Lift.kS, true);
         }
     }
 }

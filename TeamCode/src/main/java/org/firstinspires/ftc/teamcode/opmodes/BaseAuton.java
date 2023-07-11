@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.control.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.PowerplayLift;
-import org.firstinspires.ftc.teamcode.robot.PowerplayScorer;
+import org.firstinspires.ftc.teamcode.robot.Lift;
+import org.firstinspires.ftc.teamcode.robot.ScoringSystems;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagCamera;
 import org.firstinspires.ftc.teamcode.subsystems.AutonMecanumDrivetrain;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -24,7 +24,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
     private MultipleTelemetry myTelemetry;
     private AutonMecanumDrivetrain drivetrain;
-    private PowerplayScorer scorer;
+    private ScoringSystems scorer;
     private List<LynxModule> hubs;
     private AprilTagCamera camera;
 
@@ -60,9 +60,9 @@ public abstract class BaseAuton extends LinearOpMode {
         LEFT, RIGHT
     }
 
-    public void runOpMode(PowerplayLift.Position pole, Side sideEnum) throws InterruptedException {
+    public void runOpMode(Lift.Position pole, Side sideEnum) throws InterruptedException {
         drivetrain = new AutonMecanumDrivetrain(hardwareMap);
-        scorer = new PowerplayScorer(hardwareMap);
+        scorer = new ScoringSystems(hardwareMap);
 
         boolean isRight = sideEnum == Side.RIGHT;
         double side = isRight ? 1 : -1;
@@ -116,7 +116,7 @@ public abstract class BaseAuton extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .waitSeconds(TIME_PRE_DROP)
-                .addTemporalMarker(() -> scorer.dropCone(PowerplayLift.Position.FIVE))
+                .addTemporalMarker(() -> scorer.dropCone(Lift.Position.FIVE))
                 .waitSeconds(TIME_DROP)
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                 .splineTo(sideTurnPos, stackOffset + (isRight ? facingRight : facingLeft))
@@ -131,7 +131,7 @@ public abstract class BaseAuton extends LinearOpMode {
                 .splineToSplineHeading(scoringPos, scoringPos.getHeading() - facingLeft)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .waitSeconds(TIME_PRE_DROP)
-                .addTemporalMarker(() -> scorer.dropCone(PowerplayLift.Position.FOUR))
+                .addTemporalMarker(() -> scorer.dropCone(Lift.Position.FOUR))
                 .waitSeconds(TIME_DROP)
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                 .setReversed(false)
@@ -144,7 +144,7 @@ public abstract class BaseAuton extends LinearOpMode {
                         .setReversed(true)
                         .splineTo(centerTurnPos, facingLeft)
                         .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading() - facingLeft)
-                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayLift.Position.TALL))
+                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(Lift.Position.TALL))
                         .waitSeconds(TIME_PRE_DROP)
                         .addTemporalMarker(() -> scorer.dropCone())
                         .waitSeconds(TIME_DROP)
@@ -195,7 +195,7 @@ public abstract class BaseAuton extends LinearOpMode {
                         .setReversed(true)
                         .splineTo(centerTurnPos, facingRight)
                         .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading() - facingLeft)
-                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(PowerplayLift.Position.TALL))
+                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT_TALL, () -> scorer.setTargetLiftPos(Lift.Position.TALL))
                         .waitSeconds(TIME_PRE_DROP)
                         .addTemporalMarker(() -> scorer.dropCone())
                         .waitSeconds(TIME_DROP)

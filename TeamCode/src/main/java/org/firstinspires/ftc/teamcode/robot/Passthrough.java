@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.control.MotionProfiler;
 import org.firstinspires.ftc.teamcode.subsystems.SimpleServoPivot;
 
 @Config
-public class PowerplayPassthrough {
+public class Passthrough {
 
     private final SimpleServo[] servos;
 
@@ -48,7 +48,7 @@ public class PowerplayPassthrough {
         return servo;
     }
 
-    public PowerplayPassthrough(HardwareMap hw) {
+    public Passthrough(HardwareMap hw) {
         servos = new SimpleServo[]{axon(hw, "passthrough 1"), reverseServo(axon(hw, "passthrough 2"))};
         claw = new SimpleServoPivot(new SimpleServo[]{axon(hw, "claw right")}, ANGLE_CLAW_OPEN, ANGLE_CLAW_CLOSED);
         wrist = new SimpleServoPivot(new SimpleServo[]{reverseServo(axon(hw, "claw pivot"))}, ANGLE_WRIST_FRONT, ANGLE_WRIST_BACK);

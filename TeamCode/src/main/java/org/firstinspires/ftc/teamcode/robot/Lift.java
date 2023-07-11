@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledMotor;
 
 @Config
-public class PowerplayLift extends ProfiledMotor {
+public class Lift extends ProfiledMotor {
 
     public static double
             HEIGHT_FLOOR = 0.0,
@@ -68,7 +68,7 @@ public class PowerplayLift extends ProfiledMotor {
         return motors;
     }
 
-    public PowerplayLift(HardwareMap hw) {
+    public Lift(HardwareMap hw) {
         super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledPIDF(), new FIRLowPassFilter(), new FIRLowPassFilter());
     }
 

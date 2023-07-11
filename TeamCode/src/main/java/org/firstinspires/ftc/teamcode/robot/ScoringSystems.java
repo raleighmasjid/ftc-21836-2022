@@ -8,22 +8,22 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * Merger class, linking a {@link PowerplayPassthrough} and {@link PowerplayLift} by automated methods
+ * Merger class, linking a {@link Passthrough} and {@link Lift} by automated methods
  *
  * @author Arshad Anas
  * @since 2022/12/24
  */
 @Config
-public class PowerplayScorer {
+public class ScoringSystems {
 
     private final SimpleServo coneArmR;
     private final SimpleServo coneArmL;
 
     private final ElapsedTime liftClawTimer = new ElapsedTime();
 
-    public final PowerplayLift lift;
+    public final Lift lift;
 
-    public final PowerplayPassthrough passthrough;
+    public final Passthrough passthrough;
 
     private boolean clawHasLifted = true, floorPickupActivated = false;
 
@@ -39,10 +39,10 @@ public class PowerplayScorer {
      *
      * @param hw Passed-in hardware map from the op mode
      */
-    public PowerplayScorer(HardwareMap hw) {
+    public ScoringSystems(HardwareMap hw) {
 
-        lift = new PowerplayLift(hw);
-        passthrough = new PowerplayPassthrough(hw);
+        lift = new Lift(hw);
+        passthrough = new Passthrough(hw);
 
         coneArmR = goBILDAServo(hw, "arm right");
         coneArmL = goBILDAServo(hw, "arm left");
@@ -58,8 +58,8 @@ public class PowerplayScorer {
         liftClawTimer.reset();
     }
 
-    public void setTargetLiftPos(PowerplayLift.Position height) {
-        passthrough.setTilt(height == PowerplayLift.Position.LOW || height == PowerplayLift.Position.MED || height == PowerplayLift.Position.TALL);
+    public void setTargetLiftPos(Lift.Position height) {
+        passthrough.setTilt(height == Lift.Position.LOW || height == Lift.Position.MED || height == Lift.Position.TALL);
         lift.setTargetPosition(height);
     }
 
@@ -79,7 +79,7 @@ public class PowerplayScorer {
      */
     public void grabCone() {
         passthrough.claw.setActivated(true);
-        if (lift.getCurrentPosition() <= (lift.getConesHeight(5) + PowerplayLift.TOLERANCE)) {
+        if (lift.getCurrentPosition() <= (lift.getConesHeight(5) + Lift.TOLERANCE)) {
             clawHasLifted = false;
             liftClawTimer.reset();
         }
@@ -91,7 +91,7 @@ public class PowerplayScorer {
      * 2 inches if grabbing off the floor
      */
     public void liftClaw() {
-        lift.setTargetPosition(lift.getCurrentPosition() + ((lift.getCurrentPosition() > PowerplayLift.TOLERANCE) ? 6 : 2));
+        lift.setTargetPosition(lift.getCurrentPosition() + ((lift.getCurrentPosition() > Lift.TOLERANCE) ? 6 : 2));
         clawHasLifted = true;
     }
 
@@ -99,7 +99,7 @@ public class PowerplayScorer {
      * Opens claw and runs lift to floor position
      */
     public void dropCone() {
-        dropCone(PowerplayLift.Position.FLOOR);
+        dropCone(Lift.Position.FLOOR);
     }
 
     /**
@@ -107,7 +107,7 @@ public class PowerplayScorer {
      *
      * @param height Named position to run lift to
      */
-    public void dropCone(PowerplayLift.Position height) {
+    public void dropCone(Lift.Position height) {
         passthrough.claw.setActivated(false);
         setTargetLiftPos(height);
     }
