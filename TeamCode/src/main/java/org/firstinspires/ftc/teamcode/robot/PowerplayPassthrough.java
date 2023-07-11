@@ -70,21 +70,6 @@ public class PowerplayPassthrough {
         updateProfile();
     }
 
-    private void updateProfile() {
-        double tiltOffset =
-                tilted ?
-                        ANGLE_PASS_TILT_OFFSET :
-                        (!triggered) && (inBack != wrist.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
-
-        profiler.updateConstraints(MAX_VELO, MAX_ACCEL, MAX_JERK);
-        profiler.setTargetPosition(currentAngle, inBack ? ANGLE_PASS_BACK - tiltOffset : ANGLE_PASS_FRONT + tiltOffset);
-        angleOffset = 0.0;
-    }
-
-    public boolean doneMoving() {
-        return profiler.isDone();
-    }
-
     /**
      * Runs {@link #toggle} and toggles pivot when at the halfway position
      */
@@ -110,6 +95,17 @@ public class PowerplayPassthrough {
         updateProfile();
     }
 
+    private void updateProfile() {
+        double tiltOffset =
+                tilted ?
+                        ANGLE_PASS_TILT_OFFSET :
+                        (!triggered) && (inBack != wrist.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
+
+        profiler.updateConstraints(MAX_VELO, MAX_ACCEL, MAX_JERK);
+        profiler.setTargetPosition(currentAngle, inBack ? ANGLE_PASS_BACK - tiltOffset : ANGLE_PASS_FRONT + tiltOffset);
+        angleOffset = 0.0;
+    }
+
     public void run(double manualInput) {
         profiler.update();
         angleOffset += manualInput;
@@ -129,6 +125,10 @@ public class PowerplayPassthrough {
 
     public void run() {
         this.run(0.0);
+    }
+
+    public boolean doneMoving() {
+        return profiler.isDone();
     }
 
     public void reset() {
