@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystems.HeadingLockingMecanum;
 import java.util.List;
 
 @Config
-@TeleOp(name = "Main TeleOp", group = "21836 Teleop")
+@TeleOp(group = "21836 Teleop")
 
 public class MainTeleOp extends LinearOpMode {
 
