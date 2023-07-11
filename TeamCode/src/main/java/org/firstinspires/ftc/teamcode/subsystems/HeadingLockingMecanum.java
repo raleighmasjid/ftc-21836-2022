@@ -52,7 +52,9 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
         if (turnCommand != 0.0) {
             turnCommand *= scalar;
             letGoTimer.reset();
-        } else if (letGoTimer.seconds() <= LET_GO_TIME) {
+        }
+
+        if (turnCommand != 0.0 || letGoTimer.seconds() <= LET_GO_TIME) {
             setTargetHeading(getHeading());
         } else {
             headingController.pid.setError(-normalizeAngle(headingController.pid.getTarget() - getHeading()));
