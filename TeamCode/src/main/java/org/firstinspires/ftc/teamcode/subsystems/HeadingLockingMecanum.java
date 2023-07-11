@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.controllers.PIDFController;
 
@@ -17,14 +18,18 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             kI = 0.0,
             kD = 0.0,
             kS = 0.0,
-            FILTER_GAIN = 0.85;
+            FILTER_GAIN = 0.85,
+            LET_GO_TIME = 1;
 
     public static int HEADING_FILTER_COUNT = 300;
+
+    private final ElapsedTime letGoTimer;
 
     private final PIDFController headingController = new PIDFController();
 
     public HeadingLockingMecanum(HardwareMap hw, double motorCPR, double motorRPM) {
         super(hw, motorCPR, motorRPM);
+        letGoTimer = new ElapsedTime();
     }
 
     @Override
@@ -48,9 +53,12 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
         double scalar = 12.0 / voltage;
 
         if (turnCommand != 0.0) {
-            setTargetHeading(getHeading());
             turnCommand *= scalar;
-        } else {
+            letGoTimer.reset();
+        }
+
+        if (letGoTimer.seconds() <= LET_GO_TIME) setTargetHeading(getHeading());
+        else if (turnCommand == 0.0) {
             headingController.pid.setError(-normalizeAngle(headingController.pid.getTarget() - getHeading()));
             turnCommand = headingController.update(getHeading(), voltage);
         }
