@@ -7,9 +7,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.controllers.PIDFController;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 @Config
 public class HeadingLockingMecanum extends MecanumDrivetrain {
 
@@ -62,15 +59,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             turnCommand = headingController.update(getHeading(), voltage);
         }
 
-        xCommand *= scalar;
-        yCommand *= scalar;
-
-        double max = Collections.max(Arrays.asList(xCommand, yCommand, turnCommand, 1.0));
-        xCommand /= max;
-        yCommand /= max;
-        turnCommand /= max;
-
-        super.run(xCommand, yCommand, turnCommand);
+        super.run(xCommand * scalar, yCommand * scalar, turnCommand);
     }
 
     public void setTargetHeading(double angle) {
