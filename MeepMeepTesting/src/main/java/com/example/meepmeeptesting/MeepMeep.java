@@ -74,12 +74,41 @@ public class MeepMeep {
                                 .addTemporalMarker(() -> {
                                 })
                                 .lineTo(parkingZone2.vec())
-                                .setReversed(true)
                                 .lineToSplineHeading(scoringPos)
                                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> {
                                 })
                                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> {
                                 })
+                                .waitSeconds(TIME_PRE_DROP)
+                                .addTemporalMarker(() -> {
+                                })
+                                .waitSeconds(TIME_DROP)
+                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> {
+                                })
+                                .setReversed(false)
+                                .splineTo(sideTurnPos, stack + (isRight ? facingRight : facingLeft))
+                                .splineTo(stackPos, isRight ? facingRight : facingLeft)
+                                // loop below
+                                .waitSeconds(TIME_PRE_GRAB)
+                                .addTemporalMarker(() -> {
+                                })
+                                .waitSeconds(TIME_GRAB)
+                                .UNSTABLE_addTemporalMarkerOffset(TIME_GRAB_TO_FLIP, () -> {
+                                })
+                                .setReversed(true)
+                                .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
+                                .splineToSplineHeading(scoringPos, scoringPos.getHeading() - facingLeft)
+                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> {
+                                })
+                                .waitSeconds(TIME_PRE_DROP)
+                                .addTemporalMarker(() -> {
+                                })
+                                .waitSeconds(TIME_DROP)
+                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> {
+                                })
+                                .setReversed(false)
+                                .splineTo(sideTurnPos, stack + (isRight ? facingRight : facingLeft))
+                                .splineTo(stackPos, isRight ? facingRight : facingLeft)
                                 .build()
                 );
 

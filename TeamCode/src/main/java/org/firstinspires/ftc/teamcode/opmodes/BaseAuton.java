@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -90,6 +91,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
         double TIME_LIFT;
         Pose2d scoringPos;
+        Trajectory firstScore;
 
         switch (pole) {
             case TALL:
@@ -103,24 +105,28 @@ public abstract class BaseAuton extends LinearOpMode {
                 break;
         }
 
+        firstScore = drivetrain.trajectoryBuilder(startPose)
+                .lineTo(parkingZone2.vec())
+//                .lineToSplineHeading(scoringPos)
+                .build();
+
         TrajectorySequence scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> scorer.liftClaw())
-                .lineTo(parkingZone2.vec())
-//                .setReversed(true)
-//                .lineToSplineHeading(scoringPos)
+                .addTrajectory(firstScore)
 //                .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
 //                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
 //                .waitSeconds(TIME_PRE_DROP)
 //                .addTemporalMarker(() -> scorer.dropCone(PowerplayLift.Position.FIVE))
 //                .waitSeconds(TIME_DROP)
-//                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+//                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
 //                .setReversed(false)
 //                .splineTo(sideTurnPos, stack + (isRight ? facingRight : facingLeft))
 //                .splineTo(stackPos, isRight ? facingRight : facingLeft)
-                // loop below
+//                // loop below
+//                .waitSeconds(TIME_PRE_GRAB)
 //                .addTemporalMarker(() -> scorer.grabCone())
 //                .waitSeconds(TIME_GRAB)
-//                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_GRAB, () -> scorer.passthrough.trigger())
+//                .UNSTABLE_addTemporalMarkerOffset(TIME_GRAB_TO_FLIP, () -> scorer.passthrough.trigger())
 //                .setReversed(true)
 //                .splineTo(sideTurnPos, stack + (isRight ? facingLeft : facingRight))
 //                .splineToSplineHeading(scoringPos, scoringPos.getHeading() - facingLeft)
@@ -128,7 +134,7 @@ public abstract class BaseAuton extends LinearOpMode {
 //                .waitSeconds(TIME_PRE_DROP)
 //                .addTemporalMarker(() -> scorer.dropCone(PowerplayLift.Position.FOUR))
 //                .waitSeconds(TIME_DROP)
-//                .UNSTABLE_addTemporalMarkerOffset(TIME_POST_DROP, () -> scorer.passthrough.trigger())
+//                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
 //                .setReversed(false)
 //                .splineTo(sideTurnPos, stack + (isRight ? facingRight : facingLeft))
 //                .splineTo(stackPos, isRight ? facingRight : facingLeft)
