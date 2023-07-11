@@ -68,9 +68,6 @@ public class PowerplayLift extends ProfiledMotor {
         return motors;
     }
 
-    /**
-     * Initialize fields <p>
-     */
     public PowerplayLift(HardwareMap hw) {
         super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledPIDF(), new FIRLowPassFilter(), new FIRLowPassFilter());
     }
