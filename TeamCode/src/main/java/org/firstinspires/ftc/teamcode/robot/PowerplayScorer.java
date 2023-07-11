@@ -25,7 +25,7 @@ public class PowerplayScorer {
 
     public final PowerplayPassthrough passthrough;
 
-    private boolean clawHasLifted = true, floorPickupToggled = false;
+    private boolean clawHasLifted = true, floorPickupActivated = false;
 
     public static double ANGLE_CONE_ARMS_DOWN = 100.0;
     public static double TIME_CLAW = 0.0;
@@ -114,7 +114,7 @@ public class PowerplayScorer {
 
     public void toggleFloorPickup() {
         passthrough.toggleTilt();
-        floorPickupToggled = true;
+        floorPickupActivated = true;
     }
 
     /**
@@ -124,10 +124,10 @@ public class PowerplayScorer {
      * @param angleL The angle to turn {@link #coneArmL} to
      */
     public void run(double angleR, double angleL) {
-        if (floorPickupToggled && passthrough.doneMoving()) {
+        if (floorPickupActivated && passthrough.doneMoving()) {
             passthrough.wrist.toggle();
             passthrough.toggleTilt();
-            floorPickupToggled = false;
+            floorPickupActivated = false;
         }
 
         if (!clawHasLifted && liftClawTimer.seconds() >= TIME_CLAW) liftClaw();
