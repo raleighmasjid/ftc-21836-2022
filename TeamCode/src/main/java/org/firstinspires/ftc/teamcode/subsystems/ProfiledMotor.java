@@ -165,7 +165,6 @@ public class ProfiledMotor {
         telemetry.addData("Profile position (in)", controller.profiler.getX());
         telemetry.addLine();
         telemetry.addData("Current velocity (in/s)", currentVelocity);
-        telemetry.addData("Encoder-calculated velocity (in/s)", motors[0].encoder.getCorrectedVelocity());
         telemetry.addData("Profile velocity (in/s)", controller.profiler.getV());
         telemetry.addData("Max velocity (in/s)", maxVelocity);
         telemetry.addLine();
