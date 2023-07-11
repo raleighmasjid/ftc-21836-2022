@@ -105,14 +105,10 @@ public abstract class BaseAuton extends LinearOpMode {
                 break;
         }
 
-        firstScore = drivetrain.trajectoryBuilder(startPose)
-                .lineTo(parkingZone2.vec())
-//                .lineToSplineHeading(scoringPos)
-                .build();
-
         TrajectorySequence scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> scorer.liftClaw())
-                .addTrajectory(firstScore)
+                .lineTo(parkingZone2.vec())
+//                .lineToSplineHeading(scoringPos)
 //                .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
 //                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
 //                .waitSeconds(TIME_PRE_DROP)
@@ -235,23 +231,22 @@ public abstract class BaseAuton extends LinearOpMode {
 
         camera.printOutput();
         ElapsedTime autonomousTimer = new ElapsedTime();
-        boolean hasParked = false;
+        boolean parkInZone = true;
 
         while (opModeIsActive()) {
 
             for (LynxModule hub : hubs) hub.clearBulkCache();
 
-//            if (!hasParked && !drivetrain.isBusy() && (autonomousTimer.seconds() >= 3)) {
-//
-//                drivetrain.followTrajectorySequenceAsync(
-//                        tagOfInterest == null ? parkInZone2 :
-//                                tagOfInterest.id == LEFT ? parkInZone1 :
-//                                        tagOfInterest.id == RIGHT ? parkInZone3 :
-//                                                parkInZone2
-//                );
-//
-//                hasParked = true;
-//            }
+            if (parkInZone && !drivetrain.isBusy() && (autonomousTimer.seconds() >= 3)) {
+                drivetrain.followTrajectorySequenceAsync(
+                        camera.detectedTag == null ? parkInZone2 :
+                                camera.detectedTag.id == 1 ? parkInZone1 :
+                                        camera.detectedTag.id == 3 ? parkInZone3 :
+                                                parkInZone2
+                );
+
+                parkInZone = false;
+            }
 
             scorer.lift.readPosition();
             drivetrain.update();
