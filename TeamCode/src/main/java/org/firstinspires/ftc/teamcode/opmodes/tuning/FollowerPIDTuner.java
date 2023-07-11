@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.control.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.subsystems.AutonMecanumDrivetrain;
 
 /*
@@ -39,17 +38,18 @@ public class FollowerPIDTuner extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (!isStopRequested()) {
-            TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(startPose)
-                    .forward(DISTANCE)
-                    .turn(Math.toRadians(90))
-                    .forward(DISTANCE)
-                    .turn(Math.toRadians(90))
-                    .forward(DISTANCE)
-                    .turn(Math.toRadians(90))
-                    .forward(DISTANCE)
-                    .turn(Math.toRadians(90))
-                    .build();
-            drive.followTrajectorySequence(trajSeq);
+            drive.followTrajectorySequence(
+                    drive.trajectorySequenceBuilder(startPose)
+                            .forward(DISTANCE)
+                            .turn(Math.toRadians(90))
+                            .forward(DISTANCE)
+                            .turn(Math.toRadians(90))
+                            .forward(DISTANCE)
+                            .turn(Math.toRadians(90))
+                            .forward(DISTANCE)
+                            .turn(Math.toRadians(90))
+                            .build()
+            );
         }
     }
 }
