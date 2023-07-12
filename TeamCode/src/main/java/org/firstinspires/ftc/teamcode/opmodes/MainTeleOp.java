@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.robot.Lift;
-import org.firstinspires.ftc.teamcode.robot.ScoringSystems;
+import org.firstinspires.ftc.teamcode.robot.ScoringSystem;
 import org.firstinspires.ftc.teamcode.subsystems.HeadingLockingMecanum;
 
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 public class MainTeleOp extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
-    ScoringSystems scorer;
+    ScoringSystem scorer;
     HeadingLockingMecanum drivetrain;
     List<LynxModule> hubs;
     GamepadEx Gamepad1, Gamepad2;
@@ -37,7 +37,7 @@ public class MainTeleOp extends LinearOpMode {
 //      Initialize telemetry
         myTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        scorer = new ScoringSystems(hardwareMap);
+        scorer = new ScoringSystem(hardwareMap);
         drivetrain = new HeadingLockingMecanum(hardwareMap, 537.7, 312);
 
         hubs = hardwareMap.getAll(LynxModule.class);
@@ -170,8 +170,8 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             scorer.run(
-                    Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * ScoringSystems.ANGLE_CONE_ARMS_DOWN,
-                    Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * ScoringSystems.ANGLE_CONE_ARMS_DOWN
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * ScoringSystem.ANGLE_CONE_ARMS_DOWN,
+                    Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * ScoringSystem.ANGLE_CONE_ARMS_DOWN
             );
             drivetrain.run(
                     Gamepad1.getLeftX() * precisionScale,
