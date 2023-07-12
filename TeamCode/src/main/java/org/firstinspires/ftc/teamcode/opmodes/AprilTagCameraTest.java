@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.tuning;
+package org.firstinspires.ftc.teamcode.opmodes;
 
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
