@@ -16,17 +16,17 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             kD = 0.0,
             kS = 0.0,
             FILTER_GAIN = 0.85,
-            LET_GO_TIME = 1;
+            SETTLING_TIME = 1;
 
     public static int FILTER_COUNT = 300;
 
-    private final ElapsedTime letGoTimer;
+    private final ElapsedTime settlingTimer;
 
     private final PIDFController headingController = new PIDFController();
 
     public HeadingLockingMecanum(HardwareMap hw, double motorCPR, double motorRPM) {
         super(hw, motorCPR, motorRPM);
-        letGoTimer = new ElapsedTime();
+        settlingTimer = new ElapsedTime();
     }
 
     @Override
@@ -52,10 +52,10 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
         if (useManualInput) {
             turnCommand *= scalar;
-            letGoTimer.reset();
+            settlingTimer.reset();
         }
 
-        if (useManualInput || letGoTimer.seconds() <= LET_GO_TIME) {
+        if (useManualInput || settlingTimer.seconds() <= SETTLING_TIME) {
             setTargetHeading(getHeading());
         } else {
             headingController.pid.setError(-normalizeAngle(headingController.pid.getTarget() - getHeading()));
