@@ -110,6 +110,11 @@ public class MeepMeep {
                                         .waitSeconds(TIME_DROP)
 //                                        .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                                         .lineToSplineHeading(parkingZone1)
+                                        // common parking
+                                        .waitSeconds(TIME_PRE_GRAB)
+//                                        .addTemporalMarker(() -> scorer.grabCone())
+                                        .waitSeconds(TIME_GRAB)
+//                                        .UNSTABLE_addTemporalMarkerOffset(TIME_GRAB_TO_FLIP, () -> scorer.passthrough.trigger())
                                         .build()
                 );
 

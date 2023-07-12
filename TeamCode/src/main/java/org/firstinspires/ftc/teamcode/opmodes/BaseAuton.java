@@ -11,10 +11,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.control.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.roadrunner.AutonMecanumDrivetrain;
 import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.ScoringSystem;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagCamera;
-import org.firstinspires.ftc.teamcode.roadrunner.AutonMecanumDrivetrain;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
@@ -22,11 +22,11 @@ import java.util.List;
 @Config
 public abstract class BaseAuton extends LinearOpMode {
 
-    private MultipleTelemetry myTelemetry;
-    private AutonMecanumDrivetrain drivetrain;
-    private ScoringSystem scorer;
-    private List<LynxModule> hubs;
-    private AprilTagCamera camera;
+    MultipleTelemetry myTelemetry;
+    AutonMecanumDrivetrain drivetrain;
+    ScoringSystem scorer;
+    List<LynxModule> hubs;
+    AprilTagCamera camera;
 
     public static double
             MED_ANGLE = 35,
@@ -54,7 +54,8 @@ public abstract class BaseAuton extends LinearOpMode {
             TIME_DROP_TO_FLIP = 1,
             TIME_FIRST_FLIP = 1,
             TIME_LIFT_MEDIUM = 0.8,
-            TIME_LIFT_TALL = 1.0;
+            TIME_LIFT_TALL = 1.0,
+            TOTAL_RUN_TIME = 30.0;
 
     public enum Side {
         LEFT, RIGHT
@@ -137,6 +138,11 @@ public abstract class BaseAuton extends LinearOpMode {
                 .setReversed(false)
                 .splineTo(sideTurnPos, stackOffset + (isRight ? facingRight : facingLeft))
                 .splineTo(stackPos, isRight ? facingRight : facingLeft)
+                // common parking:
+                .waitSeconds(TIME_PRE_GRAB)
+                .addTemporalMarker(() -> scorer.grabCone())
+                .waitSeconds(TIME_GRAB)
+                .UNSTABLE_addTemporalMarkerOffset(TIME_GRAB_TO_FLIP, () -> scorer.passthrough.trigger())
                 .build();
 
         TrajectorySequence parkInZone1 = isRight ?
@@ -236,7 +242,7 @@ public abstract class BaseAuton extends LinearOpMode {
         ElapsedTime autonomousTimer = new ElapsedTime();
         boolean hasParked = false;
 
-        while (opModeIsActive()) {
+        while (opModeIsActive() && autonomousTimer.seconds() <= TOTAL_RUN_TIME) {
 
             for (LynxModule hub : hubs) hub.clearBulkCache();
 
