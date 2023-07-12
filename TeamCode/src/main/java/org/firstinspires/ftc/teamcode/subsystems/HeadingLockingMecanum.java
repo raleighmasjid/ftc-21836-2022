@@ -48,13 +48,14 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
     public void run(double xCommand, double yCommand, double turnCommand) {
         double voltage = batteryVoltageSensor.getVoltage();
         double scalar = 12.0 / voltage;
+        boolean useManualInput = turnCommand != 0.0;
 
-        if (turnCommand != 0.0) {
+        if (useManualInput) {
             turnCommand *= scalar;
             letGoTimer.reset();
         }
 
-        if (turnCommand != 0.0 || letGoTimer.seconds() <= LET_GO_TIME) {
+        if (useManualInput || letGoTimer.seconds() <= LET_GO_TIME) {
             setTargetHeading(getHeading());
         } else {
             headingController.pid.setError(-normalizeAngle(headingController.pid.getTarget() - getHeading()));
