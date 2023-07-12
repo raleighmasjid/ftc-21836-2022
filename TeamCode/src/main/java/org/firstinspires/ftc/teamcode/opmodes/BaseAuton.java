@@ -100,16 +100,15 @@ public abstract class BaseAuton extends LinearOpMode {
             case TALL:
                 TIME_LIFT = TIME_LIFT_TALL;
                 scoringPos = tallScoringPos;
-                sideTurnPosAngleOffset = Math.toRadians(STACK_ANGLE_OFFSET_TALL);
+                sideTurnPosAngleOffset = side * Math.toRadians(STACK_ANGLE_OFFSET_TALL);
                 break;
             default:
             case MED:
                 TIME_LIFT = TIME_LIFT_MEDIUM;
                 scoringPos = medScoringPos;
-                sideTurnPosAngleOffset = Math.toRadians(STACK_ANGLE_OFFSET_MED);
+                sideTurnPosAngleOffset = side * Math.toRadians(STACK_ANGLE_OFFSET_MED);
                 break;
         }
-        sideTurnPosAngleOffset *= side;
 
         TrajectorySequence scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> scorer.liftClaw())
