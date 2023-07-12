@@ -19,15 +19,13 @@ public class Lift extends ProfiledMotor {
             HEIGHT_TALL = 27,
             HEIGHT_1_STAGE = 9.6,
             kG_1_STAGE = 0.06,
-            kG_3 = 0.19,
-            kP = 0.1,
+            kG_3 = 0.312,
+            kP = 0.05,
             kI = 0.2,
-            kD = 0.0,
-            kV_DOWN = 0.001,
-            kV_UP = 0.005,
-            kA_DOWN = 0.00075,
-            kA_UP = 0.00075,
-            kS = 0.02,
+            kD = 0.01,
+            kV = 0.0155,
+            kA = 0.0025,
+            kS = 0.035,
             FILTER_GAIN_kD = 0.875,
             FILTER_GAIN_VELO = 0.0,
             FILTER_GAIN_ACCEL = 0.8,
@@ -39,8 +37,8 @@ public class Lift extends ProfiledMotor {
             INCHES_PER_TICK = 0.03168725;
 
     public static int
-            FILTER_COUNT_kD = 300,
-            FILTER_COUNT_VELO = 300,
+            FILTER_COUNT_kD = 50,
+            FILTER_COUNT_VELO = 10,
             FILTER_COUNT_ACCEL = 300;
 
     /**
@@ -74,8 +72,6 @@ public class Lift extends ProfiledMotor {
 
     @Override
     public void readPosition() {
-        boolean goingDown = targetPosition < getCurrentPosition();
-
         veloFilter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
         accelFilter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
@@ -90,8 +86,8 @@ public class Lift extends ProfiledMotor {
                 FILTER_COUNT_kD
         );
         controller.feedforward.setGains(
-                goingDown ? kV_DOWN : kV_UP,
-                goingDown ? kA_DOWN : kA_UP,
+                kV,
+                kA,
                 kS
         );
         controller.profiler.updateConstraints(
