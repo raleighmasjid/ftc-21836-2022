@@ -1,5 +1,14 @@
 package org.firstinspires.ftc.teamcode.control.trajectorysequence;
 
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.LEFT;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.RIGHT;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_DROP;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_DROP_TO_FLIP;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_GRAB;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_GRAB_TO_FLIP;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_PRE_DROP;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_PRE_GRAB;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.path.PathContinuityViolationException;
@@ -23,6 +32,8 @@ import org.firstinspires.ftc.teamcode.control.trajectorysequence.sequencesegment
 import org.firstinspires.ftc.teamcode.control.trajectorysequence.sequencesegment.TrajectorySegment;
 import org.firstinspires.ftc.teamcode.control.trajectorysequence.sequencesegment.TurnSegment;
 import org.firstinspires.ftc.teamcode.control.trajectorysequence.sequencesegment.WaitSegment;
+import org.firstinspires.ftc.teamcode.robot.Lift;
+import org.firstinspires.ftc.teamcode.robot.ScoringSystem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -708,4 +719,55 @@ public class TrajectorySequenceBuilder {
     private interface AddPathCallback {
         void run();
     }
+
+    public TrajectorySequenceBuilder addCycle(Lift.Position endLiftPosition) {
+        return this
+                .waitSeconds(TIME_PRE_GRAB)
+                .addTemporalMarker(scorer::grabCone)
+                .waitSeconds(TIME_GRAB)
+                .UNSTABLE_addTemporalMarkerOffset(TIME_GRAB_TO_FLIP, scorer.passthrough::trigger)
+                .setReversed(true)
+                .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? LEFT : RIGHT))
+                .splineToSplineHeading(scoringPos, scoringPos.getHeading() - LEFT)
+                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
+                .waitSeconds(TIME_PRE_DROP)
+                .addTemporalMarker(() -> scorer.dropCone(endLiftPosition))
+                .waitSeconds(TIME_DROP)
+                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, scorer.passthrough::trigger)
+                .setReversed(false)
+                .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? RIGHT : LEFT))
+                .splineTo(stackPos, isRight ? RIGHT : LEFT)
+                ;
+    }
+
+    public TrajectorySequenceBuilder setValues(
+            ScoringSystem scorer,
+            Vector2d sideTurnPos,
+            Vector2d stackPos,
+            boolean isRight,
+            Lift.Position pole,
+            double TIME_LIFT,
+            Pose2d scoringPos,
+            double sideTurnPosAngleOffset
+    ) {
+        this.scorer = scorer;
+        this.sideTurnPos = sideTurnPos;
+        this.stackPos = stackPos;
+        this.isRight = isRight;
+        this.pole = pole;
+        this.TIME_LIFT = TIME_LIFT;
+        this.scoringPos = scoringPos;
+        this.sideTurnPosAngleOffset = sideTurnPosAngleOffset;
+
+        return this;
+    }
+
+    private ScoringSystem scorer;
+    private Vector2d sideTurnPos;
+    private Vector2d stackPos;
+    private boolean isRight;
+    private Lift.Position pole;
+    private double TIME_LIFT;
+    private Pose2d scoringPos;
+    private double sideTurnPosAngleOffset;
 }
