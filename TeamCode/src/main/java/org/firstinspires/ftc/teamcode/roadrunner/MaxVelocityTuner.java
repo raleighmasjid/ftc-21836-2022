@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.tuning;
+package org.firstinspires.ftc.teamcode.roadrunner;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -7,28 +7,28 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
-import org.firstinspires.ftc.teamcode.subsystems.AutonMecanumDrivetrain;
 
 import java.util.Objects;
 
 /**
- * This routine is designed to calculate the maximum angular velocity your bot can achieve under load.
+ * This routine is designed to calculate the maximum velocity your bot can achieve under load. It
+ * will also calculate the effective kF value for your velocity PID.
  * <p>
- * Upon pressing start, your bot will turn at max power for RUNTIME seconds.
+ * Upon pressing start, your bot will run at max power for RUNTIME seconds.
  * <p>
- * Further fine tuning of MAX_ANG_VEL may be desired.
+ * Further fine tuning of kF may be desired.
  */
-
 @Config
 @Autonomous(group = "drive")
-public class MaxAngularVeloTuner extends LinearOpMode {
-    public static double RUNTIME = 4.0;
+public class MaxVelocityTuner extends LinearOpMode {
+    public static double RUNTIME = 2.0;
 
-    private double maxAngVelocity = 0.0, maxAngAcceleration = 0.0;
+    private double maxVelocity = 0.0, maxAcceleration = 0.0;
 
     private final FIRLowPassFilter accelFilter = new FIRLowPassFilter();
 
@@ -38,9 +38,11 @@ public class MaxAngularVeloTuner extends LinearOpMode {
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        VoltageSensor batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        telemetry.addLine("Your bot will turn at full speed for " + RUNTIME + " seconds.");
+        telemetry.addLine("Your bot will go at full speed for " + RUNTIME + " seconds.");
         telemetry.addLine("Please ensure you have enough space cleared.");
         telemetry.addLine("");
         telemetry.addLine("Press start when ready.");
@@ -51,7 +53,7 @@ public class MaxAngularVeloTuner extends LinearOpMode {
         telemetry.clearAll();
         telemetry.update();
 
-        drive.setDrivePower(new Pose2d(0, 0, 1));
+        drive.setDrivePower(new Pose2d(1, 0, 0));
         ElapsedTime timer = new ElapsedTime();
         ElapsedTime accelTimer = new ElapsedTime();
 
@@ -60,18 +62,26 @@ public class MaxAngularVeloTuner extends LinearOpMode {
 
             Pose2d poseVelo = Objects.requireNonNull(drive.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
 
-            double lastMaxAngVelocity = maxAngVelocity;
-            maxAngVelocity = Math.max(poseVelo.getHeading(), maxAngVelocity);
-            maxAngAcceleration = Math.max(accelFilter.getEstimate((maxAngVelocity - lastMaxAngVelocity) / accelTimer.seconds()), maxAngAcceleration);
+            double lastMaxVelocity = maxVelocity;
+            maxVelocity = Math.max(poseVelo.vec().norm(), maxVelocity);
+            maxAcceleration = Math.max(accelFilter.getEstimate((maxVelocity - lastMaxVelocity) / accelTimer.seconds()), maxAcceleration);
             accelTimer.reset();
         }
 
         drive.setDrivePower(new Pose2d());
 
-        telemetry.addData("Max Recommended Angular Velocity (rad)", maxAngVelocity * 0.9);
-        telemetry.addData("Max Recommended Angular Acceleration (rad)", maxAngAcceleration * 0.9);
+        double effectiveKf = DriveConstants.getMotorVelocityF(veloInchesToTicks(maxVelocity));
+
+        telemetry.addData("Max Recommended Velocity", maxVelocity * 0.9);
+        telemetry.addData("Max Recommended Acceleration", maxAcceleration * 0.9);
+        telemetry.addLine();
+        telemetry.addData("Voltage Compensated kF", effectiveKf * batteryVoltageSensor.getVoltage() / 12);
         telemetry.update();
 
-        while (!isStopRequested()) idle();
+        while (!isStopRequested() && opModeIsActive()) idle();
+    }
+
+    private double veloInchesToTicks(double inchesPerSec) {
+        return inchesPerSec / (2 * Math.PI * DriveConstants.WHEEL_RADIUS) / DriveConstants.GEAR_RATIO * DriveConstants.TICKS_PER_REV;
     }
 }

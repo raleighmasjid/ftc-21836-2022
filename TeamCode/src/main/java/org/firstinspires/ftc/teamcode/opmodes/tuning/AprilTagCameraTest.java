@@ -29,8 +29,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name = "Camera Test", group = "21836 Backup")
-public class AprilTagInitDetectionTest extends LinearOpMode {
+@Autonomous(group = "21836 Backup")
+public class AprilTagCameraTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
