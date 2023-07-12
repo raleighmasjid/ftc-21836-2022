@@ -40,6 +40,14 @@ public class ProfiledMotor {
         return currentPosition;
     }
 
+    public double getMaxVelocity() {
+        return maxVelocity;
+    }
+
+    public double getMaxAcceleration() {
+        return maxAcceleration;
+    }
+
     /**
      * Initialize fields <p>
      * Use {@link #updateConstants} to update constants
