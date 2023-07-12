@@ -14,7 +14,7 @@ import java.util.List;
 
 public class LiftConstraintsTuner extends LinearOpMode {
 
-    public static int REPEATS = 5;
+    public static double REPEATS = 5;
 
     MultipleTelemetry myTelemetry;
     Lift lift;
@@ -29,8 +29,8 @@ public class LiftConstraintsTuner extends LinearOpMode {
 
         for (LynxModule hub : hubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
 
-        double[] maxVelocities = new double[REPEATS];
-        double[] maxAccelerations = new double[REPEATS];
+        double[] maxVelocities = new double[(int) REPEATS];
+        double[] maxAccelerations = new double[(int) REPEATS];
 
         waitForStart();
 
@@ -54,11 +54,11 @@ public class LiftConstraintsTuner extends LinearOpMode {
 
         double maxVelocity = 0.0;
         for (double velo : maxVelocities) maxVelocity += velo;
-        maxVelocity /= ((double) REPEATS);
+        maxVelocity /= REPEATS;
 
         double maxAcceleration = 0.0;
         for (double accel : maxAccelerations) maxAcceleration += accel;
-        maxAcceleration /= ((double) REPEATS);
+        maxAcceleration /= REPEATS;
 
         myTelemetry.addData("Max velocity (in/s)", maxVelocity);
         myTelemetry.addData("Max acceleration (in/s^2)", maxAcceleration);
