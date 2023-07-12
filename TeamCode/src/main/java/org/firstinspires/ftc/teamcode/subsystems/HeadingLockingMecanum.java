@@ -11,12 +11,12 @@ import org.firstinspires.ftc.teamcode.control.controllers.PIDFController;
 public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     public static double
-            kP = 0.0,
-            kI = 0.0,
+            kP = 0.005,
+            kI = 0.01,
             kD = 0.0,
             kS = 0.0,
             FILTER_GAIN = 0.85,
-            SETTLING_TIME = 1;
+            SETTLING_TIME = 0.3;
 
     public static int FILTER_COUNT = 300;
 
