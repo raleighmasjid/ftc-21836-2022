@@ -18,7 +18,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             FILTER_GAIN = 0.85,
             LET_GO_TIME = 1;
 
-    public static int HEADING_FILTER_COUNT = 300;
+    public static int FILTER_COUNT = 300;
 
     private final ElapsedTime letGoTimer;
 
@@ -38,7 +38,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
         );
         headingController.pid.derivFilter.setGains(
                 FILTER_GAIN,
-                HEADING_FILTER_COUNT
+                FILTER_COUNT
         );
         headingController.feedforward.setGains(0.0, 0.0, kS);
         super.readIMU();
