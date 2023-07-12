@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.tuning;
 
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -10,8 +9,7 @@ import org.firstinspires.ftc.teamcode.subsystems.MecanumDrivetrain;
 
 import java.util.List;
 
-@Disabled
-@TeleOp(name = "Drivetrain kS Tuner", group = "21836 Teleop")
+@TeleOp(group = "21836 Teleop")
 
 public class DrivetrainKsTuner extends LinearOpMode {
 
