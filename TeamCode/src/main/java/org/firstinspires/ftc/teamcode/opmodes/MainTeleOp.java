@@ -65,10 +65,10 @@ public class MainTeleOp extends LinearOpMode {
                 control1Right = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_RIGHT),
                 control1Down = new ButtonReader(Gamepad1, GamepadKeys.Button.DPAD_DOWN),
 
-                control1A = new ButtonReader(Gamepad2, GamepadKeys.Button.A), // 270
-                control1X = new ButtonReader(Gamepad2, GamepadKeys.Button.X), // 180
-                control1B = new ButtonReader(Gamepad2, GamepadKeys.Button.B), // 90
-                control1Y = new ButtonReader(Gamepad2, GamepadKeys.Button.Y); // 0
+                control1A = new ButtonReader(Gamepad1, GamepadKeys.Button.A), // 270
+                control1X = new ButtonReader(Gamepad1, GamepadKeys.Button.X), // 180
+                control1B = new ButtonReader(Gamepad1, GamepadKeys.Button.B), // 90
+                control1Y = new ButtonReader(Gamepad1, GamepadKeys.Button.Y); // 0
 
         ButtonReader[] buttonReaders = {
                 control2Up, control2Left, control2Right, control2Down,
