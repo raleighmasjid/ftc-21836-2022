@@ -305,14 +305,14 @@ public class AutonMecanumDrivetrain extends MecanumDrive {
             v1 *= scalar;
             v2 *= scalar;
             v3 *= scalar;
-
-            double max = Collections.max(Arrays.asList(v, v1, v2, v3, 1.0));
-
-            v /= max;
-            v1 /= max;
-            v2 /= max;
-            v3 /= max;
         }
+
+        double max = Collections.max(Arrays.asList(v, v1, v2, v3, 1.0));
+
+        v /= max;
+        v1 /= max;
+        v2 /= max;
+        v3 /= max;
 
         leftFront.setPower(v);
         leftRear.setPower(v1);
