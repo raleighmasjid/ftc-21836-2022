@@ -723,9 +723,9 @@ public class TrajectorySequenceBuilder {
     public TrajectorySequenceBuilder addCycle(Lift.Position endLiftPosition) {
         return this
                 .waitSeconds(TIME_PRE_GRAB)
-                .addTemporalMarker(scorer::grabCone)
+                .addTemporalMarker(() -> scorer.grabCone())
                 .waitSeconds(TIME_GRAB)
-                .UNSTABLE_addTemporalMarkerOffset(TIME_GRAB_TO_FLIP, scorer.passthrough::trigger)
+                .UNSTABLE_addTemporalMarkerOffset(TIME_GRAB_TO_FLIP, () -> scorer.passthrough.trigger())
                 .setReversed(true)
                 .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? LEFT : RIGHT))
                 .splineToSplineHeading(scoringPos, scoringPos.getHeading() - LEFT)
@@ -733,7 +733,7 @@ public class TrajectorySequenceBuilder {
                 .waitSeconds(TIME_PRE_DROP)
                 .addTemporalMarker(() -> scorer.dropCone(endLiftPosition))
                 .waitSeconds(TIME_DROP)
-                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, scorer.passthrough::trigger)
+                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                 .setReversed(false)
                 .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? RIGHT : LEFT))
                 .splineTo(stackPos, isRight ? RIGHT : LEFT)
