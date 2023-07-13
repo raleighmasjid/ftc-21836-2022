@@ -5,6 +5,8 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDF;
+import org.firstinspires.ftc.teamcode.control.controllers.coefficients.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.controllers.coefficients.PIDGains;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledMotor;
 
@@ -75,44 +77,29 @@ public class Lift extends ProfiledMotor {
         veloFilter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
         accelFilter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
-        controller.pid.setGains(
+        controller.pid.setGains(new PIDGains(
                 kP,
                 kI,
                 kD,
                 MAX_PID_OUTPUT_WITH_INTEGRAL
-        );
+        ));
         controller.pid.derivFilter.setGains(
                 FILTER_GAIN_kD,
                 FILTER_COUNT_kD
         );
-        controller.feedforward.setGains(
+        controller.feedforward.setGains(new FeedforwardGains(
                 kV,
                 kA,
                 kS
-        );
-        controller.profiler.updateConstraints(
+        ));
+        controller.updateConstraints(
                 MAX_VELO,
                 MAX_ACCEL,
                 MAX_JERK
         );
 
-        super.updateConstants(kG, INCHES_PER_TICK);
+        super.updateScale(INCHES_PER_TICK);
         super.readPosition();
-        super.updateConstants(kG(), UNIT_PER_TICK);
-    }
-
-    /**
-     * Calculates anti-gravity feedforward for a 4-stage continuous rigged linear slide system
-     *
-     * @return Velocity command for lift
-     */
-    private double kG() {
-        double currentPosition = getCurrentPosition();
-        if (currentPosition >= HEIGHT_1_STAGE * 3) return kG_3 + kG_1_STAGE;
-        if (currentPosition >= HEIGHT_1_STAGE * 2) return kG_3;
-        if (currentPosition >= HEIGHT_1_STAGE) return kG_3 - kG_1_STAGE;
-        if (currentPosition > TOLERANCE) return kG_3 - 2 * kG_1_STAGE;
-        return 0.0;
     }
 
     public double getConesHeight(int numOfCones) {
@@ -147,5 +134,31 @@ public class Lift extends ProfiledMotor {
                 setTargetPosition(getConesHeight(1), "Floor / 1 cone");
                 break;
         }
+    }
+
+    /**
+     * Run motor(s) at the entered percentage of max velocity
+     *
+     * @param veloCommand       Pass in a velocity command between -1 ≤ x ≤ 1
+     * @param voltageCompensate Whether to voltage compensate veloCommand
+     */
+    @Override
+    public void run(double veloCommand, boolean voltageCompensate) {
+        veloCommand += kG() * (voltageCompensate ? 1.0 : 12.0 / currentBatteryVoltage);
+        super.run(veloCommand, voltageCompensate);
+    }
+
+    /**
+     * Calculates anti-gravity feedforward for a 4-stage continuous rigged linear slide system
+     *
+     * @return Velocity command for lift
+     */
+    private double kG() {
+        double currentPosition = getCurrentPosition();
+        if (currentPosition >= HEIGHT_1_STAGE * 3) return kG_3 + kG_1_STAGE;
+        if (currentPosition >= HEIGHT_1_STAGE * 2) return kG_3;
+        if (currentPosition >= HEIGHT_1_STAGE) return kG_3 - kG_1_STAGE;
+        if (currentPosition > TOLERANCE) return kG_3 - 2 * kG_1_STAGE;
+        return 0.0;
     }
 }

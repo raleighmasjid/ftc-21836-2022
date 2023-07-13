@@ -17,19 +17,15 @@ public class MotionProfiler {
     private double MAX_ACCEL = 1.0;
     private double MAX_JERK = 0.0;
 
-    public void setTargetPosition(double pCurrent, double vCurrent, double pTarget) {
+    public void generateProfile(State current, State target) {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(pCurrent, vCurrent),
-                new MotionState(pTarget, 0.0),
+                new MotionState(current.getX(), current.getV()),
+                new MotionState(target.getX(), target.getV()),
                 MAX_VELO,
                 MAX_ACCEL,
                 MAX_JERK
         );
         profileTimer.reset();
-    }
-
-    public void setTargetPosition(double pCurrent, double pTarget) {
-        setTargetPosition(pCurrent, profileState.getV(), pTarget);
     }
 
     public void update() {

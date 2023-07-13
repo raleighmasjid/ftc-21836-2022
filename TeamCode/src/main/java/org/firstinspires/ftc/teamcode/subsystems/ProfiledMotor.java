@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.control.State;
 import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDF;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
@@ -34,23 +35,15 @@ public class ProfiledMotor {
 
     protected String targetPositionName = "Zero";
 
-    protected double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, kG, UNIT_PER_TICK, currentBatteryVoltage = 12.0;
+    protected double currentPosition, currentVelocity, currentAcceleration, targetPosition, maxVelocity, maxAcceleration, UNIT_PER_TICK, currentBatteryVoltage = 12.0;
 
     public double getCurrentPosition() {
         return currentPosition;
     }
 
-    public double getMaxVelocity() {
-        return maxVelocity;
-    }
-
-    public double getMaxAcceleration() {
-        return maxAcceleration;
-    }
-
     /**
      * Initialize fields <p>
-     * Use {@link #updateConstants} to update constants
+     * Use {@link #updateScale} to update constants
      */
     public ProfiledMotor(
             MotorEx[] motors,
@@ -74,11 +67,9 @@ public class ProfiledMotor {
     }
 
     /**
-     * @param kG            Additive constant motor power (voltage compensated)
      * @param UNIT_PER_TICK Arbitrary unit per tick scale factor
      */
-    public void updateConstants(double kG, double UNIT_PER_TICK) {
-        this.kG = kG;
+    public void updateScale(double UNIT_PER_TICK) {
         this.UNIT_PER_TICK = UNIT_PER_TICK;
     }
 
@@ -118,7 +109,7 @@ public class ProfiledMotor {
     public void setTargetPosition(double targetPosition, String targetPositionName) {
         this.targetPosition = targetPosition;
         this.targetPositionName = targetPositionName;
-        controller.profiler.setTargetPosition(currentPosition, currentVelocity, this.targetPosition);
+        controller.setTarget(new State(currentPosition, currentVelocity), new State(this.targetPosition));
     }
 
     /**
@@ -148,7 +139,7 @@ public class ProfiledMotor {
      * Runs {@link #controller}
      */
     public void runToPosition() {
-        run(controller.update(currentPosition, currentBatteryVoltage), false);
+        run(controller.calculate(new State(currentPosition), currentBatteryVoltage), false);
     }
 
     /**
@@ -158,9 +149,8 @@ public class ProfiledMotor {
      * @param voltageCompensate Whether to voltage compensate veloCommand
      */
     public void run(double veloCommand, boolean voltageCompensate) {
-        double scalar = 12.0 / currentBatteryVoltage;
-        if (voltageCompensate) veloCommand *= scalar;
-        for (MotorEx motor : motors) motor.set(kG * scalar + veloCommand);
+        if (voltageCompensate) veloCommand *= 12.0 / currentBatteryVoltage;
+        for (MotorEx motor : motors) motor.set(veloCommand);
     }
 
     /**
@@ -170,10 +160,10 @@ public class ProfiledMotor {
      */
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Current position (in)", currentPosition);
-        telemetry.addData("Profile position (in)", controller.profiler.getX());
+        telemetry.addData("Profile position (in)", controller.getX());
         telemetry.addLine();
         telemetry.addData("Current velocity (in/s)", currentVelocity);
-        telemetry.addData("Profile velocity (in/s)", controller.profiler.getV());
+        telemetry.addData("Profile velocity (in/s)", controller.getV());
         telemetry.addData("Max velocity (in/s)", maxVelocity);
         telemetry.addLine();
         telemetry.addData("Current acceleration (in/s^2)", currentAcceleration);

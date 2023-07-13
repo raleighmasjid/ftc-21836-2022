@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.MotionProfiler;
+import org.firstinspires.ftc.teamcode.control.State;
 import org.firstinspires.ftc.teamcode.subsystems.SimpleServoPivot;
 
 @Config
@@ -32,6 +33,7 @@ public class Passthrough {
 
     private double currentAngle = ANGLE_PASS_FRONT;
     private double angleOffset = 0.0;
+    private double tiltOffset = 0.0;
 
     private boolean tilted = false;
     private boolean triggered = false;
@@ -96,13 +98,19 @@ public class Passthrough {
     }
 
     private void updateProfile() {
-        double tiltOffset =
+        tiltOffset =
                 tilted ?
                         ANGLE_PASS_TILT_OFFSET :
                         (!triggered) && (inBack != wrist.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
 
         profiler.updateConstraints(MAX_VELO, MAX_ACCEL, MAX_JERK);
-        profiler.setTargetPosition(currentAngle, inBack ? ANGLE_PASS_BACK - tiltOffset : ANGLE_PASS_FRONT + tiltOffset);
+        profiler.generateProfile(
+                new State(currentAngle, profiler.getV()),
+                new State(inBack ?
+                        ANGLE_PASS_BACK - tiltOffset :
+                        ANGLE_PASS_FRONT + tiltOffset
+                )
+        );
         angleOffset = 0.0;
     }
 

@@ -1,25 +1,29 @@
 package org.firstinspires.ftc.teamcode.control.controllers;
 
-public class FeedforwardController {
-    private double kV, kA, kS, targetVelocity, targetAcceleration;
+import org.firstinspires.ftc.teamcode.control.State;
+import org.firstinspires.ftc.teamcode.control.controllers.coefficients.FeedforwardGains;
+
+public class FeedforwardController implements Controller {
+
+    private FeedforwardGains gains;
+
+    private State target;
 
     public FeedforwardController() {
-        this(0, 0, 0);
+        this(new FeedforwardGains(0.0, 0.0, 0.0));
     }
 
-    public FeedforwardController(double kV, double kA, double kS) {
-        setGains(kV, kA, kS);
+    public FeedforwardController(FeedforwardGains gains) {
+        setGains(gains);
     }
 
-    public void setGains(double kV, double kA, double kS) {
-        this.kV = kV;
-        this.kA = kA;
-        this.kS = kS;
+    public void setGains(FeedforwardGains gains) {
+        this.gains = gains;
     }
 
     public double calculate(double voltage, double additionalOutput) {
-        double baseOutput = (kV * targetVelocity) + (kA * targetAcceleration);
-        return (Math.signum(baseOutput + additionalOutput) * kS + baseOutput) * (12.0 / voltage);
+        double baseOutput = (gains.getKV() * target.getV()) + (gains.getKA() * target.getA());
+        return (Math.signum(baseOutput + additionalOutput) * gains.getKStatic() + baseOutput) * (12.0 / voltage);
     }
 
     public double calculate(double voltage) {
@@ -30,11 +34,10 @@ public class FeedforwardController {
         return calculate(12.0);
     }
 
-    public void setTargetVelocity(double targetVelocity) {
-        this.targetVelocity = targetVelocity;
-    }
-
-    public void setTargetAcceleration(double targetAcceleration) {
-        this.targetAcceleration = targetAcceleration;
+    /**
+     * @param target The V and A attributes of the {@link State} parameter are used as velocity and acceleration references
+     */
+    public void setTarget(State target) {
+        this.target = target;
     }
 }

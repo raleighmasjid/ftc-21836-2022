@@ -5,7 +5,10 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.control.State;
 import org.firstinspires.ftc.teamcode.control.controllers.PIDFController;
+import org.firstinspires.ftc.teamcode.control.controllers.coefficients.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.controllers.coefficients.PIDGains;
 
 @Config
 public class HeadingLockingMecanum extends MecanumDrivetrain {
@@ -36,17 +39,17 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     @Override
     public void readIMU() {
-        headingController.pid.setGains(
+        headingController.pid.setGains(new PIDGains(
                 kP,
                 kI,
                 kD,
                 MAX_OUTPUT_WITH_INTEGRAL
-        );
+        ));
         headingController.pid.derivFilter.setGains(
                 FILTER_GAIN,
                 FILTER_COUNT
         );
-        headingController.feedforward.setGains(0.0, 0.0, kS);
+        headingController.feedforward.setGains(new FeedforwardGains(0.0, 0.0, kS));
         super.readIMU();
     }
 
@@ -69,7 +72,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             setTargetHeading(getHeading());
         } else if (translationSettlingTimer.seconds() > TRANSLATION_SETTLING_TIME) {
             headingController.pid.setError(-normalizeAngle(headingController.pid.getTarget() - getHeading()));
-            turnCommand = headingController.update(getHeading(), voltage);
+            turnCommand = headingController.calculate(new State(getHeading()), voltage);
         }
 
         lastXCommand = xCommand;
@@ -78,7 +81,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
     }
 
     public void setTargetHeading(double angle) {
-        headingController.pid.setTarget(normalizeAngle(angle));
+        headingController.pid.setTarget(new State(normalizeAngle(angle)));
     }
 
     @Override
