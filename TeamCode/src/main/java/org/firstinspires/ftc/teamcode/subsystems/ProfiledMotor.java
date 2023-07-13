@@ -28,9 +28,6 @@ public class ProfiledMotor {
 
     private final VoltageSensor batteryVoltageSensor;
 
-    /**
-     * PIDF controller
-     */
     public final ProfiledPIDVA controller;
 
     protected String targetPositionName = "Zero";
