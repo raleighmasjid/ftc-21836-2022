@@ -15,6 +15,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             kI = 0.01,
             kD = 0.0,
             kS = 0.0,
+            MAX_OUTPUT_WITH_INTEGRAL = 1.0,
             FILTER_GAIN = 0.85,
             SETTLING_TIME = 0.3;
 
@@ -34,7 +35,8 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
         headingController.pid.setGains(
                 kP,
                 kI,
-                kD
+                kD,
+                MAX_OUTPUT_WITH_INTEGRAL
         );
         headingController.pid.derivFilter.setGains(
                 FILTER_GAIN,
