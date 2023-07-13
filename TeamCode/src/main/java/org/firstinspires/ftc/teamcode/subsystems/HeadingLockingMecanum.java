@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.State;
-import org.firstinspires.ftc.teamcode.control.controllers.PIDFController;
+import org.firstinspires.ftc.teamcode.control.controllers.PIDVAController;
 import org.firstinspires.ftc.teamcode.control.controllers.coefficients.FeedforwardGains;
 import org.firstinspires.ftc.teamcode.control.controllers.coefficients.PIDGains;
 
@@ -29,7 +29,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     private final ElapsedTime turnSettlingTimer, translationSettlingTimer;
 
-    private final PIDFController headingController = new PIDFController();
+    private final PIDVAController headingController = new PIDVAController();
 
     public HeadingLockingMecanum(HardwareMap hw, double motorCPR, double motorRPM) {
         super(hw, motorCPR, motorRPM);

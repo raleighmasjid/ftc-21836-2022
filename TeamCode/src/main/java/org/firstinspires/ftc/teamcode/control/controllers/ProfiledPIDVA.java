@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.control.controllers;
 import org.firstinspires.ftc.teamcode.control.MotionProfiler;
 import org.firstinspires.ftc.teamcode.control.State;
 
-public class ProfiledPIDF extends PIDFController implements FeedbackController {
+public class ProfiledPIDVA extends PIDVAController implements FeedbackController {
 
     private final MotionProfiler profiler = new MotionProfiler();
 
@@ -13,11 +13,11 @@ public class ProfiledPIDF extends PIDFController implements FeedbackController {
      * @param pid         PID feedback controller
      * @param feedforward kV-kA-kS feedforward controller
      */
-    public ProfiledPIDF(PIDController pid, FeedforwardController feedforward) {
+    public ProfiledPIDVA(PIDController pid, FeedforwardController feedforward) {
         super(pid, feedforward);
     }
 
-    public ProfiledPIDF() {
+    public ProfiledPIDVA() {
         this(new PIDController(), new FeedforwardController());
     }
 

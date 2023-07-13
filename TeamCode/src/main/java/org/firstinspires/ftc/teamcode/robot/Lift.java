@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDF;
+import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDVA;
 import org.firstinspires.ftc.teamcode.control.controllers.coefficients.FeedforwardGains;
 import org.firstinspires.ftc.teamcode.control.controllers.coefficients.PIDGains;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
@@ -69,7 +69,7 @@ public class Lift extends ProfiledMotor {
     }
 
     public Lift(HardwareMap hw) {
-        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledPIDF(), new FIRLowPassFilter(), new FIRLowPassFilter());
+        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledPIDVA(), new FIRLowPassFilter(), new FIRLowPassFilter());
     }
 
     @Override

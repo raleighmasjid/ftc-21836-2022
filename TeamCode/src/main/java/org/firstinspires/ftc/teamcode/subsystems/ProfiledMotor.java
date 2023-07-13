@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.State;
-import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDF;
+import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDVA;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 /**
@@ -31,7 +31,7 @@ public class ProfiledMotor {
     /**
      * PIDF controller
      */
-    public final ProfiledPIDF controller;
+    public final ProfiledPIDVA controller;
 
     protected String targetPositionName = "Zero";
 
@@ -48,7 +48,7 @@ public class ProfiledMotor {
     public ProfiledMotor(
             MotorEx[] motors,
             VoltageSensor batteryVoltageSensor,
-            ProfiledPIDF controller,
+            ProfiledPIDVA controller,
             FIRLowPassFilter veloFilter,
             FIRLowPassFilter accelFilter
     ) {

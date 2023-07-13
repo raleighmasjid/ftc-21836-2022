@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.control.State;
 /**
  * Wrapper class combining a PID controller and a kV-kA-kS feedforward controller.
  */
-public class PIDFController implements FeedbackController {
+public class PIDVAController implements FeedbackController {
     public final PIDController pid;
     public final FeedforwardController feedforward;
 
@@ -13,12 +13,12 @@ public class PIDFController implements FeedbackController {
      * @param pid         PID feedback controller
      * @param feedforward kV-kA-kS feedforward controller
      */
-    public PIDFController(PIDController pid, FeedforwardController feedforward) {
+    public PIDVAController(PIDController pid, FeedforwardController feedforward) {
         this.pid = pid;
         this.feedforward = feedforward;
     }
 
-    public PIDFController() {
+    public PIDVAController() {
         this(new PIDController(), new FeedforwardController());
     }
 
