@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.control.controllers;
 import org.firstinspires.ftc.teamcode.control.MotionProfiler;
 import org.firstinspires.ftc.teamcode.control.State;
 
-public class ProfiledPIDVA extends PIDVAController implements FeedbackController {
+public class ProfiledPIDVA extends PIDVAController {
 
     private final MotionProfiler profiler = new MotionProfiler();
 
