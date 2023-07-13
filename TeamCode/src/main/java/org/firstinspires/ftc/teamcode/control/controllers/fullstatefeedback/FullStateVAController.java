@@ -45,4 +45,8 @@ public class FullStateVAController implements FeedbackController {
         double fullStateOutput = fullState.calculate(measurement);
         return fullStateOutput + feedforward.calculate(voltage, fullStateOutput);
     }
+
+    public State getError() {
+        return fullState.getError();
+    }
 }

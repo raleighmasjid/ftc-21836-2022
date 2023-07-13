@@ -167,7 +167,7 @@ public class ProfiledMotor {
         telemetry.addData("Max acceleration (in/s^2)", maxAcceleration);
         telemetry.addLine();
         telemetry.addData("Error integral (in*s)", controller.getErrorIntegral());
-        telemetry.addData("Error (in)", controller.getError());
+        telemetry.addData("Error (in)", controller.getError().getX());
         telemetry.addData("Error derivative (in/s)", controller.getErrorDerivative());
     }
 

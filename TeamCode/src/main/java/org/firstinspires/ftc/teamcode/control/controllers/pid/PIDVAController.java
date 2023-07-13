@@ -55,7 +55,7 @@ public class PIDVAController implements FeedbackController {
         return pidOutput + feedforward.calculate(voltage, pidOutput);
     }
 
-    public double getError() {
+    public State getError() {
         return pid.getError();
     }
 

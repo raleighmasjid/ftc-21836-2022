@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FullState
 public class FullStateController implements FeedbackController {
 
     private FullStateGains gains;
-    private State target;
+    private State target, error;
 
     @Override
     public void setTarget(State target) {
@@ -20,10 +20,16 @@ public class FullStateController implements FeedbackController {
 
     @Override
     public double calculate(State measurement) {
-        double pError = target.getX() - measurement.getX();
-        double vError = target.getV() - measurement.getV();
-        double aError = target.getA() - measurement.getA();
+        error = new State(
+                target.getX() - measurement.getX(),
+                target.getV() - measurement.getV(),
+                target.getA() - measurement.getA()
+        );
 
-        return (pError * gains.getPGain()) + (vError * gains.getVGain()) + (aError * gains.getAGain());
+        return (error.getX() * gains.getPGain()) + (error.getV() * gains.getVGain()) + (error.getA() * gains.getAGain());
+    }
+
+    public State getError() {
+        return error;
     }
 }
