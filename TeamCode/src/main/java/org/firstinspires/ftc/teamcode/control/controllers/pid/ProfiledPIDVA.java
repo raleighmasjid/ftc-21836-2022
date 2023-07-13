@@ -8,12 +8,6 @@ public class ProfiledPIDVA extends PIDVAController {
 
     private final MotionProfiler profiler = new MotionProfiler();
 
-    /**
-     * Initialize fields <p>
-     *
-     * @param pid         PID feedback controller
-     * @param feedforward kV-kA-kS feedforward controller
-     */
     public ProfiledPIDVA(PIDController pid, FeedforwardController feedforward) {
         super(pid, feedforward);
     }

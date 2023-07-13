@@ -15,10 +15,6 @@ public class PIDVAController implements FeedbackController {
     private final FeedforwardController feedforward;
     public FIRLowPassFilter derivFilter;
 
-    /**
-     * @param pid         PID feedback controller
-     * @param feedforward kV-kA-kS feedforward controller
-     */
     public PIDVAController(PIDController pid, FeedforwardController feedforward) {
         this.pid = pid;
         this.feedforward = feedforward;

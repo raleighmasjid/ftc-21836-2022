@@ -8,10 +8,6 @@ public class ProfiledFullStateVA extends FullStateVAController {
 
     private final MotionProfiler profiler = new MotionProfiler();
 
-    /**
-     * @param fullState   PID feedback controller
-     * @param feedforward kV-kA-kS feedforward controller
-     */
     public ProfiledFullStateVA(FullStateController fullState, FeedforwardController feedforward) {
         super(fullState, feedforward);
     }
@@ -44,8 +40,7 @@ public class ProfiledFullStateVA extends FullStateVAController {
     /**
      * Run a single iteration of the controller.
      *
-     * @param measurement Only the X attribute of the {@link State} parameter is used as feedback
-     * @param voltage     measured battery voltage (for feedforward voltage correction)
+     * @param voltage measured battery voltage (for feedforward voltage correction)
      */
     @Override
     public double calculate(State measurement, double voltage) {
@@ -56,8 +51,6 @@ public class ProfiledFullStateVA extends FullStateVAController {
 
     /**
      * Run a single iteration of the controller.
-     *
-     * @param measurement Only the X attribute of the {@link State} parameter is used as feedback
      */
     @Override
     public double calculate(State measurement) {
