@@ -71,10 +71,6 @@ public class PIDController implements FeedbackController {
         this.target = target;
     }
 
-    public double getTarget() {
-        return target.getX();
-    }
-
     public double getLastError() {
         return lastError;
     }
