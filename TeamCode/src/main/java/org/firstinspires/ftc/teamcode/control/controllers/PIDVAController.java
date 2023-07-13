@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.control.controllers;
 
 import org.firstinspires.ftc.teamcode.control.State;
-import org.firstinspires.ftc.teamcode.control.controllers.coefficients.FeedforwardGains;
-import org.firstinspires.ftc.teamcode.control.controllers.coefficients.PIDGains;
+import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 /**

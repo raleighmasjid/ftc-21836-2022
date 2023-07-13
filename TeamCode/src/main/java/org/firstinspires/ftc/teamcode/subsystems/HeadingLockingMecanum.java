@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.State;
 import org.firstinspires.ftc.teamcode.control.controllers.PIDVAController;
-import org.firstinspires.ftc.teamcode.control.controllers.coefficients.FeedforwardGains;
-import org.firstinspires.ftc.teamcode.control.controllers.coefficients.PIDGains;
+import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.PIDGains;
 
 @Config
 public class HeadingLockingMecanum extends MecanumDrivetrain {

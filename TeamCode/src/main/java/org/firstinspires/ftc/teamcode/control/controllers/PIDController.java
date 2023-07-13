@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.control.controllers;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.State;
-import org.firstinspires.ftc.teamcode.control.controllers.coefficients.PIDGains;
+import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 public class PIDController implements FeedbackController {

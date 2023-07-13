@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.control.controllers.coefficients
+package org.firstinspires.ftc.teamcode.control.controllers.gainmatrices
 
 data class FeedforwardGains @JvmOverloads constructor(
     val kV: Double = 0.0,

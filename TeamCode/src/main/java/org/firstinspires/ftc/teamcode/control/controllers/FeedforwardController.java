@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.control.controllers;
 
 import org.firstinspires.ftc.teamcode.control.State;
-import org.firstinspires.ftc.teamcode.control.controllers.coefficients.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FeedforwardGains;
 
 public class FeedforwardController implements Controller {
 
