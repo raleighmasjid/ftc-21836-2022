@@ -33,6 +33,7 @@ public class ProfiledPIDVA extends PIDVAController implements FeedbackController
         );
     }
 
+    @Override
     public void setTarget(State target) {
         setTarget(new State(0.0, 0.0), target);
     }
@@ -47,6 +48,7 @@ public class ProfiledPIDVA extends PIDVAController implements FeedbackController
      * @param measurement Only the X attribute of the {@link State} parameter is used as feedback
      * @param voltage     measured battery voltage (for feedforward voltage correction)
      */
+    @Override
     public double calculate(State measurement, double voltage) {
         profiler.update();
         super.setTarget(new State(profiler.getX(), profiler.getV(), profiler.getA()));
@@ -58,6 +60,7 @@ public class ProfiledPIDVA extends PIDVAController implements FeedbackController
      *
      * @param measurement Only the X attribute of the {@link State} parameter is used as feedback
      */
+    @Override
     public double calculate(State measurement) {
         return this.calculate(measurement, 12.0);
     }
