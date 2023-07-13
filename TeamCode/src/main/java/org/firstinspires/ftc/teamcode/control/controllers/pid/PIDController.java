@@ -1,8 +1,9 @@
-package org.firstinspires.ftc.teamcode.control.controllers;
+package org.firstinspires.ftc.teamcode.control.controllers.pid;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.State;
+import org.firstinspires.ftc.teamcode.control.controllers.FeedbackController;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 

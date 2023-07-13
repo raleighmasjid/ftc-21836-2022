@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.control.controllers;
+package org.firstinspires.ftc.teamcode.control.controllers.pid;
 
 import org.firstinspires.ftc.teamcode.control.MotionProfiler;
 import org.firstinspires.ftc.teamcode.control.State;
+import org.firstinspires.ftc.teamcode.control.controllers.FeedforwardController;
 
 public class ProfiledPIDVA extends PIDVAController {
 

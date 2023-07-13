@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.State;
-import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDVA;
+import org.firstinspires.ftc.teamcode.control.controllers.pid.ProfiledPIDVA;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 /**

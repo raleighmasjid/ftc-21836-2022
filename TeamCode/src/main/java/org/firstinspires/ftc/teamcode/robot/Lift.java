@@ -4,9 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.control.controllers.ProfiledPIDVA;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FeedforwardGains;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.PIDGains;
+import org.firstinspires.ftc.teamcode.control.controllers.pid.ProfiledPIDVA;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledMotor;
 
