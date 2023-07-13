@@ -9,16 +9,13 @@ import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 public class PIDController implements FeedbackController {
 
     private PIDGains gains;
-
     private State target;
 
-    private double lastError, error, errorIntegral, errorDerivative;
-
-    private boolean integrate = true, calculateError = true;
-
-    private final ElapsedTime dtTimer = new ElapsedTime();
+    private double error, errorIntegral, errorDerivative;
+    private boolean integrate = true;
 
     public final FIRLowPassFilter derivFilter;
+    private final ElapsedTime dtTimer = new ElapsedTime();
 
     public PIDController(PIDGains gains, FIRLowPassFilter derivFilter) {
         setGains(gains);
@@ -42,10 +39,8 @@ public class PIDController implements FeedbackController {
      * @param measurement Only the X attribute of the {@link State} parameter is used as feedback
      */
     public double calculate(State measurement) {
-        if (calculateError) {
-            lastError = error;
-            error = target.getX() - measurement.getX();
-        } else calculateError = true;
+        double lastError = error;
+        error = target.getX() - measurement.getX();
 
         if (Math.signum(error) != Math.signum(lastError)) reset();
 
@@ -58,31 +53,17 @@ public class PIDController implements FeedbackController {
 
         double output = (gains.getKP() * error) + (gains.getKI() * errorIntegral) + (gains.getKD() * errorDerivative);
 
-        setIntegrate(!(Math.abs(output) > gains.getMaxOutputWithIntegral() && Math.signum(output) == Math.signum(error)));
+        integrate = !(Math.abs(output) > gains.getMaxOutputWithIntegral() && Math.signum(output) == Math.signum(error));
 
         return output;
-    }
-
-    public void setIntegrate(boolean integrate) {
-        this.integrate = integrate;
     }
 
     public void setTarget(State target) {
         this.target = target;
     }
 
-    public double getLastError() {
-        return lastError;
-    }
-
     public double getError() {
         return error;
-    }
-
-    public void setError(double error) {
-        lastError = this.error;
-        this.error = error;
-        calculateError = false;
     }
 
     public double getErrorDerivative() {
