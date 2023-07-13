@@ -45,7 +45,7 @@ public class MeepMeep {
     public static void main(String[] args) {
         com.noahbres.meepmeep.MeepMeep meepMeep = new com.noahbres.meepmeep.MeepMeep(700);
 
-        boolean isRight = true;
+        boolean isRight = false;
         double side = isRight ? 1 : -1;
 
         double X_START = side * ZONE_2_X;
@@ -75,39 +75,50 @@ public class MeepMeep {
                 .setStartPose(startPose)
                 .setConstraints(50, 50, Math.toRadians(158.4000248984491), Math.toRadians(190), 16.47)
                 .followTrajectorySequence(drivetrain ->
-                                drivetrain.trajectorySequenceBuilder(startPose)
-//                                .addTemporalMarker(() -> scorer.liftClaw())
-                                        .lineTo(parkingZone2.vec())
-                                        .lineToSplineHeading(scoringPos)
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
-                                        .waitSeconds(TIME_PRE_DROP)
-//                                .addTemporalMarker(() -> scorer.dropCone(Lift.Position.FIVE))
-                                        .waitSeconds(TIME_DROP)
-//                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
-                                        .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? RIGHT : LEFT))
-                                        .splineTo(stackPos, isRight ? RIGHT : LEFT)
-                                        // loop below
-                                        .waitSeconds(TIME_PRE_GRAB)
-//                                .addTemporalMarker(scorer::grabCone)
-                                        .waitSeconds(TIME_GRAB)
-//                                .UNSTABLE_addTemporalMarkerOffset(TIME_GRAB_TO_FLIP, scorer.passthrough::trigger)
-                                        .setReversed(true)
-                                        .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? LEFT : RIGHT))
-                                        .splineToSplineHeading(scoringPos, scoringPos.getHeading() - LEFT)
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
-                                        .waitSeconds(TIME_PRE_DROP)
-//                                .addTemporalMarker(() -> scorer.dropCone(endLiftPosition))
-                                        .waitSeconds(TIME_DROP)
-//                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, scorer.passthrough::trigger)
-                                        .setReversed(false)
-                                        .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? RIGHT : LEFT))
-                                        .splineTo(stackPos, isRight ? RIGHT : LEFT)
-                                        // common parking:
-                                        .waitSeconds(TIME_PRE_GRAB)
-//                                .addTemporalMarker(() -> scorer.grabCone())
-                                        .waitSeconds(TIME_GRAB)
-                                        .build()
+                        drivetrain.trajectorySequenceBuilder(startPose)
+                                .addTemporalMarker(() -> {
+                                })
+                                .lineTo(parkingZone2.vec())
+                                .lineToSplineHeading(scoringPos)
+                                .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> {
+                                })
+                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> {
+                                })
+                                .waitSeconds(TIME_PRE_DROP)
+                                .addTemporalMarker(() -> {
+                                })
+                                .waitSeconds(TIME_DROP)
+                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> {
+                                })
+                                .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? RIGHT : LEFT))
+                                .splineTo(stackPos, isRight ? RIGHT : LEFT)
+                                // loop below
+                                .waitSeconds(TIME_PRE_GRAB)
+                                .addTemporalMarker(() -> {
+                                })
+                                .waitSeconds(TIME_GRAB)
+                                .UNSTABLE_addTemporalMarkerOffset(TIME_GRAB_TO_FLIP, () -> {
+                                })
+                                .setReversed(true)
+                                .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? LEFT : RIGHT))
+                                .splineToSplineHeading(scoringPos, scoringPos.getHeading() - LEFT)
+                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> {
+                                })
+                                .waitSeconds(TIME_PRE_DROP)
+                                .addTemporalMarker(() -> {
+                                })
+                                .waitSeconds(TIME_DROP)
+                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> {
+                                })
+                                .setReversed(false)
+                                .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? RIGHT : LEFT))
+                                .splineTo(stackPos, isRight ? RIGHT : LEFT)
+                                // common parking:
+                                .waitSeconds(TIME_PRE_GRAB)
+                                .addTemporalMarker(() -> {
+                                })
+                                .waitSeconds(TIME_GRAB)
+                                .build()
                 );
 
         meepMeep.setBackground(com.noahbres.meepmeep.MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
