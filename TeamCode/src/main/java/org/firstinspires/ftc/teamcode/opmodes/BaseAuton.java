@@ -32,7 +32,7 @@ public abstract class BaseAuton extends LinearOpMode {
             MED_ANGLE = 35,
             MED_X = 31,
             MED_Y = -17.5,
-            TALL_ANGLE = 135,
+            TALL_ANGLE = -35,
             TALL_X = 31,
             TALL_Y = -7.5,
             STACK_X = 59,
@@ -90,25 +90,12 @@ public abstract class BaseAuton extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(X_START, Y_START, FORWARD);
 
+        boolean tall = pole == Lift.Position.TALL;
+        double TIME_LIFT = tall ? TIME_LIFT_TALL : TIME_LIFT_MEDIUM;
+        Pose2d scoringPos = tall ? tallScoringPos : medScoringPos;
+        double sideTurnPosAngleOffset = side * Math.toRadians(tall ? STACK_ANGLE_OFFSET_TALL : STACK_ANGLE_OFFSET_MED);
+
         drivetrain.setPoseEstimate(startPose);
-
-        double TIME_LIFT;
-        Pose2d scoringPos;
-        double sideTurnPosAngleOffset;
-
-        switch (pole) {
-            case TALL:
-                TIME_LIFT = TIME_LIFT_TALL;
-                scoringPos = tallScoringPos;
-                sideTurnPosAngleOffset = side * Math.toRadians(STACK_ANGLE_OFFSET_TALL);
-                break;
-            default:
-            case MED:
-                TIME_LIFT = TIME_LIFT_MEDIUM;
-                scoringPos = medScoringPos;
-                sideTurnPosAngleOffset = side * Math.toRadians(STACK_ANGLE_OFFSET_MED);
-                break;
-        }
 
         TrajectorySequence scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> scorer.liftClaw())
