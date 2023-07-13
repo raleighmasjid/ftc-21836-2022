@@ -17,17 +17,21 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             kS = 0.0,
             MAX_OUTPUT_WITH_INTEGRAL = 1.0,
             FILTER_GAIN = 0.85,
-            SETTLING_TIME = 0.3;
+            TURN_SETTLING_TIME = 0.3,
+            TRANSLATION_SETTLING_TIME = 0.3;
 
     public static int FILTER_COUNT = 300;
 
-    private final ElapsedTime settlingTimer;
+    private double lastXCommand = 0.0, lastYCommand = 0.0;
+
+    private final ElapsedTime turnSettlingTimer, translationSettlingTimer;
 
     private final PIDFController headingController = new PIDFController();
 
     public HeadingLockingMecanum(HardwareMap hw, double motorCPR, double motorRPM) {
         super(hw, motorCPR, motorRPM);
-        settlingTimer = new ElapsedTime();
+        turnSettlingTimer = new ElapsedTime();
+        translationSettlingTimer = new ElapsedTime();
     }
 
     @Override
@@ -52,18 +56,24 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
         double scalar = 12.0 / voltage;
         boolean useManualInput = turnCommand != 0.0;
 
+        boolean xStopped = (lastXCommand != 0) && (xCommand == 0);
+        boolean yStopped = (lastYCommand != 0) && (yCommand == 0);
+        if (xStopped || yStopped) translationSettlingTimer.reset();
+
         if (useManualInput) {
             turnCommand *= scalar;
-            settlingTimer.reset();
+            turnSettlingTimer.reset();
         }
 
-        if (useManualInput || settlingTimer.seconds() <= SETTLING_TIME) {
+        if (useManualInput || turnSettlingTimer.seconds() <= TURN_SETTLING_TIME) {
             setTargetHeading(getHeading());
-        } else {
+        } else if (translationSettlingTimer.seconds() > TRANSLATION_SETTLING_TIME) {
             headingController.pid.setError(-normalizeAngle(headingController.pid.getTarget() - getHeading()));
             turnCommand = headingController.update(getHeading(), voltage);
         }
 
+        lastXCommand = xCommand;
+        lastYCommand = yCommand;
         super.run(xCommand * scalar, yCommand * scalar, turnCommand);
     }
 
