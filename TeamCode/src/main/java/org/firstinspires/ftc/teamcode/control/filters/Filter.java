@@ -4,5 +4,5 @@ public interface Filter {
 
     double getEstimate(double newValue);
 
-    void clearMemory();
+    void reset();
 }

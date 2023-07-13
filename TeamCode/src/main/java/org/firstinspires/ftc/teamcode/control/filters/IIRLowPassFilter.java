@@ -16,7 +16,7 @@ public class IIRLowPassFilter implements Filter {
         this.filterGain = filterGain;
     }
 
-    public void clearMemory() {
+    public void reset() {
         estimate = Double.NaN;
     }
 

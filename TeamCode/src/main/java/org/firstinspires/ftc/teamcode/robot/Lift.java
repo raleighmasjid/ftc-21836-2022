@@ -77,21 +77,14 @@ public class Lift extends ProfiledMotor {
         veloFilter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
         accelFilter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
-        controller.pid.setGains(new PIDGains(
-                kP,
-                kI,
-                kD,
-                MAX_PID_OUTPUT_WITH_INTEGRAL
-        ));
-        controller.pid.derivFilter.setGains(
+        controller.setGains(
+                new PIDGains(kP, kI, kD, MAX_PID_OUTPUT_WITH_INTEGRAL),
+                new FeedforwardGains(kV, kA, kS)
+        );
+        controller.derivFilter.setGains(
                 FILTER_GAIN_kD,
                 FILTER_COUNT_kD
         );
-        controller.feedforward.setGains(new FeedforwardGains(
-                kV,
-                kA,
-                kS
-        ));
         controller.updateConstraints(
                 MAX_VELO,
                 MAX_ACCEL,

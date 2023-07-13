@@ -113,12 +113,12 @@ public class ProfiledMotor {
      * Resets internal states to 0
      */
     public void reset() {
-        accelFilter.clearMemory();
-        veloFilter.clearMemory();
+        accelFilter.reset();
+        veloFilter.reset();
 
         motors[0].encoder.reset();
-        controller.pid.resetIntegral();
-        controller.pid.derivFilter.clearMemory();
+        controller.reset();
+        controller.derivFilter.reset();
 
         currentPosition = 0.0;
         currentVelocity = 0.0;
@@ -166,9 +166,9 @@ public class ProfiledMotor {
         telemetry.addData("Current acceleration (in/s^2)", currentAcceleration);
         telemetry.addData("Max acceleration (in/s^2)", maxAcceleration);
         telemetry.addLine();
-        telemetry.addData("Error integral (in*s)", controller.pid.getErrorIntegral());
-        telemetry.addData("Error (in)", controller.pid.getError());
-        telemetry.addData("Error derivative (in/s)", controller.pid.getErrorDerivative());
+        telemetry.addData("Error integral (in*s)", controller.getErrorIntegral());
+        telemetry.addData("Error (in)", controller.getError());
+        telemetry.addData("Error derivative (in/s)", controller.getErrorDerivative());
     }
 
     /**

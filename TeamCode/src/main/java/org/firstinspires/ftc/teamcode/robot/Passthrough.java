@@ -33,7 +33,6 @@ public class Passthrough {
 
     private double currentAngle = ANGLE_PASS_FRONT;
     private double angleOffset = 0.0;
-    private double tiltOffset = 0.0;
 
     private boolean tilted = false;
     private boolean triggered = false;
@@ -98,7 +97,7 @@ public class Passthrough {
     }
 
     private void updateProfile() {
-        tiltOffset =
+        double tiltOffset =
                 tilted ?
                         ANGLE_PASS_TILT_OFFSET :
                         (!triggered) && (inBack != wrist.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;

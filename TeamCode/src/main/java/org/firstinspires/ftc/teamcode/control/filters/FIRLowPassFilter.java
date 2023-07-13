@@ -24,7 +24,7 @@ public class FIRLowPassFilter implements Filter {
         this.filterCount = Math.max(filterCount, 2);
     }
 
-    public void clearMemory() {
+    public void reset() {
         values.clear();
     }
 

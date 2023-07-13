@@ -18,7 +18,7 @@ public class PIDController implements FeedbackController {
 
     private final ElapsedTime dtTimer = new ElapsedTime();
 
-    public FIRLowPassFilter derivFilter;
+    public final FIRLowPassFilter derivFilter;
 
     public PIDController(PIDGains gains, FIRLowPassFilter derivFilter) {
         setGains(gains);
@@ -47,7 +47,7 @@ public class PIDController implements FeedbackController {
             error = target.getX() - measurement.getX();
         } else calculateError = true;
 
-        if (Math.signum(error) != Math.signum(lastError)) resetIntegral();
+        if (Math.signum(error) != Math.signum(lastError)) reset();
 
         double timerSeconds = dtTimer.seconds();
         dtTimer.reset();
@@ -97,7 +97,7 @@ public class PIDController implements FeedbackController {
         return errorIntegral;
     }
 
-    public void resetIntegral() {
+    public void reset() {
         errorIntegral = 0.0;
     }
 }

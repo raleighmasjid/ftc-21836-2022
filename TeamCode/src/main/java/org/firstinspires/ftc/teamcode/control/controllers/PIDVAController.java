@@ -1,13 +1,17 @@
 package org.firstinspires.ftc.teamcode.control.controllers;
 
 import org.firstinspires.ftc.teamcode.control.State;
+import org.firstinspires.ftc.teamcode.control.controllers.coefficients.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.controllers.coefficients.PIDGains;
+import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 /**
  * Wrapper class combining a PID controller and a kV-kA-kS feedforward controller.
  */
 public class PIDVAController implements FeedbackController {
-    public final PIDController pid;
-    public final FeedforwardController feedforward;
+    private final PIDController pid;
+    private final FeedforwardController feedforward;
+    public FIRLowPassFilter derivFilter;
 
     /**
      * @param pid         PID feedback controller
@@ -16,10 +20,16 @@ public class PIDVAController implements FeedbackController {
     public PIDVAController(PIDController pid, FeedforwardController feedforward) {
         this.pid = pid;
         this.feedforward = feedforward;
+        derivFilter = this.pid.derivFilter;
     }
 
     public PIDVAController() {
         this(new PIDController(), new FeedforwardController());
+    }
+
+    public void setGains(PIDGains pidGains, FeedforwardGains feedforwardGains) {
+        pid.setGains(pidGains);
+        feedforward.setGains(feedforwardGains);
     }
 
     public void setTarget(State target) {
@@ -45,5 +55,33 @@ public class PIDVAController implements FeedbackController {
     public double calculate(State measurement, double voltage) {
         double pidOutput = pid.calculate(measurement);
         return pidOutput + feedforward.calculate(voltage, pidOutput);
+    }
+
+    public void setIntegrate(boolean integrate) {
+        pid.setIntegrate(integrate);
+    }
+
+    public double getLastError() {
+        return pid.getLastError();
+    }
+
+    public double getError() {
+        return pid.getError();
+    }
+
+    public void setError(double error) {
+        pid.setError(error);
+    }
+
+    public double getErrorDerivative() {
+        return pid.getErrorDerivative();
+    }
+
+    public double getErrorIntegral() {
+        return pid.getErrorIntegral();
+    }
+
+    public void reset() {
+        pid.reset();
     }
 }
