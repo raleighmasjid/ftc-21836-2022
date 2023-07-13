@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * @since 2022/12/24
  */
 @Config
-public class ScoringSystem {
+public class Scorer {
 
     private final SimpleServo coneArmR;
     private final SimpleServo coneArmL;
@@ -39,7 +39,7 @@ public class ScoringSystem {
      *
      * @param hw Passed-in hardware map from the op mode
      */
-    public ScoringSystem(HardwareMap hw) {
+    public Scorer(HardwareMap hw) {
 
         lift = new Lift(hw);
         passthrough = new Passthrough(hw);

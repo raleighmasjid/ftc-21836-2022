@@ -33,7 +33,7 @@ import org.firstinspires.ftc.teamcode.control.trajectorysequence.sequencesegment
 import org.firstinspires.ftc.teamcode.control.trajectorysequence.sequencesegment.TurnSegment;
 import org.firstinspires.ftc.teamcode.control.trajectorysequence.sequencesegment.WaitSegment;
 import org.firstinspires.ftc.teamcode.robot.Lift;
-import org.firstinspires.ftc.teamcode.robot.ScoringSystem;
+import org.firstinspires.ftc.teamcode.robot.Scorer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -741,7 +741,7 @@ public class TrajectorySequenceBuilder {
     }
 
     public TrajectorySequenceBuilder setValues(
-            ScoringSystem scorer,
+            Scorer scorer,
             Vector2d sideTurnPos,
             Vector2d stackPos,
             boolean isRight,
@@ -762,7 +762,7 @@ public class TrajectorySequenceBuilder {
         return this;
     }
 
-    private ScoringSystem scorer;
+    private Scorer scorer;
     private Vector2d sideTurnPos;
     private Vector2d stackPos;
     private boolean isRight;

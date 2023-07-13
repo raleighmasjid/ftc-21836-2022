@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.control.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.Lift;
-import org.firstinspires.ftc.teamcode.robot.ScoringSystem;
+import org.firstinspires.ftc.teamcode.robot.Scorer;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
@@ -24,7 +24,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
     SampleMecanumDrive drivetrain;
-    ScoringSystem scorer;
+    Scorer scorer;
     List<LynxModule> hubs;
     AprilTagCamera camera;
 
@@ -68,7 +68,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
     public void runOpMode(Lift.Position pole, Side sideEnum) throws InterruptedException {
         drivetrain = new SampleMecanumDrive(hardwareMap);
-        scorer = new ScoringSystem(hardwareMap);
+        scorer = new Scorer(hardwareMap);
 
         boolean isRight = sideEnum == Side.RIGHT;
         double side = isRight ? 1 : -1;
