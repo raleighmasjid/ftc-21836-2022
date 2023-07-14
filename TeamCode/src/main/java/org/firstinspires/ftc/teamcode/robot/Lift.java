@@ -5,11 +5,8 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.Integrator;
-import org.firstinspires.ftc.teamcode.control.controllers.FeedforwardController;
-import org.firstinspires.ftc.teamcode.control.controllers.FullStateController;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FeedforwardGains;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FullStateGains;
-import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledMotor;
 
 @Config
@@ -70,13 +67,13 @@ public class Lift extends ProfiledMotor {
     }
 
     public Lift(HardwareMap hw) {
-        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new Integrator(true), new FullStateController(), new FeedforwardController(), new FIRLowPassFilter(), new FIRLowPassFilter());
+        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new Integrator(true));
     }
 
     @Override
     public void readPosition() {
-        veloFilter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
-        accelFilter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
+        accelCalculator.filter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
+        veloCalculator.filter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
         integrator.setMaxOutput(MAX_PID_OUTPUT_WITH_INTEGRAL);
         fullState.setGains(new FullStateGains(pGain, vGain, aGain));

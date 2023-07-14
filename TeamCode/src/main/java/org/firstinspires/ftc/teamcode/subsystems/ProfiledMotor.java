@@ -5,14 +5,13 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.control.Differentiator;
 import org.firstinspires.ftc.teamcode.control.Integrator;
 import org.firstinspires.ftc.teamcode.control.MotionProfiler;
 import org.firstinspires.ftc.teamcode.control.State;
 import org.firstinspires.ftc.teamcode.control.controllers.FeedforwardController;
 import org.firstinspires.ftc.teamcode.control.controllers.FullStateController;
-import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 /**
  * Motion-profiled DC motor(s)
@@ -24,24 +23,21 @@ public class ProfiledMotor {
 
     private final MotorEx[] motors;
 
-    private final ElapsedTime derivTimer = new ElapsedTime();
-
-    public final FIRLowPassFilter accelFilter;
-    public final FIRLowPassFilter veloFilter;
+    public final Differentiator veloCalculator = new Differentiator();
+    public final Differentiator accelCalculator = new Differentiator();
 
     private final VoltageSensor batteryVoltageSensor;
-
     public final Integrator integrator;
-    public final FullStateController fullState;
-    public final FeedforwardController feedforward;
 
+    public final FullStateController fullState = new FullStateController();
+    public final FeedforwardController feedforward = new FeedforwardController();
     public final MotionProfiler profiler = new MotionProfiler();
 
     protected String targetPositionName = "Zero";
 
     protected double targetPosition, maxVelocity, maxAcceleration, UNIT_PER_TICK, currentBatteryVoltage = 12.0;
 
-    protected State currentState;
+    protected State currentState = new State();
 
     public double getCurrentPosition() {
         return currentState.getX();
@@ -54,11 +50,7 @@ public class ProfiledMotor {
     public ProfiledMotor(
             MotorEx[] motors,
             VoltageSensor batteryVoltageSensor,
-            Integrator integrator,
-            FullStateController fullState,
-            FeedforwardController feedforward,
-            FIRLowPassFilter veloFilter,
-            FIRLowPassFilter accelFilter
+            Integrator integrator
     ) {
         this.motors = motors;
         for (MotorEx motor : this.motors) {
@@ -66,12 +58,6 @@ public class ProfiledMotor {
         }
         this.batteryVoltageSensor = batteryVoltageSensor;
         this.integrator = integrator;
-        this.fullState = fullState;
-        this.feedforward = feedforward;
-        this.veloFilter = veloFilter;
-        this.accelFilter = accelFilter;
-
-        derivTimer.reset();
 
         reset();
     }
@@ -88,18 +74,16 @@ public class ProfiledMotor {
      * Reads encoder value and converts to inches
      */
     public void readPosition() {
-        State lastState = currentState;
-        double timerSeconds = derivTimer.seconds();
-        derivTimer.reset();
-        double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
-
         currentBatteryVoltage = batteryVoltageSensor.getVoltage();
+
         double x = motors[0].encoder.getPosition() * UNIT_PER_TICK;
-        double v = veloFilter.calculate((x - lastState.getX()) / dt);
-        double a = accelFilter.calculate((v - lastState.getV()) / dt);
+        double v = veloCalculator.calculate(x);
+        double a = accelCalculator.calculate(v);
+
         currentState = new State(x, v, a);
-        maxVelocity = Math.max(currentState.getV(), maxVelocity);
-        maxAcceleration = Math.max(currentState.getA(), maxAcceleration);
+
+        maxVelocity = Math.max(v, maxVelocity);
+        maxAcceleration = Math.max(a, maxAcceleration);
     }
 
     /**
@@ -129,8 +113,8 @@ public class ProfiledMotor {
      * Resets internal states to 0
      */
     public void reset() {
-        accelFilter.reset();
-        veloFilter.reset();
+        accelCalculator.filter.reset();
+        veloCalculator.filter.reset();
 
         motors[0].encoder.reset();
         integrator.reset();
