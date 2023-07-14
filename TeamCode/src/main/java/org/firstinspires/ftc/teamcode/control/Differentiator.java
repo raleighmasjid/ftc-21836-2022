@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 public class Differentiator {
 
-    private double lastValue, derivative;
+    private double lastValue = 0.0, derivative = 0.0;
 
     private final ElapsedTime timer = new ElapsedTime();
 
