@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 public class PIDController implements FeedbackController {
 
-    private PIDGains gains;
+    private PIDGains gains = new PIDGains();
     private State target;
 
     public final FIRLowPassFilter derivFilter;
@@ -19,18 +19,13 @@ public class PIDController implements FeedbackController {
     private double errorDerivative;
     private boolean calculateError = true;
 
-    public PIDController(PIDGains gains, FIRLowPassFilter derivFilter) {
-        setGains(gains);
+    public PIDController(FIRLowPassFilter derivFilter) {
         this.derivFilter = derivFilter;
         differentiator = new Differentiator(derivFilter);
     }
 
-    public PIDController(PIDGains gains) {
-        this(gains, new FIRLowPassFilter());
-    }
-
     public PIDController() {
-        this(new PIDGains(0, 0, 0));
+        this(new FIRLowPassFilter());
     }
 
     public void setGains(PIDGains gains) {
