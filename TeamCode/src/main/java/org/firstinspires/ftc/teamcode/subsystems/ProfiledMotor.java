@@ -83,8 +83,8 @@ public class ProfiledMotor {
 
         currentBatteryVoltage = batteryVoltageSensor.getVoltage();
         currentPosition = motors[0].encoder.getPosition() * UNIT_PER_TICK;
-        currentVelocity = veloFilter.getEstimate((currentPosition - lastPosition) / dt);
-        currentAcceleration = accelFilter.getEstimate((currentVelocity - lastVelocity) / dt);
+        currentVelocity = veloFilter.calculate((currentPosition - lastPosition) / dt);
+        currentAcceleration = accelFilter.calculate((currentVelocity - lastVelocity) / dt);
         maxVelocity = Math.max(currentVelocity, maxVelocity);
         maxAcceleration = Math.max(currentAcceleration, maxAcceleration);
     }

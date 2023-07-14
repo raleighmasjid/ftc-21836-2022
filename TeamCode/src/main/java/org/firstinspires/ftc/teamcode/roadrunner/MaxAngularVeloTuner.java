@@ -61,7 +61,7 @@ public class MaxAngularVeloTuner extends LinearOpMode {
 
             double lastMaxAngVelocity = maxAngVelocity;
             maxAngVelocity = Math.max(poseVelo.getHeading(), maxAngVelocity);
-            maxAngAcceleration = Math.max(accelFilter.getEstimate((maxAngVelocity - lastMaxAngVelocity) / accelTimer.seconds()), maxAngAcceleration);
+            maxAngAcceleration = Math.max(accelFilter.calculate((maxAngVelocity - lastMaxAngVelocity) / accelTimer.seconds()), maxAngAcceleration);
             accelTimer.reset();
         }
 

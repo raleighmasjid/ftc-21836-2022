@@ -49,7 +49,7 @@ public class PIDController implements FeedbackController {
         dtTimer.reset();
         double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
 
-        errorDerivative = derivFilter.getEstimate((error - lastError) / dt);
+        errorDerivative = derivFilter.calculate((error - lastError) / dt);
         if (integrate) errorIntegral += 0.5 * (error + lastError) * dt;
 
         double output = (gains.getKP() * error) + (gains.getKI() * errorIntegral) + (gains.getKD() * errorDerivative);
