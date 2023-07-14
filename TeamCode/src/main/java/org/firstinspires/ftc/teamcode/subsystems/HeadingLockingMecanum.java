@@ -20,7 +20,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             MAX_OUTPUT_WITH_INTEGRAL = 1.0,
             FILTER_GAIN = 0.85,
             TURN_SETTLING_TIME = 0.3,
-            TRANSLATION_SETTLING_TIME = 0.3;
+            TRANSLATION_SETTLING_TIME = 0.0;
 
     public static int FILTER_COUNT = 300;
 
