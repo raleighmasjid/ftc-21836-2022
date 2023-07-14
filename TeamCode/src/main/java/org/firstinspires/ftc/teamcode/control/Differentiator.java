@@ -10,7 +10,15 @@ public class Differentiator {
 
     private final ElapsedTime timer = new ElapsedTime();
 
-    public final FIRLowPassFilter filter = new FIRLowPassFilter();
+    public final FIRLowPassFilter filter;
+
+    public Differentiator() {
+        this(new FIRLowPassFilter());
+    }
+
+    public Differentiator(FIRLowPassFilter filter) {
+        this.filter = filter;
+    }
 
     public double calculate(double newValue) {
 
