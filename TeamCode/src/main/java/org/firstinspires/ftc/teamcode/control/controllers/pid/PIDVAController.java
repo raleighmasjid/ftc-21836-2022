@@ -67,6 +67,10 @@ public class PIDVAController implements FeedbackController {
         return pid.getErrorIntegral();
     }
 
+    public void setError(double error) {
+        pid.setError(error);
+    }
+
     public void reset() {
         pid.reset();
     }

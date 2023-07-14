@@ -68,10 +68,8 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
         if (useManualInput || turnSettlingTimer.seconds() <= TURN_SETTLING_TIME) {
             headingTarget = getHeading();
         } else if (translationSettlingTimer.seconds() > TRANSLATION_SETTLING_TIME) {
-            headingController.setTarget(new State(
-                    normalizeAngle(headingTarget - getHeading()) + getHeading()
-            ));
-            turnCommand = -headingController.calculate(new State(getHeading()), voltage);
+            headingController.setError(-normalizeAngle(headingTarget - getHeading()));
+            turnCommand = headingController.calculate(new State(getHeading()), voltage);
         }
 
         lastXCommand = xCommand;
@@ -80,7 +78,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
     }
 
     public void setTargetHeading(double angle) {
-        headingController.setTarget(new State(normalizeAngle(angle)));
+        headingTarget = angle;
     }
 
     @Override
