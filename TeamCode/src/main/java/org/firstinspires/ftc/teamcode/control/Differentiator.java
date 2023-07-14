@@ -13,9 +13,15 @@ public class Differentiator {
     public final FIRLowPassFilter filter = new FIRLowPassFilter();
 
     public double calculate(double newValue) {
-        double output = filter.calculate((newValue - lastValue) / timer.seconds());
+
+        double timerSeconds = timer.seconds();
         timer.reset();
+        double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
+
+        double output = filter.calculate((newValue - lastValue) / dt);
+
         lastValue = newValue;
+        
         return output;
     }
 }
