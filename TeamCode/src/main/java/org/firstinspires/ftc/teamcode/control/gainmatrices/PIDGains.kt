@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.control.controllers.gainmatrices
+package org.firstinspires.ftc.teamcode.control.gainmatrices
 
 data class PIDGains @JvmOverloads constructor(
     @JvmField var kP: Double = 0.0,

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.control.controllers.gainmatrices
+package org.firstinspires.ftc.teamcode.control.gainmatrices
 
 data class FullStateGains @JvmOverloads constructor(
     @JvmField var pGain: Double = 0.0,
