@@ -23,25 +23,25 @@ public class Lift extends ProfiledMotor {
             HEIGHT_1_STAGE = 9.6,
             kG_1_STAGE = 0.06,
             kG_3 = 0.312,
-            kV = 0.0155,
-            kA = 0.0025,
+            kV = 0.0075,
+            kA = 0.0005,
             kStatic = 0.035,
-            iGain = 0.2,
-            pGain = 0.0,
-            vGain = 0.0,
+            iGain = 0.3,
+            pGain = 0.075,
+            vGain = 0.0125,
             aGain = 0.0,
             FILTER_GAIN_VELO = 0.5,
-            FILTER_GAIN_ACCEL = 0.5,
-            MAX_VELO = 32,
+            FILTER_GAIN_ACCEL = 0.8,
+            MAX_VELO = 32.0,
             MAX_ACCEL = 189.16,
-            MAX_JERK = 600.0,
+            MAX_JERK = 450.0,
             MAX_PID_OUTPUT_WITH_INTEGRAL = 0.6,
             TOLERANCE = 0.15843625,
             INCHES_PER_TICK = 0.03168725;
 
     public static int
-            FILTER_COUNT_VELO = 10,
-            FILTER_COUNT_ACCEL = 10;
+            FILTER_COUNT_VELO = 20,
+            FILTER_COUNT_ACCEL = 50;
 
     /**
      * Named lift position
