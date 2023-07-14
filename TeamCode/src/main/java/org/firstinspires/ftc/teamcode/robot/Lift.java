@@ -5,8 +5,9 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.Integrator;
-import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FeedforwardGains;
-import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FullStateGains;
+import org.firstinspires.ftc.teamcode.control.gainmatrices.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.gainmatrices.FullStateGains;
+import org.firstinspires.ftc.teamcode.control.gainmatrices.ProfileConstraints;
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledMotor;
 
 @Config
@@ -21,22 +22,28 @@ public class Lift extends ProfiledMotor {
             HEIGHT_1_STAGE = 9.6,
             kG_1_STAGE = 0.06,
             kG_3 = 0.312,
-            kV = 0.0075,
-            kA = 0.0005,
-            kStatic = 0.035,
             iGain = 0.3,
-            pGain = 0.075,
-            vGain = 0.0125,
-            aGain = 0.0,
+            MAX_INTEGRAL_OUTPUT = 0.6,
             FILTER_GAIN_VELO = 0.5,
             FILTER_GAIN_ACCEL = 0.8,
-            MAX_PID_OUTPUT_WITH_INTEGRAL = 0.6,
             TOLERANCE = 0.15843625,
             INCHES_PER_TICK = 0.03168725;
 
     public static int
             FILTER_COUNT_VELO = 20,
             FILTER_COUNT_ACCEL = 50;
+
+    public static FullStateGains fullStateGains = new FullStateGains(
+            0.075,
+            0.0125,
+            0.0
+    );
+
+    public static FeedforwardGains feedforwardGains = new FeedforwardGains(
+            0.0075,
+            0.0005,
+            0.035
+    );
 
     public static ProfileConstraints constraints = new ProfileConstraints(
             32.0,
@@ -78,14 +85,10 @@ public class Lift extends ProfiledMotor {
         accelCalculator.filter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
         veloCalculator.filter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
-        integrator.setMaxOutput(MAX_PID_OUTPUT_WITH_INTEGRAL);
-        fullState.setGains(new FullStateGains(pGain, vGain, aGain));
-        feedforward.setGains(new FeedforwardGains(kV, kA, kStatic));
-        profiler.updateConstraints(
-                MAX_VELO,
-                MAX_ACCEL,
-                MAX_JERK
-        );
+        integrator.setMaxOutput(MAX_INTEGRAL_OUTPUT);
+        fullState.setGains(fullStateGains);
+        feedforward.setGains(feedforwardGains);
+        profiler.updateConstraints(constraints);
 
         super.updateConstants(INCHES_PER_TICK, iGain);
         super.readPosition();

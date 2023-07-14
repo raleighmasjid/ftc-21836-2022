@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.control.controllers;
 
 import org.firstinspires.ftc.teamcode.control.State;
-import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FullStateGains;
+import org.firstinspires.ftc.teamcode.control.gainmatrices.FullStateGains;
 
 public class FullStateController implements FeedbackController {
 

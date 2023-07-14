@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.State;
 import org.firstinspires.ftc.teamcode.control.controllers.PIDController;
-import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.PIDGains;
+import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 
 @Config
 public class HeadingLockingMecanum extends MecanumDrivetrain {

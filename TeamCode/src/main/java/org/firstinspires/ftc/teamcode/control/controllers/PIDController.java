@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.control.controllers;
 import org.firstinspires.ftc.teamcode.control.Differentiator;
 import org.firstinspires.ftc.teamcode.control.Integrator;
 import org.firstinspires.ftc.teamcode.control.State;
-import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
+import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 
 public class PIDController implements FeedbackController {
 
