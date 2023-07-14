@@ -4,7 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.control.controllers.fullstatefeedback.ProfiledFullStateVA;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FullStateGains;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.controllers.pid.ProfiledPIDVA;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
@@ -22,15 +24,15 @@ public class Lift extends ProfiledMotor {
             HEIGHT_1_STAGE = 9.6,
             kG_1_STAGE = 0.06,
             kG_3 = 0.312,
-            kP = 0.05,
             kI = 0.2,
-            kD = 0.01,
             kV = 0.0155,
             kA = 0.0025,
-            kS = 0.035,
-            FILTER_GAIN_kD = 0.875,
-            FILTER_GAIN_VELO = 0.0,
-            FILTER_GAIN_ACCEL = 0.8,
+            kStatic = 0.035,
+            pGain = 0.0,
+            vGain = 0.0,
+            aGain = 0.0,
+            FILTER_GAIN_VELO = 0.5,
+            FILTER_GAIN_ACCEL = 0.5,
             MAX_VELO = 32,
             MAX_ACCEL = 189.16,
             MAX_JERK = 600.0,
@@ -39,9 +41,8 @@ public class Lift extends ProfiledMotor {
             INCHES_PER_TICK = 0.03168725;
 
     public static int
-            FILTER_COUNT_kD = 50,
             FILTER_COUNT_VELO = 10,
-            FILTER_COUNT_ACCEL = 300;
+            FILTER_COUNT_ACCEL = 10;
 
     /**
      * Named lift position
@@ -69,7 +70,7 @@ public class Lift extends ProfiledMotor {
     }
 
     public Lift(HardwareMap hw) {
-        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledPIDVA(), new FIRLowPassFilter(), new FIRLowPassFilter());
+        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledPIDVA(), new ProfiledFullStateVA(), new FIRLowPassFilter(), new FIRLowPassFilter());
     }
 
     @Override
@@ -77,15 +78,20 @@ public class Lift extends ProfiledMotor {
         veloFilter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
         accelFilter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
-        controller.setGains(
-                new PIDGains(kP, kI, kD, MAX_PID_OUTPUT_WITH_INTEGRAL),
-                new FeedforwardGains(kV, kA, kS)
+        pid.setGains(
+                new PIDGains(0.0, kI, 0.0, MAX_PID_OUTPUT_WITH_INTEGRAL),
+                new FeedforwardGains(0, 0, 0)
         );
-        controller.derivFilter.setGains(
-                FILTER_GAIN_kD,
-                FILTER_COUNT_kD
+        fullState.setGains(
+                new FullStateGains(pGain, vGain, aGain),
+                new FeedforwardGains(kV, kA, kStatic)
         );
-        controller.updateConstraints(
+        pid.updateConstraints(
+                MAX_VELO,
+                MAX_ACCEL,
+                MAX_JERK
+        );
+        fullState.updateConstraints(
                 MAX_VELO,
                 MAX_ACCEL,
                 MAX_JERK

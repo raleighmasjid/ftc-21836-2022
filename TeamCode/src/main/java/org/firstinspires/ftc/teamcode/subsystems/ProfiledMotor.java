@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.State;
+import org.firstinspires.ftc.teamcode.control.controllers.fullstatefeedback.ProfiledFullStateVA;
 import org.firstinspires.ftc.teamcode.control.controllers.pid.ProfiledPIDVA;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
@@ -28,7 +29,8 @@ public class ProfiledMotor {
 
     private final VoltageSensor batteryVoltageSensor;
 
-    public final ProfiledPIDVA controller;
+    public final ProfiledPIDVA pid;
+    public final ProfiledFullStateVA fullState;
 
     protected String targetPositionName = "Zero";
 
@@ -45,7 +47,8 @@ public class ProfiledMotor {
     public ProfiledMotor(
             MotorEx[] motors,
             VoltageSensor batteryVoltageSensor,
-            ProfiledPIDVA controller,
+            ProfiledPIDVA pid,
+            ProfiledFullStateVA fullState,
             FIRLowPassFilter veloFilter,
             FIRLowPassFilter accelFilter
     ) {
@@ -54,7 +57,8 @@ public class ProfiledMotor {
             motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         }
         this.batteryVoltageSensor = batteryVoltageSensor;
-        this.controller = controller;
+        this.pid = pid;
+        this.fullState = fullState;
         this.veloFilter = veloFilter;
         this.accelFilter = accelFilter;
 
@@ -106,7 +110,8 @@ public class ProfiledMotor {
     public void setTargetPosition(double targetPosition, String targetPositionName) {
         this.targetPosition = targetPosition;
         this.targetPositionName = targetPositionName;
-        controller.setTarget(new State(currentPosition, currentVelocity), new State(this.targetPosition));
+        pid.setTarget(new State(currentPosition, currentVelocity), new State(this.targetPosition));
+        fullState.setTarget(new State(currentPosition, currentVelocity), new State(this.targetPosition));
     }
 
     /**
@@ -117,8 +122,8 @@ public class ProfiledMotor {
         veloFilter.reset();
 
         motors[0].encoder.reset();
-        controller.reset();
-        controller.derivFilter.reset();
+        pid.reset();
+        pid.derivFilter.reset();
 
         currentPosition = 0.0;
         currentVelocity = 0.0;
@@ -133,10 +138,13 @@ public class ProfiledMotor {
     }
 
     /**
-     * Runs {@link #controller}
+     * Runs {@link #pid}
      */
     public void runToPosition() {
-        run(controller.calculate(new State(currentPosition), currentBatteryVoltage), false);
+        State current = new State(currentPosition, currentVelocity, currentAcceleration);
+        double integralOutput = pid.calculate(current);
+        double fullStateOutput = fullState.calculate(current, currentBatteryVoltage);
+        run(integralOutput + fullStateOutput, false);
     }
 
     /**
@@ -151,24 +159,25 @@ public class ProfiledMotor {
     }
 
     /**
-     * Print tuning telemetry from {@link #readPosition} and {@link #controller}
+     * Print tuning telemetry from {@link #readPosition} and {@link #pid}
      *
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         telemetry.addData("Current position (in)", currentPosition);
-        telemetry.addData("Profile position (in)", controller.getX());
+        telemetry.addData("Profile position (in)", fullState.getX());
         telemetry.addLine();
         telemetry.addData("Current velocity (in/s)", currentVelocity);
-        telemetry.addData("Profile velocity (in/s)", controller.getV());
+        telemetry.addData("Profile velocity (in/s)", fullState.getV());
         telemetry.addData("Max velocity (in/s)", maxVelocity);
         telemetry.addLine();
         telemetry.addData("Current acceleration (in/s^2)", currentAcceleration);
+        telemetry.addData("Profile acceleration (in/s^2)", fullState.getA());
         telemetry.addData("Max acceleration (in/s^2)", maxAcceleration);
         telemetry.addLine();
-        telemetry.addData("Error integral (in*s)", controller.getErrorIntegral());
-        telemetry.addData("Error (in)", controller.getError().getX());
-        telemetry.addData("Error derivative (in/s)", controller.getErrorDerivative());
+        telemetry.addData("Error integral (in*s)", pid.getErrorIntegral());
+        telemetry.addData("Position error (in)", fullState.getError().getX());
+        telemetry.addData("Velocity error (in/s)", fullState.getError().getV());
     }
 
     /**
