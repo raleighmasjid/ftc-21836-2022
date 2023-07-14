@@ -4,16 +4,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Integrator {
 
-    private double integral, lastValue, maxOutput;
+    private double integral = 0.0, lastValue = 0.0, maxOutput = Double.POSITIVE_INFINITY;
+    private final boolean resetOnSignChange;
 
     private final ElapsedTime timer = new ElapsedTime();
 
     public Integrator() {
-        this(Double.POSITIVE_INFINITY);
+        this(false);
     }
 
-    public Integrator(double maxOutput) {
-        setMaxOutput(maxOutput);
+    public Integrator(boolean resetOnSignChange) {
+        this.resetOnSignChange = resetOnSignChange;
     }
 
     public void setMaxOutput(double maxOutput) {
@@ -25,7 +26,7 @@ public class Integrator {
         double dt = timer.seconds();
         timer.reset();
 
-        if (Math.signum(newValue) != Math.signum(lastValue)) reset();
+        if (resetOnSignChange && (Math.signum(newValue) != Math.signum(lastValue))) reset();
 
         if (Math.abs(integral) <= maxOutput) integral += 0.5 * (newValue + lastValue) * dt;
 
