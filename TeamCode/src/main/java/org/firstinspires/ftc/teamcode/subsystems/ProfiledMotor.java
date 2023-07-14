@@ -34,7 +34,7 @@ public class ProfiledMotor {
 
     protected String targetPositionName = "Zero";
 
-    protected double integral, integralGain, targetPosition, maxVelocity, maxAcceleration, UNIT_PER_TICK, currentBatteryVoltage = 12.0;
+    protected double targetPosition, maxVelocity, maxAcceleration, UNIT_PER_TICK, currentBatteryVoltage = 12.0;
 
     protected State currentState;
 
@@ -74,7 +74,7 @@ public class ProfiledMotor {
      */
     public void updateConstants(double UNIT_PER_TICK, double integralGain) {
         this.UNIT_PER_TICK = UNIT_PER_TICK;
-        this.integralGain = integralGain;
+        integrator.setGain(integralGain);
     }
 
     /**
@@ -126,7 +126,7 @@ public class ProfiledMotor {
         motors[0].encoder.reset();
         integrator.reset();
 
-        currentState = new State(0, 0, 0);
+        currentState = new State();
         maxVelocity = 0.0;
         maxAcceleration = 0.0;
 
@@ -140,9 +140,9 @@ public class ProfiledMotor {
      * Runs {@link #integrator}
      */
     public void runToPosition() {
-        integral = integrator.calculate(controller.getError().getX());
+        double integralOutput = integrator.calculate(controller.getError().getX());
         double fullStateOutput = controller.calculate(currentState, currentBatteryVoltage);
-        run((integral * integralGain) + fullStateOutput, false);
+        run(integralOutput + fullStateOutput, false);
     }
 
     /**
@@ -173,7 +173,7 @@ public class ProfiledMotor {
         telemetry.addData("Profile acceleration (in/s^2)", controller.getA());
         telemetry.addData("Max acceleration (in/s^2)", maxAcceleration);
         telemetry.addLine();
-        telemetry.addData("Position error integral (in*s)", integral);
+        telemetry.addData("Position error integral (in*s)", integrator.getIntegral());
         telemetry.addData("Position error (in)", controller.getError().getX());
         telemetry.addData("Velocity error (in/s)", controller.getError().getV());
     }
