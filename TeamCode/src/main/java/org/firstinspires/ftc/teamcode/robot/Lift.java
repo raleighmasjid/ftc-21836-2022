@@ -23,10 +23,10 @@ public class Lift extends ProfiledMotor {
             HEIGHT_1_STAGE = 9.6,
             kG_1_STAGE = 0.06,
             kG_3 = 0.312,
-            kI = 0.2,
             kV = 0.0155,
             kA = 0.0025,
             kStatic = 0.035,
+            iGain = 0.2,
             pGain = 0.0,
             vGain = 0.0,
             aGain = 0.0,
@@ -88,7 +88,7 @@ public class Lift extends ProfiledMotor {
                 MAX_JERK
         );
 
-        super.updateConstants(INCHES_PER_TICK, kI);
+        super.updateConstants(INCHES_PER_TICK, iGain);
         super.readPosition();
     }
 

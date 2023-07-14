@@ -34,7 +34,7 @@ public class ProfiledMotor {
 
     protected String targetPositionName = "Zero";
 
-    protected double integral, iGain, targetPosition, maxVelocity, maxAcceleration, UNIT_PER_TICK, currentBatteryVoltage = 12.0;
+    protected double integral, integralGain, targetPosition, maxVelocity, maxAcceleration, UNIT_PER_TICK, currentBatteryVoltage = 12.0;
 
     protected State currentState;
 
@@ -72,9 +72,9 @@ public class ProfiledMotor {
     /**
      * @param UNIT_PER_TICK Arbitrary unit per tick scale factor
      */
-    public void updateConstants(double UNIT_PER_TICK, double iGain) {
+    public void updateConstants(double UNIT_PER_TICK, double integralGain) {
         this.UNIT_PER_TICK = UNIT_PER_TICK;
-        this.iGain = iGain;
+        this.integralGain = integralGain;
     }
 
     /**
@@ -142,7 +142,7 @@ public class ProfiledMotor {
     public void runToPosition() {
         integral = integrator.calculate(controller.getError().getX());
         double fullStateOutput = controller.calculate(currentState, currentBatteryVoltage);
-        run((integral * iGain) + fullStateOutput, false);
+        run((integral * integralGain) + fullStateOutput, false);
     }
 
     /**
