@@ -34,6 +34,7 @@ public class PIDController implements FeedbackController {
 
     public void setGains(PIDGains gains) {
         this.gains = gains;
+        integrator.setGain(gains.getKI());
         integrator.setMaxOutput(gains.getMaxOutputWithIntegral());
     }
 
@@ -45,7 +46,6 @@ public class PIDController implements FeedbackController {
         else calculateError = true;
 
         errorDerivative = differentiator.calculate(error);
-        integrator.setGain(gains.getKI());
         errorIntegral = integrator.calculate(error);
 
         return (gains.getKP() * error) + errorIntegral + (gains.getKD() * errorDerivative);
