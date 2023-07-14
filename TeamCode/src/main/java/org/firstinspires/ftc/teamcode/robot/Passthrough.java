@@ -27,10 +27,13 @@ public class Passthrough {
             ANGLE_WRIST_FRONT = 17.0,
             ANGLE_WRIST_BACK = 216.0,
             ANGLE_WRIST_PIVOT_POS = (ANGLE_PASS_BACK - ANGLE_PASS_FRONT) * 0.5,
-            WRIST_PIVOT_POS_TOLERANCE = 30.0,
-            MAX_VELO = 600.0,
-            MAX_ACCEL = 1000.0,
-            MAX_JERK = 4000.0;
+            WRIST_PIVOT_POS_TOLERANCE = 30.0;
+
+    public static ProfileConstraints constraints = new ProfileConstraints(
+            600.0,
+            1000.0,
+            4000.0
+    );
 
     private double currentAngle = ANGLE_PASS_FRONT;
     private double angleOffset = 0.0;
@@ -103,7 +106,7 @@ public class Passthrough {
                         ANGLE_PASS_TILT_OFFSET :
                         (!triggered) && (inBack != wrist.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
 
-        profiler.updateConstraints(new ProfileConstraints(MAX_VELO, MAX_ACCEL, MAX_JERK));
+        profiler.updateConstraints(constraints);
         profiler.generateProfile(
                 new State(currentAngle, profiler.getV()),
                 new State(inBack ?

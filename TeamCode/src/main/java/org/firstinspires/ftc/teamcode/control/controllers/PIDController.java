@@ -38,7 +38,7 @@ public class PIDController implements FeedbackController {
      * @param measurement Only the X attribute of the {@link State} parameter is used as feedback
      */
     public double calculate(State measurement) {
-        if (calculateError) error = target.getX() - measurement.getX();
+        if (calculateError) error = target.x - measurement.x;
         else calculateError = true;
 
         errorDerivative = differentiator.calculate(error);

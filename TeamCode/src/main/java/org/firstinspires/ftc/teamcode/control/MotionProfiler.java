@@ -15,23 +15,19 @@ public class MotionProfiler {
 
     private final ElapsedTime profileTimer = new ElapsedTime();
 
-    private double MAX_VELO = 1.0;
-    private double MAX_ACCEL = 1.0;
-    private double MAX_JERK = 0.0;
+    private ProfileConstraints constraints = new ProfileConstraints();
 
     public void updateConstraints(ProfileConstraints constraints) {
-        this.MAX_VELO = constraints.MAX_VELO;
-        this.MAX_ACCEL = constraints.MAX_ACCEL;
-        this.MAX_JERK = constraints.MAX_JERK;
+        this.constraints = constraints;
     }
 
     public void generateProfile(State current, State target) {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(current.getX(), current.getV()),
-                new MotionState(target.getX(), target.getV()),
-                MAX_VELO,
-                MAX_ACCEL,
-                MAX_JERK
+                new MotionState(current.x, current.v),
+                new MotionState(target.x, target.v),
+                constraints.MAX_VELO,
+                constraints.MAX_ACCEL,
+                constraints.MAX_JERK
         );
         profileTimer.reset();
     }

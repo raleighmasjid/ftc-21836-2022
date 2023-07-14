@@ -40,7 +40,7 @@ public class ProfiledMotor {
     protected State currentState = new State();
 
     public double getCurrentPosition() {
-        return currentState.getX();
+        return currentState.x;
     }
 
     /**
@@ -141,7 +141,7 @@ public class ProfiledMotor {
 
         double fullStateOutput = fullState.calculate(currentState);
         double feedforwardOutput = feedforward.calculate(currentBatteryVoltage, fullStateOutput);
-        double integratorOutput = integrator.calculate(fullState.getError().getX());
+        double integratorOutput = integrator.calculate(fullState.getError().x);
 
         run((fullStateOutput + feedforwardOutput + integratorOutput), false);
     }
@@ -163,20 +163,18 @@ public class ProfiledMotor {
      * @param telemetry MultipleTelemetry object to add data to
      */
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
-        telemetry.addData("Current position (in)", currentState.getX());
+        telemetry.addData("Current position (in)", currentState.x);
         telemetry.addData("Profile position (in)", profiler.getX());
         telemetry.addLine();
-        telemetry.addData("Current velocity (in/s)", currentState.getV());
+        telemetry.addData("Current velocity (in/s)", currentState.v);
         telemetry.addData("Profile velocity (in/s)", profiler.getV());
         telemetry.addData("Max velocity (in/s)", maxVelocity);
         telemetry.addLine();
-        telemetry.addData("Current acceleration (in/s^2)", currentState.getA());
+        telemetry.addData("Current acceleration (in/s^2)", currentState.a);
         telemetry.addData("Profile acceleration (in/s^2)", profiler.getA());
         telemetry.addData("Max acceleration (in/s^2)", maxAcceleration);
         telemetry.addLine();
         telemetry.addData("Position error integral (in*s)", integrator.getIntegral());
-        telemetry.addData("Position error (in)", fullState.getError().getX());
-        telemetry.addData("Velocity error (in/s)", fullState.getError().getV());
     }
 
     /**
