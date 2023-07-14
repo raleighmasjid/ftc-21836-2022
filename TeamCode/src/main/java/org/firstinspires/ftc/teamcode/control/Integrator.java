@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Integrator {
 
-    private double integral = 0.0, lastValue = 0.0, gain = 0.1, maxOutput = Double.POSITIVE_INFINITY;
+    private double integral = 0.0, lastValue = 0.0, gain = 1, maxOutput = Double.POSITIVE_INFINITY;
     private final boolean resetOnSignChange;
 
     private final ElapsedTime timer = new ElapsedTime();

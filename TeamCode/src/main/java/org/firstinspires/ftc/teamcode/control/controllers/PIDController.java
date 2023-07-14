@@ -1,11 +1,8 @@
-package org.firstinspires.ftc.teamcode.control.controllers.pid;
-
-import com.qualcomm.robotcore.util.ElapsedTime;
+package org.firstinspires.ftc.teamcode.control.controllers;
 
 import org.firstinspires.ftc.teamcode.control.Differentiator;
 import org.firstinspires.ftc.teamcode.control.Integrator;
 import org.firstinspires.ftc.teamcode.control.State;
-import org.firstinspires.ftc.teamcode.control.controllers.FeedbackController;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
@@ -13,8 +10,9 @@ public class PIDController implements FeedbackController {
 
     private PIDGains gains;
     private State target;
-    private final Differentiator differentiator;
+
     public final FIRLowPassFilter derivFilter;
+    private final Differentiator differentiator;
     private final Integrator integrator = new Integrator(true);
 
     private double error, errorIntegral, errorDerivative;
@@ -47,9 +45,10 @@ public class PIDController implements FeedbackController {
         else calculateError = true;
 
         errorDerivative = differentiator.calculate(error);
+        integrator.setGain(gains.getKI());
         errorIntegral = integrator.calculate(error);
 
-        return (gains.getKP() * error) + (gains.getKI() * errorIntegral) + (gains.getKD() * errorDerivative);
+        return (gains.getKP() * error) + errorIntegral + (gains.getKD() * errorDerivative);
     }
 
     public void setTarget(State target) {

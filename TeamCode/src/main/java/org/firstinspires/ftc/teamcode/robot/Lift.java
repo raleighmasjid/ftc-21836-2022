@@ -5,7 +5,8 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.Integrator;
-import org.firstinspires.ftc.teamcode.control.controllers.fullstatefeedback.ProfiledFullStateVA;
+import org.firstinspires.ftc.teamcode.control.controllers.FeedforwardController;
+import org.firstinspires.ftc.teamcode.control.controllers.FullStateController;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FeedforwardGains;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FullStateGains;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
@@ -69,7 +70,7 @@ public class Lift extends ProfiledMotor {
     }
 
     public Lift(HardwareMap hw) {
-        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new Integrator(true), new ProfiledFullStateVA(), new FIRLowPassFilter(), new FIRLowPassFilter());
+        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new Integrator(true), new FullStateController(), new FeedforwardController(), new FIRLowPassFilter(), new FIRLowPassFilter());
     }
 
     @Override
@@ -78,11 +79,9 @@ public class Lift extends ProfiledMotor {
         accelFilter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
         integrator.setMaxOutput(MAX_PID_OUTPUT_WITH_INTEGRAL);
-        controller.setGains(
-                new FullStateGains(pGain, vGain, aGain),
-                new FeedforwardGains(kV, kA, kStatic)
-        );
-        controller.updateConstraints(
+        fullState.setGains(new FullStateGains(pGain, vGain, aGain));
+        feedforward.setGains(new FeedforwardGains(kV, kA, kStatic));
+        profiler.updateConstraints(
                 MAX_VELO,
                 MAX_ACCEL,
                 MAX_JERK

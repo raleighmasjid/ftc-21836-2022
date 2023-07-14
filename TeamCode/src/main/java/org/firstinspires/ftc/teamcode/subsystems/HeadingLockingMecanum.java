@@ -6,9 +6,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.State;
-import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.controllers.PIDController;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.PIDGains;
-import org.firstinspires.ftc.teamcode.control.controllers.pid.PIDVAController;
 
 @Config
 public class HeadingLockingMecanum extends MecanumDrivetrain {
@@ -29,7 +28,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     private final ElapsedTime turnSettlingTimer, translationSettlingTimer;
 
-    private final PIDVAController headingController = new PIDVAController();
+    private final PIDController headingController = new PIDController();
 
     public HeadingLockingMecanum(HardwareMap hw, double motorCPR, double motorRPM) {
         super(hw, motorCPR, motorRPM);
@@ -39,14 +38,8 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     @Override
     public void readIMU() {
-        headingController.setGains(
-                new PIDGains(kP, kI, kD, MAX_OUTPUT_WITH_INTEGRAL),
-                new FeedforwardGains(0.0, 0.0, kS)
-        );
-        headingController.derivFilter.setGains(
-                FILTER_GAIN,
-                FILTER_COUNT
-        );
+        headingController.setGains(new PIDGains(kP, kI, kD, MAX_OUTPUT_WITH_INTEGRAL));
+        headingController.derivFilter.setGains(FILTER_GAIN, FILTER_COUNT);
         super.readIMU();
     }
 
@@ -69,7 +62,8 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             headingTarget = getHeading();
         } else if (translationSettlingTimer.seconds() > TRANSLATION_SETTLING_TIME) {
             headingController.setError(-normalizeAngle(headingTarget - getHeading()));
-            turnCommand = headingController.calculate(new State(getHeading()), voltage);
+            double pidOutput = headingController.calculate(new State(getHeading()));
+            turnCommand = pidOutput + (Math.signum(pidOutput) * kS * scalar);
         }
 
         lastXCommand = xCommand;

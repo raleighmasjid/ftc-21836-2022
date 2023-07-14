@@ -17,6 +17,12 @@ public class MotionProfiler {
     private double MAX_ACCEL = 1.0;
     private double MAX_JERK = 0.0;
 
+    public void updateConstraints(double MAX_VELO, double MAX_ACCEL, double MAX_JERK) {
+        this.MAX_VELO = MAX_VELO;
+        this.MAX_ACCEL = MAX_ACCEL;
+        this.MAX_JERK = MAX_JERK;
+    }
+
     public void generateProfile(State current, State target) {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(current.getX(), current.getV()),
@@ -30,12 +36,6 @@ public class MotionProfiler {
 
     public void update() {
         profileState = profile.get(profileTimer.seconds());
-    }
-
-    public void updateConstraints(double MAX_VELO, double MAX_ACCEL, double MAX_JERK) {
-        this.MAX_VELO = MAX_VELO;
-        this.MAX_ACCEL = MAX_ACCEL;
-        this.MAX_JERK = MAX_JERK;
     }
 
     public void updateConstraints(double MAX_VELO, double MAX_ACCEL) {
