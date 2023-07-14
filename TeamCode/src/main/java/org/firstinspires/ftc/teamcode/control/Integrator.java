@@ -14,9 +14,8 @@ public class Integrator {
 
     public double calculate(double newValue) {
 
-        double timerSeconds = timer.seconds();
+        double dt = timer.seconds();
         timer.reset();
-        double dt = timerSeconds == 0 ? 0.002 : timerSeconds;
 
         if (Math.signum(newValue) != Math.signum(lastValue)) reset();
 
