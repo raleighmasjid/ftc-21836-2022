@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.control.MotionProfiler;
 import org.firstinspires.ftc.teamcode.control.State;
+import org.firstinspires.ftc.teamcode.control.gainmatrices.ProfileConstraints;
 import org.firstinspires.ftc.teamcode.subsystems.SimpleServoPivot;
 
 @Config
@@ -102,7 +103,7 @@ public class Passthrough {
                         ANGLE_PASS_TILT_OFFSET :
                         (!triggered) && (inBack != wrist.getActivated()) ? ANGLE_PASS_MINI_TILT_OFFSET : 0.0;
 
-        profiler.updateConstraints(MAX_VELO, MAX_ACCEL, MAX_JERK);
+        profiler.updateConstraints(new ProfileConstraints(MAX_VELO, MAX_ACCEL, MAX_JERK));
         profiler.generateProfile(
                 new State(currentAngle, profiler.getV()),
                 new State(inBack ?

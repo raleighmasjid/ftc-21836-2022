@@ -30,9 +30,6 @@ public class Lift extends ProfiledMotor {
             aGain = 0.0,
             FILTER_GAIN_VELO = 0.5,
             FILTER_GAIN_ACCEL = 0.8,
-            MAX_VELO = 32.0,
-            MAX_ACCEL = 189.16,
-            MAX_JERK = 450.0,
             MAX_PID_OUTPUT_WITH_INTEGRAL = 0.6,
             TOLERANCE = 0.15843625,
             INCHES_PER_TICK = 0.03168725;
@@ -40,6 +37,12 @@ public class Lift extends ProfiledMotor {
     public static int
             FILTER_COUNT_VELO = 20,
             FILTER_COUNT_ACCEL = 50;
+
+    public static ProfileConstraints constraints = new ProfileConstraints(
+            32.0,
+            189.16,
+            450.0
+    );
 
     /**
      * Named lift position
