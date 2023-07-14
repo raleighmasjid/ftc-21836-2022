@@ -7,9 +7,9 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.control.Integrator;
 import org.firstinspires.ftc.teamcode.control.State;
 import org.firstinspires.ftc.teamcode.control.controllers.fullstatefeedback.ProfiledFullStateVA;
-import org.firstinspires.ftc.teamcode.control.controllers.pid.ProfiledPIDVA;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 /**
@@ -29,12 +29,12 @@ public class ProfiledMotor {
 
     private final VoltageSensor batteryVoltageSensor;
 
-    public final ProfiledPIDVA integrator;
+    public final Integrator integrator;
     public final ProfiledFullStateVA controller;
 
     protected String targetPositionName = "Zero";
 
-    protected double targetPosition, maxVelocity, maxAcceleration, UNIT_PER_TICK, currentBatteryVoltage = 12.0;
+    protected double integral, iGain, targetPosition, maxVelocity, maxAcceleration, UNIT_PER_TICK, currentBatteryVoltage = 12.0;
 
     protected State currentState;
 
@@ -44,12 +44,12 @@ public class ProfiledMotor {
 
     /**
      * Initialize fields <p>
-     * Use {@link #updateScale} to update constants
+     * Use {@link #updateConstants} to update constants
      */
     public ProfiledMotor(
             MotorEx[] motors,
             VoltageSensor batteryVoltageSensor,
-            ProfiledPIDVA integrator,
+            Integrator integrator,
             ProfiledFullStateVA controller,
             FIRLowPassFilter veloFilter,
             FIRLowPassFilter accelFilter
@@ -72,8 +72,9 @@ public class ProfiledMotor {
     /**
      * @param UNIT_PER_TICK Arbitrary unit per tick scale factor
      */
-    public void updateScale(double UNIT_PER_TICK) {
+    public void updateConstants(double UNIT_PER_TICK, double iGain) {
         this.UNIT_PER_TICK = UNIT_PER_TICK;
+        this.iGain = iGain;
     }
 
     /**
@@ -112,7 +113,6 @@ public class ProfiledMotor {
         this.targetPosition = targetPosition;
         this.targetPositionName = targetPositionName;
         State target = new State(this.targetPosition);
-        integrator.setTarget(currentState, target);
         controller.setTarget(currentState, target);
     }
 
@@ -140,9 +140,9 @@ public class ProfiledMotor {
      * Runs {@link #integrator}
      */
     public void runToPosition() {
-        double integralOutput = integrator.calculate(currentState);
+        integral = integrator.calculate(controller.getError().getX());
         double fullStateOutput = controller.calculate(currentState, currentBatteryVoltage);
-        run(integralOutput + fullStateOutput, false);
+        run((integral * iGain) + fullStateOutput, false);
     }
 
     /**
@@ -173,7 +173,7 @@ public class ProfiledMotor {
         telemetry.addData("Profile acceleration (in/s^2)", controller.getA());
         telemetry.addData("Max acceleration (in/s^2)", maxAcceleration);
         telemetry.addLine();
-        telemetry.addData("Error integral (in*s)", integrator.getErrorIntegral());
+        telemetry.addData("Position error integral (in*s)", integral);
         telemetry.addData("Position error (in)", controller.getError().getX());
         telemetry.addData("Velocity error (in/s)", controller.getError().getV());
     }

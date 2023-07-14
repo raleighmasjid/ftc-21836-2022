@@ -4,11 +4,10 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.control.Integrator;
 import org.firstinspires.ftc.teamcode.control.controllers.fullstatefeedback.ProfiledFullStateVA;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FeedforwardGains;
 import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FullStateGains;
-import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.PIDGains;
-import org.firstinspires.ftc.teamcode.control.controllers.pid.ProfiledPIDVA;
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledMotor;
 
@@ -70,7 +69,7 @@ public class Lift extends ProfiledMotor {
     }
 
     public Lift(HardwareMap hw) {
-        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new ProfiledPIDVA(), new ProfiledFullStateVA(), new FIRLowPassFilter(), new FIRLowPassFilter());
+        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new Integrator(true), new ProfiledFullStateVA(), new FIRLowPassFilter(), new FIRLowPassFilter());
     }
 
     @Override
@@ -78,18 +77,10 @@ public class Lift extends ProfiledMotor {
         veloFilter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
         accelFilter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
-        integrator.setGains(
-                new PIDGains(0.0, kI, 0.0, MAX_PID_OUTPUT_WITH_INTEGRAL),
-                new FeedforwardGains(0, 0, 0)
-        );
+        integrator.setMaxOutput(MAX_PID_OUTPUT_WITH_INTEGRAL);
         controller.setGains(
                 new FullStateGains(pGain, vGain, aGain),
                 new FeedforwardGains(kV, kA, kStatic)
-        );
-        integrator.updateConstraints(
-                MAX_VELO,
-                MAX_ACCEL,
-                MAX_JERK
         );
         controller.updateConstraints(
                 MAX_VELO,
@@ -97,7 +88,7 @@ public class Lift extends ProfiledMotor {
                 MAX_JERK
         );
 
-        super.updateScale(INCHES_PER_TICK);
+        super.updateConstants(INCHES_PER_TICK, kI);
         super.readPosition();
     }
 
