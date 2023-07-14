@@ -4,24 +4,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
-public class Differentiator extends FIRLowPassFilter {
+public class Differentiator {
 
     private double lastValue;
 
-    private final ElapsedTime timer;
+    private final ElapsedTime timer = new ElapsedTime();
 
-    public Differentiator() {
-        this(0.5, 10);
-    }
+    public final FIRLowPassFilter filter = new FIRLowPassFilter();
 
-    public Differentiator(double filterGain, int filterCount) {
-        super.setGains(filterGain, filterCount);
-        timer = new ElapsedTime();
-    }
-
-    @Override
     public double calculate(double newValue) {
-        double output = super.calculate((newValue - lastValue) / timer.seconds());
+        double output = filter.calculate((newValue - lastValue) / timer.seconds());
         timer.reset();
         lastValue = newValue;
         return output;
