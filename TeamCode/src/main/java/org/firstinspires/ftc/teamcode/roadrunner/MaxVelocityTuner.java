@@ -64,7 +64,7 @@ public class MaxVelocityTuner extends LinearOpMode {
 
             double lastMaxVelocity = maxVelocity;
             maxVelocity = Math.max(poseVelo.vec().norm(), maxVelocity);
-            maxAcceleration = Math.max(accelFilter.getEstimate((maxVelocity - lastMaxVelocity) / accelTimer.seconds()), maxAcceleration);
+            maxAcceleration = Math.max(accelFilter.calculate((maxVelocity - lastMaxVelocity) / accelTimer.seconds()), maxAcceleration);
             accelTimer.reset();
         }
 

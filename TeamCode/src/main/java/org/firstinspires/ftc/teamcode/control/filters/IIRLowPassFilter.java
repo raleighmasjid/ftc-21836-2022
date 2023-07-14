@@ -20,7 +20,7 @@ public class IIRLowPassFilter implements Filter {
         estimate = Double.NaN;
     }
 
-    public double getEstimate(double newValue) {
+    public double calculate(double newValue) {
         estimate = Double.isNaN(estimate) ? newValue : filterGain * estimate + (1 - filterGain) * newValue;
         return estimate;
     }

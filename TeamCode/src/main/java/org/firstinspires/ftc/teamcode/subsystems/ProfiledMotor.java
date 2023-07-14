@@ -87,8 +87,8 @@ public class ProfiledMotor {
 
         currentBatteryVoltage = batteryVoltageSensor.getVoltage();
         double x = motors[0].encoder.getPosition() * UNIT_PER_TICK;
-        double v = veloFilter.getEstimate((x - lastState.getX()) / dt);
-        double a = accelFilter.getEstimate((v - lastState.getV()) / dt);
+        double v = veloFilter.calculate((x - lastState.getX()) / dt);
+        double a = accelFilter.calculate((v - lastState.getV()) / dt);
         currentState = new State(x, v, a);
         maxVelocity = Math.max(currentState.getV(), maxVelocity);
         maxAcceleration = Math.max(currentState.getA(), maxAcceleration);

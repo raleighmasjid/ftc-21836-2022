@@ -12,7 +12,7 @@ public class FIRLowPassFilter implements Filter {
     private ArrayList<Double> values = new ArrayList<>();
 
     public FIRLowPassFilter() {
-        this(0.8, 300);
+        this(0.5, 10);
     }
 
     public FIRLowPassFilter(double filterGain, int filterCount) {
@@ -28,7 +28,7 @@ public class FIRLowPassFilter implements Filter {
         values.clear();
     }
 
-    public double getEstimate(double newValue) {
+    public double calculate(double newValue) {
         values.add(newValue);
         if (values.size() < 2) return newValue;
         while (values.size() > filterCount) values.remove(0);
