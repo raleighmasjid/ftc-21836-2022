@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 public class PIDController implements FeedbackController {
 
     private PIDGains gains = new PIDGains();
-    private State target;
+    private State target = new State();
 
     public final FIRLowPassFilter derivFilter;
     private final Differentiator differentiator;

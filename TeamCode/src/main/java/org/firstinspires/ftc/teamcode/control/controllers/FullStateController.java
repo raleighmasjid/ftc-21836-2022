@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.control.controllers.gainmatrices.FullState
 public class FullStateController implements FeedbackController {
 
     private FullStateGains gains = new FullStateGains();
-    private State target, error = new State();
+    private State target = new State(), error = new State();
 
     @Override
     public void setTarget(State target) {
