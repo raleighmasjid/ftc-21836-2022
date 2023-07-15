@@ -25,7 +25,7 @@ public class FullStateController implements FeedbackController {
                 target.a - measurement.a
         );
 
-        return (error.x * gains.pGain) + (error.x * gains.vGain) + (error.x * gains.aGain);
+        return (error.x * gains.pGain) + (error.v * gains.vGain) + (error.a * gains.aGain);
     }
 
     public State getError() {
