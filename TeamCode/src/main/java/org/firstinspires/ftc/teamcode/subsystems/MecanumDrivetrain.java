@@ -25,25 +25,27 @@ public class MecanumDrivetrain {
 
     private double headingOffset, latestIMUReading;
 
+    private final HardwareMap hw;
     private final double motorCPR, motorRPM;
 
     protected final VoltageSensor batteryVoltageSensor;
 
-    protected MotorEx getDrivetrainMotor(HardwareMap hw, String name) {
+    protected MotorEx getMotor(String name) {
         return new MotorEx(hw, name, motorCPR, motorRPM);
     }
 
     public MecanumDrivetrain(HardwareMap hw, double motorCPR, double motorRPM) {
+        this.hw = hw;
         this.motorCPR = motorCPR;
         this.motorRPM = motorRPM;
         this.batteryVoltageSensor = hw.voltageSensor.iterator().next();
 
         // Assign motors using their hardware map names, each drive-type can have different names if needed
         motors = new MotorEx[]{
-                getDrivetrainMotor(hw, "left front"),
-                getDrivetrainMotor(hw, "right front"),
-                getDrivetrainMotor(hw, "left back"),
-                getDrivetrainMotor(hw, "right back")
+                getMotor("left front"),
+                getMotor("right front"),
+                getMotor("left back"),
+                getMotor("right back")
         };
 
         motors[0].setInverted(true);
