@@ -13,10 +13,9 @@ public class PIDController implements FeedbackController {
 
     public final FIRLowPassFilter derivFilter;
     private final Differentiator differentiator;
-    private final Integrator integrator = new Integrator(true);
+    private final Integrator integrator = new Integrator();
 
-    private double error;
-    private double errorDerivative;
+    private double error, lastError, errorDerivative, errorIntegral;
     private boolean calculateError = true;
 
     public PIDController(FIRLowPassFilter derivFilter) {
@@ -30,8 +29,6 @@ public class PIDController implements FeedbackController {
 
     public void setGains(PIDGains gains) {
         this.gains = gains;
-        integrator.setGain(gains.kI);
-        integrator.setMaxOutput(gains.maxOutputWithIntegral);
     }
 
     /**
@@ -42,8 +39,15 @@ public class PIDController implements FeedbackController {
         else calculateError = true;
 
         errorDerivative = differentiator.calculate(error);
+        errorIntegral = integrator.calculate(error);
+        if (Math.signum(error) != Math.signum(lastError)) reset();
+        lastError = error;
 
-        return (gains.kP * error) + integrator.calculate(error) + (gains.kD * errorDerivative);
+        double output = (gains.kP * error) + (gains.kI * errorIntegral) + (gains.kD * errorDerivative);
+
+        integrator.setIntegrate(Math.abs(output) <= gains.maxOutputWithIntegral || Math.signum(output) != Math.signum(error));
+
+        return output;
     }
 
     public void setTarget(State target) {
@@ -59,7 +63,7 @@ public class PIDController implements FeedbackController {
     }
 
     public double getErrorIntegral() {
-        return integrator.getIntegral();
+        return errorIntegral;
     }
 
     public void setError(double error) {

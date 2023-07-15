@@ -13,16 +13,19 @@ import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     public static double
-            kP = 0.005,
-            kI = 0.01,
-            kD = 0.0,
             kS = 0.0,
-            MAX_OUTPUT_WITH_INTEGRAL = 1.0,
             FILTER_GAIN = 0.85,
             TURN_SETTLING_TIME = 0.3,
             TRANSLATION_SETTLING_TIME = 0.0;
 
     public static int FILTER_COUNT = 300;
+
+    public static PIDGains gains = new PIDGains(
+            0.005,
+            0.01,
+            0.0,
+            1.0
+    );
 
     private double lastXCommand = 0.0, lastYCommand = 0.0, headingTarget;
 
@@ -38,7 +41,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     @Override
     public void readIMU() {
-        headingController.setGains(new PIDGains(kP, kI, kD, MAX_OUTPUT_WITH_INTEGRAL));
+        headingController.setGains(gains);
         headingController.derivFilter.setGains(FILTER_GAIN, FILTER_COUNT);
         super.readIMU();
     }

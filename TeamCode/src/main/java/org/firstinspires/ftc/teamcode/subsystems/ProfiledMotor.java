@@ -7,11 +7,11 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.control.Differentiator;
-import org.firstinspires.ftc.teamcode.control.Integrator;
 import org.firstinspires.ftc.teamcode.control.MotionProfiler;
 import org.firstinspires.ftc.teamcode.control.State;
 import org.firstinspires.ftc.teamcode.control.controllers.FeedforwardController;
 import org.firstinspires.ftc.teamcode.control.controllers.FullStateController;
+import org.firstinspires.ftc.teamcode.control.controllers.PIDController;
 
 /**
  * Motion-profiled DC motor(s)
@@ -27,8 +27,8 @@ public class ProfiledMotor {
     public final Differentiator accelCalculator = new Differentiator();
 
     private final VoltageSensor batteryVoltageSensor;
-    public final Integrator integrator;
 
+    public final PIDController integrator = new PIDController();
     public final FullStateController fullState = new FullStateController();
     public final FeedforwardController feedforward = new FeedforwardController();
     public final MotionProfiler profiler = new MotionProfiler();
@@ -49,15 +49,13 @@ public class ProfiledMotor {
      */
     public ProfiledMotor(
             MotorEx[] motors,
-            VoltageSensor batteryVoltageSensor,
-            Integrator integrator
+            VoltageSensor batteryVoltageSensor
     ) {
         this.motors = motors;
         for (MotorEx motor : this.motors) {
             motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         }
         this.batteryVoltageSensor = batteryVoltageSensor;
-        this.integrator = integrator;
 
         reset();
     }
@@ -65,9 +63,8 @@ public class ProfiledMotor {
     /**
      * @param UNIT_PER_TICK Arbitrary unit per tick scale factor
      */
-    public void updateConstants(double UNIT_PER_TICK, double integralGain) {
+    public void updateConstants(double UNIT_PER_TICK) {
         this.UNIT_PER_TICK = UNIT_PER_TICK;
-        integrator.setGain(integralGain);
     }
 
     /**
@@ -133,17 +130,17 @@ public class ProfiledMotor {
      * Runs {@link #integrator}
      */
     public void runToPosition() {
-
         profiler.update();
         State setpoint = new State(profiler.getX(), profiler.getV(), profiler.getA());
         fullState.setTarget(setpoint);
+        integrator.setTarget(setpoint);
         feedforward.setTarget(setpoint);
 
         double fullStateOutput = fullState.calculate(currentState);
+        double integratorOutput = integrator.calculate(currentState);
         double feedforwardOutput = feedforward.calculate(currentBatteryVoltage, fullStateOutput);
-        double integratorOutput = integrator.calculate(fullState.getError().x);
 
-        run((fullStateOutput + feedforwardOutput + integratorOutput), false);
+        run(fullStateOutput + feedforwardOutput + integratorOutput, false);
     }
 
     /**
@@ -174,7 +171,7 @@ public class ProfiledMotor {
         telemetry.addData("Profile acceleration (in/s^2)", profiler.getA());
         telemetry.addData("Max acceleration (in/s^2)", maxAcceleration);
         telemetry.addLine();
-        telemetry.addData("Position error integral (in*s)", integrator.getIntegral());
+        telemetry.addData("Position error integral (in*s)", integrator.getErrorIntegral());
     }
 
     /**

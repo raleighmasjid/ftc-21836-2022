@@ -4,9 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.control.Integrator;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.FeedforwardGains;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.FullStateGains;
+import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.ProfileConstraints;
 import org.firstinspires.ftc.teamcode.subsystems.ProfiledMotor;
 
@@ -22,8 +22,6 @@ public class Lift extends ProfiledMotor {
             HEIGHT_1_STAGE = 9.6,
             kG_1_STAGE = 0.06,
             kG_3 = 0.312,
-            iGain = 0.3,
-            MAX_INTEGRAL_OUTPUT = 0.6,
             FILTER_GAIN_VELO = 0.5,
             FILTER_GAIN_ACCEL = 0.8,
             TOLERANCE = 0.15843625,
@@ -37,6 +35,13 @@ public class Lift extends ProfiledMotor {
             0.075,
             0.0125,
             0.0
+    );
+
+    public static PIDGains pidGains = new PIDGains(
+            0.0,
+            0.3,
+            0.0,
+            0.6
     );
 
     public static FeedforwardGains feedforwardGains = new FeedforwardGains(
@@ -77,7 +82,7 @@ public class Lift extends ProfiledMotor {
     }
 
     public Lift(HardwareMap hw) {
-        super(getLiftMotors(hw), hw.voltageSensor.iterator().next(), new Integrator(true));
+        super(getLiftMotors(hw), hw.voltageSensor.iterator().next());
     }
 
     @Override
@@ -85,12 +90,12 @@ public class Lift extends ProfiledMotor {
         accelCalculator.filter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
         veloCalculator.filter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
-        integrator.setMaxOutput(MAX_INTEGRAL_OUTPUT);
         fullState.setGains(fullStateGains);
+        integrator.setGains(pidGains);
         feedforward.setGains(feedforwardGains);
         profiler.updateConstraints(constraints);
 
-        super.updateConstants(INCHES_PER_TICK, iGain);
+        super.updateConstants(INCHES_PER_TICK);
         super.readPosition();
     }
 
