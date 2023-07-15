@@ -5,16 +5,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Integrator {
 
     private double integral = 0.0;
-    private boolean integrate = true;
+    private boolean stopIntegration = false;
 
     private final ElapsedTime timer = new ElapsedTime();
 
-    public double calculate(double newValue) {
+    public double getIntegral(double newValue) {
 
         double dt = timer.seconds();
         timer.reset();
 
-        if (integrate) integral += newValue * dt;
+        if (!stopIntegration) integral += newValue * dt;
 
         return integral;
     }
@@ -23,8 +23,8 @@ public class Integrator {
         return integral;
     }
 
-    public void setIntegrate(boolean integrate) {
-        this.integrate = integrate;
+    public void stopIntegration(boolean stopIntegration) {
+        this.stopIntegration = stopIntegration;
     }
 
     public void reset() {

@@ -20,7 +20,7 @@ public class Differentiator {
         this.filter = filter;
     }
 
-    public double calculate(double newValue) {
+    public double getDerivative(double newValue) {
 
         double dt = timer.seconds();
         timer.reset();

@@ -38,13 +38,13 @@ public class PIDController implements FeedbackController {
         if (calculateError) error = target.x - measurement.x;
         else calculateError = true;
 
-        double errorIntegral = integrator.calculate(error);
+        double errorIntegral = integrator.getIntegral(error);
         if (Math.signum(error) != Math.signum(lastError)) reset();
         lastError = error;
 
-        double output = (gains.kP * error) + (gains.kI * errorIntegral) + (gains.kD * differentiator.calculate(error));
+        double output = (gains.kP * error) + (gains.kI * errorIntegral) + (gains.kD * differentiator.getDerivative(error));
 
-        integrator.setIntegrate(Math.abs(output) <= gains.maxOutputWithIntegral || Math.signum(output) != Math.signum(error));
+        integrator.stopIntegration(Math.abs(output) >= gains.maxOutputWithIntegral && Math.signum(output) == Math.signum(error));
 
         return output;
     }

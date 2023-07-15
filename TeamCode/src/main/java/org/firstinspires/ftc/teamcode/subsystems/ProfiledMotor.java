@@ -74,8 +74,8 @@ public class ProfiledMotor {
         currentBatteryVoltage = batteryVoltageSensor.getVoltage();
 
         double x = motors[0].encoder.getPosition() * UNIT_PER_TICK;
-        double v = veloCalculator.calculate(x);
-        double a = accelCalculator.calculate(v);
+        double v = veloCalculator.getDerivative(x);
+        double a = accelCalculator.getDerivative(v);
 
         currentState = new State(x, v, a);
 
