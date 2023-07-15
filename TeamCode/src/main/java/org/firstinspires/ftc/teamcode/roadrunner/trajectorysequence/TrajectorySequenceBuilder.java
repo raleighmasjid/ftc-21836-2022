@@ -727,7 +727,7 @@ public class TrajectorySequenceBuilder {
                 .waitSeconds(TIME_GRAB)
                 .UNSTABLE_addTemporalMarkerOffset(TIME_GRAB_TO_FLIP, () -> scorer.passthrough.trigger())
                 .setReversed(true)
-                .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? LEFT : RIGHT))
+                .splineTo(sideTurnPos, SIDE_TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
                 .splineToSplineHeading(scoringPos, scoringPos.getHeading() - LEFT)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .waitSeconds(TIME_PRE_DROP)
@@ -735,7 +735,7 @@ public class TrajectorySequenceBuilder {
                 .waitSeconds(TIME_DROP)
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                 .setReversed(false)
-                .splineTo(sideTurnPos, sideTurnPosAngleOffset + (isRight ? RIGHT : LEFT))
+                .splineTo(sideTurnPos, SIDE_TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
                 .splineTo(stackPos, isRight ? RIGHT : LEFT)
                 ;
     }
@@ -748,7 +748,7 @@ public class TrajectorySequenceBuilder {
             Lift.Position pole,
             double TIME_LIFT,
             Pose2d scoringPos,
-            double sideTurnPosAngleOffset
+            double SIDE_TURN_ANGLE_OFFSET
     ) {
         this.scorer = scorer;
         this.sideTurnPos = sideTurnPos;
@@ -757,7 +757,7 @@ public class TrajectorySequenceBuilder {
         this.pole = pole;
         this.TIME_LIFT = TIME_LIFT;
         this.scoringPos = scoringPos;
-        this.sideTurnPosAngleOffset = sideTurnPosAngleOffset;
+        this.SIDE_TURN_ANGLE_OFFSET = SIDE_TURN_ANGLE_OFFSET;
 
         return this;
     }
@@ -769,5 +769,5 @@ public class TrajectorySequenceBuilder {
     private Lift.Position pole;
     private double TIME_LIFT;
     private Pose2d scoringPos;
-    private double sideTurnPosAngleOffset;
+    private double SIDE_TURN_ANGLE_OFFSET;
 }
