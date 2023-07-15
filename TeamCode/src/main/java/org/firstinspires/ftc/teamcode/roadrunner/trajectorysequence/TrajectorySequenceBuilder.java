@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.control.trajectorysequence;
+package org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence;
 
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.LEFT;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.RIGHT;
@@ -28,10 +28,10 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.acmerobotics.roadrunner.util.Angle;
 
-import org.firstinspires.ftc.teamcode.control.trajectorysequence.sequencesegment.SequenceSegment;
-import org.firstinspires.ftc.teamcode.control.trajectorysequence.sequencesegment.TrajectorySegment;
-import org.firstinspires.ftc.teamcode.control.trajectorysequence.sequencesegment.TurnSegment;
-import org.firstinspires.ftc.teamcode.control.trajectorysequence.sequencesegment.WaitSegment;
+import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegment.SequenceSegment;
+import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegment.TrajectorySegment;
+import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegment.TurnSegment;
+import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegment.WaitSegment;
 import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.Scorer;
 
