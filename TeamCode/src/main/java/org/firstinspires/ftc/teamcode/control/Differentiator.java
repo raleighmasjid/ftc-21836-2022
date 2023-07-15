@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 public class Differentiator {
 
-    private double lastValue = 0.0, derivative = 0.0;
+    private double lastValue = Double.NaN, derivative = 0.0;
 
     private final ElapsedTime timer = new ElapsedTime();
 
@@ -25,7 +25,9 @@ public class Differentiator {
         double dt = timer.seconds();
         timer.reset();
 
-        if (dt != 0.0) derivative = filter.calculate((newValue - lastValue) / dt);
+        if (dt != 0.0 && !Double.isNaN(lastValue)) {
+            derivative = filter.calculate((newValue - lastValue) / dt);
+        }
 
         lastValue = newValue;
 
