@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.control.filters.FIRLowPassFilter;
 
 import java.util.Objects;
 
@@ -29,8 +28,6 @@ public class MaxVelocityTuner extends LinearOpMode {
     public static double RUNTIME = 2.0;
 
     private double maxVelocity = 0.0, maxAcceleration = 0.0;
-
-    private final FIRLowPassFilter accelFilter = new FIRLowPassFilter();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -64,7 +61,6 @@ public class MaxVelocityTuner extends LinearOpMode {
 
             double lastMaxVelocity = maxVelocity;
             maxVelocity = Math.max(poseVelo.vec().norm(), maxVelocity);
-            maxAcceleration = Math.max(accelFilter.calculate((maxVelocity - lastMaxVelocity) / accelTimer.seconds()), maxAcceleration);
             accelTimer.reset();
         }
 
