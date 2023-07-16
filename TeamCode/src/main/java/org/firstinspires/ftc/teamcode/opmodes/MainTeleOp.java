@@ -37,8 +37,8 @@ public class MainTeleOp extends LinearOpMode {
         Gamepad2 = new GamepadEx(gamepad2);
 
         ButtonReader
-                control2Up = new ButtonReader(Gamepad2, GamepadKeys.Button.B),
-                control2Down = new ButtonReader(Gamepad2, GamepadKeys.Button.B);
+                control2Up = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_UP),
+                control2Down = new ButtonReader(Gamepad2, GamepadKeys.Button.DPAD_DOWN);
 
         ButtonReader[] buttonReaders = {control2Up, control2Down};
 
@@ -51,7 +51,7 @@ public class MainTeleOp extends LinearOpMode {
             for (LynxModule hub : hubs) hub.clearBulkCache();
 
             for (ButtonReader button : buttonReaders) button.readValue();
-            
+
             if (control2Up.wasJustPressed()) lift.setTargetPosition(30);
             if (control2Down.wasJustPressed()) lift.setTargetPosition(0);
             lift.runToPosition();
