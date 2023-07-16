@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagCamera;
 import org.firstinspires.ftc.teamcode.systems.Lift;
-import org.firstinspires.ftc.teamcode.systems.Scorer;
+import org.firstinspires.ftc.teamcode.systems.ScoringSystem;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
     MultipleTelemetry myTelemetry;
     SampleMecanumDrive drivetrain;
-    Scorer scorer;
+    ScoringSystem scorer;
     List<LynxModule> hubs;
     AprilTagCamera camera;
 
@@ -64,7 +64,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
     public void runOpMode(boolean tallPole, boolean isRight) throws InterruptedException {
         drivetrain = new SampleMecanumDrive(hardwareMap);
-        scorer = new Scorer(hardwareMap);
+        scorer = new ScoringSystem(hardwareMap);
 
         double side = isRight ? 1 : -1;
 

@@ -33,7 +33,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegm
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegment.TurnSegment;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegment.WaitSegment;
 import org.firstinspires.ftc.teamcode.systems.Lift;
-import org.firstinspires.ftc.teamcode.systems.Scorer;
+import org.firstinspires.ftc.teamcode.systems.ScoringSystem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -741,7 +741,7 @@ public class TrajectorySequenceBuilder {
     }
 
     public TrajectorySequenceBuilder setValues(
-            Scorer scorer,
+            ScoringSystem scorer,
             Vector2d sideTurnPos,
             Vector2d stackPos,
             boolean isRight,
@@ -762,7 +762,7 @@ public class TrajectorySequenceBuilder {
         return this;
     }
 
-    private Scorer scorer;
+    private ScoringSystem scorer;
     private Vector2d sideTurnPos;
     private Vector2d stackPos;
     private boolean isRight;
