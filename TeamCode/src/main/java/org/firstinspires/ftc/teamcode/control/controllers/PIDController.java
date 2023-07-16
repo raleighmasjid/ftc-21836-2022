@@ -35,17 +35,18 @@ public class PIDController implements FeedbackController {
      * @param measurement Only the X attribute of the {@link State} parameter is used as feedback
      */
     public double calculate(State measurement) {
-        if (calculateError) error = target.x - measurement.x;
-        else calculateError = true;
+        if (calculateError) {
+            lastError = error;
+            error = target.x - measurement.x;
+        } else calculateError = true;
 
-        errorDerivative = differentiator.getDerivative(error);
-        errorIntegral = integrator.getIntegral(error);
         if (Math.signum(error) != Math.signum(lastError)) reset();
-        lastError = error;
+        errorIntegral = integrator.getIntegral(error);
+        errorDerivative = differentiator.getDerivative(error);
 
         double output = (gains.kP * error) + (gains.kI * errorIntegral) + (gains.kD * errorDerivative);
 
-        integrator.stopIntegration(Math.abs(output) >= gains.maxOutputWithIntegral && Math.signum(output) == Math.signum(error));
+        stopIntegration(Math.abs(output) >= gains.maxOutputWithIntegral && Math.signum(output) == Math.signum(error));
 
         return output;
     }
@@ -63,6 +64,7 @@ public class PIDController implements FeedbackController {
     }
 
     public void setError(double error) {
+        lastError = this.error;
         this.error = error;
         calculateError = false;
     }
