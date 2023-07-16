@@ -19,10 +19,6 @@ public class Integrator {
         return integral;
     }
 
-    public double getIntegral() {
-        return integral;
-    }
-
     public void stopIntegration(boolean stopIntegration) {
         this.stopIntegration = stopIntegration;
     }

@@ -33,8 +33,4 @@ public class Differentiator {
 
         return derivative;
     }
-
-    public double getDerivative() {
-        return derivative;
-    }
 }
