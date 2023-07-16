@@ -45,7 +45,7 @@ public class Lift {
             0.0
     );
 
-    public static PIDGains pidGains = new PIDGains(
+    public static PIDGains integratorGains = new PIDGains(
             0.0,
             0.3,
             0.0,
@@ -117,7 +117,7 @@ public class Lift {
         veloCalculator.filter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
 
         fullState.setGains(fullStateGains);
-        integrator.setGains(pidGains);
+        integrator.setGains(integratorGains);
         feedforward.setGains(feedforwardGains);
         profiler.updateConstraints(constraints);
 
