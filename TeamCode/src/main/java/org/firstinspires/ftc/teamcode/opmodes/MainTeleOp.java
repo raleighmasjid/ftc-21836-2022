@@ -10,10 +10,10 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.ScoringSystem;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.subsystems.HeadingLockingMecanum;
-import org.firstinspires.ftc.teamcode.systems.Lift;
-import org.firstinspires.ftc.teamcode.systems.ScoringSystem;
+import org.firstinspires.ftc.teamcode.subsystems.Lift;
 
 import java.util.List;
 

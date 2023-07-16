@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.systems;
+package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.control.MotionProfiler;
 import org.firstinspires.ftc.teamcode.control.State;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.ProfileConstraints;
-import org.firstinspires.ftc.teamcode.subsystems.SimpleServoPivot;
 
 @Config
 public class Passthrough {
