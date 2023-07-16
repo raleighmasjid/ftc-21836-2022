@@ -11,9 +11,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
-import org.firstinspires.ftc.teamcode.robot.Lift;
-import org.firstinspires.ftc.teamcode.robot.Scorer;
 import org.firstinspires.ftc.teamcode.subsystems.HeadingLockingMecanum;
+import org.firstinspires.ftc.teamcode.systems.Lift;
+import org.firstinspires.ftc.teamcode.systems.Scorer;
 
 import java.util.List;
 

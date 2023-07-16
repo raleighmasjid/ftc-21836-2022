@@ -12,9 +12,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.Lift;
-import org.firstinspires.ftc.teamcode.robot.Scorer;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagCamera;
+import org.firstinspires.ftc.teamcode.systems.Lift;
+import org.firstinspires.ftc.teamcode.systems.Scorer;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
