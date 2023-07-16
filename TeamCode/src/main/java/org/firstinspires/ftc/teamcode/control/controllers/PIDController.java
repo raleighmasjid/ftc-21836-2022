@@ -54,10 +54,6 @@ public class PIDController implements FeedbackController {
         this.target = target;
     }
 
-    public State getError() {
-        return new State(error);
-    }
-
     public double getErrorDerivative() {
         return errorDerivative;
     }

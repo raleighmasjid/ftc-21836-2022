@@ -27,8 +27,4 @@ public class FullStateController implements FeedbackController {
 
         return (error.x * gains.pGain) + (error.v * gains.vGain) + (error.a * gains.aGain);
     }
-
-    public State getError() {
-        return error;
-    }
 }
