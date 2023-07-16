@@ -5,13 +5,20 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.control.PIDController;
+
 @Config
 public class Lift {
 
-    public static double kG = 0.1;
+    public static double
+            kP = 0,
+            kI = 0,
+            kD = 0,
+            kG = 0.1;
 
     private final MotorEx[] motors;
     private final HardwareMap hardwareMap;
+    private final PIDController controller = new PIDController();
 
     private double currentPosition = 0.0;
 
@@ -35,8 +42,17 @@ public class Lift {
         motors[2].setInverted(true);
     }
 
-    public void run(double power) {
+    public void setTargetPosition(double targetPosition) {
+        controller.setTarget(targetPosition);
+    }
+
+    public void runToPosition() {
         currentPosition = motors[0].encoder.getPosition();
+        controller.setGains(kP, kI, kD);
+        run(controller.calculate(currentPosition));
+    }
+
+    public void run(double power) {
         for (MotorEx motor : motors) {
             motor.set(power + kG);
         }
