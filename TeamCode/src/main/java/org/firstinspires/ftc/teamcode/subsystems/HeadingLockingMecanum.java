@@ -14,17 +14,17 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     public static double
             kS = 0.0,
-            FILTER_GAIN = 0.85,
+            FILTER_GAIN = 0.8,
             TURN_SETTLING_TIME = 0.3,
-            TRANSLATION_SETTLING_TIME = 0.0;
+            TRANSLATION_SETTLING_TIME = 0.3;
 
-    public static int FILTER_COUNT = 300;
+    public static int FILTER_COUNT = 50;
 
     public static PIDGains gains = new PIDGains(
+            0.0275,
             0.005,
-            0.01,
-            0.0,
-            1.0
+            0.0015,
+            0.3
     );
 
     private double lastXCommand = 0.0, lastYCommand = 0.0, headingTarget;
