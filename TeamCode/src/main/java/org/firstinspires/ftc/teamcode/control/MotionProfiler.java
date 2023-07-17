@@ -25,9 +25,9 @@ public class MotionProfiler {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(current.x, current.v),
                 new MotionState(target.x, target.v),
-                constraints.MAX_VELO,
-                constraints.MAX_ACCEL,
-                constraints.MAX_JERK
+                constraints.maxV,
+                constraints.maxA,
+                constraints.maxJ
         );
         profileTimer.reset();
     }
