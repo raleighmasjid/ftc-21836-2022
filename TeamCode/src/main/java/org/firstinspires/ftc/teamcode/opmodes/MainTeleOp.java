@@ -68,14 +68,17 @@ public class MainTeleOp extends LinearOpMode {
                 control1A = new ButtonReader(Gamepad1, GamepadKeys.Button.A), // 270
                 control1X = new ButtonReader(Gamepad1, GamepadKeys.Button.X), // 180
                 control1B = new ButtonReader(Gamepad1, GamepadKeys.Button.B), // 90
-                control1Y = new ButtonReader(Gamepad1, GamepadKeys.Button.Y); // 0
+                control1Y = new ButtonReader(Gamepad1, GamepadKeys.Button.Y), // 0
+
+                control1LShoulder = new ButtonReader(Gamepad1, GamepadKeys.Button.LEFT_BUMPER); // toggle heading correction
 
         ButtonReader[] buttonReaders = {
                 control2Up, control2Left, control2Right, control2Down,
                 control2A, control2B, control2X, control2Y,
                 control2LShoulder, control2RShoulder,
                 control1Up, control1Left, control1Right, control1Down,
-                control1A, control1X, control1B, control1Y
+                control1A, control1X, control1B, control1Y,
+                control1LShoulder
         };
 
         boolean overrideMode = false;
@@ -173,6 +176,7 @@ public class MainTeleOp extends LinearOpMode {
                     Gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * ScoringSystem.ANGLE_CONE_ARMS_DOWN,
                     Gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * ScoringSystem.ANGLE_CONE_ARMS_DOWN
             );
+            if (control1LShoulder.wasJustPressed()) drivetrain.toggleHeadingCorrection();
             drivetrain.run(
                     Gamepad1.getLeftX() * precisionScale,
                     Gamepad1.getLeftY() * precisionScale,
@@ -189,6 +193,8 @@ public class MainTeleOp extends LinearOpMode {
             );
             myTelemetry.addLine();
             scorer.printTelemetry(myTelemetry);
+            myTelemetry.addLine();
+            drivetrain.printTelemetry(myTelemetry);
             myTelemetry.addLine();
             myTelemetry.addLine();
             drivetrain.printNumericalTelemetry(myTelemetry);

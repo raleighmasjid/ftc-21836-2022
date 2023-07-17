@@ -27,6 +27,8 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             0.3
     );
 
+    private boolean correctHeading = true;
+
     private double lastXCommand = 0.0, lastYCommand = 0.0, headingTarget;
 
     private final ElapsedTime turnSettlingTimer, translationSettlingTimer;
@@ -50,24 +52,27 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
     public void run(double xCommand, double yCommand, double turnCommand) {
         double voltage = batteryVoltageSensor.getVoltage();
         double scalar = 12.0 / voltage;
-        boolean useManualInput = turnCommand != 0.0;
 
-        boolean xStopped = (lastXCommand != 0) && (xCommand == 0);
-        boolean yStopped = (lastYCommand != 0) && (yCommand == 0);
-        if (xStopped || yStopped) translationSettlingTimer.reset();
+        if (correctHeading) {
+            boolean useManualInput = turnCommand != 0.0;
 
-        if (useManualInput) {
-            turnCommand *= scalar;
-            turnSettlingTimer.reset();
-        }
+            boolean xStopped = (lastXCommand != 0) && (xCommand == 0);
+            boolean yStopped = (lastYCommand != 0) && (yCommand == 0);
+            if (xStopped || yStopped) translationSettlingTimer.reset();
 
-        if (useManualInput || turnSettlingTimer.seconds() <= TURN_SETTLING_TIME) {
-            headingTarget = getHeading();
-        } else if (translationSettlingTimer.seconds() > TRANSLATION_SETTLING_TIME) {
-            headingController.setError(-normalizeAngle(headingTarget - getHeading()));
-            double pidOutput = headingController.calculate(new State(getHeading()));
-            turnCommand = pidOutput + (Math.signum(pidOutput) * kS * scalar);
-        }
+            if (useManualInput) {
+                turnCommand *= scalar;
+                turnSettlingTimer.reset();
+            }
+
+            if (useManualInput || turnSettlingTimer.seconds() <= TURN_SETTLING_TIME) {
+                headingTarget = getHeading();
+            } else if (translationSettlingTimer.seconds() > TRANSLATION_SETTLING_TIME) {
+                headingController.setError(-normalizeAngle(headingTarget - getHeading()));
+                double pidOutput = headingController.calculate(new State(getHeading()));
+                turnCommand = pidOutput + (Math.signum(pidOutput) * kS * scalar);
+            }
+        } else turnCommand *= scalar;
 
         lastXCommand = xCommand;
         lastYCommand = yCommand;
@@ -82,6 +87,14 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
     public void setCurrentHeading(double angle) {
         super.setCurrentHeading(angle);
         setTargetHeading(angle);
+    }
+
+    public void toggleHeadingCorrection() {
+        correctHeading = !correctHeading;
+    }
+
+    public void printTelemetry(MultipleTelemetry telemetry) {
+        telemetry.addData("Heading correction is", correctHeading ? "active" : "disabled");
     }
 
     @Override
