@@ -85,7 +85,7 @@ public class DriveConstants {
 
      */
     public static double MAX_VEL = 54.965;
-    public static double MAX_ACCEL = 54.965;
+    public static double MAX_ACCEL = 60;
     public static double MAX_ANG_VEL = Math.toRadians(158.4000248984491); //converted from degrees to radians
     public static double MAX_ANG_ACCEL = Math.toRadians(190);
 
