@@ -40,7 +40,7 @@ public class Lift {
             FILTER_COUNT_ACCEL = 50;
 
     public static FullStateGains fullStateGains = new FullStateGains(
-            0.075,
+            0.04,
             0.0125,
             0.0
     );
@@ -53,15 +53,15 @@ public class Lift {
     );
 
     public static FeedforwardGains feedforwardGains = new FeedforwardGains(
-            0.0075,
+            0.0015,
             0.0005,
             0.035
     );
 
     public static ProfileConstraints constraints = new ProfileConstraints(
-            32.0,
+            35.0,
             189.16,
-            450.0
+            600.0
     );
 
     private final Differentiator veloCalculator = new Differentiator();
