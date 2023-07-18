@@ -53,9 +53,7 @@ public class MecanumDrivetrain {
         motors[2].setInverted(true);
         motors[3].setInverted(false);
 
-        for (MotorEx motor : motors) {
-            motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        }
+        for (MotorEx motor : motors) motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
 
         // Initialize the FTCLib drive-base
         mecanumDrivetrain = new MecanumDrive(false, motors[0], motors[1], motors[2], motors[3]);
