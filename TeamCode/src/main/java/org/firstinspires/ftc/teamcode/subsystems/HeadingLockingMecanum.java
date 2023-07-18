@@ -23,7 +23,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             50
     );
 
-    public static PIDGains gains = new PIDGains(
+    public static PIDGains pidGains = new PIDGains(
             0.0275,
             0.005,
             0.0015,
@@ -46,7 +46,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     @Override
     public void readIMU() {
-        headingController.setGains(gains);
+        headingController.setGains(pidGains);
         headingController.derivFilter.setGains(derivFilterGains);
         super.readIMU();
     }
@@ -56,7 +56,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
         double scalar = 12.0 / batteryVoltageSensor.getVoltage();
         boolean useManualInput = turnCommand != 0.0;
 
-        if (!correctHeading || useManualInput) {
+        if (useManualInput || !correctHeading) {
             turnCommand *= scalar;
             turnSettlingTimer.reset();
         }
