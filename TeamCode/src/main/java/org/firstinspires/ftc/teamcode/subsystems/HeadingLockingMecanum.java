@@ -76,7 +76,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
         lastXCommand = xCommand;
         lastYCommand = yCommand;
-        super.run(xCommand * scalar, yCommand * scalar, turnCommand);
+        super.run(xCommand * scalar, yCommand * scalar, turnCommand, false);
     }
 
     public void setTargetHeading(double angle) {
