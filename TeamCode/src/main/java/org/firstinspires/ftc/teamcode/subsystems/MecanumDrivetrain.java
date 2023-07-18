@@ -110,16 +110,6 @@ public class MecanumDrivetrain {
     }
 
     public void run(double xCommand, double yCommand, double turnCommand) {
-        run(xCommand, yCommand, turnCommand, true);
-    }
-
-    public void run(double xCommand, double yCommand, double turnCommand, boolean voltageCompensate) {
-        if (voltageCompensate) {
-            double scalar = 12.0 / batteryVoltageSensor.getVoltage();
-            xCommand *= scalar;
-            yCommand *= scalar;
-            turnCommand *= scalar;
-        }
         // normalize inputs
         double max = Collections.max(Arrays.asList(xCommand, yCommand, turnCommand, 1.0));
         xCommand /= max;
