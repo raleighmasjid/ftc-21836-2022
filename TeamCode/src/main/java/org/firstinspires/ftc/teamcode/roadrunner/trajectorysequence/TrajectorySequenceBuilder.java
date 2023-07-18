@@ -8,8 +8,9 @@ import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_GRAB;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_GRAB_TO_FLIP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_PRE_DROP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_PRE_GRAB;
-import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.accelerationCap;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.scoringAccelCap;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.scoringVeloCap;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.stackAccelCap;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.stackVeloCap;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -731,7 +732,7 @@ public class TrajectorySequenceBuilder {
                 .UNSTABLE_addTemporalMarkerOffset(TIME_GRAB_TO_FLIP, () -> scorer.passthrough.trigger())
                 .setReversed(true)
                 .splineTo(sideTurnPos, SIDE_TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                .splineToSplineHeading(scoringPos, scoringPos.getHeading() - LEFT, scoringVeloCap, accelerationCap)
+                .splineToSplineHeading(scoringPos, scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .waitSeconds(TIME_PRE_DROP)
                 .addTemporalMarker(() -> scorer.dropCone(endLiftPosition))
@@ -739,7 +740,7 @@ public class TrajectorySequenceBuilder {
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                 .setReversed(false)
                 .splineTo(sideTurnPos, SIDE_TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
-                .splineTo(stackPos, isRight ? RIGHT : LEFT, stackVeloCap, accelerationCap)
+                .splineTo(stackPos, isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
                 ;
     }
 
