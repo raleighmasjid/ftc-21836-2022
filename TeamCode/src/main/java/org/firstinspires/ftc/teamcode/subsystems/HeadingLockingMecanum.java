@@ -39,7 +39,6 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
         super(hw, motorCPR, motorRPM);
         turnSettlingTimer = new ElapsedTime();
         translationSettlingTimer = new ElapsedTime();
-        setCurrentHeading(0.0);
     }
 
     @Override
