@@ -84,6 +84,7 @@ public class MainTeleOp extends LinearOpMode {
         boolean overrideMode = false;
 
         drivetrain.setCurrentHeading(HeadingHolder.getHeading());
+        drivetrain.setTargetHeading(HeadingHolder.getHeading());
 
         for (LynxModule hub : hubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
 

@@ -29,13 +29,13 @@ public abstract class BaseAuton extends LinearOpMode {
     AprilTagCamera camera;
 
     public static double
-            MED_ANGLE = 35.0,
-            MED_X = 31.0,
+            MED_ANGLE = 45,
+            MED_X = 33,
             MED_Y = -17.5,
             TALL_ANGLE = -35.0,
             TALL_X = 31.0,
             TALL_Y = -7.5,
-            STACK_X = 59.0,
+            STACK_X = 60,
             STACK_Y = -12.0,
             SIDE_TURN_ANGLE_OFFSET_MED = 5.0,
             SIDE_TURN_ANGLE_OFFSET_TALL = -2.0,
@@ -52,7 +52,7 @@ public abstract class BaseAuton extends LinearOpMode {
             TIME_PRE_DROP = 1.0,
             TIME_DROP = 1.0,
             TIME_DROP_TO_FLIP = 0.0,
-            TIME_FIRST_FLIP = 1.0,
+            TIME_FIRST_FLIP = 1.5,
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1.0,
             TOTAL_RUN_TIME = 30.0;
@@ -183,7 +183,7 @@ public abstract class BaseAuton extends LinearOpMode {
                         .build();
 
         drivetrain.followTrajectorySequenceAsync(scoringTrajectory);
-        HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
+        HeadingHolder.setHeading(side * -90);
 
         telemetry.setMsTransmissionInterval(50);
         myTelemetry = new MultipleTelemetry(telemetry);
@@ -233,6 +233,7 @@ public abstract class BaseAuton extends LinearOpMode {
             scorer.lift.readPosition();
             drivetrain.update();
             scorer.lift.runToPosition();
+            scorer.passthrough.run();
             scorer.run(0, 0);
 
             // everything below is telemetry
