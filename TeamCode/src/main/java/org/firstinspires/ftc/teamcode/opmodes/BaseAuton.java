@@ -1,10 +1,17 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 
+import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.TRACK_WIDTH;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -55,14 +62,17 @@ public abstract class BaseAuton extends LinearOpMode {
             TIME_FIRST_FLIP = 1.5,
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1.0,
-            TOTAL_RUN_TIME = 30.0,
-            TO_STACK_VELOCITY = MAX_VEL,
-            TO_SCORING_VELOCITY = MAX_VEL;
+            TOTAL_RUN_TIME = 30.0;
 
     public static final double
             RIGHT = Math.toRadians(0),
             FORWARD = Math.toRadians(90),
-            LEFT = Math.toRadians(180);
+            LEFT = Math.toRadians(180),
+            BACKWARD = Math.toRadians(270);
+
+    public static TrajectoryVelocityConstraint stackVeloCap = SampleMecanumDrive.getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
+    public static TrajectoryVelocityConstraint scoringVeloCap = SampleMecanumDrive.getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
+    public static TrajectoryAccelerationConstraint accelerationCap = SampleMecanumDrive.getAccelerationConstraint(MAX_ACCEL);
 
     public void runOpMode(boolean tallPole, boolean isRight) throws InterruptedException {
         drivetrain = new SampleMecanumDrive(hardwareMap);
@@ -92,10 +102,6 @@ public abstract class BaseAuton extends LinearOpMode {
         Pose2d scoringPos = tallPole ? tallScoringPos : medScoringPos;
         double SIDE_TURN_ANGLE_OFFSET = side * Math.toRadians(tallPole ? SIDE_TURN_ANGLE_OFFSET_TALL : SIDE_TURN_ANGLE_OFFSET_MED);
 
-        TrajectoryVelocityConstraint stackVeloCap = SampleMecanumDrive.getVelocityConstraint(TO_STACK_VELOCITY, MAX_ANG_VEL, TRACK_WIDTH);
-        TrajectoryVelocityConstraint scoringVeloCap = SampleMecanumDrive.getVelocityConstraint(TO_SCORING_VELOCITY, MAX_ANG_VEL, TRACK_WIDTH);
-        TrajectoryAccelerationConstraint accelerationCap = SampleMecanumDrive.getAccelerationConstraint(MAX_ACCEL);
-
         drivetrain.setPoseEstimate(startPose);
 
         TrajectorySequence scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
@@ -111,7 +117,7 @@ public abstract class BaseAuton extends LinearOpMode {
                 .splineTo(sideTurnPos, SIDE_TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
                 .splineTo(stackPos, isRight ? RIGHT : LEFT, stackVeloCap, accelerationCap)
                 // loop below
-                .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, SIDE_TURN_ANGLE_OFFSET, stackVeloCap, scoringVeloCap, accelerationCap)
+                .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, SIDE_TURN_ANGLE_OFFSET)
                 .addCycle(Lift.Position.FOUR)
                 // common parking:
                 .waitSeconds(TIME_PRE_GRAB)
