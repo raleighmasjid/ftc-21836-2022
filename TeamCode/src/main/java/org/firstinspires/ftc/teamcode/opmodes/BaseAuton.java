@@ -62,7 +62,11 @@ public abstract class BaseAuton extends LinearOpMode {
             TIME_FIRST_FLIP = 1.5,
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1.0,
-            TOTAL_RUN_TIME = 30.0;
+            TOTAL_RUN_TIME = 30.0,
+            STACK_VELO = MAX_VEL,
+            STACK_ACCEL = MAX_ACCEL,
+            SCORING_VELO = MAX_VEL,
+            SCORING_ACCEL = MAX_ACCEL;
 
     public static final double
             RIGHT = Math.toRadians(0),
@@ -70,10 +74,10 @@ public abstract class BaseAuton extends LinearOpMode {
             LEFT = Math.toRadians(180),
             BACKWARD = Math.toRadians(270);
 
-    public static TrajectoryVelocityConstraint stackVeloCap = SampleMecanumDrive.getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
-    public static TrajectoryAccelerationConstraint stackAccelCap = SampleMecanumDrive.getAccelerationConstraint(MAX_ACCEL);
-    public static TrajectoryVelocityConstraint scoringVeloCap = SampleMecanumDrive.getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
-    public static TrajectoryAccelerationConstraint scoringAccelCap = SampleMecanumDrive.getAccelerationConstraint(MAX_ACCEL);
+    public static TrajectoryVelocityConstraint stackVeloCap = SampleMecanumDrive.getVelocityConstraint(STACK_VELO, MAX_ANG_VEL, TRACK_WIDTH);
+    public static TrajectoryAccelerationConstraint stackAccelCap = SampleMecanumDrive.getAccelerationConstraint(STACK_ACCEL);
+    public static TrajectoryVelocityConstraint scoringVeloCap = SampleMecanumDrive.getVelocityConstraint(SCORING_VELO, MAX_ANG_VEL, TRACK_WIDTH);
+    public static TrajectoryAccelerationConstraint scoringAccelCap = SampleMecanumDrive.getAccelerationConstraint(SCORING_ACCEL);
 
     public void runOpMode(boolean tallPole, boolean isRight) throws InterruptedException {
         drivetrain = new SampleMecanumDrive(hardwareMap);
