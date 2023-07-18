@@ -50,20 +50,18 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     @Override
     public void run(double xCommand, double yCommand, double turnCommand) {
-        double voltage = batteryVoltageSensor.getVoltage();
-        double scalar = 12.0 / voltage;
+        double scalar = 12.0 / batteryVoltageSensor.getVoltage();
+        boolean useManualInput = turnCommand != 0.0;
+
+        if (useManualInput || !correctHeading) {
+            turnCommand *= scalar;
+            turnSettlingTimer.reset();
+        }
 
         if (correctHeading) {
-            boolean useManualInput = turnCommand != 0.0;
-
             boolean xStopped = (lastXCommand != 0) && (xCommand == 0);
             boolean yStopped = (lastYCommand != 0) && (yCommand == 0);
             if (xStopped || yStopped) translationSettlingTimer.reset();
-
-            if (useManualInput) {
-                turnCommand *= scalar;
-                turnSettlingTimer.reset();
-            }
 
             if (useManualInput || turnSettlingTimer.seconds() <= TURN_SETTLING_TIME) {
                 headingTarget = getHeading();
@@ -72,7 +70,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
                 double pidOutput = headingController.calculate(new State(getHeading()));
                 turnCommand = pidOutput + (Math.signum(pidOutput) * kS * scalar);
             }
-        } else turnCommand *= scalar;
+        }
 
         lastXCommand = xCommand;
         lastYCommand = yCommand;
