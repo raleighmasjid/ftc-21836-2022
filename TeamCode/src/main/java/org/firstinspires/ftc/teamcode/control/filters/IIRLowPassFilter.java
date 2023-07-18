@@ -1,19 +1,24 @@
 package org.firstinspires.ftc.teamcode.control.filters;
 
+import org.firstinspires.ftc.teamcode.control.gainmatrices.LowPassGains;
+
 /**
- * Infinite impulse response low-pass filter;
- * Filters out sensor noise
+ * Infinite impulse response low-pass filter
  */
 public class IIRLowPassFilter implements Filter {
-    private double filterGain = 0.0;
+    private LowPassGains gains;
     private double estimate = Double.NaN;
 
-    public IIRLowPassFilter(double filterGain) {
-        setGains(filterGain);
+    public IIRLowPassFilter() {
+        this(new LowPassGains());
     }
 
-    public void setGains(double filterGain) {
-        this.filterGain = filterGain;
+    public IIRLowPassFilter(LowPassGains gains) {
+        setGains(gains);
+    }
+
+    public void setGains(LowPassGains gains) {
+        this.gains = gains;
     }
 
     public void reset() {
@@ -21,7 +26,7 @@ public class IIRLowPassFilter implements Filter {
     }
 
     public double calculate(double newValue) {
-        estimate = Double.isNaN(estimate) ? newValue : filterGain * estimate + (1 - filterGain) * newValue;
+        estimate = Double.isNaN(estimate) ? newValue : gains.gain * estimate + (1 - gains.gain) * newValue;
         return estimate;
     }
 }

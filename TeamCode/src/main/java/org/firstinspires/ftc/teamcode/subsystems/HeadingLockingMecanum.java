@@ -7,18 +7,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.control.State;
 import org.firstinspires.ftc.teamcode.control.controllers.PIDController;
+import org.firstinspires.ftc.teamcode.control.gainmatrices.LowPassGains;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 
 @Config
 public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     public static double
-            kS = 0.0,
-            FILTER_GAIN = 0.8,
+            kStatic = 0.0,
             TURN_SETTLING_TIME = 0.3,
             TRANSLATION_SETTLING_TIME = 0.3;
 
-    public static int FILTER_COUNT = 50;
+    public static LowPassGains derivFilterGains = new LowPassGains(
+            0.8,
+            50
+    );
 
     public static PIDGains gains = new PIDGains(
             0.0275,
@@ -44,7 +47,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
     @Override
     public void readIMU() {
         headingController.setGains(gains);
-        headingController.derivFilter.setGains(FILTER_GAIN, FILTER_COUNT);
+        headingController.derivFilter.setGains(derivFilterGains);
         super.readIMU();
     }
 
@@ -68,7 +71,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             } else if (translationSettlingTimer.seconds() > TRANSLATION_SETTLING_TIME) {
                 headingController.setError(-normalizeAngle(headingTarget - getHeading()));
                 double pidOutput = headingController.calculate(new State(getHeading()));
-                turnCommand = pidOutput + (Math.signum(pidOutput) * kS * scalar);
+                turnCommand = pidOutput + (Math.signum(pidOutput) * kStatic * scalar);
             }
         }
 

@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.control.controllers.FullStateController;
 import org.firstinspires.ftc.teamcode.control.controllers.PIDController;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.FeedforwardGains;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.FullStateGains;
+import org.firstinspires.ftc.teamcode.control.gainmatrices.LowPassGains;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.ProfileConstraints;
 
@@ -30,14 +31,11 @@ public class Lift {
             HEIGHT_1_STAGE = 9.6,
             kG_1_STAGE = 0.06,
             kG_3 = 0.312,
-            FILTER_GAIN_VELO = 0.5,
-            FILTER_GAIN_ACCEL = 0.8,
             TOLERANCE = 0.15843625,
             INCHES_PER_TICK = 0.03168725;
 
-    public static int
-            FILTER_COUNT_VELO = 20,
-            FILTER_COUNT_ACCEL = 50;
+    public static LowPassGains veloFilterGains = new LowPassGains(0.5, 20);
+    public static LowPassGains accelFilterGains = new LowPassGains(0.8, 50);
 
     public static FullStateGains fullStateGains = new FullStateGains(
             0.04,
@@ -113,8 +111,8 @@ public class Lift {
     }
 
     public void readPosition() {
-        accelCalculator.filter.setGains(FILTER_GAIN_VELO, FILTER_COUNT_VELO);
-        veloCalculator.filter.setGains(FILTER_GAIN_ACCEL, FILTER_COUNT_ACCEL);
+        accelCalculator.filter.setGains(accelFilterGains);
+        veloCalculator.filter.setGains(veloFilterGains);
 
         fullState.setGains(fullStateGains);
         integrator.setGains(integratorGains);

@@ -1,27 +1,26 @@
 package org.firstinspires.ftc.teamcode.control.filters;
 
+import org.firstinspires.ftc.teamcode.control.gainmatrices.LowPassGains;
+
 import java.util.ArrayList;
 
 /**
- * Finite impulse response low-pass filter;
- * Filters out sensor noise
+ * Finite impulse response low-pass filter
  */
 public class FIRLowPassFilter implements Filter {
-    private double filterGain;
-    private int filterCount;
-    private ArrayList<Double> values = new ArrayList<>();
+    private LowPassGains gains;
+    private final ArrayList<Double> values = new ArrayList<>();
 
     public FIRLowPassFilter() {
-        this(0.5, 10);
+        this(new LowPassGains());
     }
 
-    public FIRLowPassFilter(double filterGain, int filterCount) {
-        setGains(filterGain, filterCount);
+    public FIRLowPassFilter(LowPassGains gains) {
+        setGains(gains);
     }
 
-    public void setGains(double filterGain, int filterCount) {
-        this.filterGain = filterGain;
-        this.filterCount = Math.max(filterCount, 2);
+    public void setGains(LowPassGains gains) {
+        this.gains = new LowPassGains(gains.gain, Math.max(gains.count, 2));
     }
 
     public void reset() {
@@ -31,11 +30,11 @@ public class FIRLowPassFilter implements Filter {
     public double calculate(double newValue) {
         values.add(newValue);
         if (values.size() < 2) return newValue;
-        while (values.size() > filterCount) values.remove(0);
+        while (values.size() > gains.count) values.remove(0);
 
         double estimate = values.get(0);
         for (int ind = 1; ind < values.size(); ind++) {
-            estimate = filterGain * estimate + (1 - filterGain) * values.get(ind);
+            estimate = gains.gain * estimate + (1 - gains.gain) * values.get(ind);
         }
 
         return estimate;

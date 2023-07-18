@@ -18,13 +18,13 @@ public class PIDController implements FeedbackController {
     private double error, lastError, errorIntegral, errorDerivative;
     private boolean calculateError = true;
 
+    public PIDController() {
+        this(new FIRLowPassFilter());
+    }
+
     public PIDController(FIRLowPassFilter derivFilter) {
         this.derivFilter = derivFilter;
         differentiator = new Differentiator(derivFilter);
-    }
-
-    public PIDController() {
-        this(new FIRLowPassFilter());
     }
 
     public void setGains(PIDGains gains) {
