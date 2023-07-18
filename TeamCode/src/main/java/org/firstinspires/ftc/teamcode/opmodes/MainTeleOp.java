@@ -39,6 +39,7 @@ public class MainTeleOp extends LinearOpMode {
 
         scorer = new ScoringSystem(hardwareMap);
         drivetrain = new HeadingLockingMecanum(hardwareMap, 537.7, 312);
+        drivetrain.setCurrentHeading(HeadingHolder.getHeading());
 
         hubs = hardwareMap.getAll(LynxModule.class);
 
@@ -83,8 +84,6 @@ public class MainTeleOp extends LinearOpMode {
 
         boolean overrideMode = false;
 
-        drivetrain.setCurrentHeading(HeadingHolder.getHeading());
-        drivetrain.setTargetHeading(HeadingHolder.getHeading());
 
         for (LynxModule hub : hubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
 
