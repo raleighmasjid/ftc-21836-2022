@@ -34,14 +34,13 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     private double lastXCommand = 0.0, lastYCommand = 0.0, headingTarget;
 
-    private final ElapsedTime turnSettlingTimer, translationSettlingTimer;
+    private final ElapsedTime turnSettlingTimer = new ElapsedTime();
+    private final ElapsedTime translationSettlingTimer = new ElapsedTime();
 
     private final PIDController headingController = new PIDController();
 
     public HeadingLockingMecanum(HardwareMap hw, double motorCPR, double motorRPM) {
         super(hw, motorCPR, motorRPM);
-        turnSettlingTimer = new ElapsedTime();
-        translationSettlingTimer = new ElapsedTime();
     }
 
     @Override
