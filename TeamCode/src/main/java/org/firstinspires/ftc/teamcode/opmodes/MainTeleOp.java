@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.AUTON_END_HEADING;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.END_HEADING;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -41,7 +41,7 @@ public class MainTeleOp extends LinearOpMode {
         scorer = new ScoringSystem(hardwareMap);
         drivetrain = new HeadingLockingMecanum(hardwareMap, 537.7, 312);
         drivetrain.readIMU();
-        drivetrain.setCurrentHeading(AUTON_END_HEADING);
+        drivetrain.setCurrentHeading(END_HEADING);
 
         hubs = hardwareMap.getAll(LynxModule.class);
 

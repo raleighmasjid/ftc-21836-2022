@@ -33,7 +33,9 @@ public abstract class BaseAuton extends LinearOpMode {
     AprilTagCamera camera;
 
     public static double
-            AUTON_END_HEADING = 0.0,
+            END_HEADING = 0.0,
+            END_HEADING_OFFSET = -90.0,
+            END_HEADING_MULTIPLIER = 1,
             MED_ANGLE = 40,
             MED_X = 33,
             MED_Y = -18,
@@ -248,7 +250,7 @@ public abstract class BaseAuton extends LinearOpMode {
             scorer.passthrough.run();
             scorer.run(0, 0);
 
-            AUTON_END_HEADING = drivetrain.getPoseEstimate().getHeading() - 90.0;
+            END_HEADING = (drivetrain.getPoseEstimate().getHeading() + END_HEADING_OFFSET) * END_HEADING_MULTIPLIER;
 
             // everything below is telemetry
             scorer.printTelemetry(myTelemetry);
