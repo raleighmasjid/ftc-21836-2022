@@ -220,7 +220,7 @@ public abstract class BaseAuton extends LinearOpMode {
         scorer.passthrough.claw.setActivated(true);
         while (!isStarted() && !isStopRequested()) {
             camera.initLoop();
-            scorer.passthrough.claw.run();
+            scorer.passthrough.run();
         }
 
         //START IS HERE//
