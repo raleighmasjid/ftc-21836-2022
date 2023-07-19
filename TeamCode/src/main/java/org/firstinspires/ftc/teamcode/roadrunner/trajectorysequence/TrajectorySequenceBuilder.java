@@ -2,16 +2,18 @@ package org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence;
 
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.LEFT;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.RIGHT;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.SCORING_ACCEL;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.SCORING_VELO;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.STACK_ACCEL;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.STACK_VELO;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_DROP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_DROP_TO_FLIP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_GRAB;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_GRAB_TO_FLIP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_PRE_DROP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_PRE_GRAB;
-import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.scoringAccelCap;
-import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.scoringVeloCap;
-import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.stackAccelCap;
-import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.stackVeloCap;
+import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.TRACK_WIDTH;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -32,6 +34,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.acmerobotics.roadrunner.util.Angle;
 
+import org.firstinspires.ftc.teamcode.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegment.SequenceSegment;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegment.TrajectorySegment;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegment.TurnSegment;
@@ -774,4 +777,8 @@ public class TrajectorySequenceBuilder {
     private double TIME_LIFT;
     private Pose2d scoringPos;
     private double SIDE_TURN_ANGLE_OFFSET;
+    private final TrajectoryVelocityConstraint stackVeloCap = SampleMecanumDrive.getVelocityConstraint(STACK_VELO, MAX_ANG_VEL, TRACK_WIDTH);
+    private final TrajectoryAccelerationConstraint stackAccelCap = SampleMecanumDrive.getAccelerationConstraint(STACK_ACCEL);
+    private final TrajectoryVelocityConstraint scoringVeloCap = SampleMecanumDrive.getVelocityConstraint(SCORING_VELO, MAX_ANG_VEL, TRACK_WIDTH);
+    private final TrajectoryAccelerationConstraint scoringAccelCap = SampleMecanumDrive.getAccelerationConstraint(SCORING_ACCEL);
 }
