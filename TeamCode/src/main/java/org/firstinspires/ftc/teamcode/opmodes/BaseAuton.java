@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_VEL;
 import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.TRACK_WIDTH;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -36,15 +35,15 @@ public abstract class BaseAuton extends LinearOpMode {
     AprilTagCamera camera;
 
     public static double
-            MED_ANGLE = 45,
+            MED_ANGLE = 40,
             MED_X = 33,
-            MED_Y = -17.5,
+            MED_Y = -18,
             TALL_ANGLE = -35.0,
             TALL_X = 31.0,
             TALL_Y = -7.5,
             STACK_X = 60,
-            STACK_Y = -12.0,
-            SIDE_TURN_ANGLE_OFFSET_MED = 5.0,
+            STACK_Y = -13,
+            SIDE_TURN_ANGLE_OFFSET_MED = 0,
             SIDE_TURN_ANGLE_OFFSET_TALL = -2.0,
             ONE_TILE = 24.0,
             ZONE_1_X = 12.5,
@@ -52,26 +51,25 @@ public abstract class BaseAuton extends LinearOpMode {
             ZONE_3_X = 57.0,
             X_TURN_POS = 46.0,
             Y_START = -62.5,
-            Y_MAIN_PATH = -12.5,
+            Y_MAIN_PATH = -13,
             TIME_PRE_GRAB = 1.0,
             TIME_GRAB = 1.0,
             TIME_PRE_DROP = 1.0,
-            TIME_DROP = 1.0,
-            TIME_DROP_TO_FLIP = 0.0,
-            TIME_FIRST_FLIP = 1.5,
-            TIME_LIFT_MEDIUM = 0.8,
-            TIME_LIFT_TALL = 1.0,
-            TIME_FLIP = 1.0,
-            STACK_VELO = MAX_VEL,
+            TIME_DROP = 0,
+            TIME_DROP_TO_FLIP = 0,
+            TIME_FIRST_FLIP = 3,
+            TIME_LIFT_MEDIUM = 1,
+            TIME_LIFT_TALL = 1.2,
+            TIME_FLIP = 3,
+            STACK_VELO = 10,
             STACK_ACCEL = MAX_ACCEL,
-            SCORING_VELO = MAX_VEL,
+            SCORING_VELO = 10,
             SCORING_ACCEL = MAX_ACCEL;
 
     public static final double
             RIGHT = Math.toRadians(0),
             FORWARD = Math.toRadians(90),
-            LEFT = Math.toRadians(180),
-            BACKWARD = Math.toRadians(270);
+            LEFT = Math.toRadians(180);
 
     private final TrajectoryVelocityConstraint stackVeloCap = SampleMecanumDrive.getVelocityConstraint(STACK_VELO, MAX_ANG_VEL, TRACK_WIDTH);
     private final TrajectoryAccelerationConstraint stackAccelCap = SampleMecanumDrive.getAccelerationConstraint(STACK_ACCEL);
