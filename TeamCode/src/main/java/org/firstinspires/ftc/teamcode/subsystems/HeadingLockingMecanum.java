@@ -80,7 +80,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
     }
 
     public void setTargetHeading(double angle) {
-        targetHeading = angle;
+        targetHeading = normalizeAngle(angle);
     }
 
     @Override
