@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-
 import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ANG_VEL;
 import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.TRACK_WIDTH;
@@ -15,7 +14,6 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.HeadingHolder;
 import org.firstinspires.ftc.teamcode.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagCamera;
@@ -35,6 +33,7 @@ public abstract class BaseAuton extends LinearOpMode {
     AprilTagCamera camera;
 
     public static double
+            AUTON_END_HEADING = 0.0,
             MED_ANGLE = 40,
             MED_X = 33,
             MED_Y = -18,
@@ -197,7 +196,6 @@ public abstract class BaseAuton extends LinearOpMode {
                         .build();
 
         drivetrain.followTrajectorySequenceAsync(scoringTrajectory);
-        HeadingHolder.setHeading(isRight ? 270.0 : 90.0);
 
         telemetry.setMsTransmissionInterval(50);
         myTelemetry = new MultipleTelemetry(telemetry);
@@ -249,6 +247,8 @@ public abstract class BaseAuton extends LinearOpMode {
             scorer.lift.runToPosition();
             scorer.passthrough.run();
             scorer.run(0, 0);
+
+            AUTON_END_HEADING = drivetrain.getPoseEstimate().getHeading() - 90.0;
 
             // everything below is telemetry
             scorer.printTelemetry(myTelemetry);
