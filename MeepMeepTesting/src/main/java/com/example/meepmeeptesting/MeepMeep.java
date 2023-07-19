@@ -28,13 +28,13 @@ public class MeepMeep {
             TALL_Y = -7.5,
             STACK_X = 60,
             STACK_Y = -13,
-            SIDE_TURN_ANGLE_OFFSET_MED = 0,
-            SIDE_TURN_ANGLE_OFFSET_TALL = -2.0,
             ONE_TILE = 24.0,
             ZONE_1_X = 12.5,
             ZONE_2_X = 35.0,
             ZONE_3_X = 57.0,
-            X_TURN_POS = 46.0,
+            TURN_POS_X = 46.0,
+            TURN_ANGLE_OFFSET_MED = 0,
+            TURN_ANGLE_OFFSET_TALL = -2.0,
             Y_START = -62.5,
             Y_MAIN_PATH = -13,
             TIME_PRE_GRAB = 1.0,
@@ -72,7 +72,7 @@ public class MeepMeep {
         double X_START = side * ZONE_2_X;
 
         Vector2d stackPos = new Vector2d(side * STACK_X, STACK_Y);
-        Vector2d sideTurnPos = new Vector2d(side * X_TURN_POS, Y_MAIN_PATH);
+        Vector2d sideTurnPos = new Vector2d(side * TURN_POS_X, Y_MAIN_PATH);
         Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * ONE_TILE, sideTurnPos.getY());
         Pose2d tallScoringPos = new Pose2d(side * TALL_X, TALL_Y, Math.toRadians(isRight ? TALL_ANGLE : 180 - TALL_ANGLE));
         Pose2d medScoringPos = new Pose2d(side * MED_X, MED_Y, Math.toRadians(isRight ? MED_ANGLE : 180 - MED_ANGLE));
@@ -88,7 +88,7 @@ public class MeepMeep {
 
         double TIME_LIFT = tallPole ? TIME_LIFT_TALL : TIME_LIFT_MEDIUM;
         Pose2d scoringPos = tallPole ? tallScoringPos : medScoringPos;
-        double SIDE_TURN_ANGLE_OFFSET = side * Math.toRadians(tallPole ? SIDE_TURN_ANGLE_OFFSET_TALL : SIDE_TURN_ANGLE_OFFSET_MED);
+        double TURN_ANGLE_OFFSET = side * Math.toRadians(tallPole ? TURN_ANGLE_OFFSET_TALL : TURN_ANGLE_OFFSET_MED);
 
         RoadRunnerBotEntity bot1 = new DefaultBotBuilder(meepMeep)
                 .setDimensions(17, 16)
