@@ -24,7 +24,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
     );
 
     public static PIDGains pidGains = new PIDGains(
-            0.0275,
+            0.02,
             0.005,
             0.0015,
             0.3
