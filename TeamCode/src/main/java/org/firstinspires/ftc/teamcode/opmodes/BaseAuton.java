@@ -85,9 +85,9 @@ public abstract class BaseAuton extends LinearOpMode {
 
         Vector2d stackPos = new Vector2d(side * STACK_X, STACK_Y);
         Vector2d sideTurnPos = new Vector2d(side * X_TURN_POS, Y_MAIN_PATH);
+        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * ONE_TILE, sideTurnPos.getY());
         Pose2d tallScoringPos = new Pose2d(side * TALL_X, TALL_Y, Math.toRadians(isRight ? TALL_ANGLE : 180 - TALL_ANGLE));
         Pose2d medScoringPos = new Pose2d(side * MED_X, MED_Y, Math.toRadians(isRight ? MED_ANGLE : 180 - MED_ANGLE));
-        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * ONE_TILE, sideTurnPos.getY());
         Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * ONE_TILE, medScoringPos.getY(), medScoringPos.getHeading());
 
         double zone1x = side * (isRight ? ZONE_1_X : ZONE_3_X);
