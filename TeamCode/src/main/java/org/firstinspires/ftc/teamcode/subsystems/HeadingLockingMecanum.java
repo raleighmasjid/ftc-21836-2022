@@ -66,7 +66,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
         if (correctHeading) {
             if (useManualInput || turnSettlingTimer.seconds() <= TURN_SETTLING_TIME) {
-                headingTarget = getHeading();
+                setTargetHeading(getHeading());
             } else if (translationSettlingTimer.seconds() > TRANSLATION_SETTLING_TIME) {
                 headingController.setError(-normalizeAngle(headingTarget - getHeading()));
                 double pidOutput = headingController.calculate(new State(getHeading()));
