@@ -56,7 +56,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
         double scalar = 12.0 / batteryVoltageSensor.getVoltage();
         boolean useManualInput = turnCommand != 0.0;
 
-        if (useManualInput) {
+        if (useManualInput || !correctHeading) {
             turnCommand *= scalar;
             turnSettlingTimer.reset();
         }
