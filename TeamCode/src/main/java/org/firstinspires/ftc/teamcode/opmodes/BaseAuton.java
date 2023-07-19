@@ -36,6 +36,7 @@ public abstract class BaseAuton extends LinearOpMode {
             END_HEADING = 0.0,
             END_HEADING_OFFSET = -90.0,
             END_HEADING_MULTIPLIER = 1,
+            START_TURN_Y = -52,
             MED_ANGLE = 40,
             MED_X = 33,
             MED_Y = -18,
@@ -86,7 +87,7 @@ public abstract class BaseAuton extends LinearOpMode {
         double X_START = side * ZONE_2_X;
 
         Vector2d stackPos = new Vector2d(side * STACK_X, STACK_Y);
-        Vector2d sideTurnPos = new Vector2d(side * X_TURN_POS, Y_MAIN_PATH);
+        Vector2d sideTurnPos = new Vector2d(side * TURN_POS_X, Y_MAIN_PATH);
         Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * ONE_TILE, sideTurnPos.getY());
         Pose2d tallScoringPos = new Pose2d(side * TALL_X, TALL_Y, Math.toRadians(isRight ? TALL_ANGLE : 180 - TALL_ANGLE));
         Pose2d medScoringPos = new Pose2d(side * MED_X, MED_Y, Math.toRadians(isRight ? MED_ANGLE : 180 - MED_ANGLE));
@@ -109,6 +110,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
         TrajectorySequence scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> scorer.liftClaw())
+                .lineToSplineHeading(new Pose2d(X_START, START_TURN_Y, RIGHT))
                 .lineTo(parkingZone2.vec())
                 .lineToSplineHeading(scoringPos, scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
