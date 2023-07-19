@@ -32,7 +32,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
 
     private boolean correctHeading = true;
 
-    private double lastXCommand = 0.0, lastYCommand = 0.0, headingTarget;
+    private double lastXCommand = 0.0, lastYCommand = 0.0, targetHeading;
 
     private final ElapsedTime turnSettlingTimer = new ElapsedTime();
     private final ElapsedTime translationSettlingTimer = new ElapsedTime();
@@ -68,7 +68,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
             if (useManualInput || turnSettlingTimer.seconds() <= TURN_SETTLING_TIME) {
                 setTargetHeading(getHeading());
             } else if (translationSettlingTimer.seconds() > TRANSLATION_SETTLING_TIME) {
-                headingController.setError(-normalizeAngle(headingTarget - getHeading()));
+                headingController.setError(-normalizeAngle(targetHeading - getHeading()));
                 double pidOutput = headingController.calculate(new State(getHeading()));
                 turnCommand = pidOutput + (Math.signum(pidOutput) * kStatic * scalar);
             }
@@ -80,7 +80,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
     }
 
     public void setTargetHeading(double angle) {
-        headingTarget = angle;
+        targetHeading = angle;
     }
 
     @Override
@@ -101,7 +101,7 @@ public class HeadingLockingMecanum extends MecanumDrivetrain {
     public void printNumericalTelemetry(MultipleTelemetry telemetry) {
         super.printNumericalTelemetry(telemetry);
         telemetry.addLine();
-        telemetry.addData("Drivetrain target heading", headingTarget);
+        telemetry.addData("Drivetrain target heading", targetHeading);
         telemetry.addLine();
         telemetry.addData("Drivetrain heading error derivative (ticks/s)", headingController.getErrorDerivative());
     }
