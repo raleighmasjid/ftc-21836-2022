@@ -62,7 +62,6 @@ public abstract class BaseAuton extends LinearOpMode {
             TIME_LIFT_MEDIUM = 0.8,
             TIME_LIFT_TALL = 1.0,
             TIME_FLIP = 1.0,
-            TOTAL_RUN_TIME = 30.0,
             STACK_VELO = MAX_VEL,
             STACK_ACCEL = MAX_ACCEL,
             SCORING_VELO = MAX_VEL,
@@ -232,7 +231,7 @@ public abstract class BaseAuton extends LinearOpMode {
         ElapsedTime autonomousTimer = new ElapsedTime();
         boolean hasParked = false;
 
-        while (opModeIsActive() && autonomousTimer.seconds() <= TOTAL_RUN_TIME) {
+        while (opModeIsActive()) {
 
             for (LynxModule hub : hubs) hub.clearBulkCache();
 
