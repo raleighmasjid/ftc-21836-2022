@@ -39,6 +39,7 @@ public class MainTeleOp extends LinearOpMode {
 
         scorer = new ScoringSystem(hardwareMap);
         drivetrain = new HeadingLockingMecanum(hardwareMap, 537.7, 312);
+        drivetrain.readIMU();
         drivetrain.setCurrentHeading(HeadingHolder.getHeading());
 
         hubs = hardwareMap.getAll(LynxModule.class);

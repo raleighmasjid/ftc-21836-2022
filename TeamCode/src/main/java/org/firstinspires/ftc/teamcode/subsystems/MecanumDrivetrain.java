@@ -64,7 +64,6 @@ public class MecanumDrivetrain {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP
         )));
 
-        readIMU();
         resetPosition();
     }
 
