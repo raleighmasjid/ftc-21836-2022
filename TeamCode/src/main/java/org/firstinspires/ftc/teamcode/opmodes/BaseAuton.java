@@ -47,8 +47,8 @@ public abstract class BaseAuton extends LinearOpMode {
             STACK_X = 59,
             STACK_Y = -12,
             ONE_TILE = 23.3,
-            ZONE_INNER_X = 12.5,
-            ZONE_CENTER_X = 35.0,
+            PARKING_INNER_X = 12.5,
+            CENTER_X = 35.0,
             TURN_POS_X = 46.0,
             TURN_ANGLE_OFFSET_MED = 10,
             TURN_ANGLE_OFFSET_TALL = -2.0,
@@ -85,10 +85,7 @@ public abstract class BaseAuton extends LinearOpMode {
         scorer = new ScoringSystem(hardwareMap);
 
         double side = isRight ? 1 : -1;
-
-        double X_START = side * ZONE_CENTER_X;
-        double STACK_SHIFT = side * BaseAuton.STACK_SHIFT;
-        double SCORING_SHIFT = side * BaseAuton.SCORING_SHIFT;
+        double CENTER_X = side * BaseAuton.CENTER_X;
 
         Vector2d stackPos = new Vector2d(side * STACK_X, STACK_Y);
         Vector2d sideTurnPos = new Vector2d(side * TURN_POS_X, Y_MAIN_PATH);
@@ -97,10 +94,8 @@ public abstract class BaseAuton extends LinearOpMode {
         Pose2d medScoringPos = new Pose2d(side * MED_X, MED_Y, Math.toRadians(isRight ? MED_ANGLE : 180 - MED_ANGLE));
         Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * ONE_TILE, medScoringPos.getY(), medScoringPos.getHeading());
 
-        Pose2d innerParkingZone = new Pose2d(side * ZONE_INNER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
-        Pose2d centerParkingZone = new Pose2d(X_START, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
-
-        Pose2d startPose = new Pose2d(X_START, Y_START, FORWARD);
+        Pose2d centerParkingZone = new Pose2d(CENTER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
+        Pose2d startPose = new Pose2d(CENTER_X, Y_START, FORWARD);
 
         Lift.Position pole = tallPole ? Lift.Position.TALL : Lift.Position.MED;
         double TIME_LIFT = tallPole ? TIME_LIFT_TALL : TIME_LIFT_MEDIUM;
@@ -112,7 +107,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
         TrajectorySequence scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> scorer.liftClaw())
-                .lineToSplineHeading(new Pose2d(X_START, START_TURN_Y, isRight ? RIGHT : LEFT))
+                .lineToSplineHeading(new Pose2d(CENTER_X, START_TURN_Y, isRight ? RIGHT : LEFT))
                 .lineTo(centerParkingZone.vec())
                 .lineToSplineHeading(new Pose2d(scoringPos.getX(), scoringPos.getY() + FIRST_Y_OFFSET, scoringPos.getHeading()), scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
@@ -144,14 +139,14 @@ public abstract class BaseAuton extends LinearOpMode {
                 .addTemporalMarker(() -> scorer.dropCone())
                 .waitSeconds(TIME_DROP)
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
-                .lineToSplineHeading(new Pose2d(side * ZONE_INNER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT))
+                .lineToSplineHeading(new Pose2d(side * PARKING_INNER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT))
                 .build();
 
         TrajectorySequence parkOuter = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                 .addCycle(Lift.Position.FLOOR, 2, 5)
                 .build();
 
-        TrajectorySequence parkInMiddle = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
+        TrajectorySequence parkCenter = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                 .score(Lift.Position.FLOOR, 5)
                 .lineToSplineHeading(centerParkingZone)
                 .build();
@@ -194,10 +189,10 @@ public abstract class BaseAuton extends LinearOpMode {
 
             if (!drivetrain.isBusy() && !hasParked && autonomousTimer.seconds() >= 3) {
                 drivetrain.followTrajectorySequenceAsync(
-                        camera.detectedTag == null ? parkInMiddle :
+                        camera.detectedTag == null ? parkCenter :
                                 camera.detectedTag.id == 1 ? isRight ? parkInner : parkOuter :
                                         camera.detectedTag.id == 3 ? isRight ? parkOuter : parkInner :
-                                                parkInMiddle
+                                                parkCenter
                 );
 
                 hasParked = true;
