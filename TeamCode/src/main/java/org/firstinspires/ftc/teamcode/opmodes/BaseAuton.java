@@ -122,6 +122,9 @@ public abstract class BaseAuton extends LinearOpMode {
                 // loop below
                 .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, TURN_ANGLE_OFFSET)
                 .addCycle(Lift.Position.FOUR)
+                .addCycle(Lift.Position.THREE)
+                .addCycle(Lift.Position.TWO)
+                .addCycle(Lift.Position.FLOOR)
                 // common parking:
                 .waitSeconds(TIME_PRE_GRAB)
                 .addTemporalMarker(() -> scorer.grabCone())
