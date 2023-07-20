@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_VEL;
 import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.TRACK_WIDTH;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -63,10 +63,12 @@ public abstract class BaseAuton extends LinearOpMode {
             TIME_LIFT_MEDIUM = 1,
             TIME_LIFT_TALL = 1.2,
             TIME_FLIP = 3,
-            STACK_VELO = 10,
-            STACK_ACCEL = MAX_ACCEL,
-            SCORING_VELO = 10,
-            SCORING_ACCEL = MAX_ACCEL;
+            STACK_SHIFT = 0.5,
+            STACK_VELO = MAX_VEL,
+            STACK_ACCEL = 10,
+            SCORING_SHIFT = 0,
+            SCORING_VELO = MAX_VEL,
+            SCORING_ACCEL = 10;
 
     public static final double
             RIGHT = Math.toRadians(0),
@@ -85,6 +87,8 @@ public abstract class BaseAuton extends LinearOpMode {
         double side = isRight ? 1 : -1;
 
         double X_START = side * ZONE_CENTER_X;
+        double STACK_SHIFT = side * BaseAuton.STACK_SHIFT;
+        double SCORING_SHIFT = side * BaseAuton.SCORING_SHIFT;
 
         Vector2d stackPos = new Vector2d(side * STACK_X, STACK_Y);
         Vector2d sideTurnPos = new Vector2d(side * TURN_POS_X, Y_MAIN_PATH);
@@ -121,10 +125,10 @@ public abstract class BaseAuton extends LinearOpMode {
                 .splineTo(stackPos, isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
                 // loop below
                 .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, TURN_ANGLE_OFFSET)
-                .addCycle(Lift.Position.FOUR)
-                .addCycle(Lift.Position.THREE)
-                .addCycle(Lift.Position.TWO)
-                .addCycle(Lift.Position.FLOOR)
+                .addCycle(Lift.Position.FOUR, 1, 1)
+                .addCycle(Lift.Position.THREE, 2, 2)
+                .addCycle(Lift.Position.TWO,3, 3)
+                .addCycle(Lift.Position.FLOOR,4, 4)
                 // common parking:
                 .waitSeconds(TIME_PRE_GRAB)
                 .addTemporalMarker(() -> scorer.grabCone())
@@ -147,7 +151,7 @@ public abstract class BaseAuton extends LinearOpMode {
         TrajectorySequence parkOuter = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                 .setReversed(true)
                 .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
+                .splineToSplineHeading(new Pose2d(scoringPos.getX() - (5 * SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
                 .waitSeconds(TIME_PRE_DROP)
@@ -162,7 +166,7 @@ public abstract class BaseAuton extends LinearOpMode {
         TrajectorySequence parkInMiddle = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                 .setReversed(true)
                 .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                .splineToSplineHeading(medScoringPos, medScoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
+                .splineToSplineHeading(new Pose2d(scoringPos.getX() - (5 * SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
                 .waitSeconds(TIME_PRE_DROP)
