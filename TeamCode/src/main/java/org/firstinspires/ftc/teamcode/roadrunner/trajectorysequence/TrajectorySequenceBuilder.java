@@ -730,7 +730,6 @@ public class TrajectorySequenceBuilder {
     }
 
     public TrajectorySequenceBuilder addCycle(Lift.Position endLiftPosition, double stackShifts, double scoringShifts) {
-        double side = isRight ? 1 : -1;
         return this
                 .waitSeconds(TIME_PRE_GRAB)
                 .addTemporalMarker(() -> scorer.grabCone())
@@ -764,6 +763,7 @@ public class TrajectorySequenceBuilder {
         this.sideTurnPos = sideTurnPos;
         this.stackPos = stackPos;
         this.isRight = isRight;
+        this.side = isRight ? 1 : -1;
         this.pole = pole;
         this.TIME_LIFT = TIME_LIFT;
         this.scoringPos = scoringPos;
@@ -776,6 +776,7 @@ public class TrajectorySequenceBuilder {
     private Vector2d sideTurnPos;
     private Vector2d stackPos;
     private boolean isRight;
+    private double side;
     private Lift.Position pole;
     private double TIME_LIFT;
     private Pose2d scoringPos;
