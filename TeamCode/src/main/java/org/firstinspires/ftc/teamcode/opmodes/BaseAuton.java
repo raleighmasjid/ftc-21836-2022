@@ -190,8 +190,8 @@ public abstract class BaseAuton extends LinearOpMode {
             if (!drivetrain.isBusy() && !hasParked && autonomousTimer.seconds() >= 3) {
                 drivetrain.followTrajectorySequenceAsync(
                         camera.detectedTag == null ? parkCenter :
-                                camera.detectedTag.id == 1 ? isRight ? parkInner : parkOuter :
-                                        camera.detectedTag.id == 3 ? isRight ? parkOuter : parkInner :
+                                camera.detectedTag.id == 1 ? (isRight ? parkInner : parkOuter) :
+                                        camera.detectedTag.id == 3 ? (isRight ? parkOuter : parkInner) :
                                                 parkCenter
                 );
 
