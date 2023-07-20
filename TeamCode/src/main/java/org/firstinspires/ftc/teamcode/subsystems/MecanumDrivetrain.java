@@ -59,12 +59,12 @@ public class MecanumDrivetrain {
         mecanumDrivetrain = new MecanumDrive(false, motors[0], motors[1], motors[2], motors[3]);
 
         imu = hw.get(IMU.class, "imu");
+        imu.resetDeviceConfigurationForOpMode();
+        imu.resetYaw();
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP
         )));
-        imu.resetDeviceConfigurationForOpMode();
-        imu.resetYaw();
 
         resetPosition();
     }
