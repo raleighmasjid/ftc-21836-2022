@@ -63,6 +63,7 @@ public class MecanumDrivetrain {
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP
         )));
+        imu.resetDeviceConfigurationForOpMode();
         imu.resetYaw();
 
         resetPosition();
