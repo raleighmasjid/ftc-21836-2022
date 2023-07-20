@@ -151,18 +151,7 @@ public abstract class BaseAuton extends LinearOpMode {
                 .build();
 
         TrajectorySequence parkOuter = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
-                .setReversed(true)
-                .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                .splineToSplineHeading(new Pose2d(scoringPos.getX() + (5 * SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
-                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
-                .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
-                .waitSeconds(TIME_PRE_DROP)
-                .addTemporalMarker(() -> scorer.dropCone())
-                .waitSeconds(TIME_DROP)
-                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
-                .setReversed(false)
-                .splineTo(sideTurnPos, (isRight ? RIGHT : LEFT))
-                .splineTo(outerParkingZone.vec(), outerParkingZone.getHeading())
+                .addCycle(Lift.Position.FLOOR, 2, 5)
                 .build();
 
         TrajectorySequence parkInMiddle = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
