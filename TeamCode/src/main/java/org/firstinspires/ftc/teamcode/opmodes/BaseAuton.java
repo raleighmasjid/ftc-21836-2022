@@ -129,13 +129,12 @@ public abstract class BaseAuton extends LinearOpMode {
                 .addCycle(Lift.Position.THREE, 2, 2)
                 .addCycle(Lift.Position.TWO, 3, 3)
                 .addCycle(Lift.Position.FLOOR, 4, 4)
-                // common parking:
-                .waitSeconds(TIME_PRE_GRAB)
-                .addTemporalMarker(() -> scorer.grabCone())
-                .waitSeconds(TIME_GRAB)
                 .build();
 
         TrajectorySequence parkInner = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
+                .waitSeconds(TIME_PRE_GRAB)
+                .addTemporalMarker(() -> scorer.grabCone())
+                .waitSeconds(TIME_GRAB)
                 .setReversed(true)
                 .splineTo(centerTurnPos, isRight ? LEFT : RIGHT)
                 .splineToSplineHeading(centerTallScoringPos, medScoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
