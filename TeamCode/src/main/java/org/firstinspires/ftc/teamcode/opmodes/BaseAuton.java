@@ -205,7 +205,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
             for (LynxModule hub : hubs) hub.clearBulkCache();
 
-            if (!hasParked && !drivetrain.isBusy() && (autonomousTimer.seconds() >= 3)) {
+            if (!drivetrain.isBusy() && !hasParked && autonomousTimer.seconds() >= 3) {
                 drivetrain.followTrajectorySequenceAsync(
                         camera.detectedTag == null ? parkInMiddle :
                                 camera.detectedTag.id == 1 ? isRight ? parkInner : parkOuter :
