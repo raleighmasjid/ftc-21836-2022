@@ -8,8 +8,8 @@ import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.STACK_ACCEL;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.STACK_VELO;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_DROP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_DROP_TO_FLIP;
-import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_GRAB;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_FLIP;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_GRAB;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_PRE_DROP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_PRE_GRAB;
 import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ANG_VEL;
@@ -736,7 +736,7 @@ public class TrajectorySequenceBuilder {
                 .waitSeconds(TIME_GRAB)
                 .setReversed(true)
                 .splineTo(sideTurnPos, SIDE_TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                .splineToSplineHeading(new Pose2d(scoringPos.getX() - (scoringShifts * side * BaseAuton.SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
+                .splineToSplineHeading(new Pose2d(scoringPos.getX() + (scoringShifts * side * BaseAuton.SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
                 .waitSeconds(TIME_PRE_DROP)

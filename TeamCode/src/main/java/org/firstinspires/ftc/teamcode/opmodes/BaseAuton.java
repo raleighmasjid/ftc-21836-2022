@@ -67,7 +67,7 @@ public abstract class BaseAuton extends LinearOpMode {
             STACK_SHIFT = 0.45,
             STACK_VELO = MAX_VEL,
             STACK_ACCEL = 40,
-            SCORING_SHIFT = -0.1,
+            SCORING_SHIFT = 0.1,
             SCORING_VELO = MAX_VEL,
             SCORING_ACCEL = 20;
 
@@ -129,8 +129,8 @@ public abstract class BaseAuton extends LinearOpMode {
                 .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, TURN_ANGLE_OFFSET)
                 .addCycle(Lift.Position.FOUR, 1, 1)
                 .addCycle(Lift.Position.THREE, 2, 2)
-                .addCycle(Lift.Position.TWO,3, 3)
-                .addCycle(Lift.Position.FLOOR,4, 4)
+                .addCycle(Lift.Position.TWO, 3, 3)
+                .addCycle(Lift.Position.FLOOR, 4, 4)
                 // common parking:
                 .waitSeconds(TIME_PRE_GRAB)
                 .addTemporalMarker(() -> scorer.grabCone())
@@ -153,7 +153,7 @@ public abstract class BaseAuton extends LinearOpMode {
         TrajectorySequence parkOuter = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                 .setReversed(true)
                 .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                .splineToSplineHeading(new Pose2d(scoringPos.getX() - (5 * SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
+                .splineToSplineHeading(new Pose2d(scoringPos.getX() + (5 * SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
                 .waitSeconds(TIME_PRE_DROP)
@@ -168,7 +168,7 @@ public abstract class BaseAuton extends LinearOpMode {
         TrajectorySequence parkInMiddle = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                 .setReversed(true)
                 .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                .splineToSplineHeading(new Pose2d(scoringPos.getX() - (5 * SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
+                .splineToSplineHeading(new Pose2d(scoringPos.getX() + (5 * SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
                 .waitSeconds(TIME_PRE_DROP)
