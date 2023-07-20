@@ -730,16 +730,13 @@ public class TrajectorySequenceBuilder {
 
     public TrajectorySequenceBuilder addCycle(Lift.Position endLiftPosition, double stackShifts, double scoringShifts) {
         double side = isRight ? 1 : -1;
-        double STACK_SHIFT = side * BaseAuton.STACK_SHIFT;
-        double SCORING_SHIFT = side * BaseAuton.SCORING_SHIFT;
-
         return this
                 .waitSeconds(TIME_PRE_GRAB)
                 .addTemporalMarker(() -> scorer.grabCone())
                 .waitSeconds(TIME_GRAB)
                 .setReversed(true)
                 .splineTo(sideTurnPos, SIDE_TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                .splineToSplineHeading(new Pose2d(scoringPos.getX() - (scoringShifts * SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
+                .splineToSplineHeading(new Pose2d(scoringPos.getX() - (scoringShifts * side * BaseAuton.SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
                 .waitSeconds(TIME_PRE_DROP)
@@ -748,7 +745,7 @@ public class TrajectorySequenceBuilder {
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                 .setReversed(false)
                 .splineTo(sideTurnPos, SIDE_TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
-                .splineTo(new Vector2d(stackPos.getX() + (stackShifts * STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
+                .splineTo(new Vector2d(stackPos.getX() + (stackShifts * side * BaseAuton.STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
                 ;
     }
 
