@@ -49,7 +49,6 @@ public abstract class BaseAuton extends LinearOpMode {
             ONE_TILE = 23.3,
             ZONE_INNER_X = 12.5,
             ZONE_CENTER_X = 35.0,
-            ZONE_OUTER_X = 57.0,
             TURN_POS_X = 46.0,
             TURN_ANGLE_OFFSET_MED = 10,
             TURN_ANGLE_OFFSET_TALL = -2.0,
@@ -100,7 +99,6 @@ public abstract class BaseAuton extends LinearOpMode {
 
         Pose2d innerParkingZone = new Pose2d(side * ZONE_INNER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
         Pose2d centerParkingZone = new Pose2d(X_START, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
-        Pose2d outerParkingZone = new Pose2d(side * ZONE_OUTER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
 
         Pose2d startPose = new Pose2d(X_START, Y_START, FORWARD);
 
@@ -147,7 +145,7 @@ public abstract class BaseAuton extends LinearOpMode {
                 .addTemporalMarker(() -> scorer.dropCone())
                 .waitSeconds(TIME_DROP)
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
-                .lineToSplineHeading(innerParkingZone)
+                .lineToSplineHeading(new Pose2d(side * ZONE_INNER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT))
                 .build();
 
         TrajectorySequence parkOuter = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
