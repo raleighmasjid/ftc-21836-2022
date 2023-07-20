@@ -731,6 +731,13 @@ public class TrajectorySequenceBuilder {
 
     public TrajectorySequenceBuilder addCycle(Lift.Position endLiftPosition, double stackShifts, double scoringShifts) {
         return this
+                .score(endLiftPosition, scoringShifts)
+                .goToStack(stackShifts)
+                ;
+    }
+
+    public TrajectorySequenceBuilder score(Lift.Position endLiftPosition, double scoringShifts) {
+        return this
                 .waitSeconds(TIME_PRE_GRAB)
                 .addTemporalMarker(() -> scorer.grabCone())
                 .waitSeconds(TIME_GRAB)
@@ -743,6 +750,11 @@ public class TrajectorySequenceBuilder {
                 .addTemporalMarker(() -> scorer.dropCone(endLiftPosition))
                 .waitSeconds(TIME_DROP)
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
+                ;
+    }
+
+    public TrajectorySequenceBuilder goToStack(double stackShifts) {
+        return this
                 .setReversed(false)
                 .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
                 .splineTo(new Vector2d(stackPos.getX() + (stackShifts * side * STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
