@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Disabled
-@Autonomous(group = "21836 Autonomous")
+@Autonomous(group = "21836 Autonomous", preselectTeleOp = "MainTeleOp")
 public class TallRight extends BaseAuton {
 
     @Override

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(group = "21836 Autonomous")
+@Autonomous(group = "21836 Autonomous", preselectTeleOp = "MainTeleOp")
 public class MediumRight extends BaseAuton {
 
     @Override
