@@ -735,7 +735,7 @@ public class TrajectorySequenceBuilder {
                 .addTemporalMarker(() -> scorer.grabCone())
                 .waitSeconds(TIME_GRAB)
                 .setReversed(true)
-                .splineTo(sideTurnPos, SIDE_TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
+                .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
                 .splineToSplineHeading(new Pose2d(scoringPos.getX() + (scoringShifts * side * BaseAuton.SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
@@ -744,7 +744,7 @@ public class TrajectorySequenceBuilder {
                 .waitSeconds(TIME_DROP)
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                 .setReversed(false)
-                .splineTo(sideTurnPos, SIDE_TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
+                .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
                 .splineTo(new Vector2d(stackPos.getX() + (stackShifts * side * BaseAuton.STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
                 ;
     }
@@ -757,7 +757,7 @@ public class TrajectorySequenceBuilder {
             Lift.Position pole,
             double TIME_LIFT,
             Pose2d scoringPos,
-            double SIDE_TURN_ANGLE_OFFSET
+            double TURN_ANGLE_OFFSET
     ) {
         this.scorer = scorer;
         this.sideTurnPos = sideTurnPos;
@@ -766,7 +766,7 @@ public class TrajectorySequenceBuilder {
         this.pole = pole;
         this.TIME_LIFT = TIME_LIFT;
         this.scoringPos = scoringPos;
-        this.SIDE_TURN_ANGLE_OFFSET = SIDE_TURN_ANGLE_OFFSET;
+        this.TURN_ANGLE_OFFSET = TURN_ANGLE_OFFSET;
 
         return this;
     }
@@ -778,7 +778,7 @@ public class TrajectorySequenceBuilder {
     private Lift.Position pole;
     private double TIME_LIFT;
     private Pose2d scoringPos;
-    private double SIDE_TURN_ANGLE_OFFSET;
+    private double TURN_ANGLE_OFFSET;
     private final TrajectoryVelocityConstraint stackVeloCap = SampleMecanumDrive.getVelocityConstraint(STACK_VELO, MAX_ANG_VEL, TRACK_WIDTH);
     private final TrajectoryAccelerationConstraint stackAccelCap = SampleMecanumDrive.getAccelerationConstraint(STACK_ACCEL);
     private final TrajectoryVelocityConstraint scoringVeloCap = SampleMecanumDrive.getVelocityConstraint(SCORING_VELO, MAX_ANG_VEL, TRACK_WIDTH);
