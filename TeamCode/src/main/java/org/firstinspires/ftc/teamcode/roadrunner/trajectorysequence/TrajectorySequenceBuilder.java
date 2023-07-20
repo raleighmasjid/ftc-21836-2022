@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.LEFT;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.RIGHT;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.SCORING_ACCEL;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.SCORING_SHIFT;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.SCORING_VELO;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.STACK_ACCEL;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.STACK_SHIFT;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.STACK_VELO;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_DROP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_DROP_TO_FLIP;
@@ -34,7 +36,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.acmerobotics.roadrunner.util.Angle;
 
-import org.firstinspires.ftc.teamcode.opmodes.BaseAuton;
 import org.firstinspires.ftc.teamcode.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegment.SequenceSegment;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.sequencesegment.TrajectorySegment;
@@ -736,7 +737,7 @@ public class TrajectorySequenceBuilder {
                 .waitSeconds(TIME_GRAB)
                 .setReversed(true)
                 .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                .splineToSplineHeading(new Pose2d(scoringPos.getX() + (scoringShifts * side * BaseAuton.SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
+                .splineToSplineHeading(new Pose2d(scoringPos.getX() + (scoringShifts * side * SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
                 .waitSeconds(TIME_PRE_DROP)
@@ -745,7 +746,7 @@ public class TrajectorySequenceBuilder {
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                 .setReversed(false)
                 .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
-                .splineTo(new Vector2d(stackPos.getX() + (stackShifts * side * BaseAuton.STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
+                .splineTo(new Vector2d(stackPos.getX() + (stackShifts * side * STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
                 ;
     }
 
