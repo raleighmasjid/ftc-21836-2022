@@ -37,10 +37,10 @@ public abstract class BaseAuton extends LinearOpMode {
             END_HEADING_OFFSET = -90.0,
             END_HEADING_MULTIPLIER = 1,
             START_TURN_Y = -52,
-            MED_ANGLE = 29,
+            MED_ANGLE = 29.25,
             MED_X = 32,
             MED_Y = -18.5,
-            MED_FIRST_OFFSET = 2.5,
+            MED_Y_FIRST_OFFSET = 2.5,
             TALL_ANGLE = -35.0,
             TALL_X = 31.0,
             TALL_Y = -7.5,
@@ -108,7 +108,7 @@ public abstract class BaseAuton extends LinearOpMode {
         double TIME_LIFT = tallPole ? TIME_LIFT_TALL : TIME_LIFT_MEDIUM;
         Pose2d scoringPos = tallPole ? tallScoringPos : medScoringPos;
         double TURN_ANGLE_OFFSET = side * Math.toRadians(tallPole ? TURN_ANGLE_OFFSET_TALL : TURN_ANGLE_OFFSET_MED);
-        double FIRST_OFFSET = side * (tallPole ? 0 : MED_FIRST_OFFSET);
+        double FIRST_Y_OFFSET = tallPole ? 0 : MED_Y_FIRST_OFFSET;
 
         drivetrain.setPoseEstimate(startPose);
 
@@ -116,7 +116,7 @@ public abstract class BaseAuton extends LinearOpMode {
                 .addTemporalMarker(() -> scorer.liftClaw())
                 .lineToSplineHeading(new Pose2d(X_START, START_TURN_Y, isRight ? RIGHT : LEFT))
                 .lineTo(centerParkingZone.vec())
-                .lineToSplineHeading(new Pose2d(scoringPos.getX(), scoringPos.getY() + FIRST_OFFSET, scoringPos.getHeading()), scoringVeloCap, scoringAccelCap)
+                .lineToSplineHeading(new Pose2d(scoringPos.getX(), scoringPos.getY() + FIRST_Y_OFFSET, scoringPos.getHeading()), scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .waitSeconds(TIME_PRE_DROP)
