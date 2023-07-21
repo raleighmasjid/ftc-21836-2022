@@ -52,8 +52,6 @@ public abstract class BaseAuton extends LinearOpMode {
             TURN_POS_X = 46.0,
             TURN_ANGLE_OFFSET_MED = 10,
             TURN_ANGLE_OFFSET_TALL = -2.0,
-            FIRST_TURN_ANGLE_OFFSET_MED = 10,
-            FIRST_TURN_ANGLE_OFFSET_TALL = -2.0,
             Y_START = -62.5,
             Y_MAIN_PATH = -13,
             TIME_PRE_GRAB = 0,
@@ -103,7 +101,6 @@ public abstract class BaseAuton extends LinearOpMode {
         double TIME_LIFT = tallPole ? TIME_LIFT_TALL : TIME_LIFT_MEDIUM;
         Pose2d scoringPos = tallPole ? tallScoringPos : medScoringPos;
         double TURN_ANGLE_OFFSET = side * Math.toRadians(tallPole ? TURN_ANGLE_OFFSET_TALL : TURN_ANGLE_OFFSET_MED);
-        double FIRST_TURN_ANGLE_OFFSET = side * Math.toRadians(tallPole ? FIRST_TURN_ANGLE_OFFSET_TALL : FIRST_TURN_ANGLE_OFFSET_MED);
         double FIRST_Y_OFFSET = tallPole ? 0 : MED_Y_FIRST_OFFSET;
 
         drivetrain.setPoseEstimate(startPose);
@@ -119,8 +116,7 @@ public abstract class BaseAuton extends LinearOpMode {
                 .addTemporalMarker(() -> scorer.dropCone(Lift.Position.FIVE))
                 .waitSeconds(TIME_DROP)
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
-                .splineTo(sideTurnPos, FIRST_TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
-                .splineTo(stackPos, isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
+                .goToStack(0)
                 // loop below
                 .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, TURN_ANGLE_OFFSET)
                 .addCycle(Lift.Position.FOUR, 1, 1)
