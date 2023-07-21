@@ -30,9 +30,8 @@ public class MeepMeep {
             STACK_X = 59,
             STACK_Y = -12,
             ONE_TILE = 23.3,
-            ZONE_INNER_X = 12.5,
-            ZONE_CENTER_X = 35.0,
-            ZONE_OUTER_X = 57.0,
+            PARKING_INNER_X = 12.5,
+            CENTER_X = 35.0,
             TURN_POS_X = 46.0,
             TURN_ANGLE_OFFSET_MED = 10,
             TURN_ANGLE_OFFSET_TALL = -2.0,
@@ -71,10 +70,7 @@ public class MeepMeep {
         boolean tallPole = false;
 
         double side = isRight ? 1 : -1;
-
-        double X_START = side * ZONE_CENTER_X;
-        double STACK_SHIFT = side * MeepMeep.STACK_SHIFT;
-        double SCORING_SHIFT = side * MeepMeep.SCORING_SHIFT;
+        double CENTER_X = side * MeepMeep.CENTER_X;
 
         Vector2d stackPos = new Vector2d(side * STACK_X, STACK_Y);
         Vector2d sideTurnPos = new Vector2d(side * TURN_POS_X, Y_MAIN_PATH);
@@ -83,11 +79,8 @@ public class MeepMeep {
         Pose2d medScoringPos = new Pose2d(side * MED_X, MED_Y, Math.toRadians(isRight ? MED_ANGLE : 180 - MED_ANGLE));
         Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * ONE_TILE, medScoringPos.getY(), medScoringPos.getHeading());
 
-        Pose2d innerParkingZone = new Pose2d(side * ZONE_INNER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
-        Pose2d centerParkingZone = new Pose2d(X_START, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
-        Pose2d outerParkingZone = new Pose2d(side * ZONE_OUTER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
-
-        Pose2d startPose = new Pose2d(X_START, Y_START, FORWARD);
+        Pose2d centerParkingZone = new Pose2d(CENTER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
+        Pose2d startPose = new Pose2d(CENTER_X, Y_START, FORWARD);
 
 //        Lift.Position pole = tallPole ? Lift.Position.TALL : Lift.Position.MED;
         double TIME_LIFT = tallPole ? TIME_LIFT_TALL : TIME_LIFT_MEDIUM;
@@ -95,101 +88,43 @@ public class MeepMeep {
         double TURN_ANGLE_OFFSET = side * Math.toRadians(tallPole ? TURN_ANGLE_OFFSET_TALL : TURN_ANGLE_OFFSET_MED);
         double FIRST_Y_OFFSET = tallPole ? 0 : MED_Y_FIRST_OFFSET;
 
+        double scoringShifts = 0;
+        double stackShifts = 0;
+
         RoadRunnerBotEntity bot1 = new DefaultBotBuilder(meepMeep)
                 .setDimensions(17, 16)
                 .setStartPose(startPose)
                 .setConstraints(50, 50, Math.toRadians(158.4000248984491), Math.toRadians(190), 16.47)
                 .followTrajectorySequence(drivetrain ->
                                 drivetrain.trajectorySequenceBuilder(startPose)
-//                                .addTemporalMarker(() -> scorer.liftClaw())
-                                        .lineToSplineHeading(new Pose2d(X_START, START_TURN_Y, isRight ? RIGHT : LEFT))
+//                                        .addTemporalMarker(() -> scorer.liftClaw())
+                                        .lineToSplineHeading(new Pose2d(CENTER_X, START_TURN_Y, isRight ? RIGHT : LEFT))
                                         .lineTo(centerParkingZone.vec())
                                         .lineToSplineHeading(new Pose2d(scoringPos.getX(), scoringPos.getY() + FIRST_Y_OFFSET, scoringPos.getHeading()), scoringVeloCap, scoringAccelCap)
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
+//                                        .UNSTABLE_addTemporalMarkerOffset(-TIME_FIRST_FLIP, () -> scorer.passthrough.trigger())
+//                                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                                         .waitSeconds(TIME_PRE_DROP)
-//                                .addTemporalMarker(() -> scorer.dropCone(Lift.Position.FIVE))
+//                                        .addTemporalMarker(() -> scorer.dropCone(Lift.Position.FIVE))
                                         .waitSeconds(TIME_DROP)
-//                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
+//                                        .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                                         .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
                                         .splineTo(stackPos, isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
                                         // loop below
                                         .waitSeconds(TIME_PRE_GRAB)
-//                                .addTemporalMarker(() -> scorer.grabCone())
+//                                        .addTemporalMarker(() -> scorer.grabCone())
                                         .waitSeconds(TIME_GRAB)
                                         .setReversed(true)
                                         .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                                        .splineToSplineHeading(new Pose2d(scoringPos.getX() + (1 * side * MeepMeep.SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
+                                        .splineToSplineHeading(new Pose2d(scoringPos.getX() + (scoringShifts * side * SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
+//                                        .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
+//                                        .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
                                         .waitSeconds(TIME_PRE_DROP)
-//                                .addTemporalMarker(() -> scorer.dropCone(endLiftPosition))
+//                                        .addTemporalMarker(() -> scorer.dropCone(endLiftPosition))
                                         .waitSeconds(TIME_DROP)
-//                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
+//                                        .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                                         .setReversed(false)
                                         .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
-                                        .splineTo(new Vector2d(stackPos.getX() + (1 * side * MeepMeep.STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
-                                        .waitSeconds(TIME_PRE_GRAB)
-//                                .addTemporalMarker(() -> scorer.grabCone())
-                                        .waitSeconds(TIME_GRAB)
-                                        .setReversed(true)
-                                        .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                                        .splineToSplineHeading(new Pose2d(scoringPos.getX() + (2 * side * MeepMeep.SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
-                                        .waitSeconds(TIME_PRE_DROP)
-//                                .addTemporalMarker(() -> scorer.dropCone(endLiftPosition))
-                                        .waitSeconds(TIME_DROP)
-//                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
-                                        .setReversed(false)
-                                        .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
-                                        .splineTo(new Vector2d(stackPos.getX() + (2 * side * MeepMeep.STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
-                                        .waitSeconds(TIME_PRE_GRAB)
-//                                .addTemporalMarker(() -> scorer.grabCone())
-                                        .waitSeconds(TIME_GRAB)
-                                        .setReversed(true)
-                                        .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                                        .splineToSplineHeading(new Pose2d(scoringPos.getX() + (3 * side * MeepMeep.SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
-                                        .waitSeconds(TIME_PRE_DROP)
-//                                .addTemporalMarker(() -> scorer.dropCone(endLiftPosition))
-                                        .waitSeconds(TIME_DROP)
-//                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
-                                        .setReversed(false)
-                                        .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
-                                        .splineTo(new Vector2d(stackPos.getX() + (3 * side * MeepMeep.STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
-                                        .waitSeconds(TIME_PRE_GRAB)
-//                                .addTemporalMarker(() -> scorer.grabCone())
-                                        .waitSeconds(TIME_GRAB)
-                                        .setReversed(true)
-                                        .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                                        .splineToSplineHeading(new Pose2d(scoringPos.getX() + (4 * side * MeepMeep.SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
-                                        .waitSeconds(TIME_PRE_DROP)
-//                                .addTemporalMarker(() -> scorer.dropCone(endLiftPosition))
-                                        .waitSeconds(TIME_DROP)
-//                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
-                                        .setReversed(false)
-                                        .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
-                                        .splineTo(new Vector2d(stackPos.getX() + (4 * side * MeepMeep.STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
-                                        // common parking:
-                                        .waitSeconds(TIME_PRE_GRAB)
-//                                .addTemporalMarker(() -> scorer.grabCone())
-                                        .waitSeconds(TIME_GRAB)
-                                        .setReversed(true)
-                                        .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                                        .splineToSplineHeading(new Pose2d(scoringPos.getX() + (5 * side * MeepMeep.SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
-//                                .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
-                                        .waitSeconds(TIME_PRE_DROP)
-//                                .addTemporalMarker(() -> scorer.dropCone(endLiftPosition))
-                                        .waitSeconds(TIME_DROP)
-//                                .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
-                                        .setReversed(false)
-                                        .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
-                                        .splineTo(new Vector2d(stackPos.getX() + (2 * side * MeepMeep.STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
+                                        .splineTo(new Vector2d(stackPos.getX() + (stackShifts * side * STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
                                         .build()
                 );
 
