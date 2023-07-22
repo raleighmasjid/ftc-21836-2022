@@ -106,6 +106,7 @@ public abstract class BaseAuton extends LinearOpMode {
         drivetrain.setPoseEstimate(startPose);
 
         TrajectorySequence scoringTrajectory = drivetrain.trajectorySequenceBuilder(startPose)
+                .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, TURN_ANGLE_OFFSET)
                 .addTemporalMarker(() -> scorer.liftClaw())
                 .lineToSplineHeading(new Pose2d(CENTER_X, START_TURN_Y, isRight ? RIGHT : LEFT))
                 .lineTo(centerParkingZone.vec())
@@ -118,7 +119,6 @@ public abstract class BaseAuton extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                 .goToStack(0)
                 // loop below
-                .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, TURN_ANGLE_OFFSET)
                 .addCycle(Lift.Position.FOUR, 1, 1)
                 .addCycle(Lift.Position.THREE, 2, 2)
                 .addCycle(Lift.Position.TWO, 3, 3)
@@ -126,6 +126,7 @@ public abstract class BaseAuton extends LinearOpMode {
                 .build();
 
         TrajectorySequence parkInner = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
+                .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, TURN_ANGLE_OFFSET)
                 .waitSeconds(TIME_PRE_GRAB)
                 .addTemporalMarker(() -> scorer.grabCone())
                 .waitSeconds(TIME_GRAB)
@@ -142,10 +143,12 @@ public abstract class BaseAuton extends LinearOpMode {
                 .build();
 
         TrajectorySequence parkOuter = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
+                .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, TURN_ANGLE_OFFSET)
                 .addCycle(Lift.Position.FLOOR, 2, 5)
                 .build();
 
         TrajectorySequence parkCenter = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
+                .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, TURN_ANGLE_OFFSET)
                 .score(Lift.Position.FLOOR, 5)
                 .lineToSplineHeading(centerParkingZone)
                 .build();
