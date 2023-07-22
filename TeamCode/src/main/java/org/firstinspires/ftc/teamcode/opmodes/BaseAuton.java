@@ -53,7 +53,7 @@ public abstract class BaseAuton extends LinearOpMode {
             TURN_ANGLE_OFFSET_MED = 10,
             TURN_ANGLE_OFFSET_TALL = -2.0,
             Y_START = -62.5,
-            Y_MAIN_PATH = -13,
+            Y_MAIN_PATH = -12.5,
             TIME_PRE_GRAB = 0,
             TIME_GRAB = 0.5,
             TIME_PRE_DROP = 0,
@@ -63,12 +63,11 @@ public abstract class BaseAuton extends LinearOpMode {
             TIME_LIFT_MEDIUM = 1.3,
             TIME_LIFT_TALL = 1.7,
             TIME_FLIP = 1.75,
-            STACK_SHIFT = 0.45,
             STACK_VELO = MAX_VEL,
             STACK_ACCEL = 40,
-            SCORING_SHIFT = 0.1,
             SCORING_VELO = MAX_VEL,
-            SCORING_ACCEL = 20;
+            SCORING_ACCEL = 20,
+            X_SHIFT = 0.1;
 
     public static final double
             RIGHT = Math.toRadians(0),
@@ -89,12 +88,12 @@ public abstract class BaseAuton extends LinearOpMode {
 
         Vector2d stackPos = new Vector2d(side * STACK_X, STACK_Y);
         Vector2d sideTurnPos = new Vector2d(side * TURN_POS_X, Y_MAIN_PATH);
-        Vector2d centerTurnPos = new Vector2d(sideTurnPos.getX() - side * ONE_TILE, sideTurnPos.getY());
         Pose2d tallScoringPos = new Pose2d(side * TALL_X, TALL_Y, Math.toRadians(isRight ? TALL_ANGLE : 180 - TALL_ANGLE));
         Pose2d medScoringPos = new Pose2d(side * MED_X, MED_Y, Math.toRadians(isRight ? MED_ANGLE : 180 - MED_ANGLE));
-        Pose2d centerTallScoringPos = new Pose2d(medScoringPos.getX() - side * ONE_TILE, medScoringPos.getY(), medScoringPos.getHeading());
+        Vector2d centerTurnPos = new Vector2d((sideTurnPos.getX() - side * ONE_TILE) + (5 * side * X_SHIFT), sideTurnPos.getY());
+        Pose2d centerTallScoringPos = new Pose2d((medScoringPos.getX() - side * ONE_TILE) + (5 * side * X_SHIFT), medScoringPos.getY(), medScoringPos.getHeading());
 
-        Pose2d centerParkingZone = new Pose2d(CENTER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
+        Pose2d centerParkingZone = new Pose2d(CENTER_X + (5 * side * X_SHIFT), Y_MAIN_PATH, isRight ? RIGHT : LEFT);
         Pose2d startPose = new Pose2d(CENTER_X, Y_START, FORWARD);
 
         Lift.Position pole = tallPole ? Lift.Position.TALL : Lift.Position.MED;
@@ -119,10 +118,10 @@ public abstract class BaseAuton extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
                 .goToStack(0)
                 // loop below
-                .addCycle(Lift.Position.FOUR, 1, 1)
-                .addCycle(Lift.Position.THREE, 2, 2)
-                .addCycle(Lift.Position.TWO, 3, 3)
-                .addCycle(Lift.Position.FLOOR, 4, 4)
+                .addCycle(Lift.Position.FOUR, 1)
+                .addCycle(Lift.Position.THREE, 2)
+                .addCycle(Lift.Position.TWO, 3)
+                .addCycle(Lift.Position.FLOOR, 4)
                 .build();
 
         TrajectorySequence parkInner = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
@@ -139,12 +138,12 @@ public abstract class BaseAuton extends LinearOpMode {
                 .addTemporalMarker(() -> scorer.dropCone())
                 .waitSeconds(TIME_DROP)
                 .UNSTABLE_addTemporalMarkerOffset(TIME_DROP_TO_FLIP, () -> scorer.passthrough.trigger())
-                .lineToSplineHeading(new Pose2d(side * PARKING_INNER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT))
+                .lineToSplineHeading(new Pose2d((side * PARKING_INNER_X) + (5 + side * X_SHIFT), Y_MAIN_PATH, isRight ? RIGHT : LEFT))
                 .build();
 
         TrajectorySequence parkOuter = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                 .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, TURN_ANGLE_OFFSET)
-                .addCycle(Lift.Position.FLOOR, 2, 5)
+                .addCycle(Lift.Position.FLOOR, 5)
                 .build();
 
         TrajectorySequence parkCenter = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
