@@ -38,7 +38,7 @@ public abstract class BaseAuton extends LinearOpMode {
             END_HEADING_MULTIPLIER = 1,
             START_TURN_Y = -52,
             MED_ANGLE = 29.25,
-            MED_X = 32,
+            MED_X = 33,
             MED_Y = -18.5,
             MED_Y_FIRST_OFFSET = 2.5,
             TALL_ANGLE = -35.0,
@@ -67,7 +67,7 @@ public abstract class BaseAuton extends LinearOpMode {
             STACK_ACCEL = 40,
             SCORING_VELO = MAX_VEL,
             SCORING_ACCEL = 20,
-            X_SHIFT = 0.1;
+            X_SHIFT = 0.5   ;
 
     public static final double
             RIGHT = Math.toRadians(0),
@@ -93,7 +93,7 @@ public abstract class BaseAuton extends LinearOpMode {
         Vector2d centerTurnPos = new Vector2d((sideTurnPos.getX() - side * ONE_TILE) + (5 * side * X_SHIFT), sideTurnPos.getY());
         Pose2d centerTallScoringPos = new Pose2d((medScoringPos.getX() - side * ONE_TILE) + (5 * side * X_SHIFT), medScoringPos.getY(), medScoringPos.getHeading());
 
-        Pose2d centerParkingZone = new Pose2d(CENTER_X + (5 * side * X_SHIFT), Y_MAIN_PATH, isRight ? RIGHT : LEFT);
+        Pose2d centerParkingZone = new Pose2d(CENTER_X, Y_MAIN_PATH, isRight ? RIGHT : LEFT);
         Pose2d startPose = new Pose2d(CENTER_X, Y_START, FORWARD);
 
         Lift.Position pole = tallPole ? Lift.Position.TALL : Lift.Position.MED;
@@ -149,7 +149,7 @@ public abstract class BaseAuton extends LinearOpMode {
         TrajectorySequence parkCenter = drivetrain.trajectorySequenceBuilder(scoringTrajectory.end())
                 .setValues(scorer, sideTurnPos, stackPos, isRight, pole, TIME_LIFT, scoringPos, TURN_ANGLE_OFFSET)
                 .score(Lift.Position.FLOOR, 5)
-                .lineToSplineHeading(centerParkingZone)
+                .lineToSplineHeading(new Pose2d(centerParkingZone.getX() + (5 * side * X_SHIFT), centerParkingZone.getY(), centerParkingZone.getHeading()))
                 .build();
 
         drivetrain.followTrajectorySequenceAsync(scoringTrajectory);
@@ -169,6 +169,7 @@ public abstract class BaseAuton extends LinearOpMode {
 
         /*
          * The INIT-loop:
+         *
          * This REPLACES waitForStart!
          */
 
