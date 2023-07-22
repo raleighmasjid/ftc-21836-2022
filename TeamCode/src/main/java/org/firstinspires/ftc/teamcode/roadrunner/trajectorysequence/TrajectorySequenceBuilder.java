@@ -3,10 +3,8 @@ package org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.LEFT;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.RIGHT;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.SCORING_ACCEL;
-import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.SCORING_SHIFT;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.SCORING_VELO;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.STACK_ACCEL;
-import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.STACK_SHIFT;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.STACK_VELO;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_DROP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_DROP_TO_FLIP;
@@ -14,6 +12,7 @@ import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_FLIP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_GRAB;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_PRE_DROP;
 import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.TIME_PRE_GRAB;
+import static org.firstinspires.ftc.teamcode.opmodes.BaseAuton.X_SHIFT;
 import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ANG_VEL;
 import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.TRACK_WIDTH;
 
@@ -729,21 +728,22 @@ public class TrajectorySequenceBuilder {
         void run();
     }
 
-    public TrajectorySequenceBuilder addCycle(Lift.Position endLiftPosition, double stackShifts, double scoringShifts) {
+    public TrajectorySequenceBuilder addCycle(Lift.Position endLiftPosition, double shifts) {
         return this
-                .score(endLiftPosition, scoringShifts)
-                .goToStack(stackShifts)
+                .score(endLiftPosition, shifts)
+                .goToStack(shifts)
                 ;
     }
 
-    public TrajectorySequenceBuilder score(Lift.Position endLiftPosition, double scoringShifts) {
+    public TrajectorySequenceBuilder score(Lift.Position endLiftPosition, double shifts) {
+        double shift = shifts * side * X_SHIFT;
         return this
                 .waitSeconds(TIME_PRE_GRAB)
                 .addTemporalMarker(() -> scorer.grabCone())
                 .waitSeconds(TIME_GRAB)
                 .setReversed(true)
-                .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
-                .splineToSplineHeading(new Pose2d(scoringPos.getX() + (scoringShifts * side * SCORING_SHIFT), scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
+                .splineTo(new Vector2d(sideTurnPos.getX() + shift, sideTurnPos.getY()), TURN_ANGLE_OFFSET + (isRight ? LEFT : RIGHT))
+                .splineToSplineHeading(new Pose2d(scoringPos.getX() + shift, scoringPos.getY(), scoringPos.getHeading()), scoringPos.getHeading() - LEFT, scoringVeloCap, scoringAccelCap)
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_LIFT, () -> scorer.setTargetLiftPos(pole))
                 .UNSTABLE_addTemporalMarkerOffset(-TIME_FLIP, () -> scorer.passthrough.trigger())
                 .waitSeconds(TIME_PRE_DROP)
@@ -753,11 +753,12 @@ public class TrajectorySequenceBuilder {
                 ;
     }
 
-    public TrajectorySequenceBuilder goToStack(double stackShifts) {
+    public TrajectorySequenceBuilder goToStack(double shifts) {
+        double shift = shifts * side * X_SHIFT;
         return this
                 .setReversed(false)
-                .splineTo(sideTurnPos, TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
-                .splineTo(new Vector2d(stackPos.getX() + (stackShifts * side * STACK_SHIFT), stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
+                .splineTo(new Vector2d(sideTurnPos.getX() + shift, sideTurnPos.getY()), TURN_ANGLE_OFFSET + (isRight ? RIGHT : LEFT))
+                .splineTo(new Vector2d(stackPos.getX() + shift, stackPos.getY()), isRight ? RIGHT : LEFT, stackVeloCap, stackAccelCap)
                 ;
     }
 
