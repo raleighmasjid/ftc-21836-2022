@@ -38,13 +38,13 @@ public abstract class BaseAuton extends LinearOpMode {
             END_HEADING_MULTIPLIER = 1,
             START_TURN_Y = -52,
             MED_ANGLE = 29.25,
-            MED_X = 33,
-            MED_Y = -18.5,
-            MED_Y_FIRST_OFFSET = 2.5,
+            MED_X = 33.75,
+            MED_Y = -17.75,
+            MED_Y_FIRST_OFFSET = 0,
             TALL_ANGLE = -35.0,
             TALL_X = 31.0,
             TALL_Y = -7.5,
-            STACK_X = 59,
+            STACK_X = 60,
             STACK_Y = -12,
             ONE_TILE = 23.3,
             PARKING_INNER_X = 12.5,
@@ -53,7 +53,7 @@ public abstract class BaseAuton extends LinearOpMode {
             TURN_ANGLE_OFFSET_MED = 10,
             TURN_ANGLE_OFFSET_TALL = -2.0,
             Y_START = -62.5,
-            Y_MAIN_PATH = -12.5,
+            Y_MAIN_PATH = -12,
             TIME_PRE_GRAB = 0,
             TIME_GRAB = 0.5,
             TIME_PRE_DROP = 0,
@@ -67,7 +67,7 @@ public abstract class BaseAuton extends LinearOpMode {
             STACK_ACCEL = 40,
             SCORING_VELO = MAX_VEL,
             SCORING_ACCEL = 20,
-            X_SHIFT = 0.5   ;
+            X_SHIFT = 1.1;
 
     public static final double
             RIGHT = Math.toRadians(0),
